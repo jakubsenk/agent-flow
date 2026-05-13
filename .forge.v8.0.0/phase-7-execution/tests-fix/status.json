@@ -1,0 +1,17 @@
+{
+  "task": "tests-fix",
+  "status": "DONE",
+  "timestamp": "2026-04-27T00:00:00Z",
+  "test": "v8-invariant-template-parity.sh",
+  "root_cause": "check_pair called with bug.md / feature.md; real filenames are bug_report.md / feature_request.md",
+  "fix": "Updated both check_pair calls in tests/scenarios/v8-invariant-template-parity.sh",
+  "result": {
+    "exit_code": 0,
+    "verdict": "PASS",
+    "pairs_verified": [
+      ".gitea/issue_template/bug_report.md == .github/ISSUE_TEMPLATE/bug_report.md",
+      ".gitea/issue_template/feature_request.md == .github/ISSUE_TEMPLATE/feature_request.md",
+      ".gitea/pull_request_template.md == .github/PULL_REQUEST_TEMPLATE.md"
+    ]
+  }
+}

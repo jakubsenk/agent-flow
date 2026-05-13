@@ -1,0 +1,89 @@
+{
+  "schema_version": "1.5.0",
+  "id": "forge-2026-04-23-002",
+  "pipeline_mode": "adaptive",
+  "pipeline_mode__provenance": {
+    "source": "default",
+    "reason": "no CLI pin, no project config override; adaptive is the plugin default"
+  },
+  "jit": {
+    "enabled": true,
+    "enabled__provenance": {
+      "source": "meta-agent",
+      "reason": "composite complexity 5 >= 3; JIT enables mid-pipeline re-specification as downstream phases surface surprises"
+    },
+    "timeout": 120,
+    "timeout__provenance": { "source": "default", "reason": "plugin default retained" },
+    "fallback_timeout": 60,
+    "fallback_timeout__provenance": { "source": "default", "reason": "plugin default retained" },
+    "max_consecutive_fallbacks": 2,
+    "max_consecutive_fallbacks__provenance": { "source": "default", "reason": "plugin default retained" }
+  },
+  "replanning": {
+    "enabled": true,
+    "enabled__provenance": { "source": "default", "reason": "default is true; meta-agent confirms fit for composite=5" },
+    "max_cycles": 3,
+    "max_cycles__provenance": {
+      "source": "meta-agent",
+      "reason": "bumped from default 1 to 3 because composite complexity 5 (release-scale) warrants more replanning headroom; ambiguity=3 is mid-range but scope=5 drives cycles upward"
+    },
+    "divergence_threshold": 0.3,
+    "divergence_threshold__provenance": {
+      "source": "default",
+      "reason": "ambiguity=3 does not warrant lowering default; three tracks of moderately defined scope do not need extra early-divergence bias"
+    },
+    "trigger_classes": ["PIVOTED"],
+    "trigger_classes__provenance": { "source": "default", "reason": "plugin default retained" }
+  },
+  "fast_track": {
+    "enabled": null,
+    "enabled__provenance": {
+      "source": "default",
+      "reason": "auto-detect retained but eligibility fails upstream: composite=5 exceeds <=2 ceiling and confidence=0.88 below 0.9 threshold; orchestrator will honor precondition failure"
+    }
+  },
+  "meta_agent": {
+    "confidence_threshold": 0.7,
+    "confidence_threshold__provenance": { "source": "default", "reason": "plugin default retained" }
+  },
+  "routing": {
+    "enabled": null,
+    "enabled__provenance": { "source": "default", "reason": "auto (plugin default); meta-agent produced routing-decision.json for CHECK D consumption" },
+    "confidence_threshold": 0.85,
+    "confidence_threshold__provenance": { "source": "default", "reason": "plugin default retained" },
+    "auto_select_template": false,
+    "auto_select_template__provenance": { "source": "default", "reason": "plugin default retained; Section 6 template auto-selection was NOT executed" },
+    "default_template": null,
+    "default_template__provenance": { "source": "default", "reason": "plugin default retained" }
+  },
+  "templates": {},
+  "templates__provenance": { "source": "default", "reason": "no templates in pre-merged config" },
+  "verification": {
+    "dimension_weights": {
+      "security": 0.3,
+      "correctness": 0.35,
+      "spec_alignment": 0.2,
+      "robustness": 0.15
+    },
+    "dimension_weights__provenance": {
+      "source": "meta-agent",
+      "reason": "correctness-leaning (0.35) because Tracks 1 + 2 are explicitly correctness quality work - the entire release is motivated by doc-grep assertions producing false correctness signals. Security stays at 0.3 (Track 3 prompt-injection constraint needs real scrutiny). Robustness 0.2 -> 0.15 (no concurrency redesign, no fault-injection surface change). Spec-alignment stays 0.2 default. Sum = 1.0."
+    }
+  },
+  "skip_phases": [],
+  "skip_phases__provenance": { "source": "default", "reason": "routing action=full_pipeline; no phases to skip" },
+  "approval_gates": [3, 4, 6],
+  "approval_gates__provenance": { "source": "default", "reason": "plugin default retained (brainstorm, spec, plan gates)" },
+  "tdd": {
+    "mutation_threshold": 70,
+    "mutation_threshold__provenance": { "source": "default", "reason": "plugin default retained" }
+  },
+  "review": {
+    "triage_enabled": false,
+    "triage_enabled__provenance": { "source": "default", "reason": "plugin default retained" }
+  },
+  "oracle": {
+    "enabled": true,
+    "enabled__provenance": { "source": "default", "reason": "plugin default retained" }
+  }
+}

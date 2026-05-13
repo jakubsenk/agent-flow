@@ -1,0 +1,9 @@
+{
+  "task_id": "T-05",
+  "status": "DONE",
+  "files_created": [".gitea/issue_template/bug_report.md", ".gitea/issue_template/feature_request.md", ".gitea/pull_request_template.md", ".github/ISSUE_TEMPLATE/bug_report.md", ".github/ISSUE_TEMPLATE/feature_request.md", ".github/PULL_REQUEST_TEMPLATE.md"],
+  "revision_cycle": null,
+  "concerns": [],
+  "test_results": "AC-017..020 verified: 6 files exist, 3 byte-identical pairs (diff -q clean), PII warning + no-secrets checkbox grep'd",
+  "completed_at": "2026-04-19T00:00:00Z"
+}

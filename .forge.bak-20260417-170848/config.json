@@ -1,0 +1,72 @@
+{
+  "pipeline_mode": {
+    "value": "adaptive",
+    "source": "default",
+    "meta_reasoning": "Standard adaptive mode — complexity 3 means full pipeline, no fast-track."
+  },
+  "jit.enabled": {
+    "value": false,
+    "source": "meta-agent",
+    "meta_reasoning": "All files are identified upfront from the roadmap spec. No just-in-time context loading needed — confidence 1.0."
+  },
+  "jit.timeout": {
+    "value": 120,
+    "source": "default",
+    "meta_reasoning": "Default timeout. JIT disabled, so irrelevant."
+  },
+  "replanning.enabled": {
+    "value": false,
+    "source": "meta-agent",
+    "meta_reasoning": "Task is fully specified with zero ambiguity. All 4 work items have explicit file lists and exact changes. No replanning needed."
+  },
+  "replanning.max_cycles": {
+    "value": 1,
+    "source": "default",
+    "meta_reasoning": "Default preserved but replanning is disabled."
+  },
+  "replanning.divergence_threshold": {
+    "value": 0.3,
+    "source": "default",
+    "meta_reasoning": "Default preserved."
+  },
+  "fast_track.enabled": {
+    "value": false,
+    "source": "meta-agent",
+    "meta_reasoning": "Composite complexity 3 exceeds fast-track threshold of 2. Standard pipeline required."
+  },
+  "meta_agent.confidence_threshold": {
+    "value": 0.7,
+    "source": "default",
+    "meta_reasoning": "Default preserved. Actual confidence is 1.0, well above threshold."
+  },
+  "routing.enabled": {
+    "value": false,
+    "source": "meta-agent",
+    "meta_reasoning": "Task type is refactor — routed to standard execution pipeline, no skill delegation needed."
+  },
+  "routing.auto_select_template": {
+    "value": false,
+    "source": "default",
+    "meta_reasoning": "No template selection needed for refactor tasks."
+  },
+  "verification.dimension_weights": {
+    "value": {
+      "correctness": 0.35,
+      "spec_alignment": 0.30,
+      "robustness": 0.20,
+      "security": 0.15
+    },
+    "source": "meta-agent",
+    "meta_reasoning": "Correctness weighted highest — content loss during extraction is the primary risk. Spec alignment high because 12 precise ACs must be met. Security low — no external input handling or network code, but webhook format changes warrant minimal check."
+  },
+  "skip_phases": {
+    "value": [],
+    "source": "default",
+    "meta_reasoning": "All phases needed. Task has enough complexity for full research-brainstorm-spec-plan-execute-verify cycle."
+  },
+  "approval_gates": {
+    "value": [3, 4, 6],
+    "source": "default",
+    "meta_reasoning": "Default gates: after brainstorm (3), after spec (4), after plan (6). All appropriate for this refactor."
+  }
+}

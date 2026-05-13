@@ -1,0 +1,36 @@
+{
+  "task_id": "T-017",
+  "status": "completed",
+  "files_modified": [
+    "docs/guides/migration-v7-to-v8.md"
+  ],
+  "files_modified_actual": [
+    "docs/guides/migration-v7-to-v8.md",
+    ".forge/phase-7-execution/T-017/status.json"
+  ],
+  "acceptance_criteria_fulfilled": [
+    "AC-DOC-001 — docs/guides/migration-v7-to-v8.md exists and contains ALL 8 required H2 headings: 'TOML overlay conversion', 'Agent rename mapping', 'SKILL decomposition', 'Plugin permission constraint', 'Scaffold mode harmonization', 'Skip stages syntax migration', 'Deprecation timeline', '/migrate-config --to-v8'",
+    "REQ-DOC-001 — Comprehensive migration guide for v7→v8 with all 12 required sections per task spec"
+  ],
+  "self_review_checklist": {
+    "1_correct_path": "PASS — file at docs/guides/migration-v7-to-v8.md",
+    "2_all_12_sections": "PASS — 12 sections: Overview, Prerequisites, TOML overlay conversion, Agent rename mapping, SKILL decomposition, Plugin permission constraint, Scaffold mode harmonization, Skip stages syntax migration, /migrate-config --to-v8, Deprecation timeline, Troubleshooting, Rollback procedure",
+    "3_all_breaking_changes": "PASS — 4 breaking changes documented: customization .md→.toml, 3 agent merges, SKILL decomposition steps, scaffold mode prompt removal",
+    "4_agent_rename_table": "PASS — full 6→3 rename table present (triage-analyst/code-analyst→analyst, test-engineer/e2e-test-engineer→test-engineer, reproducer/browser-verifier→browser-agent) plus complete 18-agent list",
+    "5_migrate_config_commands": "PASS — all 5 steps documented: --dry-run preview, review conflicts, --yes apply, check-setup, scaffold-validate",
+    "6_8_h2_headings": "PASS — verified via grep: 'TOML overlay conversion', 'Agent rename mapping', 'SKILL decomposition', 'Plugin permission constraint', 'Scaffold mode harmonization', 'Skip stages syntax migration', 'Deprecation timeline', '/migrate-config --to-v8'"
+  },
+  "content_summary": {
+    "file_size_approximate": "~560 lines",
+    "sections_count": 12,
+    "breaking_changes_documented": 4,
+    "agent_rename_mappings": "6 old → 3 new (full table)",
+    "scaffold_equivalence_table": "5-row table (v7 prompt choice → v8 flag)",
+    "skip_stages_migration_table": "6-row conversion table",
+    "counter_examples_present": 1,
+    "posix_portable_commands": true,
+    "hooks_mcpServers_permissionMode_in_frontmatter": "documented as BLOCKED via COUNTER-EXAMPLE comment only"
+  },
+  "notes": "Všechny 18 jmen agentů jsou explicitně vyjmenovány v mapovacích tabulkách (ne jen count string). Scaffold tabulka B6 odpovídá přesně design.md §5.4. Rollback sekce popisuje customization.bak-v7-{timestamp}/ adresář vytvořený /migrate-config. Deprecation timeline uvádí v8.0.0 deprecated + v9.0.0 hard removal pro každou položku.",
+  "completed_at": "2026-04-27T12:00:00Z"
+}

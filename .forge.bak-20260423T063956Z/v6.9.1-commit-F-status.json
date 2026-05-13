@@ -1,0 +1,27 @@
+{
+  "commit": "F",
+  "feature": "pipeline-resumed webhook event (NEW-5)",
+  "status": "DONE",
+  "files_modified": [
+    "core/post-publish-hook.md",
+    "skills/resume-ticket/SKILL.md",
+    "docs/reference/config.md",
+    "docs/reference/automation-config.md"
+  ],
+  "files_created": [
+    "tests/scenarios/v6.9.1-pipeline-resumed-webhook.sh"
+  ],
+  "test_result": "184/184 PASS",
+  "new_test_scenario": "v6.9.1-pipeline-resumed-webhook.sh (10 assertions, all PASS)",
+  "invariants_preserved": [
+    "REQ-049: pipeline-completed MUST NOT fire on paused->running transition",
+    "BC: all existing events (pr-created, issue-blocked, pipeline-started, step-completed, pipeline-completed, pipeline-paused) unchanged"
+  ],
+  "notes": [
+    "pipeline-resumed added to Section 4 event table in core/post-publish-hook.md",
+    "New subsection 'Webhook event: pipeline-resumed' with full payload spec, jq-pipe curl pattern, and REQ-049 negative invariant",
+    "Firing site wired in skills/resume-ticket/SKILL.md Step 5 after state.json write, gated on On events config",
+    "Both docs/reference files updated with new event token",
+    "On events filter list in core/post-publish-hook.md updated with v6.9.1 entry"
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0.0",
+  "id": "forge-2026-03-22-001",
+  "plugin_version": "0.1.0",
+  "input": "Merge forge + ceos-agents into a unified pipeline plugin with /build command. Auto-detection of mode (code/analysis/strategy/content), unified 10-phase pipeline, shared core extraction, commands-to-skills migration, agent merges.",
+  "status": "running",
+  "current_phase": 4,
+  "phases": {
+    "0": {"name": "meta-agent", "status": "completed", "started_at": "2026-03-22T10:00:00Z", "completed_at": "2026-03-22T10:10:00Z"},
+    "1": {"name": "research-questions", "status": "completed", "started_at": "2026-03-22T10:10:00Z", "completed_at": "2026-03-22T10:30:00Z", "agents_dispatched": 7},
+    "2": {"name": "research-answers", "status": "completed", "started_at": "2026-03-22T10:30:00Z", "completed_at": "2026-03-22T10:55:00Z", "agents_dispatched": 7},
+    "3": {"name": "brainstorm", "status": "completed", "started_at": "2026-03-22T10:55:00Z", "completed_at": "2026-03-22T12:00:00Z", "agents_dispatched": 3, "gate_decision": "approved"},
+    "4": {"name": "spec", "status": "completed", "gate_decision": "approved_scope_reduced"},
+    "5": {"name": "tdd", "status": "completed"},
+    "6": {"name": "plan", "status": "completed", "gate_decision": "approved"}
+  },
+  "config": {
+    "agents": {
+      "phase_1": 7,
+      "phase_2": 7,
+      "phase_3": 3
+    },
+    "models": {
+      "phase_0": "opus",
+      "phase_1": "sonnet",
+      "phase_2": "sonnet",
+      "phase_3": "opus",
+      "phase_4": "opus",
+      "phase_5": "sonnet",
+      "phase_6": "opus",
+      "phase_7": "sonnet",
+      "phase_8_reviewers": "opus",
+      "phase_8_correctness": "sonnet",
+      "phase_9": "sonnet"
+    },
+    "review": {
+      "max_rounds": 4
+    },
+    "approval_gates": [3, 4, 6],
+    "skip_phases": [],
+    "timeout": {
+      "per_agent": 300000,
+      "per_phase": 900000,
+      "total_pipeline": 10800000
+    }
+  },
+  "metrics": {
+    "total_tokens_estimated": 85460,
+    "total_duration_ms": 572839,
+    "review_rounds_used": 0,
+    "escalations_to_human": 0
+  },
+  "phase_8_revision": null
+}

@@ -1,0 +1,125 @@
+{
+  "task_id": "T-rerun",
+  "config_reader_fixed": true,
+  "harness_run2_total": 140,
+  "harness_run2_pass": 117,
+  "harness_run2_fail": 23,
+  "improvement_from_run1": "+18 tests passing (run1: 99 pass / 41 fail → run2: 117 pass / 23 fail)",
+  "remaining_failures": [
+    {
+      "test": "ac-v68-autopilot-config-keys.sh",
+      "classification": "B",
+      "note": "CLAUDE.md documents Autopilot keys under different names (Lock file, Stop on error, Max features per run) vs. spec-expected names (Lock timeout, Log file, Bug limit, Feature limit, On error)"
+    },
+    {
+      "test": "ac-v68-autopilot-config-reader-keys.sh",
+      "classification": "B",
+      "note": "core/config-reader.md Autopilot section missing dotted keys autopilot.lock_timeout, autopilot.log_file, autopilot.bug_limit, autopilot.feature_limit, autopilot.on_error — uses different field names"
+    },
+    {
+      "test": "ac-v68-autopilot-dry-run-shortcircuit.sh",
+      "classification": "B",
+      "note": "skills/autopilot/SKILL.md uses '[autopilot][INFO] Dry run mode' marker, not the '[DRY RUN]' tag the test expects"
+    },
+    {
+      "test": "ac-v68-autopilot-info-hostname.sh",
+      "classification": "B",
+      "note": "skills/autopilot/SKILL.md missing 'disjoint' query guidance (AUTOPILOT-R13); also docs/guides/autopilot.md not yet created"
+    },
+    {
+      "test": "ac-v68-autopilot-on-error-stop.sh",
+      "classification": "B",
+      "note": "SKILL.md uses 'Stop on error: false' syntax, not 'On error: skip' — config key name drift from spec"
+    },
+    {
+      "test": "ac-v68-cost-metrics-dual-mode.sh",
+      "classification": "A",
+      "note": "skills/metrics/SKILL.md says 'NEVER emit a single combined grand total' — the prohibition text contains 'grand total', causing false positive. Also missing 'Data source: measured=...' footer (B component)"
+    },
+    {
+      "test": "ac-v68-cost-task-tool-usage-field-discovery.sh",
+      "classification": "B",
+      "note": "tests/scenarios/cost-task-tool-usage-field-discovery.sh does not reference 'result.usage' (the meta-test checks the discovery test file structure)"
+    },
+    {
+      "test": "ac-v68-doc-changelog-entry.sh",
+      "classification": "B",
+      "note": "CHANGELOG.md missing v6.8.0 entry with today's date 2026-04-17 and 'Migration notes' subsection — not yet written"
+    },
+    {
+      "test": "ac-v68-doc-optional-sections-18.sh",
+      "classification": "B",
+      "note": "CLAUDE.md says '17 optional' sections but Autopilot is the 18th — count not bumped in CLAUDE.md"
+    },
+    {
+      "test": "ac-v68-doc-skill-count-29.sh",
+      "classification": "B",
+      "note": "docs/reference/skills.md still documents 28 skills; autopilot adds the 29th, count not updated"
+    },
+    {
+      "test": "ac-v68-doc-version-6.8.0.sh",
+      "classification": "B",
+      "note": "plugin.json and marketplace.json still at v6.7.x — version bump to 6.8.0 not yet done"
+    },
+    {
+      "test": "ac-v68-webhook-advisory-failure.sh",
+      "classification": "B",
+      "note": "CLAUDE.md missing 'Webhook payloads are forward-compatible' paragraph — text exists in core/post-publish-hook.md but test checks CLAUDE.md"
+    },
+    {
+      "test": "ac-v68-webhook-no-per-iteration.sh",
+      "classification": "A",
+      "note": "Regex 'step-completed.*per (fixer|iteration)' matches negation text 'never per iteration' / 'not per iteration' in skill files — implementation correctly documents ONCE-per-stage, not per-iteration"
+    },
+    {
+      "test": "ac-v68-webhook-no-step-skipped.sh",
+      "classification": "A",
+      "note": "core/post-publish-hook.md contains 'step-skipped' only in a WEBHOOK-R7 prohibition heading — the grep catches the prohibition text, not an actual event emission"
+    },
+    {
+      "test": "ac-v68-webhook-post-publish-hook-section4.sh",
+      "classification": "B",
+      "note": "Section 4 heading says 'Pipeline Event Notifications' but test expects 'Pipeline lifecycle events'; also forward-compat text in wrong file"
+    },
+    {
+      "test": "ac2-fixbugs-contributor-note.sh",
+      "classification": "B",
+      "note": "skills/fix-bugs/SKILL.md has 30 non-comment atomic-write references vs. expected 14; v6.8.0 added 16 more references (autopilot + cost tracking steps) but test threshold not updated"
+    },
+    {
+      "test": "autopilot-dry-run.sh",
+      "classification": "B",
+      "note": "Duplicate of ac-v68-autopilot-dry-run-shortcircuit: SKILL.md uses '[autopilot][INFO] Dry run mode' not '[DRY RUN]' tag"
+    },
+    {
+      "test": "cost-summary-truncation.sh",
+      "classification": "A",
+      "note": "state/schema.md says 'max 20 data rows'; test regex '20 rows?' requires '20 rows' with no word between '20' and 'rows' — regex doesn't match 'max 20 data rows'"
+    },
+    {
+      "test": "cost-usage-null-defensive.sh",
+      "classification": "A",
+      "note": "state-manager.md line 101 'result.usage is null...do not retry' matches pattern 'null.*retry' causing false positive; prohibition text is correct implementation"
+    },
+    {
+      "test": "metrics-dual-mode.sh",
+      "classification": "A",
+      "note": "Same false-positive as ac-v68-cost-metrics-dual-mode: 'grand total' appears in prohibition text 'NEVER emit a single combined grand total'"
+    },
+    {
+      "test": "regression-no-breaking-config-changes.sh",
+      "classification": "A",
+      "note": "Script uses 'cd $(dirname $0)/../../..' which resolves to parent of repo root — CLAUDE.md not found because wrong CWD. Harness runs from repo root so path resolution breaks."
+    },
+    {
+      "test": "sprint-counts.sh",
+      "classification": "B",
+      "note": "Test expects 28 SKILL.md files; v6.8.0 added autopilot making it 29 — test threshold not updated. CLAUDE.md correctly says 29 but test expects 28."
+    },
+    {
+      "test": "webhook-no-step-skipped.sh",
+      "classification": "A",
+      "note": "Duplicate of ac-v68-webhook-no-step-skipped: catches WEBHOOK-R7 prohibition heading in post-publish-hook.md, not an actual step-skipped event"
+    }
+  ]
+}

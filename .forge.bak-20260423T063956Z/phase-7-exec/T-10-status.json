@@ -1,0 +1,9 @@
+{
+  "task_id": "T-10",
+  "status": "DONE",
+  "files_modified": ["tests/scenarios/v681-harness-exit-propagation.sh"],
+  "revision_cycle": null,
+  "concerns": [],
+  "test_results": "AC-023: trap line inserted after TMPSCEN declaration; bash -n passes",
+  "completed_at": "2026-04-20T13:00:30Z"
+}

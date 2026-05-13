@@ -1,0 +1,27 @@
+[2026-04-02T08:22:44Z] FORGE_START input="scaffold YouTrack epic/story bug" config={pipeline_mode:adaptive,approval_gates:[3,4,6],skip_phases:[]}
+[2026-04-02T08:23:38Z] PHASE_START phase=0 name=meta-agent
+[2026-04-02T08:30:55Z] PHASE_END phase=0 status=completed
+[2026-04-02T08:30:55Z] ROUTING_FALLBACK reason=routing_decision_not_in_standard_format
+[2026-04-02T08:31:20Z] PHASE_START phase=1 name=research-questions
+[2026-04-02T08:35:56Z] PHASE_END phase=1 status=completed
+[2026-04-02T08:35:56Z] SYNTHESIS_END phase=1 status=completed
+[2026-04-02T08:36:38Z] PHASE_START phase=3 name=brainstorm
+[2026-04-02T08:43:44Z] PHASE_END phase=3 status=completed
+[2026-04-02T08:43:44Z] DIVERGENCE_SCORED phase=3 divergence_class=REFINED keyword_overlap=0.31
+[2026-04-02T08:47:40Z] APPROVAL_GATE phase=3
+[2026-04-02T08:48:00Z] PHASE_START phase=4 name=specification
+[2026-04-02T08:53:08Z] PHASE_END phase=4 status=completed
+[2026-04-02T08:56:56Z] APPROVAL_GATE phase=4
+[2026-04-02T08:57:15Z] PHASE_START phase=5 name=tdd
+[2026-04-02T09:02:08Z] PHASE_END phase=5 status=completed
+[2026-04-02T09:02:29Z] PHASE_START phase=6 name=planning
+[2026-04-02T09:05:24Z] PHASE_END phase=6 status=completed
+[2026-04-02T09:05:24Z] APPROVAL_GATE phase=6
+[2026-04-02T09:10:06Z] PHASE_START phase=7 name=execution
+[2026-04-02T09:14:50Z] PHASE_END phase=7 status=completed
+[2026-04-02T09:15:19Z] PHASE_START phase=8 name=verification
+[2026-04-02T09:20:12Z] PHASE_END phase=8 status=completed
+[2026-04-02T09:20:12Z] COMMANDER_ARITHMETIC_VERIFIED phase=8 commander_aggregate=0.935 recomputed_aggregate=0.935 delta=0
+[2026-04-02T09:20:44Z] PHASE_START phase=9 name=completion
+[2026-04-02T09:20:56Z] PHASE_END phase=9 status=completed
+[2026-04-02T09:20:56Z] FORGE_END status=completed duration_ms=3400000

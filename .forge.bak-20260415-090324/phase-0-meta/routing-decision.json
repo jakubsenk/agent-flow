@@ -1,0 +1,19 @@
+{
+  "task_type": "bugfix",
+  "composite_complexity": 3,
+  "scope": 3,
+  "ambiguity": 1,
+  "risk": 1,
+  "template": null,
+  "template_reason": "No pre-built template matches this multi-file bugfix pattern",
+  "fast_track_eligible": false,
+  "fast_track_reason": "Composite complexity 3 exceeds fast-track threshold of 2",
+  "jit_recommended": true,
+  "jit_reason": "Composite >= 3, multiple cross-cutting file changes",
+  "phases_to_skip": [],
+  "phases_to_skip_reason": "All phases needed: research for exhaustive call-site enumeration, spec for formalization, TDD for test coverage, plan for dependency ordering",
+  "confidence": 0.95,
+  "confidence_reason": "Fully specified bugfix with clear file list, AC, and reproduction case",
+  "security_impact": "none",
+  "routing_timestamp": "2026-04-15T00:00:00Z"
+}

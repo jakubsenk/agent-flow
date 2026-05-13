@@ -1,0 +1,124 @@
+{
+  "pipeline_mode": "adaptive",
+  "pipeline_mode__provenance": {
+    "source": "default",
+    "reason": "Inherited from Level 1 defaults (pre-merged config); no CLI or project override."
+  },
+
+  "jit": {
+    "enabled": true,
+    "enabled__provenance": {
+      "source": "meta-agent",
+      "reason": "Composite complexity 3 (>=3 threshold) per meta-analysis-prompt.md JIT Recommendation rule."
+    },
+    "timeout": 120,
+    "timeout__provenance": { "source": "default", "reason": "No override." },
+    "fallback_timeout": 60,
+    "fallback_timeout__provenance": { "source": "default", "reason": "No override." },
+    "max_consecutive_fallbacks": 2,
+    "max_consecutive_fallbacks__provenance": { "source": "default", "reason": "No override." }
+  },
+
+  "replanning": {
+    "enabled": true,
+    "enabled__provenance": { "source": "default", "reason": "Default is true; no override." },
+    "max_cycles": 1,
+    "max_cycles__provenance": {
+      "source": "meta-agent",
+      "reason": "Ambiguity score = 1 (fully specified). No need to inflate beyond default."
+    },
+    "divergence_threshold": 0.3,
+    "divergence_threshold__provenance": {
+      "source": "meta-agent",
+      "reason": "Risk score = 2 (low). Default divergence threshold is adequate."
+    },
+    "trigger_classes": ["PIVOTED"],
+    "trigger_classes__provenance": { "source": "default", "reason": "No override." }
+  },
+
+  "fast_track": {
+    "enabled": false,
+    "enabled__provenance": {
+      "source": "meta-agent",
+      "reason": "Auto-eval: composite complexity 3 exceeds <=2 threshold. Fast-track ineligible."
+    }
+  },
+
+  "meta_agent": {
+    "confidence_threshold": 0.7,
+    "confidence_threshold__provenance": { "source": "default", "reason": "No override." }
+  },
+
+  "routing": {
+    "enabled": true,
+    "enabled__provenance": {
+      "source": "meta-agent",
+      "reason": "Null in pre-merged config; meta-agent enables to honor the phase_subset decision in routing-decision.json."
+    },
+    "confidence_threshold": 0.85,
+    "confidence_threshold__provenance": { "source": "default", "reason": "No override." },
+    "auto_select_template": false,
+    "auto_select_template__provenance": { "source": "default", "reason": "No override; no template candidates matched anyway." },
+    "default_template": null,
+    "default_template__provenance": { "source": "default", "reason": "No template." }
+  },
+
+  "templates": {},
+  "templates__provenance": { "source": "default", "reason": "No templates loaded." },
+
+  "verification": {
+    "dimension_weights": {
+      "security": 0.25,
+      "correctness": 0.40,
+      "spec_alignment": 0.20,
+      "robustness": 0.15
+    },
+    "dimension_weights__provenance": {
+      "source": "meta-agent",
+      "reason": "Correctness-critical PATCH (regression test + exit-code fix + regex gate). Elevated correctness weight; security non-dominant but relevant (path-traversal defense). Sum = 1.00."
+    }
+  },
+
+  "skip_phases": [3],
+  "skip_phases__provenance": {
+    "source": "meta-agent",
+    "reason": "Routing phase_subset (see routing-decision.json). Phase 3 Brainstorming has negligible marginal value for a PATCH with zero open design questions."
+  },
+
+  "active_phases": [0, 1, 2, 4, 5, 6, 7, 8, 9],
+  "active_phases__provenance": {
+    "source": "meta-agent",
+    "reason": "Complement of skip_phases. Phase 0 already running; Phases 1-2 locate exact file lines; Phase 4 EARS requirements; Phase 5 TDD; Phase 6 DAG; Phase 7 parallel execute; Phase 8 verify; Phase 9 complete."
+  },
+
+  "approval_gates": [4, 6],
+  "approval_gates__provenance": {
+    "source": "meta-agent",
+    "reason": "Default gates are [3, 4, 6]. Phase 3 is skipped so its gate drops. Gates 4 (post-spec) and 6 (post-plan) remain active."
+  },
+
+  "tdd": {
+    "mutation_threshold": 70,
+    "mutation_threshold__provenance": { "source": "default", "reason": "No override (ceos-agents has no mutation framework; Phase 5 will log MUTATION_SKIP)." }
+  },
+
+  "review": {
+    "triage_enabled": false,
+    "triage_enabled__provenance": { "source": "default", "reason": "No override." }
+  },
+
+  "oracle": {
+    "enabled": true,
+    "enabled__provenance": { "source": "default", "reason": "Default enabled; structural-metrics oracle will run in Phase 9 if script present." }
+  },
+
+  "agents": {
+    "phase_1": 3,
+    "phase_2": 3,
+    "phase_7_max_parallel": 6,
+    "_provenance": {
+      "source": "meta-agent",
+      "reason": "Composite complexity 3 -> default agent count. Phase 7 max-parallel 6 to accommodate T-01..T-06 concurrent execution."
+    }
+  }
+}

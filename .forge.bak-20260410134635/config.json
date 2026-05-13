@@ -1,0 +1,45 @@
+{
+  "task_id": "forge-2026-04-08-001",
+  "task_type": "research",
+  "created_at": "2026-04-08T00:00:00Z",
+  "provenance": {
+    "input_source": "user_request",
+    "review_report": "C:/Users/FSABACKY/Downloads/ceos-agents-review-report 1.md",
+    "repository_version": "v6.4.1",
+    "report_version": "v6.3.3"
+  },
+  "routing": {
+    "action": "phase_subset",
+    "active_phases": [0, 1, 2, 3],
+    "skip_phases": [4, 5, 6, 7, 8, 9]
+  },
+  "complexity": {
+    "scope": 3,
+    "ambiguity": 2,
+    "risk": 1,
+    "composite": 3
+  },
+  "constraints": {
+    "read_only": true,
+    "requires_code_changes": false,
+    "requires_tests": false,
+    "deliverable_format": "text_analysis"
+  },
+  "research_scope": {
+    "recommendations_count": 12,
+    "priority_tiers": {
+      "critical": ["D1", "D2", "D3"],
+      "high": ["D4", "D5", "D6", "D7"],
+      "medium": ["D8", "D9", "D10", "D11", "D12"]
+    },
+    "files_to_examine": [
+      "agents/*.md",
+      "skills/*/SKILL.md",
+      "core/*.md",
+      "state/schema.md",
+      "CLAUDE.md",
+      ".gitea/workflows/test.yaml",
+      "tests/scenarios/*.sh"
+    ]
+  }
+}

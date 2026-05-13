@@ -1,0 +1,27 @@
+{
+  "route": "full_pipeline",
+  "phases": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "skip_phases": [],
+  "reasoning": "Composite complexity 4/5 with ambiguity 4/5. Confidence 0.65 below 0.7 threshold. Research needed for tracker API sprint semantics (6 tracker types). Brainstorm needed for autonomous vs semi-autonomous workflow design. Full pipeline warranted.",
+  "fast_track": false,
+  "fast_track_reason": "Composite 4 exceeds threshold 2; multi-layer feature with design ambiguity",
+  "confidence": 0.65,
+  "complexity": {
+    "scope": 4,
+    "ambiguity": 4,
+    "risk": 3,
+    "composite": 4
+  },
+  "task_type": "feature",
+  "estimated_phases_duration": {
+    "research_questions": "medium",
+    "research_answers": "high",
+    "brainstorm": "high",
+    "spec": "high",
+    "tdd": "medium",
+    "plan": "medium",
+    "execute": "high",
+    "verify": "medium",
+    "completion": "low"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "pipeline_id": "forge-2026-04-19-001",
+  "outcome": "COMPLETE",
+  "verdict": "FULL_PASS",
+  "aggregate_score": 0.953,
+  "aggregate_score_recomputed": 0.9535,
+  "arithmetic_verified": true,
+  "arithmetic_correction_delta": 0.0005,
+  "scoring_method": "weighted_sum",
+  "dimension_scores": {
+    "security":       { "score": 0.95, "weight": 0.25, "weighted": 0.2375 },
+    "correctness":    { "score": 0.97, "weight": 0.40, "weighted": 0.3880 },
+    "spec_alignment": { "score": 0.98, "weight": 0.20, "weighted": 0.1960 },
+    "robustness":     { "score": 0.88, "weight": 0.15, "weighted": 0.1320 }
+  },
+  "total_tokens_estimated": 5500000,
+  "total_duration_ms": 86400000,
+  "phases": {
+    "0": { "description": "Meta-agent",                          "duration_ms":  8310000, "tokens": 138476,  "status": "completed" },
+    "1": { "description": "Research questions",                  "duration_ms":  2010000, "tokens": 313453,  "status": "completed" },
+    "2": { "description": "Research answers",                    "duration_ms":  2400000, "tokens": 334559,  "status": "completed" },
+    "3": { "description": "Brainstorm + Gate 1",                 "duration_ms":  4500000, "tokens": 643908,  "status": "completed", "approval_gate": true },
+    "4": { "description": "Spec + Gate 2",                      "duration_ms":  7800000, "tokens": 991912,  "status": "completed", "approval_gate": true, "review_rounds": 3 },
+    "5": { "description": "TDD test authoring",                  "duration_ms":  6000000, "tokens": 272178,  "status": "completed" },
+    "6": { "description": "Planning + Gate 3",                   "duration_ms":  2400000, "tokens": 246676,  "status": "completed", "approval_gate": true, "review_rounds": 1 },
+    "7": { "description": "Execution (42 tasks)",                "duration_ms": 11700000, "tokens": 1500000, "status": "completed", "tasks_executed": 41, "tasks_deferred": 1, "commits": 2, "tag": "v6.9.0" },
+    "8": { "description": "Verification (2 cycles)",             "duration_ms":  9000000, "tokens": 1100000, "status": "completed", "verdict": "FULL_PASS", "revision_cycles": 1,
+           "cycle_history": {
+             "0": { "aggregate": 0.887, "verdict": "FAIL",      "failed_dimensions": ["robustness"], "completed_at": "2026-04-20T16:30:00Z" },
+             "1": { "aggregate": 0.953, "verdict": "FULL_PASS", "failed_dimensions": [],              "completed_at": "2026-04-20T18:30:00Z" }
+           }
+    },
+    "9": { "description": "Completion (this phase)",             "duration_ms":   null,   "tokens":   null,  "status": "in_progress" }
+  },
+  "review_rounds": {
+    "phase_3": 1,
+    "phase_4": 3,
+    "phase_5": 1,
+    "phase_6": 1,
+    "phase_8": 2
+  },
+  "escalations": 0,
+  "approval_gates_resolved": 3,
+  "fast_track_activated": false,
+  "fast_track_skip_rationale": "Composite complexity 5 fails precondition (<= 2). Fast-track ineligible — full pipeline runs.",
+  "harness_final": { "pass": 183, "fail": 0, "total": 183 },
+  "harness_baseline": { "pass": 141, "fail": 0, "total": 141 },
+  "tasks_executed": 41,
+  "tasks_with_revision": 1,
+  "phase_8_bugs_fixed": 8,
+  "structural_metrics": "STRUCTURAL_METRICS_SKIP reason=no_oracle_script"
+}

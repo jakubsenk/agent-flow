@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.5.0",
+  "id": "forge-2026-04-08-001",
+  "plugin_version": "0.9.8",
+  "input": "Kriticky zanalyzuj review report projektu ceos-agents",
+  "status": "completed",
+  "current_phase": 3,
+  "phases": {
+    "0": {
+      "status": "completed",
+      "started_at": "2026-04-08T09:00:00Z",
+      "completed_at": "2026-04-08T09:05:17Z",
+      "duration_ms": 317000,
+      "tokens_estimated": 81978
+    },
+    "1": {
+      "status": "completed",
+      "started_at": "2026-04-08T09:05:18Z",
+      "completed_at": "2026-04-08T09:07:30Z",
+      "duration_ms": 132000,
+      "tokens_estimated": 185668
+    },
+    "2": {
+      "status": "completed",
+      "started_at": "2026-04-08T09:07:31Z",
+      "completed_at": "2026-04-08T09:11:42Z",
+      "duration_ms": 251000,
+      "tokens_estimated": 47328
+    },
+    "3": {
+      "status": "completed",
+      "started_at": "2026-04-08T09:07:31Z",
+      "completed_at": "2026-04-08T09:11:42Z",
+      "duration_ms": 0,
+      "tokens_estimated": 0
+    },
+    "4": { "status": "skipped_by_user" },
+    "5": { "status": "skipped_by_user" },
+    "6": { "status": "skipped_by_user" },
+    "7": { "status": "skipped_by_user" },
+    "8": { "status": "skipped_by_user" },
+    "9": { "status": "skipped_by_user" }
+  },
+  "config": {
+    "pipeline_mode": {"value": "adaptive", "source": "default"}
+  },
+  "metrics": {
+    "total_tokens_estimated": 314974,
+    "total_duration_ms": 700000,
+    "review_rounds_used": 0,
+    "escalations_to_human": 0,
+    "verification_scores": null,
+    "verification_score_history": {}
+  },
+  "fast_track": false,
+  "fast_track_decision": null,
+  "phase_8_revision": null,
+  "replanning_state": null,
+  "abort_reason": null,
+  "aborted_at": null,
+  "explicit_invocation": true,
+  "redirect_decision": null,
+  "template_decision": null,
+  "task_type_skip_profile": {
+    "task_type": "research",
+    "skip_phases": [4, 5, 6, 7, 8, 9],
+    "active_phases": [0, 1, 2, 3],
+    "reason": "Research task with brainstorm synthesis"
+  },
+  "skip_confirmation_decision": null,
+  "post_skip_validation_result": null
+}

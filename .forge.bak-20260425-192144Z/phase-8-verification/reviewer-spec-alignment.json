@@ -1,0 +1,162 @@
+{
+  "dimension": "spec_alignment",
+  "weight": 0.20,
+  "reviewer": "Phase 8 Dimension Reviewer — spec_alignment (isolated)",
+  "forge_run": "forge-2026-04-23-002",
+  "branch": "forge/v6.10.0",
+  "reviewed_at": "2026-04-23",
+
+  "per_req_verdicts": [
+    {
+      "req": "REQ-T1-1",
+      "description": "RETIRE list = exactly 4 scenarios with exit 77",
+      "verdict": "FULFILLED",
+      "evidence": "grep -l '^exit 77' on all 4 named paths returns 4. Each RETIRE file confirmed (e.g. v6.9.0-changelog-completeness.sh: exit 77 at line 5 with explanatory comment)."
+    },
+    {
+      "req": "REQ-T1-2",
+      "description": "REWRITE list = 16 scenarios",
+      "verdict": "FULFILLED",
+      "evidence": "git diff main..forge/v6.10.0 --name-only shows all 16 REWRITE paths modified. Each contains jq -n, jq -e, or bash =~ patterns confirming non-trivial rewrite. Harness reports 203/190/0 (all REWRITE scenarios PASS)."
+    },
+    {
+      "req": "REQ-T1-4",
+      "description": "DSL-lite = 3 helpers in tests/lib/fixtures.sh",
+      "verdict": "FULFILLED",
+      "evidence": "grep -cE '^(make_state_json|setup_scratch|require_jq)\\(\\)' tests/lib/fixtures.sh = 3. File is a net-new addition confirmed via git diff."
+    },
+    {
+      "req": "REQ-T1-5",
+      "description": "Anti-pattern constraint: no awk+source in V6100_TOUCHED",
+      "verdict": "FULFILLED",
+      "evidence": "v6.9.0-pause-timeout-validation.sh uses REQ-T1-5 path (a) — inline redefine-and-test with comment 'NOT awk-extracted'. No V6100_TOUCHED scenario contains the awk+source pattern (confirmed by anti-pattern gate at v6.10.0-no-awk-source-in-rewrites.sh PASS)."
+    },
+    {
+      "req": "REQ-T1-7",
+      "description": "Anti-pattern harness gate scenario",
+      "verdict": "FULFILLED",
+      "evidence": "v6.10.0-no-awk-source-in-rewrites.sh exists, has bash -n syntax-valid, TOUCHED_SCENARIOS array contains 50 entries (spec says 50 ± drift). Scenario passed in harness."
+    },
+    {
+      "req": "REQ-T1-9",
+      "description": "Harness run-count = hard equality 204",
+      "verdict": "PARTIALLY FULFILLED",
+      "evidence": "DISCREPANCY FOUND: git ls-tree v6.9.2 tests/scenarios/*.sh = 184 files (spec states baseline=185). git ls-tree forge/v6.10.0 tests/scenarios/*.sh = 203 (184 + 19 net-new). Spec equation: 185+19=204; actual: 184+19=203. The spec's stated baseline of 185 is off by 1 vs the actual v6.9.2 tag count of 184. The harness run during Phase 7 reports 203/190/0/13 — 203 total, not 204. Phase 7 wave 3 commit message says '203/190/0/13'. The AC-T1-9-1 hard-equality assertion of ==204 will FAIL at 203. REQ-T1-9 spec arithmetic error: spec cited baseline=185, actual tag has 184. Net result: total=203, not 204.",
+      "severity": "HIGH — hard equality assertion AC-T1-9-1 fails (203 ≠ 204)"
+    },
+    {
+      "req": "REQ-T1-13",
+      "description": "CONTRIBUTING.md 7-item security checklist",
+      "verdict": "PARTIALLY FULFILLED",
+      "evidence": "Section '## Functional test scenarios — security expectations' exists with exactly 7 items. Items 1-3 cover command substitution, eval, and out-of-tree sourcing. However, spec item 4 ('No awk+source code-lift pattern — cross-reference REQ-T1-5') is NOT a standalone item — it is merged into item 3 (out-of-tree sourcing). The spec's items 4-7 become CONTRIBUTING items 4-7 with a 1-position shift. Content coverage is present but item 4 (awk+source explicit prohibition with REQ-T1-5 cross-reference) is missing as a standalone bullet. Test AC-T1-13-2 only checks 4 phrases (eval, set -, fixtures.sh, trap) — not the awk+source phrase — so test passed despite this gap.",
+      "severity": "LOW — content intent preserved via item 3 merger; test passed"
+    },
+    {
+      "req": "REQ-T2-3",
+      "description": "Layer 1 file set + pattern: ≥37 imperative sites, 0 residual old prose",
+      "verdict": "FULFILLED",
+      "evidence": "grep -rnF \"Task(subagent_type='ceos-agents:\" across 5 files = 58 (≥37 lower bound). Residual old prose '(Run|Dispatch|Invoke).*Task tool, model:' across same 5 files = 0. File-set completeness: all 5 files exist."
+    },
+    {
+      "req": "REQ-T2-8",
+      "description": "External research dispatch-hook-api.md: Confidence HIGH + ≥3 citations",
+      "verdict": "FULFILLED",
+      "evidence": ".forge/phase-4-spec/research/dispatch-hook-api.md exists, non-empty. Contains all 5 required section headings. Confidence: HIGH. External citations section has 4 URLs with retrieved: 2026-04-23 dates."
+    },
+    {
+      "req": "REQ-T2-9",
+      "description": "External research autopilot-hook-interaction.md with resolution",
+      "verdict": "FULFILLED",
+      "evidence": ".forge/phase-4-spec/research/autopilot-hook-interaction.md exists. Resolution recorded as 'hooks fire' under --dangerously-skip-permissions (positive finding, Confidence: HIGH, 4 citations). T2-ADV-3 disclosure triggered unconditionally."
+    },
+    {
+      "req": "REQ-T2-10",
+      "description": "T2-ADV-3 unconditional disclosure in docs/guides/dispatch-enforcement.md + roadmap",
+      "verdict": "FULFILLED",
+      "evidence": "docs/guides/dispatch-enforcement.md contains '## Known limitation: Autopilot subprocess dispatch audit gap' at line 120. Section contains '--dangerously-skip-permissions' and 'v6.10.1' and 'Autopilot dispatch audit parity'. roadmap.md v6.10.1 section contains 'Autopilot dispatch audit parity' item. Disclosure is unconditional."
+    },
+    {
+      "req": "REQ-T3-1",
+      "description": "Canonical source correction: code-analyst.md not test-engineer.md",
+      "verdict": "FULFILLED",
+      "evidence": "grep -nF 'agents/test-engineer.md' roadmap.md returns 0 matches in v6.10.0 Track 3 context. agents/code-analyst.md:120 referenced as canonical source at roadmap line 821."
+    },
+    {
+      "req": "REQ-T3-3 + REQ-T3-11",
+      "description": "Scope = 11 agents patched, 21/21 total coverage",
+      "verdict": "FULFILLED",
+      "evidence": "git diff main..forge/v6.10.0 --name-only -- agents/ = 11 files (exactly the spec list). All 11 contain canonical NEVER bullet. Total agent count with EXTERNAL INPUT START: enumeration across all 21 named agent files = 23 matches (note: some agents have bullet in multiple places like Constraints + Receiver-side; net distinct agent files with marker = 21). prompt-injection-protection.sh PASSED verifying 21/21."
+    },
+    {
+      "req": "REQ-T3-5",
+      "description": "Fenced-block carve-out for sprint-planner + publisher",
+      "verdict": "FULFILLED",
+      "evidence": "sprint-planner.md NEVER bullet at line 135 (after closing ``` at line 134). publisher.md NEVER bullet at line 107 (after closing ``` at line 106). Both correctly placed after the fenced Block Comment Template block."
+    },
+    {
+      "req": "REQ-T3-12",
+      "description": "Residual risk disclosure in core/agent-states.md + roadmap",
+      "verdict": "FULFILLED",
+      "evidence": "core/agent-states.md section '## Tracker content normalization — deferred (residual risks from v6.10.0)' at line 93 enumerates T3-ADV-1, T3-ADV-2, T3-ADV-3 with 'NOT CLOSED' status. roadmap.md v6.11.0 section contains 'Prompt-injection defense-in-depth' with T3-ADV-1/ADV-2/ADV-3 citations."
+    },
+    {
+      "req": "REQ-META-2",
+      "description": "MINOR justification: 7-clause enumeration",
+      "verdict": "FULFILLED",
+      "evidence": "CHANGELOG.md v6.10.0 Breaking Changes section: 'No breaking changes. MINOR bump: no new required Automation Config keys, no new agents/skills, no agent output format changes, no removed webhook events, state schema additive-only.' All 7 clauses evidenced. BC tests (bc-no-new-required-key, bc-no-removed-agent-output, bc-no-removed-webhook-event) are in REWRITE set and passed."
+    },
+    {
+      "req": "REQ-META-3",
+      "description": "CHANGELOG entry completeness",
+      "verdict": "FULFILLED",
+      "evidence": "CHANGELOG.md '## [6.10.0]' heading present. Sub-sections: Track 1, Track 2, Track 3, Residual risks disclosure section. Effort annotation: '~30h' present (spec says ~33h; test AC-T1-15-1 passes on regex '~[0-9]+h' — minor value drift vs spec estimate but compliant)."
+    }
+  ],
+
+  "counts": {
+    "reqs_sampled": 15,
+    "fulfilled": 13,
+    "partially_fulfilled": 2,
+    "not_addressed": 0,
+    "fulfillment_ratio": "13/15 = 0.867"
+  },
+
+  "scope_drift_findings": [
+    {
+      "id": "SD-1",
+      "severity": "HIGH",
+      "req": "REQ-T1-9",
+      "description": "Harness count = 203, not 204. Spec arithmetic used baseline=185 but v6.9.2 tag has 184 scenarios. The spec's stated baseline was off-by-1. Phase 7 harness output confirms 203 total. AC-T1-9-1 hard-equality assertion (==204) will fail. AC-T1-9-2 'PASS+SKIP+FAIL==204' will also fail (actual: PASS+SKIP+FAIL=203). This is the single most material spec-alignment gap."
+    },
+    {
+      "id": "SD-2",
+      "severity": "LOW",
+      "req": "REQ-T1-13",
+      "description": "CONTRIBUTING.md item 4 (explicit awk+source prohibition with REQ-T1-5 cross-reference) was not implemented as a standalone item. The anti-pattern is subsumed in item 3 (out-of-tree sourcing) with no explicit 'awk+source' mention or REQ-T1-5 cross-reference. Items 4-7 in CONTRIBUTING correspond to spec items 5-7 + trap, shifted by one. Functional intent preserved; standalone bullet absent."
+    },
+    {
+      "id": "SD-3",
+      "severity": "INFO",
+      "req": "REQ-T1-15",
+      "description": "Spec says '~33 person-hours' but CHANGELOG says '~30h'. Spec text also said 'informational (non-testable)' — the test only checks for the regex '~[0-9]+h' which matches ~30h. No hard violation but value differs from spec estimate."
+    }
+  ],
+
+  "minor_version_gate_sample": {
+    "no_new_required_config_keys": "PASS — CHANGELOG confirms no new required keys; bc-no-new-required-key.sh PASSED",
+    "no_new_agents": "PASS — agent count unchanged at 21",
+    "no_new_skills": "PASS — skill count unchanged at 29",
+    "schema_version_stays_1.0": "PASS — state/schema.md schema_version still '1.0' confirmed",
+    "no_removed_webhook_events": "PASS — bc-no-removed-webhook-event.sh PASSED",
+    "new_files_operator_surface": "PASS — new files are hooks/, docs/guides/, docs/reference/ (operator/doc surface)",
+    "no_agent_output_format_changes": "PASS — only NEVER bullet additions in Constraints section; no output section changes"
+  },
+
+  "overall_score": 0.89,
+  "score_rationale": "13/15 REQs fully fulfilled (0.867 ratio). Deduct 0.06 for REQ-T1-9 hard-equality count failure (203 vs 204 — spec arithmetic error propagated; HIGH severity). Deduct 0.03 for REQ-T1-13 awk+source item merger (LOW severity). Add 0.02 for strong Track 2 + Track 3 alignment. Score: 0.89.",
+
+  "confidence": "HIGH",
+  "confidence_rationale": "Direct file-level verification performed for all sampled REQs. Counts verified via git ls-tree (authoritative). Research artifacts confirmed with full schema check. The 203 vs 204 discrepancy is unambiguous — traced to spec's stated baseline=185 vs actual tag count=184.",
+
+  "key_finding": "The single material spec-alignment gap is REQ-T1-9: harness count is 203 (actual v6.9.2 baseline=184 + 19 net-new), not 204 (spec's stated baseline=185). The spec's baseline was misstated by 1. AC-T1-9-1 hard-equality assertion and AC-T1-9-2 combined-count assertion will both fail at the hard ==204 threshold. All other core REQs (Track 2, Track 3, research artifacts, CHANGELOG, roadmap corrections) are fully fulfilled."
+}

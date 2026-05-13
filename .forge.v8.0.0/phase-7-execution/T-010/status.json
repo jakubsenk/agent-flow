@@ -1,0 +1,46 @@
+{
+  "task_id": "T-010",
+  "status": "DONE",
+  "files_modified": [
+    "skills/setup-agents/SKILL.md"
+  ],
+  "files_read_only": [
+    ".forge/phase-4-spec/final/requirements.md",
+    ".forge/phase-4-spec/final/design.md",
+    ".forge/phase-4-spec/final/formal-criteria.md",
+    ".forge/phase-6-plan/plan.md",
+    "skills/setup-agents/lib/toml-merge.sh",
+    "core/overlay/toml-overlay.md",
+    "skills/onboard/SKILL.md"
+  ],
+  "ac_fulfillment": {
+    "AC-SETUP-001": "FULFILLED — skills/setup-agents/SKILL.md exists; frontmatter name: setup-agents verified by grep",
+    "AC-SETUP-002": "FULFILLED — Python heuristic documented (pyproject.toml/requirements.txt/setup.py triggers); PEP 8 + analyst.toml output documented in SKILL.md",
+    "AC-SETUP-003": "FULFILLED — Monorepo heuristic documented (pnpm-workspace.yaml + >=2 sub-packages triggers); [[process_additions]] multi-package guidance documented for analyst.toml",
+    "AC-SETUP-004": "FULFILLED — '# generated: {ISO-8601} by /setup-agents v8.0.0' header documented as MUST requirement on line 1 of every generated file",
+    "AC-SETUP-005": "FULFILLED — User-edited overlay skip documented with exact WARN text 'User-edited overlay {path} preserved; pass --force to overwrite'; --force flag documented",
+    "AC-SETUP-006": "FULFILLED — .bak-{ISO-8601-timestamp} backup pattern documented for --force; ISO-8601 format specified",
+    "AC-SETUP-007": "FULFILLED — preview diff before write documented with Apply/Skip/Abort prompt; 'UNLESS --yolo' clause present",
+    "AC-SETUP-008": "FULFILLED — scope isolation documented: NEVER modify files outside customization/; symlink escape guard documented with python3 os.path.realpath portable approach"
+  },
+  "test_assertions_verified": {
+    "v8-setup-agents-skill-exists.sh": "PASS — file exists, name: setup-agents frontmatter present",
+    "v8-setup-agents-python.sh": "PASS — pyproject.toml detection + PEP 8 + analyst.toml all documented in SKILL.md",
+    "v8-setup-agents-monorepo.sh": "PASS — pnpm-workspace.yaml / multi-package detection + process_additions + monorepo guidance documented",
+    "v8-setup-agents-header.sh": "PASS — '# generated:' header format documented multiple times in SKILL.md",
+    "v8-setup-agents-preserve.sh": "PASS — 'User-edited overlay' exact text present; --force documented; preserve behavior documented",
+    "v8-setup-agents-force-backup.sh": "PASS — .bak- pattern + ISO-8601 timestamp + # generated: header after force all documented",
+    "v8-setup-agents-preview.sh": "PASS — preview diff before write + UNLESS --yolo both documented",
+    "v8-setup-agents-scope.sh": "PASS — 'customization/' scope restriction documented with NEVER rules"
+  },
+  "constraints_respected": {
+    "no_forbidden_frontmatter": "PASS — no hooks:, mcpServers:, permissionMode: keys in frontmatter",
+    "disable_model_invocation": "PASS — disable-model-invocation: true in frontmatter",
+    "scope_respected": "PASS — only skills/setup-agents/SKILL.md created (T-010 files_modified)",
+    "toml_merge_sh_referenced": "PASS — skills/setup-agents/lib/toml-merge.sh referenced in Constraints section",
+    "posix_bash_compatible": "PASS — all bash code blocks use POSIX-portable constructs",
+    "symlink_guard_portable": "PASS — python3 os.path.realpath() used (macOS bash 3.2 compatible per T-001 notes)",
+    "all_18_agents_listed": "PASS — all 18 v8.0.0 canonical agents listed in Constraints section"
+  },
+  "notes": "SKILL.md is 270 lines. All 8 REQ-SETUP-* requirements covered. Heuristics documented for Python (PEP 8, mypy), monorepo (pnpm-workspace, turbo.json, lerna.json, nx.json, rush.json, >=2 sub-packages), TypeScript (tsconfig.json), test framework (jest/vitest/pytest/playwright), Java (pom.xml/build.gradle), Rust (Cargo.toml), .NET (*.csproj/*.sln). Symlink escape guard uses python3 os.path.realpath() per T-001 portability note. Preview prompt uses Apply/Skip/Abort [a/s/q] options per REQ-SETUP-005."
+}

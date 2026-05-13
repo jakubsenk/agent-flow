@@ -1,0 +1,6 @@
+{
+  "status": "completed",
+  "tasks_completed": 6,
+  "tests_passed": true,
+  "files_changed": ["skills/check-setup/SKILL.md", "tests/scenarios/check-setup-improvements.sh", "tests/scenarios/check-setup-edge-cases.sh"]
+}

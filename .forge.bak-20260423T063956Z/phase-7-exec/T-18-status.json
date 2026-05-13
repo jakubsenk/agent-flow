@@ -1,0 +1,9 @@
+{
+  "task_id": "T-18",
+  "status": "DONE",
+  "files_modified": ["core/post-publish-hook.md", "agents/fixer.md", "agents/reviewer.md", "docs/guides/installation.md", "core/block-handler.md"],
+  "revision_cycle": null,
+  "concerns": [],
+  "test_results": "AC-051/052/052a/053/054/055/055a/055b/055c/077: Section 5 + sanitize_block_reason POSIX 14-pattern + agent reads + .gitignore + block-handler Detail bound",
+  "completed_at": "2026-04-20T13:56:00Z"
+}

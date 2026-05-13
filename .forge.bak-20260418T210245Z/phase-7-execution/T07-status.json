@@ -1,0 +1,37 @@
+{
+  "task": "T07",
+  "file": "skills/fix-bugs/SKILL.md",
+  "status": "done",
+  "changes": [
+    "Added Step 0-obs: per-issue run_id computation (compact ISO-8601 basic-format '{ISSUE-ID}_{YYYYMMDDTHHMMSSZ}') and pipeline-started webhook after state.json init, inside the batch loop for each issue",
+    "Step 2 (triage): added pre-dispatch usage init writes (started_at, model='sonnet', status: in_progress, counters=0) and post-dispatch usage capture + step-completed webhook (step_name: triage)",
+    "Step 3 (code-analyst): added pre-dispatch usage init writes and post-dispatch usage capture + step-completed webhook (step_name: code_analysis)",
+    "Step 3e (browser reproduction): added pre-dispatch usage init writes and post-dispatch usage capture + step-completed webhook (step_name: reproduction; reproducer agent maps to 'reproduction' canonical stage key)",
+    "Step 4 (fixer) / Step 6 (reviewer): added pre-loop fixer_reviewer stage init before first fixer dispatch; cumulative usage accumulation per fixer/reviewer invocation (COST-R5, no per-iteration array); step-completed webhook fires ONCE on loop completion (APPROVE or exhaustion) with iteration_count (WEBHOOK-R6)",
+    "Step 7 (test-engineer): added pre-dispatch usage init writes and post-dispatch usage capture + step-completed webhook (step_name: test)",
+    "Step 7a-deploy (deployment-verifier): added pre-dispatch usage init writes and post-dispatch usage capture + step-completed webhook (step_name: deployment)",
+    "Step 7b (e2e-test-engineer): added pre-dispatch usage init writes and post-dispatch usage capture + step-completed webhook (step_name: e2e_test)",
+    "Step 7b-browser (browser-verifier): added pre-dispatch usage init writes and post-dispatch usage capture + step-completed webhook (step_name: browser_verification)",
+    "Step 7c (acceptance-gate): added pre-dispatch usage init writes and post-dispatch usage capture + step-completed webhook (step_name: acceptance_gate)",
+    "Step 8 (publisher): added pre-dispatch usage init writes and post-dispatch usage capture + step-completed webhook (step_name: publisher)",
+    "Added Step 8-obs: per-issue pipeline accumulator (total_tokens, total_duration_ms, total_tool_uses, summary_table with COST-R10 truncation at 20 rows / 4000 chars) written BEFORE terminal status; pipeline.summary_table echoed to stdout per issue; pipeline-completed webhook fired after terminal status write (outcome: success or blocked)"
+  ],
+  "requirements_addressed": ["WEBHOOK-R2", "WEBHOOK-R3", "WEBHOOK-R4", "WEBHOOK-R5", "WEBHOOK-R6", "WEBHOOK-R7", "COST-R2", "COST-R3", "COST-R4", "COST-R5", "COST-R6", "COST-R10"],
+  "gate1_constraints_respected": [
+    "Batch iteration logic unchanged",
+    "Blocked-issue handling unchanged",
+    "Existing error handling unchanged",
+    "No autopilot-started / autopilot-completed batch-level events (out of scope per Gate 1)",
+    "WEBHOOK-R6: step-completed fires once per top-level stage, not per fixer-reviewer iteration",
+    "WEBHOOK-R7: no step-skipped events, no webhooks for skipped stages",
+    "On events filter applied to EACH per-issue event",
+    "State-commit ordering respected: state.json atomically committed before webhook fires",
+    "Per-issue state.json independence maintained (parallel worktrees safe)"
+  ],
+  "verification": {
+    "pipeline_event_count": 28,
+    "run_id_present": true,
+    "per_issue_references": true,
+    "command": "grep -c 'pipeline-started|step-completed|pipeline-completed' skills/fix-bugs/SKILL.md  # 28 (>= 6 required)"
+  }
+}

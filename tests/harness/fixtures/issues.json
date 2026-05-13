@@ -1,0 +1,35 @@
+[
+  {
+    "id": "TEST-1",
+    "title": "Login button not responding on mobile",
+    "description": "The login button on the mobile version does not trigger any action when tapped. This occurs on iOS Safari and Chrome for Android.",
+    "state": "Open",
+    "labels": ["bug"],
+    "created": "2026-02-28T10:00:00Z",
+    "comments": []
+  },
+  {
+    "id": "TEST-2",
+    "title": "Duplicate of TEST-1",
+    "description": "Same issue as TEST-1 - login button broken on mobile.",
+    "state": "Open",
+    "labels": ["bug"],
+    "created": "2026-02-28T11:00:00Z",
+    "comments": []
+  },
+  {
+    "id": "TEST-3",
+    "title": "API returns 500 on empty payload",
+    "description": "POST /api/v1/users returns 500 Internal Server Error when the request body is empty. Should return 400 Bad Request with validation errors.",
+    "state": "Open",
+    "labels": ["bug", "critical"],
+    "created": "2026-02-28T12:00:00Z",
+    "comments": [
+      {
+        "author": "claude-agents",
+        "text": "[ceos-agents] Triage completed. Severity: HIGH. Area: API.",
+        "created": "2026-02-28T12:05:00Z"
+      }
+    ]
+  }
+]

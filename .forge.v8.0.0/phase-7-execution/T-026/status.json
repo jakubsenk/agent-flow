@@ -1,0 +1,34 @@
+{
+  "task_id": "T-026",
+  "status": "DONE",
+  "files_modified": [
+    "examples/configs/github-nextjs.md",
+    "examples/configs/github-python-fastapi.md",
+    "examples/configs/github-dotnet.md",
+    "examples/configs/gitea-spring-boot.md",
+    "examples/configs/jira-react.md",
+    "examples/configs/youtrack-python.md",
+    "examples/configs/redmine-rails.md",
+    "examples/configs/redmine-oracle-plsql.md",
+    "core/aliases/agents-rename-aliases.md"
+  ],
+  "acceptance_criteria_fulfilled": [
+    "AC-DOC-010 — all 8 config templates updated with 'Migration note (v7 → v8)' callout at top of ## Automation Config section, referencing docs/guides/toml-overlay-syntax.md and examples/customization/",
+    "AC-CT-005 — all 8 templates preserved (count unchanged: github-nextjs, github-python-fastapi, github-dotnet, gitea-spring-boot, jira-react, youtrack-python, redmine-rails, redmine-oracle-plsql)",
+    "AC-AGT-006 — core/aliases/agents-rename-aliases.md created under sub-namespace core/aliases/ with full mapping table (5 deprecated v7 names → 3 v8 canonical names + phase flags)",
+    "AC-MIG-007 — Pipeline Profiles named-phase aliases table present; plugin behavior section documents [WARN] log format for all 3 alias-encounter contexts",
+    "AC-CT-004 (invariant) — find core -maxdepth 1 -name '*.md' -type f | wc -l == 16 (verified)"
+  ],
+  "self_review": {
+    "1_all_8_templates_updated": "PASS — grep -l 'Migration note' examples/configs/*.md returns 8 files",
+    "2_core_aliases_exists": "PASS — core/aliases/agents-rename-aliases.md created",
+    "3_core_maxdepth1_count_16": "PASS — find core -maxdepth 1 -name '*.md' -type f | wc -l == 16",
+    "4_no_deprecated_stage_names_active": "PASS — deprecated names appear only inside blockquote migration-note text, not as active Skip stages values",
+    "5_pipeline_profiles_v8_syntax": "PASS — github-nextjs uses analyst-triage/analyst-impact/test-engineer-e2e; redmine-oracle-plsql uses browser-agent-reproduce/browser-agent-verify/test-engineer-e2e",
+    "6_no_hooks_mcpServers_permissionMode": "PASS — none added; core/aliases file contains no frontmatter",
+    "7_toml_overlay_reference": "PASS — all 8 templates reference docs/guides/toml-overlay-syntax.md and examples/customization/ in migration note",
+    "8_posix_portable": "PASS — no platform-specific commands referenced"
+  },
+  "notes": "Šablony neobsahovaly text '21 agents' ani '28 skills' — tyto count references se v config templates nevyskytují, pouze v hlavních doc souborech (CLAUDE.md, README.md, docs/reference/). Změny v Pipeline Profiles provedeny ve 2 ze 8 šablon (github-nextjs a redmine-oracle-plsql — jedině tyto obsahovaly Pipeline Profiles sekci s deprecated stage names). Ostatních 6 šablon obdrželo pouze migration note callout. core/aliases/agents-rename-aliases.md je v sub-namespace per plan.md poznámka 7.2 a precedent core/snippets/.",
+  "completed_at": "2026-04-27T14:00:00Z"
+}

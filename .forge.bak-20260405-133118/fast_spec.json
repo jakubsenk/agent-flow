@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-04-05T08:22:00Z",
+  "task_summary": "Three patch fixes for v6.3.2: formalize UNCLEAR triage signal contract, add Java/.NET/Go Playwright detection in scaffolder, and harden test grep patterns with sed range extraction.",
+  "scope": [
+    "agents/triage-analyst.md",
+    "agents/scaffolder.md",
+    "skills/analyze-bug/SKILL.md",
+    "skills/fix-bugs/SKILL.md",
+    "skills/fix-ticket/SKILL.md",
+    "tests/scenarios/scaffolder-e2e-batch.sh"
+  ],
+  "inputs": [
+    "docs/plans/roadmap.md"
+  ],
+  "constraints": [
+    "Preserve existing YAML frontmatter format exactly in all agent files",
+    "Maintain Goal > Expertise > Process > Constraints section order in agents",
+    "Do not change agent model assignments",
+    "Keep Block Comment Template format consistent across all skills",
+    "Tests must pass with set -euo pipefail",
+    "No new files — only modify existing files",
+    "CHANGELOG.md entry must follow Keep a Changelog format",
+    "Version bump via /ceos-agents:version-bump skill"
+  ],
+  "success_criteria": [
+    "triage-analyst.md defines explicit UNCLEAR token in output format that consuming skills can match",
+    "All three consuming skills (analyze-bug, fix-bugs, fix-ticket) use identical block comment format when triage returns UNCLEAR",
+    "scaffolder.md Batch 7 detects Playwright in Java (pom.xml/build.gradle), .NET (*.csproj), and Go (go.mod)",
+    "scaffolder.md generates language-appropriate e2e test files for Java, .NET, and Go",
+    "scaffolder-e2e-batch.sh uses sed range extraction instead of grep -A5 for Batch 7 section",
+    "scaffolder-e2e-batch.sh smoke test assertion is Batch-7-specific (not global grep)",
+    "All existing tests in tests/harness/run-tests.sh still pass",
+    "New test assertions for Java/Go/.NET Playwright detection pass"
+  ],
+  "test_requirement": "unit",
+  "parallelizable": false,
+  "single_task_mode": true,
+  "skip_rationale": "Fully specified bugfix task with composite complexity 2, confidence 1.0. All file paths, exact changes, and patterns are documented in the roadmap. No research, brainstorming, or specification needed.",
+  "security_cleared": true,
+  "security_checks": {
+    "destructive_ops":           { "result": "pass", "evidence": "Task modifies markdown agent definitions and shell test scripts only — no file deletion or data destruction" },
+    "credential_handling":       { "result": "pass", "evidence": "No credentials, secrets, API keys, or tokens are read, written, or transmitted in any of the target files" },
+    "irreversible_side_effects": { "result": "pass", "evidence": "All changes are local markdown and shell script edits — no emails, notifications, or external API calls triggered" },
+    "elevated_privileges":       { "result": "pass", "evidence": "No sudo, chmod, chown, or any elevated privilege operations — pure text file edits in user workspace" },
+    "ambiguous_scope":           { "result": "pass", "evidence": "Scope is precisely bounded to 6 named files listed in the roadmap — no wildcard or unbounded operations" },
+    "network_irreversibility":   { "result": "pass", "evidence": "No DNS, CDN, firewall, load balancer, or webhook modifications — entirely local file changes" },
+    "supply_chain_ops":          { "result": "pass", "evidence": "No package publishing, container pushing, or registry operations — this is a plugin of markdown definitions" },
+    "billing_quota_ops":         { "result": "pass", "evidence": "No cloud resource provisioning, subscription changes, or quota modifications involved" },
+    "system_service_effects":    { "result": "pass", "evidence": "No systemd, cron, docker daemon, or firewall rule changes — only markdown and bash test script edits" }
+  }
+}

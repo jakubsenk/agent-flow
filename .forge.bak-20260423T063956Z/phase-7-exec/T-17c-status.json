@@ -1,0 +1,9 @@
+{
+  "task_id": "T-17c",
+  "status": "DONE",
+  "files_modified": ["agents/triage-analyst.md"],
+  "revision_cycle": null,
+  "concerns": [],
+  "test_results": "AC-041/048: NEEDS_CLARIFICATION fenced-block + receiver-side EXTERNAL INPUT Constraint present in triage-analyst",
+  "completed_at": "2026-04-19T00:00:00Z"
+}

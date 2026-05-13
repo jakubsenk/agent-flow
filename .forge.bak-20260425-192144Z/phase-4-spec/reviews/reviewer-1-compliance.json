@@ -1,0 +1,78 @@
+{
+  "tier_1": {
+    "schema_valid": true,
+    "requirements_traced": true,
+    "no_regressions": true,
+    "lint_clean": true,
+    "pass": true
+  },
+  "tier_2": {
+    "fail_to_pass": null,
+    "hidden_test_gap": null,
+    "mutation_score": null,
+    "mutation_available": false,
+    "pass": true,
+    "notes": "N/A for Phase 4 spec"
+  },
+  "tier_3": {
+    "correctness": 4,
+    "completeness": 5,
+    "security": 5,
+    "maintainability": 4,
+    "robustness": 5,
+    "weighted_aggregate": 4.55,
+    "pass": true
+  },
+  "overall_verdict": "PASS",
+  "confidence": 0.88,
+  "findings": [
+    {
+      "id": "f-t1-1-retire-count-internal-inconsistency",
+      "severity": "MAJOR",
+      "criterion": "Tier 1 #8 / Correctness",
+      "location": "requirements.md:REQ-T1-1 (lines 86-95)",
+      "description": "REQ-T1-1 contains an embedded self-correction that mid-REQ changes the RETIRE count from 5 to 4. The REQ header text promises 'exactly the following 5 scenarios' but the body freezes at 4 distinct paths. Downstream ACs (AC-T1-1-1, AC-T1-1-2, AC-T1-12-1) all use 4, and Out-of-Scope §5.4 reference item 14 still says '13 KEEP scenarios' etc. Self-correction in-REQ is fragile — Phase 5 implementer reading only the header prose could still attempt to find a 5th RETIRE target.",
+      "recommendation": "Rewrite REQ-T1-1 as a clean 'exactly 4 scenarios' statement; move the 5-vs-4 rationale to a §Revision Notes entry. Remove the self-correcting clause inside the REQ body."
+    },
+    {
+      "id": "f-t1-9-harness-count-mismatch",
+      "severity": "MAJOR",
+      "criterion": "Correctness / Maintainability",
+      "location": "requirements.md:REQ-T1-9 (lines 156-162) + traceability.md lines 183-184",
+      "description": "REQ-T1-9 freezes the harness run-count expectation at 186 (baseline 185 + 1 anti-pattern gate), but traceability.md explicitly says '204 scenarios in harness' due to 19 net-new scenarios planned in Phase 5. The REQ's internal 'Correction note' acknowledges the count might shift to 187, but does not account for the 13 additional Track 2 / Track 3 net-new scenarios enumerated in traceability.md §Net-new scenarios. AC-T1-9-1 ('≥ 186') is satisfied with margin, but AC-T1-9-2 asserts 'PASS + SKIP + FAIL = ≥ 186' AND 'FAIL = 0' — the ≥ operator is survivable, but the REQ prose 'SHALL yield a harness count of 186' is factually wrong by the spec's own planning.",
+      "recommendation": "Replace 'harness count of 186' with 'harness count of ≥ 186 (expected ~204 given the 19 net-new scenarios in traceability.md §Net-new)'. Align REQ prose with AC operator."
+    },
+    {
+      "id": "f-req-t1-2-ambiguous-promotion",
+      "severity": "MINOR",
+      "criterion": "Correctness",
+      "location": "requirements.md:REQ-T1-2 lines 114-115",
+      "description": "REQ-T1-2 parenthetically notes that `v6.9.0-pipeline-history-pii-scope.sh` and `v6.9.0-pipeline-paused-webhook.sh` were moved to EXTEND (REQ-T1-3), but these paths do NOT appear in REQ-T1-3's 8-item EXTEND list. REQ-T1-3 lists a different 8 scenarios. The promotion note is dangling.",
+      "recommendation": "Either (a) remove the promotion note and classify the 2 ambiguous scenarios as KEEP or a new category, or (b) update REQ-T1-3 to 10 EXTENDs and add the 2 paths."
+    },
+    {
+      "id": "f-missing-research-deliverables",
+      "severity": "MAJOR",
+      "criterion": "Tier 1 #18 (External-research gate) / Robustness",
+      "location": "traceability.md lines 198-201, REQ-T2-8, REQ-T2-9",
+      "description": "The spec declares `.forge/phase-4-spec/research/dispatch-hook-api.md` and `.forge/phase-4-spec/research/autopilot-hook-interaction.md` as external-research deliverables required before Phase 5, but the `research/` directory does NOT exist in `.forge/phase-4-spec/`. AC-T2-8-1 and AC-T2-9-1 both assert the files exist — currently they do not. The spec defines the gate but the gate has not yet been executed. REQ-T2-FALLBACK semantics cannot be evaluated without the research.",
+      "recommendation": "Phase 4 closeout MUST include executing both external-research tasks and writing the 2 deliverables to `.forge/phase-4-spec/research/`. Alternatively, explicitly document that this research is Phase 5 Step 6 (as design.md §6 Step 6 does state) AND re-scope AC-T2-8-1/AC-T2-9-1 as Phase 5 gates, not Phase 4 gates."
+    },
+    {
+      "id": "f-ac-t2-2-grep-pattern-underspecified",
+      "severity": "MINOR",
+      "criterion": "Correctness",
+      "location": "formal-criteria.md AC-T2-2-1",
+      "description": "AC-T2-2-1 uses `grep -rnF \"Task(subagent_type='ceos-agents:\"` with fixed-string matching, but the canonical template in REQ-T2-2 has backtick-wrapped markdown in the quoted template block. Fixed-string grep over 5 files will correctly count occurrences, but the assertion says '≥ 42' while REQ-T2-3 freezes the count at '≥10 to ≥15' for scaffold (drift-tolerant). The lower bound of 42 is correct given minima 13+13+12+10+2=50 already exceeds 42.",
+      "recommendation": "Clarify assertion: '≥ 50 ... OR explicitly justify the 42 as a weaker lower bound'. Minor — passes as written."
+    },
+    {
+      "id": "f-out-of-scope-item-numbering",
+      "severity": "MINOR",
+      "criterion": "Maintainability",
+      "location": "requirements.md §5 Out-of-Scope",
+      "description": "Out-of-Scope items are numbered 1-16 but use flat numbering across 5.1/5.2/5.3/5.4 subsections, which is uncommon and slightly error-prone. §5.1 has 1-3, §5.2 has 4-9, §5.3 has 10-13, §5.4 has 14-16. AC-META-1-2 references 'Out-of-Scope 5.1 #1' which works, but AC-META-1-3 references 'items 4-9' — if Phase 5 renumbers, traceability breaks.",
+      "recommendation": "Either use per-subsection numbering (5.1.1, 5.1.2) OR keep flat but add a cross-ref note that items are stable across subsections. MINOR — does not block PASS."
+    }
+  ]
+}

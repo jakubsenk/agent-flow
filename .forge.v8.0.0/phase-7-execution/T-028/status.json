@@ -1,0 +1,40 @@
+{
+  "task_id": "T-028",
+  "status": "DONE",
+  "files_modified": ["README.md"],
+  "lines_changed": {
+    "approximate_net_additions": 22,
+    "approximate_deletions": 8
+  },
+  "acceptance_criteria_satisfied": [
+    "AC-DOC-012",
+    "AC-INV-DOC-ENUM-001 (README.md side)"
+  ],
+  "changes_summary": [
+    "Line 3: 21→18 agents, 28→29 skills in tagline",
+    "Lines 10-11 (mermaid diagram): Skills (28)→(29), Agents (21)→(18)",
+    "Line 43: '21 specialized agents' → '18 specialized agents'",
+    "Line 44: removed '(a)/(b)/(c)' scaffold mode description; added --yolo/--step-mode flag mention",
+    "Line 115 (scaffold diagram): 'Mode Selection / Interactive·YOLO·Full YOLO' → 'Mode Flags / --yolo·default·--step-mode'",
+    "Lines 95-96 (bug-fix diagram): 'Triage Analyst' → 'Analyst (--phase triage)', 'Code Analyst' → 'Analyst (--phase impact)'",
+    "Line 72: Added migration callout blockquote after Quick Start",
+    "Lines 76-85: Added '## v8.0.0 Highlights' section (7 bullet points)",
+    "Line 181: Added '/setup-agents' skill row to Skills table (count 28→29)",
+    "Lines 213-232: Replaced 21-agent table with 18-agent table (analyst, test-engineer extended, browser-agent replacing 6 old agents)",
+    "Lines 293-294: 'All 28 skills' → 'All 29 skills', 'All 21 agents' → 'All 18 agents' in Documentation table"
+  ],
+  "self_review": {
+    "counts_updated_18_agents": true,
+    "counts_updated_29_skills": true,
+    "v8_highlights_box_present": true,
+    "migration_callout_visible_near_top": true,
+    "no_deprecated_agent_names_as_active_refs": true,
+    "no_interactive_abc_scaffold_strings": true,
+    "cross_reference_with_claude_md": "18 agents, 29 skills — consistent",
+    "18_optional_sections_unchanged": true
+  },
+  "follow_up_warnings": [
+    "Bug-Fix Pipeline mermaid diagram still labels nodes 'Triage' and 'CodeAnalyst' as Mermaid node IDs (internal; not visible to user). Labels updated to v8 names.",
+    "T-029 (CHANGELOG) depends on this task — T-028 DONE, T-029 can proceed."
+  ]
+}

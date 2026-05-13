@@ -1,0 +1,119 @@
+{
+  "schema_version": "1.5.0",
+  "id": "forge-2026-04-10-002",
+  "plugin_version": "0.9.11",
+  "input": "Vytvoř novou šablonu Automation Config pro Oracle PL/SQL + Redmine stack.\n\nKontext:\n- Gap analýza v docs/plans/readmine-project/ceos-agents-gap-analysis.md (sekce 5) obsahuje draft Automation Config\n- Přílohy A a B obsahují kompletní Agent Override drafty pro fixer a test-engineer\n- Existující šablona pro Redmine: examples/configs/redmine-rails.md (použij jako vzor formátu)\n- Oracle stack: XE 21c Docker, SQLcl 26.1, Flyway 9.22.3, utPLSQL 3.1.14\n\nÚkoly:\n1. Vytvořit examples/configs/redmine-oracle-plsql.md — kompletní Automation Config šablona pro Redmine + Oracle PL/SQL projekty. Formát musí odpovídat existující redmine-rails.md šabloně. Zahrnout všechny required sekce + volitelné sekce relevantní pro Oracle (Local Deployment, Agent Overrides, Retry Limits, Decomposition). Přidat komentáře co uživatel musí upravit.\n2. Aktualizovat skills/template/SKILL.md — přidat redmine-oracle-plsql do seznamu dostupných šablon.\n3. Aktualizovat docs pokud existuje reference na seznam šablon (docs/reference/, README apod.)\n4. Spustit testy (./tests/harness/run-tests.sh) před dokončením.\n\nVerzování: toto je nová volitelná šablona = MINOR change. NEDĚLEJTE version bump — to se udělá zvlášť.",
+  "status": "completed",
+  "current_phase": 9,
+  "phases": {
+    "0": {
+      "status": "completed",
+      "started_at": "2026-04-10T14:50:00Z",
+      "completed_at": "2026-04-10T14:55:00Z",
+      "duration_ms": 300000,
+      "tokens_estimated": 50583
+    },
+    "1": {
+      "status": "skipped_auto",
+      "skip_rationale": "Fast-track: composite 2, confidence 0.95. No research needed for fully specified markdown template task.",
+      "skipped_at": "2026-04-10T14:55:00Z"
+    },
+    "2": {
+      "status": "skipped_auto",
+      "skip_rationale": "Fast-track: no research answers needed when questions are skipped.",
+      "skipped_at": "2026-04-10T14:55:00Z"
+    },
+    "3": {
+      "status": "skipped_auto",
+      "skip_rationale": "Fast-track: single approach — follow existing template format. No brainstorming needed.",
+      "skipped_at": "2026-04-10T14:55:00Z"
+    },
+    "4": {
+      "status": "skipped_auto",
+      "skip_rationale": "Fast-track: task is implicitly specified by format reference and content sources.",
+      "skipped_at": "2026-04-10T14:55:00Z"
+    },
+    "5": {
+      "status": "skipped_auto",
+      "skip_rationale": "Fast-track: markdown-only changes, no TDD applicable.",
+      "skipped_at": "2026-04-10T14:55:00Z"
+    },
+    "6": {
+      "status": "completed",
+      "started_at": "2026-04-10T14:56:00Z",
+      "completed_at": "2026-04-10T14:56:30Z",
+      "duration_ms": 30000,
+      "tokens_estimated": 0
+    },
+    "7": {
+      "status": "completed",
+      "started_at": "2026-04-10T14:57:00Z",
+      "completed_at": "2026-04-10T14:58:30Z",
+      "duration_ms": 90000,
+      "tokens_estimated": 0
+    },
+    "8": {
+      "status": "completed",
+      "started_at": "2026-04-10T14:59:00Z",
+      "completed_at": "2026-04-10T15:00:00Z",
+      "duration_ms": 60000,
+      "tokens_estimated": 21068
+    },
+    "9": {
+      "status": "completed",
+      "started_at": "2026-04-10T15:00:00Z",
+      "completed_at": "2026-04-10T15:00:30Z",
+      "duration_ms": 30000,
+      "tokens_estimated": 0
+    }
+  },
+  "config": {
+    "pipeline_mode": {"value": "adaptive", "source": "default"},
+    "jit.enabled": {"value": false, "source": "forced_standard_mode"},
+    "jit.timeout": {"value": 120, "source": "default"},
+    "jit.fallback_timeout": {"value": 60, "source": "default"},
+    "jit.max_consecutive_fallbacks": {"value": 2, "source": "default"},
+    "replanning.enabled": {"value": false, "source": "forced_standard_mode"},
+    "replanning.max_cycles": {"value": 1, "source": "default"},
+    "replanning.divergence_threshold": {"value": 0.3, "source": "default"},
+    "replanning.trigger_classes": {"value": ["PIVOTED"], "source": "default"},
+    "fast_track.enabled": {"value": true, "source": "meta-agent"},
+    "meta_agent.confidence_threshold": {"value": 0.7, "source": "default"},
+    "routing.enabled": {"value": null, "source": "default"},
+    "routing.confidence_threshold": {"value": 0.85, "source": "default"},
+    "routing.auto_select_template": {"value": false, "source": "default"},
+    "routing.default_template": {"value": null, "source": "default"},
+    "templates": {"value": {}, "source": "default"},
+    "verification.dimension_weights": {"value": {"security": 0.3, "correctness": 0.3, "spec_alignment": 0.2, "robustness": 0.2}, "source": "default"},
+    "skip_phases": {"value": [1, 2, 3, 4, 5], "source": "meta-agent"},
+    "approval_gates": {"value": [3, 4, 6], "source": "default"},
+    "tdd.mutation_threshold": {"value": 70, "source": "default"},
+    "review.triage_enabled": {"value": false, "source": "default"},
+    "oracle.enabled": {"value": true, "source": "default"}
+  },
+  "metrics": {
+    "total_tokens_estimated": 50583,
+    "total_duration_ms": 300000,
+    "review_rounds_used": 0,
+    "escalations_to_human": 0,
+    "verification_scores": null,
+    "verification_score_history": {}
+  },
+  "fast_track": true,
+  "fast_track_decision": {
+    "complexity": 2,
+    "confidence": 0.95,
+    "activated_at": "2026-04-10T14:55:00Z",
+    "skip_rationale": "Composite complexity 2, confidence 0.95. Task is fully specified with format reference and content sources."
+  },
+  "phase_8_revision": null,
+  "replanning_state": null,
+  "abort_reason": null,
+  "aborted_at": null,
+  "explicit_invocation": true,
+  "redirect_decision": null,
+  "template_decision": null,
+  "task_type_skip_profile": null,
+  "skip_confirmation_decision": null,
+  "post_skip_validation_result": null
+}

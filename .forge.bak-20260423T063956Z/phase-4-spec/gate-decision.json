@@ -1,0 +1,10 @@
+{
+  "gate": 2,
+  "phase": 4,
+  "decision": "approve",
+  "decided_at": "2026-04-20T10:15:00Z",
+  "decided_by": "user",
+  "user_response": "ok",
+  "next_phase": 5,
+  "comments": "User approved spec without modifications. Phase 5 TDD authorized to consume requirements.md + design.md + formal-criteria.md."
+}

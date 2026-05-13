@@ -1,0 +1,66 @@
+{
+  "pipeline_id": "forge-2026-04-25-001",
+  "start": "2026-04-25T19:21:50Z",
+  "end": "2026-04-26T02:30:00Z",
+  "total_duration_ms": 25669508,
+  "total_tokens_estimated": 3878588,
+  "phases": {
+    "0": {"name": "meta-agent", "duration_ms": 1051508, "tokens": 145233, "status": "completed"},
+    "1": {"name": "research-questions", "duration_ms": 310000, "tokens": 218506, "status": "completed"},
+    "2": {"name": "research-answers", "duration_ms": 1214000, "tokens": 491988, "status": "completed"},
+    "3": {"name": "brainstorm", "duration_ms": 1499000, "tokens": 381546, "status": "completed"},
+    "4": {"name": "spec", "duration_ms": 2399000, "tokens": 1121989, "status": "completed"},
+    "5": {"name": "tdd", "duration_ms": 479000, "tokens": 106652, "status": "completed"},
+    "6": {"name": "plan", "duration_ms": 9719000, "tokens": 151319, "status": "completed"},
+    "7": {"name": "execution", "duration_ms": 5399000, "tokens": 775559, "status": "completed"},
+    "8": {"name": "verification", "duration_ms": 3599000, "tokens": 485796, "status": "completed"},
+    "9": {"name": "completion", "tokens": "TBD - this run", "status": "in_progress"}
+  },
+  "phase_notes": {
+    "4": "3 spec review rounds (r1: PARTIAL, r2: PARTIAL, r3: APPROVED); 11 open questions resolved",
+    "6": "Approval gate waited ~2h 42m (user review of plan)",
+    "7": "Wave 1-4 + T-21 fix-up wave (5 waves total); harness 197/11/13 → 206/0/15",
+    "8": "Single cycle; 1 SHOULD-FIX (CHANGELOG Czech) applied inline"
+  },
+  "review_iterations": {
+    "phase_4": 3,
+    "phase_8": 1
+  },
+  "escalations_to_human": 0,
+  "approval_gates": {
+    "phase_3": {"waited_ms": 420000, "decision": "approved"},
+    "phase_4": {"waited_ms": 479000, "decision": "approved"},
+    "phase_6": {"waited_ms": 9719000, "decision": "approved"}
+  },
+  "verification": {
+    "verdict": "FULL_PASS",
+    "aggregate": 0.918,
+    "dimensions": {
+      "security": {"score": 0.94, "weight": 0.15, "weighted": 0.141},
+      "correctness": {"score": 0.88, "weight": 0.35, "weighted": 0.308},
+      "spec_alignment": {"score": 0.95, "weight": 0.30, "weighted": 0.285},
+      "robustness": {"score": 0.92, "weight": 0.20, "weighted": 0.184}
+    },
+    "arithmetic_verified": true,
+    "ceiling_applied": false,
+    "fast_track": false,
+    "reqs_traced": "11/11",
+    "cross_file_invariants": "3/3 PASS"
+  },
+  "test_results": {
+    "total": 221,
+    "pass": 206,
+    "fail": 0,
+    "skip": 15,
+    "new_v700_scenarios": 18,
+    "newly_retired": 2
+  },
+  "delivery": {
+    "actions_delivered": 6,
+    "reqs_covered": 11,
+    "files_modified_non_forge": 46,
+    "files_deleted_non_forge": 1,
+    "files_renamed_non_forge": 2,
+    "new_test_scenarios": 18
+  }
+}

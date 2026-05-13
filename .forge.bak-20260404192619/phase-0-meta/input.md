@@ -1,0 +1,1 @@
+fix: Decomposition Persistence Parity (v6.1.9). Reference: docs/plans/roadmap.md section 'PLANNED — Next' item 'Decomposition Persistence Parity — v6.1.9'. Reference implementation: skills/implement-feature/SKILL.md (v6.1.8). Bump to 6.1.9 + changelog.

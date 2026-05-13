@@ -1,0 +1,14 @@
+{
+  "task_type": "design",
+  "secondary_types": ["research"],
+  "action": "phase_subset",
+  "target_skill": null,
+  "confidence": 0.92,
+  "reasoning": "Strategic business model design task for commercializing the ceos-agents plugin ecosystem. User needs a CEO-grade deliverable today: competitive-landscape research, brainstorm of business-model variants, formal written specification, and phased MVP -> millions-USD revenue roadmap. No source code is implemented, so phases 5-9 (TDD, plan, execute, verify, completion) are not applicable. Research is a secondary signal because Phase 2 will ground the Phase 3 brainstorm in real market data (competitor pricing, TAM/SAM/SOM, plugin-marketplace precedents), but the primary deliverable is a design artifact (business-model spec), not a research report, so design is the correct primary type. Fast-track is ineligible: design task statically conflicts with Phase 6 skip-profile per VALID_TARGETS, composite complexity is 4 (cross-cutting strategic scope, high ambiguity, high stakes), and the user explicitly asked for deep brainstorm with business-model variants which requires Phase 3's heterogeneous personas.",
+  "skip_profile": {
+    "task_type": "design",
+    "skip_phases": [5, 6, 7, 8, 9],
+    "active_phases": [0, 1, 2, 3, 4],
+    "reason": "Design task per VALID_TARGETS skip profile — phases 0-4 produce the CEO presentation deliverable (research, brainstorm of business-model variants, formal spec + roadmap). Implementation, verification, and completion phases are not applicable to a strategy document."
+  }
+}

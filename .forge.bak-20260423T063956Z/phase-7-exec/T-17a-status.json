@@ -1,0 +1,10 @@
+{
+  "task_id": "T-17a",
+  "status": "DONE",
+  "files_modified": ["state/schema.md"],
+  "revision_cycle": null,
+  "concerns": [],
+  "test_results": "AC-042/043/044/050a/055/055d: clarification object + paused enum + awaiting_clarification step status + aborted_by_system + block.detail HARD CONTRACT all present",
+  "completed_at": "2026-04-19T00:00:00Z",
+  "gates_unlocked": ["T-15", "T-17b", "T-17c", "T-17d", "T-17e", "T-17f", "T-17g"]
+}

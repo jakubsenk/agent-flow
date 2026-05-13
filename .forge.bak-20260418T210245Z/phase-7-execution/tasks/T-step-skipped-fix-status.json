@@ -1,0 +1,1 @@
+{"task_id":"T-step-skipped","status":"completed","files_modified":[],"drift_found_in":[],"drift_removed":false,"note":"No drift found. post-publish-hook.md lines 128-130 contain only the correct negating statement (WEBHOOK-R7). config-reader.md On events enum is clean — no step-skipped token present."}

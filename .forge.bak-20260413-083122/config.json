@@ -1,0 +1,21 @@
+{
+  "pipeline_mode": {"value": "adaptive", "source": "default"},
+  "jit.enabled": {"value": null, "source": "default"},
+  "jit.timeout": {"value": 120, "source": "default"},
+  "replanning.enabled": {"value": true, "source": "default"},
+  "replanning.max_cycles": {"value": 1, "source": "default"},
+  "fast_track.enabled": {"value": false, "source": "phase-0-routing", "reason": "research route, not fast-track eligible"},
+  "meta_agent.confidence_threshold": {"value": 0.7, "source": "default"},
+  "routing.enabled": {"value": true, "source": "phase-0-routing"},
+  "routing.confidence_threshold": {"value": 0.85, "source": "default"},
+  "routing.auto_select_template": {"value": false, "source": "default"},
+  "routing.selected_route": {"value": "research", "source": "phase-0-routing"},
+  "routing.phases": {"value": [0, 1, 2], "source": "phase-0-routing"},
+  "routing.skip_phases": {"value": [3, 4, 5, 6, 7, 8, 9], "source": "phase-0-routing"},
+  "verification.dimension_weights": {"value": {"security": 0.3, "correctness": 0.3, "spec_alignment": 0.2, "robustness": 0.2}, "source": "default"},
+  "skip_phases": {"value": [3, 4, 5, 6, 7, 8, 9], "source": "phase-0-routing"},
+  "approval_gates": {"value": [], "source": "phase-0-routing", "reason": "research route has no gates"},
+  "tdd.mutation_threshold": {"value": 70, "source": "default"},
+  "review.triage_enabled": {"value": false, "source": "default"},
+  "oracle.enabled": {"value": true, "source": "default"}
+}

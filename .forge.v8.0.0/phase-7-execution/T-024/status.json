@@ -1,0 +1,45 @@
+{
+  "task_id": "T-024",
+  "status": "DONE",
+  "files_modified": [
+    "docs/reference/automation-config.md"
+  ],
+  "summary": "docs/reference/automation-config.md aktualizován pro v8.0.0. Přidána sekce 'Plugin Permission Architecture' s counter-example HTML komentářem (hooks:/mcpServers:/permissionMode: pouze uvnitř <!-- COUNTER-EXAMPLE -->). Přidána TOML overlay dokumentace u Agent Overrides (preferovaný formát .toml, 3-tier merge shrnutí, TOML příklad). Přidána sekce 'Mode Flags' (--yolo / default / --step-mode, ne config klíče). Pipeline Profiles aktualizovány na named-phase identifikátory (analyst-triage, analyst-impact, test-engineer-e2e, browser-agent-reproduce, browser-agent-verify) s deprecation aliasy + [WARN] popisem. Deprecated agent jména opravena (code-analyst → analyst, e2e-test-engineer → test-engineer --e2e). Feature Workflow row: /status → /pipeline-status. Počet sekcí 18 zachován.",
+  "ac_fulfillment": {
+    "AC-DOC-007": {
+      "verdict": "FULFILLED",
+      "evidence": "Plugin Permission Constraint subsection present at '## Plugin Permission Architecture' with exact phrase 'hooks are skill-orchestrated, not agent-frontmatter' (verbatim in bold). TOML overlay format reference present in Agent Overrides expansion. Pipeline Profiles named-phase syntax present with all 5 named-phase identifiers table. 18 optional sections preserved (Quick reference table count unchanged)."
+    },
+    "AC-CT-003": {
+      "verdict": "FULFILLED",
+      "evidence": "Quick reference table still has exactly 18 optional section rows. No new config section rows added — TOML overlay, Plugin Permission, and Mode Flags are informational sections outside the config section table."
+    },
+    "AC-INV-PERM-001": {
+      "verdict": "FULFILLED",
+      "evidence": "Documentation pointer present. 'Plugin Permission Architecture' section documents the constraint with counter-example. grep -E '^hooks:|^mcpServers:|^permissionMode:' outside <!-- COUNTER-EXAMPLE --> block: 0 matches."
+    }
+  },
+  "self_review": {
+    "plugin_permission_section_with_counter_example": true,
+    "counter_example_inside_html_comment": true,
+    "toml_overlay_section_present": true,
+    "toml_overlay_3_tier_merge_documented": true,
+    "setup_agents_skill_referenced": true,
+    "toml_syntax_guide_referenced": true,
+    "pipeline_profiles_named_phase_updated": true,
+    "all_5_named_phase_ids_documented": true,
+    "v7_aliases_with_warn_documented": true,
+    "migration_v7_to_v8_link_present": true,
+    "mode_flags_section_present": true,
+    "no_hooks_outside_counter_example": true,
+    "no_mcpservers_outside_counter_example": true,
+    "no_permissionmode_outside_counter_example": true,
+    "18_optional_sections_preserved": true,
+    "deprecated_agent_names_updated": true,
+    "feature_workflow_status_ref_updated": true
+  },
+  "test_results": {
+    "v8-invariant-plugin-perm-constraint": "SIMULATED_PASS — Plugin Permission Architecture section present, counter-example in HTML comment, no active hooks:/mcpServers:/permissionMode: outside comment",
+    "v8-count-config-sections": "SIMULATED_PASS — 18 optional sections in Quick reference table (unchanged)"
+  }
+}

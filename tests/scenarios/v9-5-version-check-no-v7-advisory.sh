@@ -1,0 +1,21 @@
+#!/bin/bash
+# Covers: AC-21 (skills/version-check/SKILL.md lines 86-96 untouched — version comparison logic present)
+set -e
+
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+
+FILE="$REPO_ROOT/skills/version-check/SKILL.md"
+
+if [ ! -f "$FILE" ]; then
+  echo "FAIL: v9-5-version-check-no-v7-advisory — skills/version-check/SKILL.md not found"
+  exit 1
+fi
+
+BLOCK=$(sed -n '86,96p' "$FILE")
+if echo "$BLOCK" | grep -qE 'remote_version|repo_version|installed_version|pull|comparison'; then
+  echo "PASS: v9-5-version-check-no-v7-advisory — version comparison logic (lines 86-96) preserved"
+  exit 0
+else
+  echo "FAIL: v9-5-version-check-no-v7-advisory — version comparison logic not found in lines 86-96 of version-check SKILL.md"
+  exit 1
+fi

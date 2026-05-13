@@ -1,0 +1,16 @@
+{
+  "status": "completed",
+  "files_changed": [
+    "agents/fixer.md",
+    "agents/reviewer.md",
+    "agents/test-engineer.md",
+    "agents/e2e-test-engineer.md",
+    "agents/publisher.md",
+    "agents/rollback-agent.md",
+    "core/block-handler.md",
+    "core/fixer-reviewer-loop.md",
+    "core/decomposition-heuristics.md",
+    "state/schema.md"
+  ],
+  "edits_count": 20
+}

@@ -1,0 +1,26 @@
+{
+  "task_id": "T-002",
+  "status": "complete",
+  "files_modified": [
+    "docs/guides/toml-overlay-syntax.md"
+  ],
+  "test_results": {
+    "v8-doc-toml-syntax-content.sh": {
+      "assertion_1_toml_blocks": { "result": "PASS", "count": 12, "required": ">=5" },
+      "assertion_2_all_18_agents": { "result": "PASS", "agents_found": ["analyst","fixer","reviewer","acceptance-gate","test-engineer","publisher","rollback-agent","spec-analyst","architect","stack-selector","scaffolder","priority-engine","spec-writer","spec-reviewer","browser-agent","deployment-verifier","backlog-creator","sprint-planner"] },
+      "assertion_3_meta_free_form": { "result": "PASS", "meta_table_present": true, "free_form_semantics_documented": true }
+    }
+  },
+  "ac_fulfillment": {
+    "AC-DOC-002": "FULFILLED — docs/guides/toml-overlay-syntax.md created with 12 TOML code blocks (>=5), all 18 agents enumerated by full name in Sections 2 and 4, [meta] free-form table explicitly documented with NOT subject to unknown-key rejection wording",
+    "REQ-OVR-003": "FULFILLED — full per-agent reference table covering all 18 agents, [meta] free-form exemption documented",
+    "REQ-OVR-004": "FULFILLED — validation rules section documents unknown-key halt with error format and [meta] exemption",
+    "REQ-OVR-005": "FULFILLED — .md + .toml coexistence rules documented with WARN log wording",
+    "REQ-OVR-006": "FULFILLED — legacy .md-only fallback path documented with WARN log wording",
+    "REQ-OVR-007": "FULFILLED — provenance log format agent={name} overlay_source={toml|md|none} overlay_path={path} documented with 3 mandatory branches",
+    "REQ-DOC-002": "FULFILLED — comprehensive guide with 9 sections: Overview, Per-agent reference, 3-tier merge rules, 5+ TOML examples, [meta] free-form, Validation rules, Provenance log, Backwards compat, Migration path"
+  },
+  "sections_count": 9,
+  "file_size_lines": 280,
+  "notes": "Zpráva: soubor docs/guides/toml-overlay-syntax.md vytvořen. 9 sekcí, 12 TOML bloků, všech 18 agentů vyjmenováno plnými názvy v referenční tabulce i v příkladech. [meta] free-form sémantika explicitně zdokumentována s větou NOT subject to unknown-key rejection. Provenance log formát pokrývá všechny 3 větve (toml/md/none). Zpětná kompatibilita v7→v8 dokumentována včetně v9.0.0 hard removal. Odkaz na migration-v7-to-v8.md v Sekci 9."
+}

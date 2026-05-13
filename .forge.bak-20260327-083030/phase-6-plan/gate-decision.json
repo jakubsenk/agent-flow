@@ -1,0 +1,9 @@
+{
+  "phase": 6,
+  "phase_name": "plan",
+  "gate_fired_at": "2026-03-26T23:20:00Z",
+  "user_decision": "approved",
+  "user_feedback": null,
+  "iterations_used_at_gate": 0,
+  "resolved_at": "2026-03-26T23:25:00Z"
+}

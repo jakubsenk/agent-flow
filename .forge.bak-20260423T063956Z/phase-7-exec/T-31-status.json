@@ -1,0 +1,9 @@
+{
+  "task_id": "T-31",
+  "status": "DONE",
+  "files_created": ["core/snippets/architecture-freshness.md", "core/snippets/README.md"],
+  "revision_cycle": null,
+  "concerns": [],
+  "test_results": "AC-061/062/063b/063d: both files exist; freshness has 2-site Used-by; README has rollback contract + citation count table",
+  "completed_at": "2026-04-19T00:00:00Z"
+}

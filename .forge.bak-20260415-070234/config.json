@@ -1,0 +1,128 @@
+{
+  "schema_version": "1.5.0",
+  "generated_by": "phase-0-meta",
+  "generated_at": "2026-04-14T11:01:00Z",
+  "task_context": {
+    "task_type": "research",
+    "secondary_types": ["refactor"],
+    "domain": "LLM prompt engineering / token economics",
+    "complexity_composite": 3.7,
+    "confidence_composite": 0.65
+  },
+  "config": {
+    "pipeline_mode": {
+      "value": "adaptive",
+      "source": "default",
+      "rationale": "Research task with conditional implementation — adaptive mode allows early termination if research concludes NO-GO"
+    },
+    "jit.enabled": {
+      "value": false,
+      "source": "phase-0-recommendation",
+      "rationale": "JIT is not needed — this is a self-contained research+refactor task with no external dependencies or long-running operations"
+    },
+    "jit.timeout": {
+      "value": 120,
+      "source": "default"
+    },
+    "jit.fallback_timeout": {
+      "value": 60,
+      "source": "default"
+    },
+    "jit.max_consecutive_fallbacks": {
+      "value": 2,
+      "source": "default"
+    },
+    "replanning.enabled": {
+      "value": true,
+      "source": "phase-0-recommendation",
+      "rationale": "Essential for this task — if Phase 2 research synthesis concludes NO-GO, the pipeline should replan to skip Phases 5-7 (TDD, Plan, Execute) and go directly to Phase 8-9 (Verify findings, Complete)"
+    },
+    "replanning.max_cycles": {
+      "value": 1,
+      "source": "default",
+      "rationale": "One replan is sufficient — the key decision point is after Phase 2 (GO vs NO-GO)"
+    },
+    "replanning.divergence_threshold": {
+      "value": 0.3,
+      "source": "default"
+    },
+    "replanning.trigger_classes": {
+      "value": ["PIVOTED"],
+      "source": "default"
+    },
+    "fast_track.enabled": {
+      "value": false,
+      "source": "phase-0-decision",
+      "rationale": "Not eligible — multi-file scope, open-ended research question, ambiguity score 4/5"
+    },
+    "meta_agent.confidence_threshold": {
+      "value": 0.7,
+      "source": "default",
+      "rationale": "Composite confidence is 0.65 (below threshold), but this is expected for research tasks — ambiguity is the task, not a blocker"
+    },
+    "routing.enabled": {
+      "value": false,
+      "source": "phase-0-decision",
+      "rationale": "No single skill can handle this — requires full research pipeline"
+    },
+    "routing.confidence_threshold": {
+      "value": 0.85,
+      "source": "default"
+    },
+    "routing.auto_select_template": {
+      "value": false,
+      "source": "default"
+    },
+    "routing.default_template": {
+      "value": null,
+      "source": "default"
+    },
+    "templates": {
+      "value": {},
+      "source": "default"
+    },
+    "verification.dimension_weights": {
+      "value": {
+        "security": 0.10,
+        "correctness": 0.30,
+        "spec_alignment": 0.30,
+        "robustness": 0.30
+      },
+      "source": "phase-0-calibration",
+      "rationale": "Security weight stays minimal (prompt files only, no code execution). Correctness and spec_alignment are equally important — content preservation is critical for a format migration. Robustness covers edge cases in large files."
+    },
+    "skip_phases": {
+      "value": [],
+      "source": "phase-0-decision",
+      "rationale": "All phases needed. Research (1-2) is the core deliverable. Brainstorm (3) provides multi-perspective evaluation. Spec (4) defines changes. TDD (5) ensures quality. Plan (6) sequences work. Execute (7) implements. Verify (8) confirms. Complete (9) reports."
+    },
+    "approval_gates": {
+      "value": [3, 4, 6],
+      "source": "default",
+      "rationale": "Gate after brainstorm (3): confirm the GO/NO-GO direction. Gate after spec (4): approve exact changes before TDD and implementation. Gate after plan (6): confirm implementation order before execution."
+    },
+    "tdd.mutation_threshold": {
+      "value": 70,
+      "source": "default"
+    },
+    "review.triage_enabled": {
+      "value": false,
+      "source": "default"
+    },
+    "oracle.enabled": {
+      "value": true,
+      "source": "default"
+    }
+  },
+  "phase_specific_notes": {
+    "phase_1": "Research must produce quantitative token measurements on actual files, not estimates. Read at least 3 representative files per category.",
+    "phase_2": "Synthesis must produce a clear GO/NO-GO/PARTIAL-GO per file category. If overall NO-GO, flag for replanning to skip implementation phases.",
+    "phase_3": "The Token Economist and Prompt Quality Advocate will likely disagree. The Pragmatic Maintainer is the tiebreaker for 'is it worth the migration cost?'",
+    "phase_4": "If GO: spec must include before/after examples using REAL file content. If NO-GO: spec should still document minor improvements.",
+    "phase_5": "Tests must work with bash built-ins only — no jq, no yq, no python. The test harness is pure shell.",
+    "phase_6": "Plan smallest category first (core, 11 files) as validation, then configs (8), then agents (21), then skills (28 — if changing at all).",
+    "phase_7": "Run tests/harness/run-tests.sh after EACH file category migration, not just at the end.",
+    "phase_8": "Content preservation is the #1 verification priority. Count information units (steps, constraints, fields) in original vs migrated.",
+    "phase_9": "Report in Czech (user's language) with English technical terms. Reference specific token measurements from Phase 1."
+  }
+}

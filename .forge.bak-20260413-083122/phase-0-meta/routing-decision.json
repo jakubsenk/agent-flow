@@ -1,0 +1,14 @@
+{
+  "route": "research",
+  "phases": [0, 1, 2],
+  "skip_phases": [3, 4, 5, 6, 7, 8, 9],
+  "reason": "Read-only audit/review task. Requires structured analysis of existing markdown files and cross-referencing definitions. No implementation, design, testing, or verification needed.",
+  "primary_type": "research",
+  "secondary_types": ["review"],
+  "complexity": "medium",
+  "confidence": 0.95,
+  "domain": "plugin-architecture",
+  "security_pass": true,
+  "fast_track_eligible": false,
+  "approval_gates": []
+}

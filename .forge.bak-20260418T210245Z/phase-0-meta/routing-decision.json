@@ -1,0 +1,9 @@
+{
+  "task_type": "feature",
+  "secondary_types": ["migration"],
+  "action": "full_pipeline",
+  "target_skill": null,
+  "confidence": 0.88,
+  "reasoning": "ceos-agents v6.8.0 bundles three additive deliverables (Autopilot headless dispatcher skill, Observability Hooks D10 webhook events, Real-Time Cost Visibility state.json fields + summary table). Feature task type with composite complexity 4 -- requires full design-brainstorm-spec-plan-implement-verify cycle. Secondary migration signal stems from backward-compatible state.json schema bump (v1.0 -> v1.1) for per-stage usage fields, but the dominant signal is net-new capability (new skill, new config section, new webhook events) which is feature. No standalone skill exists to handle this task (not docs-only, not research), so redirect is not appropriate. No phase subset applies to feature task type.",
+  "skip_profile": null
+}

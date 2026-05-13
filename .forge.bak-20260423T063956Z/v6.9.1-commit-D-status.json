@@ -1,0 +1,55 @@
+{
+  "commit": "D",
+  "status": "DONE",
+  "timestamp": "2026-04-19T00:00:00Z",
+  "changes": [
+    {
+      "file": "CHANGELOG.md",
+      "fix": "H1 — MEDIUM",
+      "description": "v6.9.0 entry lines 24 and 40: '14 credential patterns' → '17 credential patterns' (both sites). Parenthetical pattern list on line 40 extended to name 3 new patterns: lower-case env-var assignments, JSON field values, PGP private-key end marker.",
+      "validation": "grep -F '14 credential' CHANGELOG.md → 0 matches; grep -F '17 credential' CHANGELOG.md → 2 matches"
+    },
+    {
+      "file": ".forge/phase-4-spec/final/requirements.md",
+      "fix": "Phase 4 spec amendments",
+      "amendments": [
+        {
+          "req": "REQ-042",
+          "change": "Added 'asked_at' (ISO 8601 timestamp, written at detection time, read by autopilot for pause-timeout) to clarification object field list. Updated total field count from 6 to 7.",
+          "marker": "(amended v6.9.1)"
+        },
+        {
+          "req": "REQ-045",
+          "change": "Added explicit increment-exclusivity clause: 'clarifications_consumed is incremented exclusively by skill orchestrators at NEEDS_CLARIFICATION detection time; resume-ticket --clarification MUST NOT re-increment the counter.'",
+          "marker": "(amended v6.9.1)"
+        },
+        {
+          "req": "REQ-052",
+          "change": "Changed '14-row credential-pattern regex table' to '17-row'. Added 3 new patterns: (15) lower-case env-var assignments → [REDACTED-LOWER-VAR]; (16) JSON field values → [REDACTED-JSON-FIELD]; (17) SSH/PGP private-key END line → [REDACTED-PRIVATE-KEY-END].",
+          "marker": "(amended v6.9.1)"
+        }
+      ],
+      "validation": "grep -F 'asked_at' requirements.md → match under REQ-042; grep -F '(amended v6.9.1)' requirements.md → 3 matches"
+    },
+    {
+      "file": "core/snippets/README.md",
+      "fix": "H2 — MEDIUM",
+      "description": "Updated citation count table to match actual grep counts from skills/ and core/ (excluding self-references in snippet files). webhook-curl: 21 → 29 (actual implementation has more sites than spec projected); issue-id-validation: 4 → 5 (core/agent-states.md adds 1 reference). metrics-json-schema, pipeline-completion, architecture-freshness unchanged (1, 3, 2).",
+      "actual_counts_from_grep": {
+        "webhook-curl": 29,
+        "issue-id-validation": 5,
+        "metrics-json-schema": 1,
+        "pipeline-completion": 3,
+        "architecture-freshness": 2
+      },
+      "validation": "grep -F 'webhook-curl | 29' README.md → match; grep -F 'issue-id-validation | 5' README.md → match"
+    }
+  ],
+  "validation_results": {
+    "H1_no_14_credential_in_changelog": "PASS",
+    "H1_17_credential_in_changelog": "PASS — 2 matches",
+    "H2_asked_at_in_req042": "PASS",
+    "H2_amended_v691_count": "PASS — 3 matches",
+    "readme_counts_updated": "PASS — webhook-curl 29, issue-id-validation 5"
+  }
+}

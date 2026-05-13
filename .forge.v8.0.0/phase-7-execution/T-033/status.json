@@ -1,0 +1,22 @@
+{
+  "task_id": "T-033",
+  "status": "DONE",
+  "mock_fixtures_created": [
+    "tests/mock-project/customization/.gitkeep",
+    "tests/mock-project/customization/reviewer.toml",
+    "tests/mock-project/customization/steps/fix-bugs/.gitkeep",
+    "tests/mock-project/.ceos-agents/.gitkeep",
+    "tests/mock-project/pyproject.toml",
+    "tests/mock-project/pnpm-workspace.yaml",
+    "tests/mock-project/packages/api/package.json",
+    "tests/mock-project/packages/web/package.json"
+  ],
+  "claude_md_modified": true,
+  "claude_md_change": "Added 'ci' profile row with analyst-impact (v8 stage name) to ### Pipeline Profiles section",
+  "notes": [
+    "v8-setup-agents-python.sh and v8-setup-agents-monorepo.sh use mktemp temp dirs, not mock-project directly — fixtures present for structural completeness",
+    "v8-overlay-*.sh tests also use temp dirs — reviewer.toml in mock-project provides reference fixture",
+    "Pipeline Profiles existing entry (fast / triage, e2e-test-engineer) preserved; ci profile added with v8 stage name (analyst-impact)"
+  ],
+  "concerns": "None for Phase 8 — most overlay/setup-agents tests use temp dirs and will SKIP until implementation lands"
+}

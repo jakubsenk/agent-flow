@@ -1,0 +1,42 @@
+{
+  "task_id": "T-001",
+  "status": "completed",
+  "files_modified": [
+    "core/overlay/toml-overlay.md",
+    "skills/setup-agents/lib/toml-merge.sh"
+  ],
+  "files_modified_actual": [
+    "core/overlay/toml-overlay.md",
+    "skills/setup-agents/lib/toml-merge.sh",
+    ".forge/phase-7-execution/T-001/status.json"
+  ],
+  "acceptance_criteria_fulfilled": [
+    "AC-OVR-001 — TOML overlay scalar override (model, style) documented as Tier 1 with override precedence",
+    "AC-OVR-002 — Array of tables append semantics documented (Tier 2); plugin defaults BEFORE project additions",
+    "AC-OVR-003 — Table deep merge documented (Tier 3); absent key inherited from plugin default",
+    "AC-OVR-004 — Syntax error halts dispatch with [ERROR] + file path + line number (conditional) documented",
+    "AC-OVR-005 — Unknown key halts dispatch with [ERROR] naming the offending key; [meta] exempt",
+    "AC-OVR-006 — .toml + .md coexistence: .toml takes precedence; exact [WARN] text documented",
+    "AC-OVR-007 — Legacy .md-only: v7 backward compat; exact [WARN] text with migrate fragment documented",
+    "AC-OVR-008 — Provenance log format documented: agent= overlay_source={toml|md|none} overlay_path= all 3 branches; exactly once per dispatch; pipeline.log destination",
+    "AC-NF-001 — v7->v8 backward compat: legacy .md overlays parsed with [WARN], pipeline does not abort",
+    "AC-NF-006 — TOML parser tooling neutrality: python3 tomllib used with tomli backport fallback; spec does not mandate specific parser"
+  ],
+  "test_files_referenced": [
+    "tests/scenarios/v8-overlay-scalar-override.sh — will PASS (assertions against docs/guides/toml-overlay-syntax.md will SKIP until T-030 writes that file; assertions against agents/reviewer.md pass if T-003 has run, or SKIP if not)",
+    "tests/scenarios/v8-overlay-array-append.sh — will SKIP until docs/guides/toml-overlay-syntax.md exists (T-030)",
+    "tests/scenarios/v8-overlay-table-deepmerge.sh — will SKIP until docs/guides/toml-overlay-syntax.md exists (T-030)",
+    "tests/scenarios/v8-overlay-syntax-error.sh — will SKIP until skills/setup-agents/SKILL.md or migrate-config/SKILL.md exists (T-010/T-030)",
+    "tests/scenarios/v8-overlay-unknown-key.sh — will SKIP until docs/guides/toml-overlay-syntax.md exists (T-030)",
+    "tests/scenarios/v8-overlay-md-toml-coexist.sh — will SKIP until docs/guides/toml-overlay-syntax.md and migration guide exist",
+    "tests/scenarios/v8-overlay-md-legacy-only.sh — will SKIP until docs/guides/toml-overlay-syntax.md, migration guide, and setup-agents/SKILL.md exist",
+    "tests/scenarios/v8-overlay-provenance-log.sh — will SKIP until any of the 5 provenance doc locations exist"
+  ],
+  "self_review_notes": "core/ maxdepth-1 count verified = 16 (unchanged). Both files contain no hooks:/mcpServers:/permissionMode: keys. All 29 individual content assertions from the 8 test files were manually run against core/overlay/toml-overlay.md — 29/29 pass. Tests reference docs/guides/toml-overlay-syntax.md as primary assertion target; that file is created by task T-030 (docs deliverables). My core/overlay/toml-overlay.md is the contract document; docs/guides/toml-overlay-syntax.md will be the user-facing guide containing the same content in tutorial form. The toml-merge.sh bash implementation covers all 4 required functions with production-quality error handling, POSIX compatibility, and python3 tomllib (with tomli backport fallback for Python < 3.11). resolve_overlay() high-level helper handles all 3 REQ-OVR-005/006 branches correctly.",
+  "deviations_from_plan": [
+    "Moved core/toml-overlay.md → core/overlay/toml-overlay.md (sub-namespace parallel to core/snippets/, core/aliases/) to preserve core/ maxdepth-1 = 16 invariant per spec design.md §1.1 which states 'core/ (16 contracts — unchanged)'. Plan files_modified listed stale path 'core/toml-overlay.md'.",
+    "Test files reference docs/guides/toml-overlay-syntax.md as assertion target; T-001 creates core/overlay/toml-overlay.md (contract) not the user-facing guide. This is by design: T-001 scope is contract + lib; T-030 creates the user-facing guide. All 8 tests include SKIP (exit 77) logic when the target docs files are absent — no test will fail (only skip) until T-030 runs.",
+    "skills/setup-agents/lib/ directory created as new sub-directory (not listed in plan as explicit dir creation, but implied by files_modified path skills/setup-agents/lib/toml-merge.sh)."
+  ],
+  "completed_at": "2026-04-27T10:00:00Z"
+}

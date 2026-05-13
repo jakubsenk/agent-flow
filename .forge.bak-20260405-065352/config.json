@@ -1,0 +1,72 @@
+{
+  "pipeline_mode": "fast-track",
+  "pipeline_mode.provenance": "Phase 0 analysis: confidence 0.94 > threshold 0.7, fast-track eligible",
+
+  "jit.enabled": false,
+  "jit.enabled.provenance": "Fast-track mode — no JIT needed, all phases predetermined",
+
+  "jit.timeout": 120,
+  "jit.timeout.provenance": "Default — unused in fast-track",
+
+  "jit.fallback_timeout": 60,
+  "jit.fallback_timeout.provenance": "Default — unused in fast-track",
+
+  "jit.max_consecutive_fallbacks": 2,
+  "jit.max_consecutive_fallbacks.provenance": "Default — unused in fast-track",
+
+  "replanning.enabled": false,
+  "replanning.enabled.provenance": "Fast-track: task is well-specified, no replanning expected",
+
+  "replanning.max_cycles": 1,
+  "replanning.max_cycles.provenance": "Default",
+
+  "replanning.divergence_threshold": 0.3,
+  "replanning.divergence_threshold.provenance": "Default",
+
+  "replanning.trigger_classes": ["PIVOTED"],
+  "replanning.trigger_classes.provenance": "Default",
+
+  "fast_track.enabled": true,
+  "fast_track.enabled.provenance": "Phase 0 Tier A+B: ELIGIBLE, confidence 0.94",
+
+  "meta_agent.confidence_threshold": 0.7,
+  "meta_agent.confidence_threshold.provenance": "Default L1",
+
+  "routing.enabled": false,
+  "routing.enabled.provenance": "No template routing needed — direct execution",
+
+  "routing.confidence_threshold": 0.85,
+  "routing.confidence_threshold.provenance": "Default L1",
+
+  "routing.auto_select_template": false,
+  "routing.auto_select_template.provenance": "Default L1",
+
+  "routing.default_template": null,
+  "routing.default_template.provenance": "Default L1",
+
+  "templates": {},
+  "templates.provenance": "No templates configured",
+
+  "verification.dimension_weights": {
+    "security": 0.1,
+    "correctness": 0.4,
+    "spec_alignment": 0.3,
+    "robustness": 0.2
+  },
+  "verification.dimension_weights.provenance": "Adjusted: security low (pure markdown), correctness high (must match roadmap spec), spec_alignment high (roadmap is the spec)",
+
+  "skip_phases": [1, 2, 3, 5],
+  "skip_phases.provenance": "Fast-track: skip research (1,2), brainstorm (3), TDD (5 — no testable code). Keep: spec (4), plan (6), execute (7), verify (8), completion (9)",
+
+  "approval_gates": [4, 6],
+  "approval_gates.provenance": "Reduced from [3,4,6]: gate 3 (brainstorm) skipped. Keep spec (4) and plan (6) gates for user confirmation",
+
+  "tdd.mutation_threshold": 70,
+  "tdd.mutation_threshold.provenance": "Default — TDD phase skipped",
+
+  "review.triage_enabled": false,
+  "review.triage_enabled.provenance": "Default L1",
+
+  "oracle.enabled": true,
+  "oracle.enabled.provenance": "Default L1 — keep oracle for verification"
+}

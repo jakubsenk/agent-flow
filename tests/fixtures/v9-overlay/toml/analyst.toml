@@ -1,0 +1,12 @@
+# v9.2.0 overlay test fixture — toml source (R1 input)
+# Drives resolve_overlay() to assign OVERLAY_SOURCE="toml"
+# Minimum schema-conforming payload that triggers the toml branch (toml-merge.sh line 436).
+# Uses the actual allowed top-level keys: model, style, process_additions, constraints, limits, meta.
+
+[meta]
+generated = "ceos-agents v9.2.0 test fixture"
+purpose = "trigger OVERLAY_SOURCE=toml in resolve_overlay()"
+
+[[process_additions]]
+step = 99
+instruction = "Always check for SQL injection in all database queries"

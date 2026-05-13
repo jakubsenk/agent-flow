@@ -1,0 +1,183 @@
+{
+  "schema_version": "1.1.0",
+  "generated_by": "phase-0-meta-agent",
+  "generated_at": "2026-03-27T09:00:00Z",
+  "task_summary": "Scaffold Infrastructure Integration (v5.5.0) — Redesign scaffold command's infrastructure setup flow",
+
+  "task_classification": {
+    "type": "enhancement",
+    "sub_type": "workflow-redesign",
+    "domain": "devops-plugin-architecture",
+    "complexity": "medium",
+    "complexity_score": 0.55,
+    "confidence": 0.90,
+    "fast_track_eligible": false,
+    "fast_track_reason": "Multi-file change (8+ files) with cross-file documentation consistency requirements"
+  },
+
+  "files_to_modify": [
+    {
+      "path": "commands/scaffold.md",
+      "change_type": "major-restructure",
+      "priority": 1,
+      "description": "Primary target — add Steps 0-INFRA, 0-MCP, 4d, 4e; remove Steps 4b, 4c, 9; modify Steps 4, 10"
+    },
+    {
+      "path": "docs/reference/pipelines.md",
+      "change_type": "update-references",
+      "priority": 2,
+      "description": "Update scaffold stages table, mermaid diagram, step descriptions"
+    },
+    {
+      "path": "docs/architecture.md",
+      "change_type": "update-references",
+      "priority": 3,
+      "description": "Update scaffold pipeline section and mermaid diagram"
+    },
+    {
+      "path": "CLAUDE.md",
+      "change_type": "update-references",
+      "priority": 4,
+      "description": "Update Scaffold Pipeline description"
+    },
+    {
+      "path": "README.md",
+      "change_type": "update-references",
+      "priority": 5,
+      "description": "Update scaffold pipeline description and mermaid diagram"
+    },
+    {
+      "path": "docs/reference/commands.md",
+      "change_type": "update-references",
+      "priority": 6,
+      "description": "Update /scaffold command description"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "change_type": "add-entry",
+      "priority": 7,
+      "description": "Add v5.5.0 MINOR entry"
+    }
+  ],
+
+  "files_verified_unchanged": [
+    "commands/init.md",
+    "agents/*.md",
+    "skills/workflow-router/SKILL.md",
+    "core/*.md",
+    "docs/plans/*.md",
+    "docs/reference/automation-config.md",
+    "docs/reference/agents.md",
+    "docs/getting-started.md",
+    "tests/**",
+    "examples/**",
+    "checklists/**",
+    "state/**"
+  ],
+
+  "agents": {
+    "phase_1": {
+      "count": 5,
+      "model": "sonnet",
+      "persona": "DevOps Plugin Architect",
+      "provenance": "default (L1 config)"
+    },
+    "phase_2": {
+      "count": 5,
+      "model": "sonnet",
+      "persona": "Meticulous Codebase Analyst",
+      "provenance": "default (L1 config)"
+    },
+    "phase_3": {
+      "count": 3,
+      "model": "opus",
+      "personas": [
+        "Conservative Incrementalist (Senior DevOps Platform Engineer)",
+        "Innovative UX Designer (Developer Experience Architect)",
+        "Skeptical Systems Thinker (Distributed Systems Architect)"
+      ],
+      "provenance": "default (L1 config)"
+    }
+  },
+
+  "models": {
+    "phase_0": { "value": "opus", "source": "default", "rationale": "Meta-agent requires high-quality analysis" },
+    "phase_1": { "value": "sonnet", "source": "default", "rationale": "Research question generation" },
+    "phase_2": { "value": "sonnet", "source": "default", "rationale": "File reading and grep-based research" },
+    "phase_3": { "value": "opus", "source": "default", "rationale": "Strategic brainstorming with heterogeneous personas" },
+    "phase_4": { "value": "opus", "source": "default", "rationale": "Specification writing requires precision" },
+    "phase_5": { "value": "sonnet", "source": "default", "rationale": "Test case design from specification" },
+    "phase_6": { "value": "opus", "source": "default", "rationale": "Plan decomposition with dependency analysis" },
+    "phase_7": { "value": "sonnet", "source": "default", "rationale": "Execution of edit operations" },
+    "phase_8_reviewers": { "value": "opus", "source": "default", "rationale": "Adversarial verification requires deep analysis" },
+    "phase_8_correctness": { "value": "sonnet", "source": "default", "rationale": "Grep-based test execution" },
+    "phase_9": { "value": "sonnet", "source": "default", "rationale": "Completion checklist and summary" }
+  },
+
+  "review": {
+    "max_rounds": { "value": 3, "source": "default" }
+  },
+
+  "approval_gates": {
+    "value": [3, 4, 6],
+    "source": "default",
+    "description": "Gates after brainstorm (3), specification (4), and plan (6)"
+  },
+
+  "skip_phases": {
+    "value": [],
+    "source": "default",
+    "rationale": "No phases skipped — all phases needed for multi-file refactoring"
+  },
+
+  "timeout": {
+    "per_agent": { "value": 300000, "source": "default" },
+    "per_phase": { "value": 900000, "source": "default" },
+    "total_pipeline": { "value": 7200000, "source": "default" }
+  },
+
+  "pipeline_mode": {
+    "value": "adaptive",
+    "source": "default",
+    "rationale": "Standard adaptive mode — no fast-track, no JIT needed"
+  },
+
+  "jit": {
+    "enabled": { "value": false, "source": "phase-0-decision", "rationale": "Task is well-defined with clear design doc — no JIT research needed" }
+  },
+
+  "replanning": {
+    "enabled": { "value": true, "source": "default" },
+    "max_cycles": { "value": 1, "source": "default" },
+    "divergence_threshold": { "value": 0.3, "source": "default" },
+    "trigger_classes": { "value": ["PIVOTED"], "source": "default" }
+  },
+
+  "fast_track": {
+    "enabled": { "value": false, "source": "phase-0-decision" },
+    "reason": "Multi-file change (8+ files), cross-file consistency requirements, not eligible for fast-track"
+  },
+
+  "meta_agent": {
+    "confidence_threshold": { "value": 0.7, "source": "default" },
+    "actual_confidence": 0.90,
+    "confidence_above_threshold": true
+  },
+
+  "critical_research_directives": [
+    "Find ALL files that reference scaffold Steps 4b, 4c, 9, 10 (including docs, README, CLAUDE.md, architecture.md)",
+    "Verify init.md compatibility with inline invocation from scaffold (reads Automation Config — may not exist during scaffold)",
+    "Search for 'auto-finalize', 'Auto-Finalize', 'Tracker Configuration', 'MCP Guidance' across all non-plan .md files",
+    "Identify every mermaid diagram that includes scaffold pipeline flow — all must be updated"
+  ],
+
+  "version_info": {
+    "current": "5.4.1",
+    "target": "5.5.0",
+    "bump_type": "minor",
+    "breaking_changes": false,
+    "new_config_keys": false,
+    "new_agents": false,
+    "new_commands": false
+  }
+}

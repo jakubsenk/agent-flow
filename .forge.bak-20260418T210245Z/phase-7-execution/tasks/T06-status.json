@@ -1,0 +1,25 @@
+{
+  "task": "T06",
+  "file": "skills/fix-ticket/SKILL.md",
+  "status": "done",
+  "changes": [
+    "Added Notifications config parsing (Webhook URL + On events token set) in Configuration section",
+    "Added run_id generation (ISSUE_ID_YYYYMMDDTHHMMSSz compact UTC) in Step 0 MCP pre-flight",
+    "Added pipeline-started webhook fire after state.json init",
+    "Added pre-dispatch usage fields (started_at, model, status=in_progress, zeroed counters) for: triage, code_analysis, reproduction, fixer_reviewer, test, e2e_test, browser_verification, acceptance_gate, publisher",
+    "Added post-dispatch defensive usage capture (tokens_used, duration_ms, tool_uses, completed_at) for all stages",
+    "Added cumulative accumulation for fixer_reviewer across iterations (COST-R5)",
+    "Added step-completed webhook fire after each stage's state commit: triage, code_analysis, reproduction, fixer_reviewer (once, not per-iteration), test, e2e_test, browser_verification, acceptance_gate, publisher",
+    "Added pipeline accumulator (total_tokens, total_duration_ms, total_tool_uses, summary_table) on both success path (Step 9) and block path (Step X)",
+    "Added COST-R10 truncation rule for summary_table (max 20 rows / 4000 chars with truncation notice row)",
+    "Added summary_table stdout emit on both success and block paths",
+    "Added pipeline-completed webhook fire on both success (outcome: success) and block (outcome: blocked) terminal states",
+    "On events filter applied before every webhook fire — silent skip if token absent"
+  ],
+  "verification": {
+    "pipeline_event_occurrences": 14,
+    "run_id_present": true,
+    "summary_table_present": true,
+    "on_events_filter_present": true
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "task_type": "research",
+  "action": "phase_subset",
+  "confidence": 0.92,
+  "reasoning": "Uloha je ciste analyticka — zadne zmeny kodu, vystupem je strukturovany dokument s gap analyzou. Vyzaduje faze 0-3 (research + brainstorm synteza), volitelne faze 4 (specifikace jako formalni gap-analyza dokument). Faze 5-9 (TDD, plan, execute, verify, completion) jsou irelevantni.",
+  "active_phases": [0, 1, 2, 3, 4],
+  "skipped_phases": [5, 6, 7, 8, 9],
+  "skip_reason": "Research/design uloha bez implementace — zadny kod k testovani (faze 5), zadny plan k vytvoreni (faze 6), zadna exekuce (faze 7), zadna verifikace (faze 8), zadne zavrseni (faze 9)",
+  "fast_track_eligible": false,
+  "estimated_complexity": "M",
+  "estimated_phases_duration": {
+    "phase_1": "10 min — formulace vyzkumnych otazek",
+    "phase_2": "20 min — cteni a analyzovani kodu + dokumentu",
+    "phase_3": "15 min — synteza nalezu do gap-analyzy",
+    "phase_4": "10 min — formalizace do strukturovaneho vystupu"
+  },
+  "domain_tags": ["ceos-agents-architecture", "redmine-integration", "oracle-plsql", "gradual-adoption", "agent-process-separation"],
+  "security_evaluation": null
+}

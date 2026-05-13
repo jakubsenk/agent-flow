@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0.0",
+  "id": "forge-2026-03-22-001",
+  "plugin_version": "0.1.0",
+  "input": "Merge forge + ceos-agents into a unified pipeline plugin with /build command. Auto-detection of mode (code/analysis/strategy/content), unified 10-phase pipeline, shared core extraction, commands-to-skills migration, agent merges.",
+  "status": "running",
+  "current_phase": 0,
+  "phases": {},
+  "config": {
+    "agents": {
+      "phase_1": 7,
+      "phase_2": 7,
+      "phase_3": 3
+    },
+    "models": {
+      "phase_0": "opus",
+      "phase_1": "sonnet",
+      "phase_2": "sonnet",
+      "phase_3": "opus",
+      "phase_4": "opus",
+      "phase_5": "sonnet",
+      "phase_6": "opus",
+      "phase_7": "sonnet",
+      "phase_8_reviewers": "opus",
+      "phase_8_correctness": "sonnet",
+      "phase_9": "sonnet"
+    },
+    "review": {
+      "max_rounds": 4
+    },
+    "approval_gates": [3, 4, 6],
+    "skip_phases": [],
+    "timeout": {
+      "per_agent": 300000,
+      "per_phase": 900000,
+      "total_pipeline": 10800000
+    }
+  },
+  "config_provenance": {
+    "agents.phase_1": "Increased from 5→7: scope=5 migration with 7 distinct research domains (plugin architecture, agent merging, pipeline engine, mode adapters, backward compat, skill migration, test strategy)",
+    "agents.phase_2": "Increased from 5→7: matches research question count for 1:1 question→answer mapping",
+    "agents.phase_3": "Kept at 3: conservative/innovative/skeptical triad is optimal for architectural decisions",
+    "review.max_rounds": "Increased from 3→4: risk=5 + ambiguity=4 warrants extra review iteration to catch migration edge cases",
+    "approval_gates": "Kept at [3,4,6]: all three gates critical for high-risk migration — brainstorm gate catches architectural flaws, spec gate catches missing backward compat, plan gate catches sequencing errors",
+    "skip_phases": "No phases skipped: scope=5 migration requires full pipeline — research (understand both codebases), brainstorm (explore merge strategies), spec (formal contract), TDD (structural tests), plan (task graph), execute, verify",
+    "timeout.per_phase": "Increased from 600s→900s: large scope means more files to read/write per phase",
+    "timeout.total_pipeline": "Increased from 7200s→10800s (3h): cross-cutting migration affecting 152 files needs extended total budget",
+    "models": "No changes from defaults: opus for critical design decisions (phases 0,3,4,6,8-reviewers), sonnet for research and execution (phases 1,2,5,7,8-correctness,9). Risk=5 does not warrant upgrading sonnet phases to opus because the review loops and approval gates provide sufficient quality assurance."
+  },
+  "metrics": {
+    "total_tokens_estimated": 0,
+    "total_duration_ms": 0,
+    "review_rounds_used": 0,
+    "escalations_to_human": 0
+  },
+  "phase_8_revision": null
+}

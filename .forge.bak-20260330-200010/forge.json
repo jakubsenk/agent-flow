@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.1.0",
+  "id": "forge-2026-03-30-001",
+  "plugin_version": "0.3.1",
+  "input": "Implement v5.6.1 (UX Polish) for the ceos-agents plugin. Four items from roadmap: (1) --infra flag format: change positional --infra ready,later to self-documenting --infra tracker:ready,sc:later format, (2) Canary-write should ask or announce before creating test item in tracker, (3) Error messages should use user language not MCP jargon — rewrite block messages to say 'Cannot connect to your {type} tracker' instead of 'MCP server for {type} is not available', (4) Resume should allow infrastructure override — detect --infra flag on re-invocation and prefer it over stale state.json values.",
+  "status": "running",
+  "current_phase": 1,
+  "phases": {
+    "0": {
+      "name": "meta-agent",
+      "status": "completed",
+      "fast_track_decision": "ELIGIBLE_BUT_NO_ARTIFACT",
+      "confidence": 0.92,
+      "complexity_composite": 2,
+      "task_type": "enhancement",
+      "files_to_modify": [
+        "commands/scaffold.md",
+        "core/mcp-detection.md",
+        "commands/resume-ticket.md"
+      ]
+    }
+  },
+  "config": {
+    "pipeline_mode": "adaptive",
+    "jit": {
+      "enabled": false,
+      "timeout": 120,
+      "fallback_timeout": 60,
+      "max_consecutive_fallbacks": 2
+    },
+    "replanning": {
+      "enabled": false,
+      "max_cycles": 1,
+      "divergence_threshold": 0.3,
+      "trigger_classes": ["PIVOTED"]
+    },
+    "fast_track": {
+      "enabled": false
+    },
+    "meta_agent": {
+      "confidence_threshold": 0.7
+    }
+  },
+  "metrics": {
+    "total_tokens_estimated": 0,
+    "total_duration_ms": 365193,
+    "review_rounds_used": 0,
+    "escalations_to_human": 0
+  },
+  "fast_track": false,
+  "fast_track_decision": null,
+  "phase_8_revision": null,
+  "replanning_state": null,
+  "abort_reason": null,
+  "aborted_at": null
+}

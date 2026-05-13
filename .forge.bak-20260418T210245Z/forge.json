@@ -1,0 +1,94 @@
+{
+  "schema_version": "1.5.0",
+  "id": "forge-2026-04-17-001",
+  "plugin_version": "0.9.17",
+  "input": "ceos-agents v6.8.0 — Autopilot + Observability. Three items: (1) /ceos-agents:autopilot skill (thin headless dispatcher with lock file + optional Autopilot config section); (2) Observability Hooks D10 (pipeline-started, step-completed, pipeline-completed webhook events); (3) Real-Time Cost Visibility (per-stage tokens_used/duration_ms/tool_uses in state.json mirroring forge.json, pipeline summary, /metrics aggregation). Pure-markdown plugin, no breaking Automation Config changes, tests via ./tests/harness/run-tests.sh, changelog + version bump via /ceos-agents:version-bump.",
+  "status": "completed",
+  "current_phase": 9,
+  "phases": {
+    "0": {"status": "completed", "started_at": "2026-04-17T17:10:00Z", "completed_at": "2026-04-17T17:30:00Z", "duration_ms": 1200000, "tokens_estimated": 136542},
+    "1": {"status": "completed", "started_at": "2026-04-17T17:30:03Z", "completed_at": "2026-04-17T17:40:00Z", "duration_ms": 597000, "tokens_estimated": 215667},
+    "2": {"status": "completed", "started_at": "2026-04-17T17:40:02Z", "completed_at": "2026-04-17T17:52:00Z", "duration_ms": 720000, "tokens_estimated": 220535},
+    "3": {"status": "completed", "started_at": "2026-04-17T17:52:02Z", "completed_at": "2026-04-17T18:10:00Z", "duration_ms": 1078000, "tokens_estimated": 342451},
+    "4": {"status": "completed", "started_at": "2026-04-17T18:20:01Z", "completed_at": "2026-04-17T19:05:00Z", "duration_ms": 2700000, "tokens_estimated": 780403},
+    "5": {"status": "completed", "started_at": "2026-04-17T19:10:01Z", "completed_at": "2026-04-18T00:30:00Z", "duration_ms": 1500000, "tokens_estimated": 163982},
+    "6": {"status": "completed", "started_at": "2026-04-18T00:30:02Z", "completed_at": "2026-04-18T00:50:00Z", "duration_ms": 1200000, "tokens_estimated": 92290},
+    "7": {"status": "completed", "started_at": "2026-04-18T00:55:01Z", "completed_at": "2026-04-18T04:30:00Z", "duration_ms": 13140000, "tokens_estimated": 1100000, "tests_passing": "139/140"},
+    "8": {"status": "completed", "started_at": "2026-04-18T04:30:02Z", "completed_at": "2026-04-18T06:15:00Z", "duration_ms": 6300000, "tokens_estimated": 620000, "verdict": "FULL_PASS", "aggregate": 0.857, "revision_cycles": 1},
+    "9": {"status": "completed", "started_at": "2026-04-18T06:15:02Z", "completed_at": "2026-04-18T06:30:00Z", "duration_ms": 900000, "tokens_estimated": 46297}
+  },
+  "config": {
+    "pipeline_mode": {"value": "adaptive", "source": "meta-agent"},
+    "jit.enabled": {"value": true, "source": "meta-agent"},
+    "jit.timeout": {"value": 120, "source": "default"},
+    "jit.fallback_timeout": {"value": 60, "source": "default"},
+    "jit.max_consecutive_fallbacks": {"value": 2, "source": "default"},
+    "replanning.enabled": {"value": true, "source": "default"},
+    "replanning.max_cycles": {"value": 2, "source": "meta-agent"},
+    "replanning.divergence_threshold": {"value": 0.3, "source": "default"},
+    "replanning.trigger_classes": {"value": ["PIVOTED"], "source": "default"},
+    "fast_track.enabled": {"value": null, "source": "meta-agent"},
+    "meta_agent.confidence_threshold": {"value": 0.7, "source": "default"},
+    "routing.enabled": {"value": null, "source": "meta-agent"},
+    "routing.confidence_threshold": {"value": 0.85, "source": "default"},
+    "routing.auto_select_template": {"value": false, "source": "default"},
+    "routing.default_template": {"value": null, "source": "default"},
+    "templates": {"value": {}, "source": "default"},
+    "verification.dimension_weights": {"value": {"security": 0.3, "correctness": 0.3, "spec_alignment": 0.2, "robustness": 0.2}, "source": "default"},
+    "skip_phases": {"value": [], "source": "meta-agent"},
+    "approval_gates": {"value": [3, 4, 6], "source": "default"},
+    "tdd.mutation_threshold": {"value": 70, "source": "default"},
+    "review.triage_enabled": {"value": false, "source": "default"},
+    "oracle.enabled": {"value": true, "source": "default"}
+  },
+  "metrics": {
+    "total_tokens_estimated": 3671870,
+    "total_duration_ms": 28435000,
+    "review_rounds_used": 3,
+    "escalations_to_human": 3,
+    "verification_scores": {
+      "dimensions": {
+        "security": {"score": 0.82, "weight": 0.3},
+        "correctness": {"score": 0.85, "weight": 0.3},
+        "spec_alignment": {"score": 0.90, "weight": 0.2},
+        "robustness": {"score": 0.88, "weight": 0.2}
+      },
+      "aggregate": 0.857,
+      "commander_reported_aggregate": 0.774,
+      "recomputed_aggregate": 0.857,
+      "arithmetic_verified": true,
+      "arithmetic_correction_delta": 0.0,
+      "verdict": "FULL_PASS",
+      "scoring_method": "weighted_sum",
+      "revision_cycles": 1
+    },
+    "verification_score_history": {
+      "0": {
+        "aggregate": 0.774,
+        "verdict": "CONDITIONAL_PASS",
+        "failed_dimensions": [],
+        "high_findings": 1,
+        "completed_at": "2026-04-18T05:30:00Z"
+      },
+      "1": {
+        "aggregate": 0.857,
+        "verdict": "FULL_PASS",
+        "failed_dimensions": [],
+        "high_findings": 0,
+        "completed_at": "2026-04-18T06:15:00Z"
+      }
+    }
+  },
+  "fast_track": false,
+  "fast_track_decision": null,
+  "phase_8_revision": null,
+  "replanning_state": null,
+  "abort_reason": null,
+  "aborted_at": null,
+  "explicit_invocation": true,
+  "redirect_decision": {"action": "full_pipeline", "task_type": "feature", "secondary_types": ["migration"], "confidence": 0.88},
+  "template_decision": null,
+  "task_type_skip_profile": null,
+  "skip_confirmation_decision": null,
+  "post_skip_validation_result": null
+}

@@ -1,0 +1,17 @@
+{
+  "task_type": "research",
+  "action": "phase_subset",
+  "active_phases": [0, 1, 2, 3],
+  "skip_phases": [4, 5, 6, 7, 8, 9],
+  "skip_reason": "Read-only research task -- no implementation, no tests, no execution needed",
+  "phase_descriptions": {
+    "0": "Meta-agent: classify task, write prompts, configure pipeline",
+    "1": "Research: verify each of 12 claims against actual codebase",
+    "2": "Synthesis: compile verified findings into structured analysis",
+    "3": "Brainstorm: categorize recommendations into implement/roadmap/reject"
+  },
+  "estimated_complexity": 3,
+  "requires_code_changes": false,
+  "requires_tests": false,
+  "deliverable": "Critical analysis report with per-recommendation verdict and categorization"
+}

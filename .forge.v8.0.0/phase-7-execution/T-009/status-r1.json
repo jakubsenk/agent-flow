@@ -1,0 +1,35 @@
+{
+  "task": "T-009",
+  "revision": "r1",
+  "status": "PASS",
+  "timestamp": "2026-04-27T00:00:00Z",
+  "checks": {
+    "line_count": {
+      "value": 101,
+      "limit": 120,
+      "pass": true
+    },
+    "step_files_count": {
+      "value": 8,
+      "range": "5-8",
+      "pass": true
+    },
+    "deprecated_mode_strings": {
+      "pattern": "(a) Interactive|(b) YOLO with checkpoint|(c) Full YOLO",
+      "count": 0,
+      "pass": true
+    },
+    "deprecated_agent_names": {
+      "pattern": "triage-analyst|code-analyst|e2e-test-engineer|reproducer|browser-verifier",
+      "count": 0,
+      "pass": true
+    },
+    "b6_mode_flags": {
+      "pattern": "GOT_YOLO|GOT_STEP_MODE|step-mode",
+      "count": 8,
+      "minimum": 3,
+      "pass": true
+    }
+  },
+  "notes": "SKILL.md rewritten to 101 lines. B6 mode harmonization applied: --yolo sets GOT_YOLO, --step-mode sets GOT_STEP_MODE, mutual exclusion check, MODE resolution table. All 8 step files confirmed present. No deprecated agent names or old mode strings."
+}

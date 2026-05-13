@@ -1,0 +1,8 @@
+{
+  "task": "T-027",
+  "revision": "r1",
+  "status": "DONE",
+  "file": "CLAUDE.md",
+  "change": "Pipeline Profiles stage names updated to v8 canonical identifiers: code-analyst→analyst-impact, e2e-test-engineer→test-engineer-e2e, reproducer→browser-agent-reproduce, browser-verifier→browser-agent-verify",
+  "self_check": "grep -nE '(code-analyst|e2e-test-engineer|reproducer|browser-verifier)' CLAUDE.md | grep -v deprecat = 0 hits PASS"
+}

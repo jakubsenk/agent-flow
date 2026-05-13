@@ -1,0 +1,12 @@
+{
+  "task_type": "research",
+  "secondary_types": ["refactor"],
+  "action": "full_pipeline",
+  "target_skill": null,
+  "confidence": 0.88,
+  "reasoning": "Open-ended format evaluation question requiring structured research (Phase 1-2), evidence-based specification (Phase 4), and conditional implementation. Cannot fast-track because scope is unknown until research completes. Cannot route to a single skill — this is a multi-phase investigation that may or may not result in code changes. The adaptive pipeline with replanning enabled is ideal: if research concludes 'no changes needed', the pipeline can terminate early after Phase 4 (spec) without executing Phase 7 (implement).",
+  "skip_profile": {
+    "skip_phases": [],
+    "reason": "All phases needed. Research (1-2) is the core deliverable. Brainstorm (3) evaluates trade-offs. Spec (4) defines what changes (if any). TDD (5) ensures format changes don't degrade quality. Plan (6) sequences file-by-file migration. Execute (7) applies changes. Verify (8) confirms no regressions. No phase is skippable for a research-to-implementation pipeline."
+  }
+}

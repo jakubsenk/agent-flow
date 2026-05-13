@@ -1,0 +1,131 @@
+{
+  "pipeline_mode": {
+    "value": "adaptive",
+    "source": "default",
+    "__provenance": "No CLI override. Adaptive mode is appropriate — three independent fixes can benefit from parallel execution within groups."
+  },
+  "jit.enabled": {
+    "value": false,
+    "source": "meta-agent",
+    "__provenance": "JIT disabled — all three fixes are fully specified with no ambiguity. No need for just-in-time research or clarification."
+  },
+  "jit.timeout": {
+    "value": 120,
+    "source": "default",
+    "__provenance": "Default retained (unused since JIT disabled)."
+  },
+  "jit.fallback_timeout": {
+    "value": 60,
+    "source": "default",
+    "__provenance": "Default retained (unused since JIT disabled)."
+  },
+  "jit.max_consecutive_fallbacks": {
+    "value": 2,
+    "source": "default",
+    "__provenance": "Default retained (unused since JIT disabled)."
+  },
+  "replanning.enabled": {
+    "value": false,
+    "source": "meta-agent",
+    "__provenance": "Replanning disabled — task is fully specified with zero ambiguity. All files identified, all changes described. No divergence expected."
+  },
+  "replanning.max_cycles": {
+    "value": 1,
+    "source": "default",
+    "__provenance": "Default retained (unused since replanning disabled)."
+  },
+  "replanning.divergence_threshold": {
+    "value": 0.3,
+    "source": "default",
+    "__provenance": "Default retained (unused since replanning disabled)."
+  },
+  "replanning.trigger_classes": {
+    "value": ["PIVOTED"],
+    "source": "default",
+    "__provenance": "Default retained (unused since replanning disabled)."
+  },
+  "fast_track.enabled": {
+    "value": true,
+    "source": "meta-agent",
+    "__provenance": "Enabled — composite complexity 2, confidence 1.0, security APPROVED. Pure markdown plugin with no runtime risk. See .forge/fast_spec.json for details."
+  },
+  "meta_agent.confidence_threshold": {
+    "value": 0.7,
+    "source": "default",
+    "__provenance": "Default retained. Confidence is 1.0, well above threshold."
+  },
+  "routing.enabled": {
+    "value": false,
+    "source": "meta-agent",
+    "__provenance": "Routing disabled — no template match needed. Standard forge phases are appropriate for this well-specified bugfix."
+  },
+  "routing.confidence_threshold": {
+    "value": 0.85,
+    "source": "default",
+    "__provenance": "Default retained (unused since routing disabled)."
+  },
+  "routing.auto_select_template": {
+    "value": false,
+    "source": "default",
+    "__provenance": "Default retained."
+  },
+  "routing.default_template": {
+    "value": null,
+    "source": "default",
+    "__provenance": "No template — standard phases used."
+  },
+  "templates": {
+    "value": {},
+    "source": "default",
+    "__provenance": "No custom templates defined."
+  },
+  "verification.dimension_weights": {
+    "value": {
+      "security": 0.1,
+      "correctness": 0.4,
+      "spec_alignment": 0.3,
+      "robustness": 0.2
+    },
+    "source": "meta-agent",
+    "__provenance": "Adjusted from defaults: security weight reduced (0.3→0.1) because pure markdown has zero security surface. Correctness increased (0.3→0.4) because the core bugs must be fixed correctly. Spec alignment increased (0.2→0.3) because all three fixes have precise roadmap specs to match against."
+  },
+  "skip_phases": {
+    "value": [],
+    "source": "default",
+    "__provenance": "No phases skipped — all phases are useful even for this simple task."
+  },
+  "approval_gates": {
+    "value": [3, 4, 6],
+    "source": "default",
+    "__provenance": "Default gates retained: after brainstorm (3), after spec (4), after plan (6)."
+  },
+  "tdd.mutation_threshold": {
+    "value": 70,
+    "source": "default",
+    "__provenance": "Default retained. Mutation testing applies to the test grep fragility fix — removing any assertion target from scaffolder.md should cause test failure."
+  },
+  "review.triage_enabled": {
+    "value": false,
+    "source": "default",
+    "__provenance": "Default retained — no review triage needed for a simple patch."
+  },
+  "oracle.enabled": {
+    "value": true,
+    "source": "default",
+    "__provenance": "Default retained — oracle can validate the final state."
+  },
+  "_meta": {
+    "task_type": "bugfix",
+    "complexity": {
+      "scope": 2,
+      "ambiguity": 1,
+      "risk": 1,
+      "composite": 2
+    },
+    "confidence": 1.0,
+    "fast_track_eligible": true,
+    "routing_decision": "no_template",
+    "generated_by": "phase-0-meta-agent",
+    "generated_at": "2026-04-05"
+  }
+}

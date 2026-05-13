@@ -1,0 +1,20 @@
+{
+  "task": "T-39",
+  "title": "Reconciliation: test harness failures",
+  "phase": 7,
+  "wave": 3,
+  "status": "DONE",
+  "date": "2026-04-19",
+  "harness_start": { "pass": 155, "fail": 27, "total": 182 },
+  "harness_final": { "pass": 181, "fail": 1, "total": 182 },
+  "deferred": [
+    {
+      "test": "v6.9.0-version-bump",
+      "reason": "Requires T-41 (/ceos-agents:version-bump) — plugin.json/marketplace.json still at 6.8.1, git tag v6.9.0 not yet created"
+    }
+  ],
+  "fix_test_count": 16,
+  "fix_impl_count": 14,
+  "deferred_count": 1,
+  "notes": "All 26 real failures resolved. Primary root causes: (1) Windows Git-Bash treats strings starting with '--' or '---' as grep flags — fixed by adding '--' separator to all affected grep calls; (2) jq not available on Windows — replaced with Python json module throughout; (3) awk range patterns included header lines — fixed with {found=1; next} idiom; (4) webhook-proto-coverage parity check counted prose mentions of 'curl' not actual command invocations — fixed with anchored grep pattern."
+}

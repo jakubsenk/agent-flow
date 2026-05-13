@@ -1,0 +1,3 @@
+[2026-04-16T07:00:00Z] FORGE_START input="v6.7.2 — Pipeline Consistency & Dedup (4 work items: tracker-subtask extraction, webhook alignment, block handler inline removal, LOW doc fixes)" config=defaults
+[2026-04-16T07:00:01Z] PHASE_START phase=0 name=Meta-Agent
+[2026-04-16T07:00:30Z] FORGE_END status=aborted_by_system reason="orchestrator_primitive_unavailable: no Task/Agent dispatch tool, no AskUserQuestion tool; cannot honor ZFC or hardcoded Phase 6 approval gate"

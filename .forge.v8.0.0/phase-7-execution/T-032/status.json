@@ -1,0 +1,10 @@
+{
+  "task_id": "T-032",
+  "status": "DONE",
+  "files_moved": 12,
+  "source": ".forge/phase-5-tdd/tests-hidden/v8-hidden-*.sh",
+  "destination": "tests/scenarios-hidden/v8-hidden-*.sh",
+  "method": "cp (source preserved)",
+  "permissions": "chmod +x applied",
+  "concerns": "None — syntax check passed on v8-hidden-toml-malformed-recovery.sh"
+}

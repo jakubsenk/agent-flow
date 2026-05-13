@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.5.0",
+  "id": "forge-2026-04-18-001",
+  "plugin_version": "0.9.18",
+  "input": "ceos-agents v6.8.1 — Post-v6.8.0 follow-ups. Six small items from roadmap.md 'PLANNED — v6.8.1' section: (1) examples/config-templates/* add Autopilot table row per template; (2) issue_id regex gate for path-traversal defense in log file path construction; (3) JSON-encode payload field interpolation documentation for webhook events; (4) Lock-timeout text alignment — reconcile 120 vs 125min buffer wording in docs/code; (5) Fixer-reviewer crash-recovery regression test in tests/harness; (6) Test harness exit-code propagation — fail propagation to CI. Pure-markdown plugin, no breaking Automation Config changes, tests via ./tests/harness/run-tests.sh, changelog + version bump via /ceos-agents:version-bump. Target: PATCH release (6.8.0 -> 6.8.1).",
+  "status": "completed",
+  "current_phase": 9,
+  "phases": {
+    "0": { "status": "completed", "started_at": "2026-04-18T21:03:30Z", "completed_at": "2026-04-18T21:16:20Z", "duration_ms": 764667, "tokens_estimated": 119516 },
+    "1": { "status": "completed", "started_at": "2026-04-18T21:16:25Z", "completed_at": "2026-04-18T21:28:45Z", "duration_ms": 740000, "tokens_estimated": 251252 },
+    "2": { "status": "completed", "started_at": "2026-04-18T21:28:48Z", "completed_at": "2026-04-18T21:45:10Z", "duration_ms": 982000, "tokens_estimated": 262500 },
+    "4": { "status": "completed", "started_at": "2026-04-18T21:45:18Z", "completed_at": "2026-04-19T00:22:00Z", "duration_ms": 1268650, "tokens_estimated": 477650 },
+    "5": { "status": "completed", "started_at": "2026-04-19T00:25:05Z", "completed_at": "2026-04-19T00:32:00Z", "duration_ms": 415000, "tokens_estimated": 96968 },
+    "6": { "status": "completed", "started_at": "2026-04-19T00:32:05Z", "completed_at": "2026-04-19T00:40:00Z", "duration_ms": 475000, "tokens_estimated": 166604 },
+    "7": { "status": "completed", "started_at": "2026-04-19T00:42:05Z", "completed_at": "2026-04-19T01:30:00Z", "duration_ms": 2875000, "tokens_estimated": 583000, "tasks_executed": 17, "commits": 2, "tag": "v6.8.1" },
+    "8": { "status": "completed", "started_at": "2026-04-19T01:30:05Z", "completed_at": "2026-04-19T02:35:00Z", "duration_ms": 3895000, "tokens_estimated": 382561, "verdict": "FULL_PASS", "aggregate": 0.907, "revision_cycles": 0 },
+    "9": { "status": "completed", "started_at": "2026-04-19T02:35:05Z", "completed_at": "2026-04-19T02:40:00Z", "duration_ms": 295000, "tokens_estimated": 10000 },
+    "3": { "status": "skipped_by_user", "skip_rationale": "Routing phase_subset from routing-decision.json — PATCH with fully-enumerated items, no architectural direction-setting needed.", "skipped_at": "2026-04-18T21:16:22Z" }
+  },
+  "config": {
+    "pipeline_mode": { "value": "adaptive", "source": "default" },
+    "jit.enabled": { "value": true, "source": "meta-agent" },
+    "jit.timeout": { "value": 120, "source": "default" },
+    "jit.fallback_timeout": { "value": 60, "source": "default" },
+    "jit.max_consecutive_fallbacks": { "value": 2, "source": "default" },
+    "replanning.enabled": { "value": true, "source": "default" },
+    "replanning.max_cycles": { "value": 1, "source": "meta-agent" },
+    "replanning.divergence_threshold": { "value": 0.3, "source": "meta-agent" },
+    "replanning.trigger_classes": { "value": ["PIVOTED"], "source": "default" },
+    "fast_track.enabled": { "value": false, "source": "meta-agent" },
+    "meta_agent.confidence_threshold": { "value": 0.7, "source": "default" },
+    "routing.enabled": { "value": true, "source": "meta-agent" },
+    "routing.confidence_threshold": { "value": 0.85, "source": "default" },
+    "routing.auto_select_template": { "value": false, "source": "default" },
+    "routing.default_template": { "value": null, "source": "default" },
+    "templates": { "value": {}, "source": "default" },
+    "verification.dimension_weights": { "value": { "security": 0.25, "correctness": 0.40, "spec_alignment": 0.20, "robustness": 0.15 }, "source": "meta-agent" },
+    "skip_phases": { "value": [3], "source": "meta-agent" },
+    "approval_gates": { "value": [4, 6], "source": "meta-agent" },
+    "tdd.mutation_threshold": { "value": 70, "source": "default" },
+    "review.triage_enabled": { "value": false, "source": "default" },
+    "oracle.enabled": { "value": true, "source": "default" }
+  },
+  "metrics": {
+    "total_tokens_estimated": 1374490,
+    "total_duration_ms": 4645317,
+    "review_rounds_used": 0,
+    "escalations_to_human": 0,
+    "verification_scores": {
+      "dimensions": {
+        "security": {"score": 0.92, "weight": 0.25},
+        "correctness": {"score": 0.93, "weight": 0.40},
+        "spec_alignment": {"score": 0.94, "weight": 0.20},
+        "robustness": {"score": 0.78, "weight": 0.15}
+      },
+      "aggregate": 0.907,
+      "commander_reported_aggregate": 0.907,
+      "recomputed_aggregate": 0.907,
+      "arithmetic_verified": true,
+      "arithmetic_correction_delta": 0.0,
+      "scoring_method": "weighted_sum"
+    },
+    "verification_score_history": {
+      "0": {
+        "aggregate": 0.907,
+        "commander_reported_aggregate": 0.907,
+        "recomputed_aggregate": 0.907,
+        "verdict": "FULL_PASS",
+        "failed_dimensions": [],
+        "dimensions": {
+          "security": {"score": 0.92, "weight": 0.25},
+          "correctness": {"score": 0.93, "weight": 0.40},
+          "spec_alignment": {"score": 0.94, "weight": 0.20},
+          "robustness": {"score": 0.78, "weight": 0.15}
+        },
+        "arithmetic_verified": true,
+        "arithmetic_correction_delta": 0.0,
+        "completed_at": "2026-04-19T02:35:00Z"
+      }
+    }
+  },
+  "fast_track": false,
+  "fast_track_decision": {
+    "complexity": 3,
+    "confidence": 0.95,
+    "activated_at": null,
+    "skip_rationale": "Composite complexity 3 exceeds <=2 threshold; fast-track ineligible."
+  },
+  "phase_8_revision": null,
+  "replanning_state": null,
+  "abort_reason": null,
+  "aborted_at": null,
+  "explicit_invocation": true,
+  "redirect_decision": null,
+  "template_decision": null,
+  "task_type_skip_profile": {
+    "task_type": "bugfix",
+    "skip_phases": [3],
+    "active_phases": [0, 1, 2, 4, 5, 6, 7, 8, 9],
+    "reason": "PATCH release with six enumerated, unambiguous items — no architectural direction-setting required, so Phase 3 Brainstorming is skipped. Research/Spec/TDD/Plan/Execute/Verify/Complete remain active."
+  },
+  "skip_confirmation_decision": null,
+  "post_skip_validation_result": null
+}

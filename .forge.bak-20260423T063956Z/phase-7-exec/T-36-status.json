@@ -1,0 +1,21 @@
+{
+  "task_id": "T-36",
+  "status": "DONE",
+  "files_modified": ["README.md"],
+  "files_audited": [
+    "CLAUDE.md",
+    "README.md",
+    "docs/reference/skills.md",
+    "docs/reference/automation-config.md",
+    "docs/reference/agents.md",
+    "docs/architecture.md",
+    "docs/guides/installation.md",
+    "docs/guides/autopilot.md",
+    "docs/plans/roadmap.md",
+    "CONTRIBUTING.md"
+  ],
+  "revision_cycle": null,
+  "concerns": [],
+  "test_results": "AC-064/064a: full-repo count audit FIXED_IN_PLACE / 2 stale README.md mentions fixed (28→29 skills at lines 3 and 10)",
+  "completed_at": "2026-04-20T00:00:00Z"
+}

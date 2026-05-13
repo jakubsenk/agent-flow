@@ -1,0 +1,8 @@
+{
+  "gate": 3,
+  "phase": 6,
+  "decision": "approved",
+  "decided_at": "2026-04-18T00:55:00Z",
+  "mandatory": true,
+  "user_notes": "Plan approved without modification. 24 tasks, 6 waves, 71% parallelizable."
+}

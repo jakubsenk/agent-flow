@@ -1,0 +1,104 @@
+{
+  "pipeline_mode": {
+    "value": "adaptive",
+    "source": "default",
+    "meta_agent_note": "Standard adaptive pipeline — cross-cutting feature benefits from all phases"
+  },
+  "jit.enabled": {
+    "value": false,
+    "source": "meta_agent",
+    "meta_agent_note": "JIT disabled — all target files are well-identified, no need for dynamic tool loading"
+  },
+  "jit.timeout": {
+    "value": 120,
+    "source": "default"
+  },
+  "jit.fallback_timeout": {
+    "value": 60,
+    "source": "default"
+  },
+  "jit.max_consecutive_fallbacks": {
+    "value": 2,
+    "source": "default"
+  },
+  "replanning.enabled": {
+    "value": false,
+    "source": "meta_agent",
+    "meta_agent_note": "Replanning disabled — task is well-specified with 6 explicit items, low ambiguity. Reference implementation exists. Divergence unlikely."
+  },
+  "replanning.max_cycles": {
+    "value": 1,
+    "source": "default"
+  },
+  "replanning.divergence_threshold": {
+    "value": 0.3,
+    "source": "default"
+  },
+  "replanning.trigger_classes": {
+    "value": ["PIVOTED"],
+    "source": "default"
+  },
+  "fast_track.enabled": {
+    "value": false,
+    "source": "meta_agent",
+    "meta_agent_note": "Not fast-tracked despite high confidence (0.94) — cross-cutting nature (3 skills + docs + schema + config) benefits from structured phases for consistency verification"
+  },
+  "meta_agent.confidence_threshold": {
+    "value": 0.7,
+    "source": "default"
+  },
+  "routing.enabled": {
+    "value": false,
+    "source": "meta_agent",
+    "meta_agent_note": "No template routing — custom task, unique to this codebase"
+  },
+  "routing.confidence_threshold": {
+    "value": 0.85,
+    "source": "default"
+  },
+  "routing.auto_select_template": {
+    "value": false,
+    "source": "default"
+  },
+  "routing.default_template": {
+    "value": null,
+    "source": "default"
+  },
+  "templates": {
+    "value": {},
+    "source": "default"
+  },
+  "verification.dimension_weights": {
+    "value": {
+      "security": 0.1,
+      "correctness": 0.35,
+      "spec_alignment": 0.25,
+      "robustness": 0.3
+    },
+    "source": "meta_agent",
+    "meta_agent_note": "Security weight reduced from 0.3 to 0.1 (pure markdown plugin, no runtime code, no credentials). Correctness and robustness weights increased — cross-skill consistency is the primary risk. Spec alignment increased — 6 explicit user requirements must all be met."
+  },
+  "skip_phases": {
+    "value": [],
+    "source": "meta_agent",
+    "meta_agent_note": "No phases skipped — all phases valuable for this cross-cutting change"
+  },
+  "approval_gates": {
+    "value": [3, 4, 6],
+    "source": "default",
+    "meta_agent_note": "Standard gates at spec (3), TDD (4), and plan (6)"
+  },
+  "tdd.mutation_threshold": {
+    "value": 70,
+    "source": "default",
+    "meta_agent_note": "Default threshold — tests are structural grep-based checks on markdown files"
+  },
+  "review.triage_enabled": {
+    "value": false,
+    "source": "default"
+  },
+  "oracle.enabled": {
+    "value": true,
+    "source": "default"
+  }
+}

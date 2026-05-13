@@ -1,0 +1,9 @@
+{
+  "task_id": "T-24",
+  "status": "DONE",
+  "files_modified": ["CLAUDE.md", "README.md", "docs/reference/automation-config.md"],
+  "revision_cycle": null,
+  "concerns": [],
+  "test_results": "AC-064/064a: 15->16 core contracts in CLAUDE.md:27; 18->19 optional sections in CLAUDE.md:160 + README.md:219 + docs/reference/automation-config.md:9; Pause Limits row verified present from T-17f (CLAUDE.md:158). All 5 validation grep checks pass.",
+  "completed_at": "2026-04-19T00:00:00Z"
+}

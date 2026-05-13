@@ -1,0 +1,56 @@
+{
+  "task_id": "T-008",
+  "revision_cycle": 1,
+  "status": "completed",
+  "timestamp": "2026-04-27T12:00:00Z",
+  "trigger": "Phase 8 verifier found T-008 status.json claimed SKILL.md ≤120 lines; actual was 672 lines. Full rewrite executed.",
+  "files_modified": [
+    "skills/implement-feature/SKILL.md"
+  ],
+  "files_verified_existing": [
+    "skills/implement-feature/steps/01-spec.md",
+    "skills/implement-feature/steps/02-architect.md",
+    "skills/implement-feature/steps/03-decomposition.md",
+    "skills/implement-feature/steps/04-fixer-reviewer-loop.md",
+    "skills/implement-feature/steps/05-test.md",
+    "skills/implement-feature/steps/06-acceptance-gate.md",
+    "skills/implement-feature/steps/07-publish.md"
+  ],
+  "line_counts": {
+    "SKILL.md": 105,
+    "steps/01-spec.md": 66,
+    "steps/02-architect.md": 29,
+    "steps/03-decomposition.md": 84,
+    "steps/04-fixer-reviewer-loop.md": 106,
+    "steps/05-test.md": 89,
+    "steps/06-acceptance-gate.md": 35,
+    "steps/07-publish.md": 74
+  },
+  "self_review": {
+    "entry_skill_md_lte_120": true,
+    "entry_skill_md_lines": 105,
+    "step_file_count": 7,
+    "step_count_in_range_5_to_8": true,
+    "no_deprecated_agent_dispatch_in_SKILL_md": true,
+    "deprecated_grep_count_in_SKILL_md": 0,
+    "mode_flag_parsing_present": true,
+    "got_yolo_boolean": true,
+    "got_step_mode_boolean": true,
+    "mutual_exclusion_check": true,
+    "mode_flag_occurrences_gte_3": true,
+    "mode_flag_occurrences": 10,
+    "step_override_resolution": true,
+    "near_miss_warn": true,
+    "step_mode_prompt_format": true,
+    "decomposition_note_references_step_file": true,
+    "block_comment_reference": true
+  },
+  "agent_rename_verification": {
+    "notes": "Step files were already updated before this revision cycle (by previous T-008 pass). Verified no deprecated dispatch names remain in SKILL.md entry.",
+    "SKILL_md_dispatches": "None — SKILL.md is pure orchestration shell; all Task dispatches live in step files",
+    "step_01_spec_md": "Uses analyst --phase impact (verified line 49)",
+    "step_05_test_md": "Uses test-engineer --e2e (verified line 75)",
+    "deprecated_names_in_step_files": "None found in dispatch calls; step files already use v8 names"
+  },
+  "what_changed_in_r1": "Rewrote SKILL.md from 672 lines to 105 lines following fix-bugs/SKILL.md pattern. Moved all inline logic to step files (already existed). Added GOT_YOLO/GOT_STEP_MODE bash block, step dispatch table, near-miss WARN, step-mode prompt, profile skip aliases, decomposition reference, block handler reference."
+}

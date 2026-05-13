@@ -1,0 +1,128 @@
+{
+  "task_id": "T-autopilot-key-fix",
+  "files_modified": [
+    "CLAUDE.md",
+    "core/config-reader.md",
+    "docs/reference/config.md",
+    "skills/autopilot/SKILL.md",
+    "docs/guides/autopilot.md"
+  ],
+  "roadmap_canonical_keys_applied": [
+    "Max issues per run",
+    "Lock timeout",
+    "Log file",
+    "Bug limit",
+    "Feature limit",
+    "On error",
+    "Dry run"
+  ],
+  "harness_before": "117/140 pass",
+  "harness_after": "122/140 pass",
+  "autopilot_key_tests_now_passing": [
+    "ac-v68-autopilot-config-keys",
+    "ac-v68-autopilot-config-reader-keys",
+    "ac-v68-autopilot-dry-run-shortcircuit",
+    "ac-v68-autopilot-on-error-stop",
+    "autopilot-dry-run",
+    "ac-v68-autopilot-feature-limit-warn (was already passing)",
+    "ac-v68-autopilot-stale-lock-120min (was already passing)",
+    "autopilot-feature-limit-no-query (was already passing)"
+  ],
+  "remaining_failures": [
+    {
+      "test": "ac-v68-autopilot-info-hostname",
+      "classification": "environment-bug",
+      "reason": "grep -iF crashes (SIGABRT/core dump) on Windows Git Bash for ALL files and patterns — not fixable by content changes. File content has 6 occurrences of 'disjoint'/'DISJOINT' which case-sensitive grep finds fine."
+    },
+    {
+      "test": "ac-v68-cost-metrics-dual-mode",
+      "classification": "implementation-drift",
+      "reason": "Real-Time Cost Visibility feature not yet implemented in pipeline skills"
+    },
+    {
+      "test": "ac-v68-cost-task-tool-usage-field-discovery",
+      "classification": "implementation-drift",
+      "reason": "Real-Time Cost Visibility feature not yet implemented"
+    },
+    {
+      "test": "cost-summary-truncation",
+      "classification": "implementation-drift",
+      "reason": "Real-Time Cost Visibility feature not yet implemented"
+    },
+    {
+      "test": "cost-usage-null-defensive",
+      "classification": "implementation-drift",
+      "reason": "Real-Time Cost Visibility feature not yet implemented"
+    },
+    {
+      "test": "metrics-dual-mode",
+      "classification": "implementation-drift",
+      "reason": "Metrics dual-mode feature not yet implemented"
+    },
+    {
+      "test": "ac-v68-doc-changelog-entry",
+      "classification": "implementation-drift",
+      "reason": "v6.8.0 changelog entry not yet written"
+    },
+    {
+      "test": "ac-v68-doc-optional-sections-18",
+      "classification": "implementation-drift",
+      "reason": "Optional section count in docs not yet updated to 18"
+    },
+    {
+      "test": "ac-v68-doc-skill-count-29",
+      "classification": "implementation-drift",
+      "reason": "Skill count not yet bumped to 29 in CLAUDE.md and docs/reference/skills.md"
+    },
+    {
+      "test": "ac-v68-doc-version-6.8.0",
+      "classification": "implementation-drift",
+      "reason": "Version not yet bumped to 6.8.0"
+    },
+    {
+      "test": "ac-v68-webhook-advisory-failure",
+      "classification": "implementation-drift",
+      "reason": "Webhook advisory failure handling not yet implemented in core"
+    },
+    {
+      "test": "ac-v68-webhook-no-per-iteration",
+      "classification": "implementation-drift",
+      "reason": "Webhook per-iteration suppression not yet documented in core files"
+    },
+    {
+      "test": "ac-v68-webhook-no-step-skipped",
+      "classification": "implementation-drift",
+      "reason": "Webhook step-skipped suppression not yet implemented"
+    },
+    {
+      "test": "webhook-no-step-skipped",
+      "classification": "implementation-drift",
+      "reason": "Same as above — existing test also fails"
+    },
+    {
+      "test": "ac-v68-webhook-post-publish-hook-section4",
+      "classification": "implementation-drift",
+      "reason": "Post-publish hook Section 4 webhook documentation not yet updated"
+    },
+    {
+      "test": "ac2-fixbugs-contributor-note",
+      "classification": "implementation-drift",
+      "reason": "Contributor note not yet added to fix-bugs skill"
+    },
+    {
+      "test": "regression-no-breaking-config-changes",
+      "classification": "test-bug-or-implementation-drift",
+      "reason": "Autopilot key rename from old names (Bug query, Stop on error, Lock file) to canonical names (On error, Bug limit, etc.) may be detected as breaking by this regression test — needs investigation"
+    },
+    {
+      "test": "sprint-counts",
+      "classification": "implementation-drift",
+      "reason": "Sprint-related counts not yet updated"
+    }
+  ],
+  "semantic_ambiguities_resolved": {
+    "Bug_limit_0_and_Feature_limit_0": "0 means no per-type cap — only Max issues per run (total cap) applies. This is consistent with roadmap line 634 which lists 'Bug limit (0), Feature limit (0)' without specifying 'disabled'. The total cap (Max issues per run, default 1) serves as the only limiting mechanism when per-type limits are 0.",
+    "Bug_query_and_Feature_query_ownership": "These keys are NOT in the Autopilot section. Bug query lives in Issue Tracker (required). Feature query lives in Feature Workflow (optional). Autopilot only reads them — it does not define them.",
+    "Lock_vs_Log_distinction": "Lock directory is .ceos-agents/autopilot.lock/ (mkdir-based, separate from Log file). Log file is .ceos-agents/autopilot.log (append-only text log). These are different artifacts."
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "task_id": "PHASE_7_REVISION_CYCLE_1",
+  "status": "DONE",
+  "revision_cycle": 1,
+  "files_modified": [
+    "state/schema.md",
+    "skills/fix-ticket/SKILL.md",
+    "skills/fix-bugs/SKILL.md",
+    "skills/implement-feature/SKILL.md",
+    "skills/scaffold/SKILL.md",
+    "skills/resume-ticket/SKILL.md",
+    "core/post-publish-hook.md",
+    "core/agent-states.md"
+  ],
+  "files_created": [
+    "tests/scenarios/v6.9.0-needs-clarification-e2e.sh"
+  ],
+  "bugs_fixed": [
+    {
+      "id": "CRITICAL-1",
+      "name": "clarification.asked_at field never written",
+      "fix": "Added asked_at: $asked_at to all 6 jq write sites; added ASKED_AT=$(date -u +%FT%TZ) before each. Documented field in state/schema.md clarification table."
+    },
+    {
+      "id": "CRITICAL-2",
+      "name": "Question: vs ^question: case mismatch",
+      "fix": "Replaced 6 grep -A1 sites with grep -iE -A1; replaced sed 's/^question: //' with sed -E 's/^[Qq]uestion: //'. Same for context."
+    },
+    {
+      "id": "HIGH-3",
+      "name": ".iteration field path wrong",
+      "fix": "Replaced 6 jq -r '.iteration // 0' reads with jq -r '.fixer_reviewer.iterations // 0'."
+    },
+    {
+      "id": "HIGH-4",
+      "name": "clarifications_consumed double-increment",
+      "fix": "Rewrote skills/resume-ticket/SKILL.md Step 4 to explicitly forbid incrementing clarifications_consumed; orchestrator-only increment is the side of truth. Updated state/schema.md to document this contract."
+    },
+    {
+      "id": "HIGH-5",
+      "name": "pipeline-paused webhook not wired into orchestrators",
+      "fix": "Inlined the curl/jq pipeline-paused webhook firing block at all 6 orchestrator NEEDS_CLARIFICATION detection sites, gated on Webhook URL configured AND pipeline-paused in On events. Updated core/agent-states.md to document the variable provenance for each site."
+    },
+    {
+      "id": "MEDIUM-6",
+      "name": "sanitize_block_reason() pattern gaps",
+      "fix": "Added 3 new POSIX-portable sed patterns: lowercase env-var (REDACTED-LOWER-VAR), JSON-style credential field (REDACTED-JSON-FIELD), PGP/SSH END line (REDACTED-PRIVATE-KEY-END). Pattern count 14 -> 17. Multi-line body limitation explicitly documented."
+    },
+    {
+      "id": "MEDIUM-7",
+      "name": "pipeline-history.md awk truncation by line not section",
+      "fix": "Replaced line-counter awk pattern with section-count-aware awk: count total H2 sections, compute cutoff = total - 50, use 'section_num > cutoff' gate. Atomic .tmp + mv preserved."
+    },
+    {
+      "id": "MEDIUM-8",
+      "name": "no functional end-to-end test for NEEDS_CLARIFICATION",
+      "fix": "Added tests/scenarios/v6.9.0-needs-clarification-e2e.sh covering all 8 cycle-1 bugs with both doc-presence checks AND functional tests (sed/awk-based; jq-functional tests gracefully degrade when jq absent)."
+    }
+  ],
+  "concerns": [],
+  "test_results": "Harness: 183/183 PASS (was 182/182 baseline; +1 new e2e scenario). All 8 bug-fix verifications confirmed via direct grep on impl: 6 asked_at writes / 6 fixer_reviewer.iterations reads / 6 case-insensitive question greps / 6 pipeline-paused webhook event references / resume-ticket clarifications_consumed increment removed (only the negative comment remains).",
+  "completed_at": "2026-04-20T11:02:00Z"
+}

@@ -1,0 +1,15 @@
+{
+  "name": "ceos-agents",
+  "owner": {
+    "name": "Filip Sabacky"
+  },
+  "plugins": [
+    {
+      "name": "ceos-agents",
+      "source": "./",
+      "description": "CEOS CLAUDE Agents — development automation: bug-fix, feature pipeline, scaffold, decomposition, dashboard",
+      "version": "10.2.0",
+      "license": "MIT"
+    }
+  ]
+}

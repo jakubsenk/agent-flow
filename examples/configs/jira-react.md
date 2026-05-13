@@ -1,0 +1,75 @@
+# React + Jira — Automation Config Template
+
+> Copy the section below into your project's CLAUDE.md
+
+## Automation Config
+
+> **Migration note (v7 → v8):** v8.0.0 introduces per-agent TOML overlay files in
+> `customization/` (e.g., `customization/*.toml`) for fine-grained customization without forking the plugin. See
+> `docs/guides/toml-overlay-syntax.md` and example overlays in `examples/customization/`.
+> Agent names have also changed: `triage-analyst`/`code-analyst` → `analyst`;
+> `e2e-test-engineer` → `test-engineer --e2e`; `reproducer`/`browser-verifier` →
+> `browser-agent`. Update any Pipeline Profiles `Skip stages` values accordingly.
+> For migration guidance, see `docs/guides/migration-v7-to-v8.md` (the `/migrate-config` skill that previously automated this was removed in v9.5.0).
+
+### Issue Tracker
+| Key | Value |
+|------|---------|
+| Type | jira |
+| Instance | `<org>.atlassian.net` |
+| Project | `<PROJECT_KEY>` |
+| Bug query | `project = <PROJECT_KEY> AND status = Open AND type = Bug` |
+| State transitions | In Progress: `transition:In Progress`, Blocked: `transition:Blocked`, For Review: `transition:In Review`, Done: `transition:Done` |
+| On start set | `transition:In Progress` |
+
+### Source Control
+| Key | Value |
+|------|---------|
+| Remote | `github.com/<owner/repo>` |
+| Base branch | `main` |
+| Branch naming | `fix/{issue}-{short-description}` |
+
+### PR Rules
+| Key | Value |
+|------|---------|
+| Labels | `ForReview` |
+
+### PR Description Template
+
+## Summary
+{summary}
+
+## Changes
+{changes}
+
+## Testing
+{testing}
+
+Fixes {issue_key}
+
+### Build & Test
+| Key | Value |
+|------|---------|
+| Build command | `npm run build` |
+| Test command | `npm test` |
+
+> **Uncomment and customize optional sections as needed.**
+
+<!--
+### Autopilot (optional)
+| Key | Value |
+|-----|-------|
+| Max issues per run | 1 |
+| Lock timeout | 120 |
+| Log file | .ceos-agents/autopilot.log |
+| Bug limit | 0 |
+| Feature limit | 0 |
+| On error | skip |
+| Dry run | false |
+
+### Pause Limits (optional, v6.9.0+)
+| Key | Value |
+|-----|-------|
+| Pause timeout | 30 days |
+-->
+

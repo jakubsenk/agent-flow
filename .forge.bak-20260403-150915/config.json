@@ -1,0 +1,73 @@
+{
+  "pipeline_mode": {
+    "value": "adaptive",
+    "source": "default",
+    "reasoning": "No CLI flags or project config overrides. Adaptive mode allows phases to be skipped or reordered based on research findings."
+  },
+  "jit": {
+    "enabled": {
+      "value": null,
+      "source": "default",
+      "reasoning": "JIT not configured. All phases run sequentially."
+    }
+  },
+  "skip_phases": {
+    "value": [],
+    "source": "default",
+    "reasoning": "High ambiguity (4/5) requires all phases including research and brainstorm."
+  },
+  "approval_gates": {
+    "value": [3, 4, 6],
+    "source": "default",
+    "reasoning": "Gates after brainstorm (phase 3), spec (phase 4), and plan (phase 6). Research (phase 1) flows directly into brainstorm. TDD (phase 5) flows directly into plan."
+  },
+  "task_type": {
+    "value": "feature",
+    "source": "phase-0-analysis",
+    "reasoning": "Adding new capability (design awareness) to existing scaffold pipeline. Not a bug fix or refactor."
+  },
+  "complexity": {
+    "value": "medium-high",
+    "source": "phase-0-analysis",
+    "reasoning": "Touches 3-5 agent definitions + 1 skill + tests + docs. Design decisions affect plugin architecture. No runtime code."
+  },
+  "ambiguity": {
+    "value": 4,
+    "source": "phase-0-analysis",
+    "reasoning": "5 viable approaches, no clear winner before research. High ambiguity requires full research -> brainstorm -> spec pipeline."
+  },
+  "confidence": {
+    "value": 0.3,
+    "source": "phase-0-analysis",
+    "reasoning": "Cannot commit to an approach before research phase determines which option(s) to pursue."
+  },
+  "version_impact": {
+    "value": "MINOR",
+    "source": "phase-0-analysis",
+    "reasoning": "New optional feature (design awareness). No new required config keys. New optional agent or agent extensions are backward-compatible. Per versioning policy: new backward-compatible feature = MINOR."
+  },
+  "affected_files": {
+    "value": [
+      "agents/scaffolder.md",
+      "agents/spec-writer.md",
+      "agents/stack-selector.md",
+      "agents/spec-reviewer.md",
+      "skills/scaffold/SKILL.md",
+      "CLAUDE.md",
+      "tests/scenarios/scaffold-design-*.sh"
+    ],
+    "source": "phase-0-analysis",
+    "reasoning": "Core agent and skill files that need design awareness. Exact list may change based on brainstorm outcome (e.g., new agent file if Option 1 chosen)."
+  },
+  "phase_outputs": {
+    "phase_0": ".forge/phase-0-meta/",
+    "phase_1": ".forge/phase-1-research/report.md",
+    "phase_3": ".forge/phase-3-brainstorm/brainstorm.md",
+    "phase_4": ".forge/phase-4-spec/",
+    "phase_5": ".forge/phase-5-tdd/",
+    "phase_6": ".forge/phase-6-plan/plan.md",
+    "phase_7": ".forge/phase-7-execute/execution-log.md",
+    "phase_8": ".forge/phase-8-verify/report.md",
+    "phase_9": ".forge/phase-9-completion/report.md"
+  }
+}

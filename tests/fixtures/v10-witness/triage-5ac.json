@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "stages": {
+    "triage": {
+      "agent_name": "analyst",
+      "stage_name": "triage",
+      "model": "sonnet",
+      "severity": "M",
+      "area": "core/lib",
+      "complexity": "M",
+      "acceptance_criteria": [
+        "AC-1: First criterion line",
+        "AC-2: Second criterion line",
+        "AC-3: Third criterion line",
+        "AC-4: Fourth criterion line",
+        "AC-5: Fifth criterion line"
+      ],
+      "reproduction_steps": [
+        "Step 1: do thing",
+        "Step 2: do other thing"
+      ],
+      "dispatch_witness": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "completed_at": "2026-05-13T00:00:00Z"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "tasks": {
+    "task-001": { "status": "completed", "file": "skills/fix-ticket/SKILL.md", "description": "Fix step 4b decomposition decision persistence" },
+    "task-002": { "status": "completed", "file": "skills/fix-ticket/SKILL.md", "description": "Fix step 4c subtask commit persistence" },
+    "task-003": { "status": "completed", "file": "skills/fix-bugs/SKILL.md", "description": "Fix step 3b decomposition decision persistence" },
+    "task-004": { "status": "completed", "file": "skills/fix-bugs/SKILL.md", "description": "Fix step 3c subtask commit persistence" },
+    "task-005": { "status": "completed", "file": "state/schema.md", "description": "Document subtask object fields" },
+    "task-006": { "status": "completed", "file": ".claude-plugin/plugin.json, .claude-plugin/marketplace.json", "description": "Version bump 6.1.8 → 6.1.9" },
+    "task-007": { "status": "completed", "file": "CHANGELOG.md", "description": "Add v6.1.9 changelog entry" },
+    "task-008": { "status": "completed", "file": "docs/plans/roadmap.md", "description": "Move roadmap item to DONE" }
+  },
+  "test_results": {
+    "total": 41,
+    "pass": 41,
+    "fail": 0,
+    "skip": 0
+  }
+}

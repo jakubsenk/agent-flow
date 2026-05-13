@@ -1,0 +1,9 @@
+{
+  "task_type": "refactor",
+  "secondary_types": ["docs"],
+  "action": "execute",
+  "target_skill": null,
+  "confidence": 1.0,
+  "reasoning": "Internal refactor and doc fix release. Four well-specified work items: extract shared contract, align webhook format, remove inline duplication, fix documentation. All files identified, all patterns confirmed by reading source. No Automation Config contract changes. PATCH version. Standard pipeline — composite complexity 3 exceeds fast-track threshold.",
+  "skip_profile": []
+}

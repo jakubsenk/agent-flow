@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "codegraph": {
+      "type": "http",
+      "url": "<codegraph_url>",
+      "headers": {
+        "Authorization": "Bearer <token>"
+      }
+    }
+  }
+}

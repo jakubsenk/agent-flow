@@ -1,0 +1,9 @@
+{
+  "task_id": "T-22",
+  "status": "DONE",
+  "files_modified": ["skills/autopilot/SKILL.md", "docs/guides/autopilot.md"],
+  "revision_cycle": null,
+  "concerns": [],
+  "test_results": "AC-038: multi-host defer note in autopilot SKILL + Multi-Host Coordination subsection in autopilot guide",
+  "completed_at": "2026-04-20T12:45:30Z"
+}

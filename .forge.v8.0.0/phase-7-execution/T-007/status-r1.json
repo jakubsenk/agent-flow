@@ -1,0 +1,26 @@
+{
+  "task": "T-007",
+  "revision_cycle": 1,
+  "status": "DONE",
+  "entry_skill_line_count": 95,
+  "entry_skill_within_limit": true,
+  "step_files_count": 7,
+  "step_files": [
+    "skills/fix-bugs/steps/01-triage.md",
+    "skills/fix-bugs/steps/02-impact.md",
+    "skills/fix-bugs/steps/03-reproduce.md",
+    "skills/fix-bugs/steps/04-fixer-reviewer-loop.md",
+    "skills/fix-bugs/steps/05-test.md",
+    "skills/fix-bugs/steps/06-acceptance-gate.md",
+    "skills/fix-bugs/steps/07-publish.md"
+  ],
+  "checks": {
+    "line_count_le_120": true,
+    "step_files_5_to_8": true,
+    "deprecated_dispatch_calls_zero": true,
+    "GOT_YOLO_present": true,
+    "GOT_STEP_MODE_present": true,
+    "step_mode_flag_present": true
+  },
+  "notes": "Deprecated names appear ONLY in stage-skip alias documentation (v7->v8 mapping comment), NOT in any Task() dispatch call. This is intentional — operators using v7 profile names need the mapping table. All actual dispatch calls use new names: analyst --phase triage, analyst --phase impact, browser-agent --phase reproduce, browser-agent --phase verify, test-engineer --e2e."
+}

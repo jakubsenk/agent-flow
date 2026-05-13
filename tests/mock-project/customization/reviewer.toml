@@ -1,0 +1,5 @@
+# v8.0.0 TOML overlay for reviewer agent
+# Used as fixture by v8-overlay-*.sh tests
+
+[extra_instructions]
+text = "Always check for SQL injection in all database queries."

@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.5.0",
+  "task_type": "research",
+  "generated_by": "phase-0-meta-agent",
+  "generated_at": "2026-04-10T12:00:00.000Z",
+  "config": {
+    "pipeline_mode": {
+      "value": "adaptive",
+      "source": "default",
+      "provenance": "Level 1 default — zadna project-specific konfigurace"
+    },
+    "jit.enabled": {
+      "value": false,
+      "source": "routing-decision",
+      "provenance": "Research uloha nepotrebuje JIT — vsechny faze jsou preddefinovane"
+    },
+    "replanning.enabled": {
+      "value": false,
+      "source": "routing-decision",
+      "provenance": "Research uloha nema implementacni faze kde by doslo k divergenci"
+    },
+    "replanning.max_cycles": {
+      "value": 0,
+      "source": "routing-decision",
+      "provenance": "Preskoceno — viz replanning.enabled"
+    },
+    "fast_track.enabled": {
+      "value": false,
+      "source": "routing-decision",
+      "provenance": "Research/design ukoly nejsou fast-track eligible"
+    },
+    "routing.enabled": {
+      "value": true,
+      "source": "routing-decision",
+      "provenance": "Phase subset routing — faze 0-4 aktivni, 5-9 preskoceny"
+    },
+    "skip_phases": {
+      "value": [5, 6, 7, 8, 9],
+      "source": "routing-decision",
+      "provenance": "Research uloha: TDD (5), Plan (6), Execute (7), Verify (8), Completion (9) jsou irelevantni"
+    },
+    "approval_gates": {
+      "value": [3, 4],
+      "source": "routing-decision",
+      "provenance": "Gate pred brainstormem (faze 3) a pred specifikaci (faze 4) — uzivatel schvaluje smer analyzy"
+    },
+    "active_phases": {
+      "value": [0, 1, 2, 3, 4],
+      "source": "routing-decision",
+      "provenance": "Meta (0) -> Research questions (1) -> Research answers (2) -> Brainstorm (3) -> Spec (4)"
+    },
+    "estimated_complexity": {
+      "value": "M",
+      "source": "analysis",
+      "provenance": "Stredni slozitost: 8 dokumentu k analyze, krizove referencovani, ale zadne zmeny kodu"
+    },
+    "domain_tags": {
+      "value": ["ceos-agents-architecture", "redmine-integration", "oracle-plsql", "gradual-adoption", "agent-process-separation"],
+      "source": "analysis",
+      "provenance": "Domeny identifikovane z analyzovanych dokumentu"
+    }
+  }
+}

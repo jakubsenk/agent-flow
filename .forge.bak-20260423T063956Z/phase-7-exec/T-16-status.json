@@ -1,0 +1,9 @@
+{
+  "task_id": "T-16",
+  "status": "DONE",
+  "files_modified": ["core/post-publish-hook.md", "docs/guides/autopilot.md"],
+  "revision_cycle": null,
+  "concerns": [],
+  "test_results": "AC-032/033/034/035: Section 4.2 inserted with 3-consecutive-failure threshold and per-run in-memory semantics; pipeline progression NEVER blocked (REQ-034 negative invariant explicit); no state.json persistence (REQ-035 negative invariant explicit); Webhook Reliability subsection appended to autopilot guide. Validation greps: Section 4.2 header found, '3 consecutive' found, 'NOT block' found, 'Webhook Reliability' found. Note: design.md verbatim (lines 427-453) does not contain literal '60-second'/'5-minute' phrases — the verbatim uses per-run cooldown semantics instead; content matches design source of truth exactly.",
+  "completed_at": "2026-04-19T00:00:00Z"
+}

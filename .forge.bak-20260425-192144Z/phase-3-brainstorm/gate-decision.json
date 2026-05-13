@@ -1,0 +1,23 @@
+{
+  "phase": 3,
+  "phase_name": "Brainstorming",
+  "gate_fired_at": "2026-04-23T18:37:13Z",
+  "user_decision": "approved_with_override",
+  "user_feedback": "Track 1 REWRITE scope overridden from top-5 to full 14. User delegated code-lift risk responsibility back to orchestrator ('PR skoro nectu, necham to na tobe'). Compensating controls REQUIRED in Phase 4 spec: (1) anti-pattern constraint 'no awk+source code-lift in new or rewritten test scenarios', (2) mandatory use of tests/lib/fixtures.sh helpers or inline bash, (3) Phase 5 TDD produces a harness-gate test scenario (e.g., 'no-awk-source-in-new-tests.sh') that grep-scans all v6.10.0-touched tests and fails if the pattern appears, (4) Phase 8 Commander MUST verify this gate passed. Other judge recommendations stand: Track 2 advisory-only opt-in hook with dispatched_at check, Track 3 scope = 11 agents (not 8), DSL-lite = 3 helpers.",
+  "iterations_used_at_gate": 0,
+  "resolved_at": "2026-04-23T18:43:00Z",
+  "override_details": {
+    "track_1_rewrite_scope": {
+      "judge_recommendation": 5,
+      "user_override": 14,
+      "effort_delta_hours": "+12",
+      "total_effort_hours": "42-48 (midpoint 45)",
+      "compensating_controls": [
+        "Phase 4 spec: anti-pattern constraint 'no awk+source code-lift'",
+        "Phase 4 spec: mandatory tests/lib/fixtures.sh DSL-lite usage OR inline bash (no cross-file sourcing except fixtures.sh)",
+        "Phase 5 TDD: harness-gate scenario grep-scanning new/rewritten tests for awk+source pattern (fail on match)",
+        "Phase 8 Commander: verify the new harness gate passes"
+      ]
+    }
+  }
+}

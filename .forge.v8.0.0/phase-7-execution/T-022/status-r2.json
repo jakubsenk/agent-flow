@@ -1,0 +1,42 @@
+{
+  "task": "T-022",
+  "revision_cycle": 2,
+  "status": "DONE",
+  "timestamp": "2026-04-27T00:00:00Z",
+  "fixes": [
+    {
+      "id": "fix-1a",
+      "file": "agents/analyst.md",
+      "action": "no_change",
+      "reason": "## Phase Dispatch section already present at line 26"
+    },
+    {
+      "id": "fix-1b",
+      "file": "agents/browser-agent.md",
+      "action": "no_change",
+      "reason": "## Phase Dispatch section already present at line 18"
+    },
+    {
+      "id": "fix-1c",
+      "file": "agents/test-engineer.md",
+      "action": "added",
+      "section": "## Mode Flag",
+      "details": "Added --e2e flag documentation before ## Process section"
+    },
+    {
+      "id": "fix-2",
+      "file": "tests/scenarios/v8-invariant-template-parity.sh",
+      "action": "fixed",
+      "old": ["bug.md", "feature.md"],
+      "new": ["bug_report.md", "feature_request.md"],
+      "details": "Updated check_pair calls to use real filenames"
+    }
+  ],
+  "self_review": {
+    "analyst_phase_dispatch_count": 1,
+    "browser_agent_phase_dispatch_count": 1,
+    "test_engineer_e2e_mentions": 3,
+    "parity_test_exit_code": 0,
+    "parity_test_verdict": "PASS"
+  }
+}

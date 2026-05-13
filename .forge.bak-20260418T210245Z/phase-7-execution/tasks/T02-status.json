@@ -1,0 +1,8 @@
+{
+  "task_id": "T02",
+  "status": "completed",
+  "files_modified": ["core/state-manager.md"],
+  "verification_passed": true,
+  "maps_to": ["COST-R5", "COST-R6", "COST-R9", "COST-R12"],
+  "summary": "Added four subsections to core/state-manager.md: 'Usage Field Capture' (stage lifecycle writes pre/post dispatch, COST-R12 field-name discovery, §4.1 JSON shape), 'Pipeline Accumulator Write' (sum at pipeline end, COST-R10 truncation, §4.2 shape), 'Fixer-Reviewer Cumulative Write' (running total across iterations, no per-iteration array), and 'Backward-Compatible Read' (v6.7.x tolerance, null/0 defaults, schema_version stays 1.0). All existing atomic-write content preserved."
+}

@@ -1,0 +1,39 @@
+{
+  "task_id": "T-003",
+  "status": "DONE",
+  "files_modified": [
+    { "path": "agents/analyst.md", "action": "CREATE" },
+    { "path": "agents/triage-analyst.md", "action": "DELETE" },
+    { "path": "agents/code-analyst.md", "action": "DELETE" }
+  ],
+  "agent_count_after": 18,
+  "ac_fulfillment": {
+    "AC-AGT-001": "FULFILLED — agents/ contains exactly 18 .md files with correct names per enumeration",
+    "AC-AGT-002": "FULFILLED — agents/triage-analyst.md and agents/code-analyst.md deleted",
+    "AC-AGT-003": "FULFILLED — agents/analyst.md exists with 'Phase Dispatch' section, name: analyst, model: sonnet",
+    "AC-NF-004": "FULFILLED — prompt-injection NEVER-follow-EXTERNAL-INPUT paragraph present in Constraints",
+    "AC-INV-PERM-001": "FULFILLED — frontmatter contains only name/description/model/style; no hooks/mcpServers/permissionMode"
+  },
+  "frontmatter_check": {
+    "name": "analyst",
+    "description": "Triage + impact analysis (--phase {triage,impact})",
+    "model": "sonnet",
+    "style": "Concise diagnostic",
+    "forbidden_keys_present": false
+  },
+  "dispatch_sites_for_downstream": {
+    "skills_referencing_old_names": [
+      "skills/analyze-bug/SKILL.md",
+      "skills/dashboard/SKILL.md",
+      "skills/estimate/SKILL.md",
+      "skills/fix-bugs/SKILL.md",
+      "skills/fix-ticket/SKILL.md",
+      "skills/implement-feature/SKILL.md",
+      "skills/metrics/SKILL.md",
+      "skills/migrate-config/SKILL.md",
+      "skills/onboard/SKILL.md",
+      "skills/resume-ticket/SKILL.md"
+    ],
+    "note": "These dispatch sites remain unchanged per T-003 scope. T-007/T-008/T-009 will update them."
+  }
+}

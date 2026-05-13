@@ -1,0 +1,138 @@
+{
+  "task_id": "T-030",
+  "status": "PASS",
+  "timestamp": "2026-04-27",
+  "invariant_results": {
+    "INV-1-license-spdx": {
+      "verdict": "PASS",
+      "details": {
+        "plugin_json": "MIT",
+        "marketplace_json": "MIT",
+        "LICENSE_first_line": "MIT License"
+      },
+      "repairs": []
+    },
+    "INV-2-maintainer-email": {
+      "verdict": "PASS",
+      "details": {
+        "SECURITY.md": "filip.sabacky@ceosdata.com found",
+        "CODE_OF_CONDUCT.md": "filip.sabacky@ceosdata.com found",
+        "CONTRIBUTING.md": "filip.sabacky@ceosdata.com found"
+      },
+      "repairs": []
+    },
+    "INV-3-template-parity": {
+      "verdict": "PASS",
+      "details": {
+        "bug_report.md": "byte-identical (.gitea == .github)",
+        "feature_request.md": "byte-identical (.gitea == .github)",
+        "pull_request_template.md": "byte-identical (.gitea == .github)"
+      },
+      "repairs": []
+    },
+    "INV-4-doc-count-enumeration": {
+      "verdict": "PASS (after repairs)",
+      "sub_checks": {
+        "4a-agent-count": {
+          "verdict": "PASS (after repair)",
+          "filesystem_canonical": 18,
+          "doc_claims": {
+            "CLAUDE.md": 18,
+            "README.md": 18,
+            "docs/reference/agents.md": 18,
+            "docs/reference/skills.md": "N/A (not enumerated here)",
+            "docs/architecture.md": 18
+          },
+          "issue_found": "Filesystem had 23 agents — T-003/T-004/T-005 created new merged agents but did not delete the 5 deprecated files",
+          "repair": "Deleted 5 deprecated agent files: triage-analyst.md, code-analyst.md, e2e-test-engineer.md, reproducer.md, browser-verifier.md"
+        },
+        "4b-skill-count": {
+          "verdict": "PASS",
+          "filesystem_canonical": 29,
+          "doc_claims": {
+            "CLAUDE.md": 29,
+            "README.md": 29,
+            "docs/reference/skills.md": 29,
+            "docs/architecture.md": 29
+          }
+        },
+        "4c-optional-config-sections": {
+          "verdict": "PASS",
+          "canonical_count": 18,
+          "doc_claims": {
+            "CLAUDE.md": 18,
+            "docs/reference/automation-config.md": 18,
+            "docs/architecture.md": 18
+          }
+        },
+        "4d-core-contract-count": {
+          "verdict": "PASS (after repair)",
+          "filesystem_canonical_maxdepth1": 16,
+          "sub_namespaces_not_counted": ["core/snippets/", "core/aliases/", "core/overlay/"],
+          "doc_claims": {
+            "CLAUDE.md": "not enumerated directly (inherits from cross-file invariant)",
+            "docs/architecture.md": 16,
+            "CHANGELOG.md_v8_entry": "16 (unchanged) — REPAIRED"
+          },
+          "issue_found": "CHANGELOG.md v8.0.0 entry incorrectly claimed 'Core contracts (maxdepth-1): 16 → 17' and listed core/toml-overlay.md as a new top-level core file. In reality core/overlay/toml-overlay.md is in core/overlay/ sub-namespace (maxdepth-1 stays 16).",
+          "repair": "Updated CHANGELOG.md v8.0.0 entry: '16 → 17' → '16 (unchanged)', fixed core/toml-overlay.md reference to core/overlay/toml-overlay.md (sub-namespace), corrected both bullet points referencing count=17 to count=16"
+        }
+      }
+    }
+  },
+  "repairs_made": [
+    {
+      "file": "agents/triage-analyst.md",
+      "action": "DELETE",
+      "reason": "T-003 recorded this deletion in status.json but did not execute it; INV-4a repair"
+    },
+    {
+      "file": "agents/code-analyst.md",
+      "action": "DELETE",
+      "reason": "T-003 recorded this deletion in status.json but did not execute it; INV-4a repair"
+    },
+    {
+      "file": "agents/e2e-test-engineer.md",
+      "action": "DELETE",
+      "reason": "T-004 recorded this deletion in status.json but did not execute it; INV-4a repair"
+    },
+    {
+      "file": "agents/reproducer.md",
+      "action": "DELETE",
+      "reason": "T-005 recorded this deletion in status.json but did not execute it; INV-4a repair"
+    },
+    {
+      "file": "agents/browser-verifier.md",
+      "action": "DELETE",
+      "reason": "T-005 recorded this deletion in status.json but did not execute it; INV-4a repair"
+    },
+    {
+      "file": "CHANGELOG.md",
+      "action": "EDIT",
+      "reason": "v8.0.0 entry incorrectly claimed core contracts went 16→17; correct value is 16 (unchanged) since toml-overlay.md went into core/overlay/ sub-namespace"
+    }
+  ],
+  "final_counts_verified": {
+    "agents": 18,
+    "skills": 29,
+    "optional_config_sections": 18,
+    "core_contracts_maxdepth1": 16
+  },
+  "self_review": {
+    "all_4_invariants_pass": true,
+    "diff_q_templates_zero_diffs": true,
+    "license_spdx_mit_all_3": true,
+    "maintainer_email_sole_in_3_files": true,
+    "counts_18_agents_29_skills_18_sections_16_core_in_all_relevant_docs": true
+  },
+  "lint_checks": {
+    "explicit_boolean_pattern": {
+      "result": "WARN",
+      "detail": "GOT_YOLO= and GOT_STEP_MODE= not found in skills/fix-bugs/, skills/implement-feature/, skills/scaffold/ — T-012/T-013/T-014 (mode-flag parsing) were not executed in phase-7. These tasks are upstream blockers for this lint check. Not a T-030 invariant — flagged for downstream T-031 test integration."
+    },
+    "agent_frontmatter_perm_constraint": {
+      "result": "PASS",
+      "detail": "Checked all 18 agents/*.md — none contain hooks:, mcpServers:, or permissionMode: in frontmatter (AC-INV-PERM-001)"
+    }
+  }
+}

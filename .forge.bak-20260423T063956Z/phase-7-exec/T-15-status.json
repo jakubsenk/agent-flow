@@ -1,0 +1,9 @@
+{
+  "task_id": "T-15",
+  "status": "DONE",
+  "files_modified": ["skills/metrics/SKILL.md"],
+  "revision_cycle": null,
+  "concerns": [],
+  "test_results": "AC-029/030/031: --format json flag added; schema documented; block.detail excluded per state/schema.md HARD CONTRACT cross-ref",
+  "completed_at": "2026-04-20T13:43:00Z"
+}

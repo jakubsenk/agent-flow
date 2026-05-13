@@ -1,0 +1,76 @@
+{
+  "_comment": "FIXTURE: refresh when prompt template changes (REQ-B-2 v1.2). acceptance_gate has NO dispatch_witness field at all (simulates legitimately-skipped or v9.x-era stage). check_dispatch_witness MUST return WITNESS_MISSING / exit 1 for acceptance_gate.",
+  "schema_version": "1.0",
+  "fixture_kind": "witness_missing_acceptance_gate",
+  "stages": {
+    "triage": {
+      "dispatched_at": "2026-05-12T10:00:00Z",
+      "dispatch_witness": "a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456",
+      "agent_name": "ceos-agents:analyst",
+      "stage_name": "triage",
+      "status": "in_progress"
+    },
+    "code_analysis": {
+      "dispatched_at": "2026-05-12T10:01:00Z",
+      "dispatch_witness": "b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef12345601",
+      "agent_name": "ceos-agents:analyst",
+      "stage_name": "code_analysis",
+      "status": "in_progress"
+    },
+    "reproduce_browser": {
+      "dispatched_at": "2026-05-12T10:02:00Z",
+      "dispatch_witness": "c3d4e5f6789012345678901234567890abcdef1234567890abcdef1234560102",
+      "agent_name": "ceos-agents:browser-agent",
+      "stage_name": "reproduce_browser",
+      "status": "in_progress"
+    },
+    "fixer_reviewer": {
+      "dispatched_at": "2026-05-12T10:03:00Z",
+      "dispatch_witness": "d4e5f6789012345678901234567890abcdef1234567890abcdef123456010203",
+      "agent_name": "ceos-agents:fixer",
+      "stage_name": "fixer_reviewer",
+      "status": "in_progress"
+    },
+    "smoke_check": {
+      "dispatched_at": "2026-05-12T10:04:00Z",
+      "dispatch_witness": "e5f6789012345678901234567890abcdef1234567890abcdef12345601020304",
+      "agent_name": "ceos-agents:test-engineer",
+      "stage_name": "smoke_check",
+      "status": "in_progress"
+    },
+    "test": {
+      "dispatched_at": "2026-05-12T10:05:00Z",
+      "dispatch_witness": "f6789012345678901234567890abcdef1234567890abcdef1234560102030405",
+      "agent_name": "ceos-agents:test-engineer",
+      "stage_name": "test",
+      "status": "in_progress"
+    },
+    "e2e_test": {
+      "dispatched_at": "2026-05-12T10:06:00Z",
+      "dispatch_witness": "0789abcdef0123456789012345678901234567890abcdef123456789abcdef01",
+      "agent_name": "ceos-agents:test-engineer",
+      "stage_name": "e2e_test",
+      "status": "in_progress"
+    },
+    "browser_verification": {
+      "dispatched_at": "2026-05-12T10:07:00Z",
+      "dispatch_witness": "1789abcdef0123456789012345678901234567890abcdef123456789abcdef02",
+      "agent_name": "ceos-agents:browser-agent",
+      "stage_name": "browser_verification",
+      "status": "in_progress"
+    },
+    "publisher": {
+      "dispatched_at": "2026-05-12T10:09:00Z",
+      "dispatch_witness": "3789abcdef0123456789012345678901234567890abcdef123456789abcdef04",
+      "agent_name": "ceos-agents:publisher",
+      "stage_name": "publisher",
+      "status": "in_progress"
+    },
+    "acceptance_gate": {
+      "dispatched_at": "2026-05-12T10:08:00Z",
+      "agent_name": "ceos-agents:acceptance-gate",
+      "stage_name": "acceptance_gate",
+      "status": "in_progress"
+    }
+  }
+}

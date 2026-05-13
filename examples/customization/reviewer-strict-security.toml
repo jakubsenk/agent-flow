@@ -1,0 +1,25 @@
+# Example: Strict security-focused reviewer overlay
+# Apply: copy to customization/reviewer.toml in your consuming project
+
+model = "opus"  # default; locked
+
+[[process_additions]]
+step = "after_change_review"
+instruction = "MANDATORY: For any database query, validate against SQL injection patterns. For any user input, verify sanitization at boundary."
+
+[[process_additions]]
+step = "after_security_check"
+instruction = "Run STRIDE threat model checklist for any new endpoint or API. Block PR if any unmitigated threat."
+
+[[constraints]]
+rule = "Reviewer MUST NOT approve PR until security review section is filled with explicit STRIDE analysis."
+
+[[constraints]]
+rule = "Reviewer MUST emit BLOCK if dependency added with last-published > 365 days OR security advisories listed in CVE database."
+
+[limits]
+max_review_iterations = 3  # tighter than default 5 for security-sensitive review
+
+[meta]
+priority_label = "security"
+applies_to_repos = ["security-sensitive"]

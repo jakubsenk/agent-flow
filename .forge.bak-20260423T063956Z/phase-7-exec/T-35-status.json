@@ -1,0 +1,18 @@
+{
+  "task_id": "T-35",
+  "status": "DONE",
+  "files_modified": [],
+  "files_audited": [
+    "CLAUDE.md",
+    "core/post-publish-hook.md",
+    "agents/fixer.md",
+    "agents/triage-analyst.md",
+    "agents/reviewer.md"
+  ],
+  "revision_cycle": null,
+  "concerns": [
+    "F-01 INFO (pre-existing): 'issue-blocked' config token vs 'ceos-agents-block' payload event name naming duality in block-handler.md/post-publish-hook.md/CLAUDE.md — not a v6.9.0 regression, predates this work"
+  ],
+  "test_results": "AC-064a/070/071/072/073: all 4 BC negatives hold; count drift correct (16 core contracts, 19 optional sections); Pause Limits row present; Cross-File Invariants subsection present with all 3 invariants",
+  "completed_at": "2026-04-20T15:06:00Z"
+}

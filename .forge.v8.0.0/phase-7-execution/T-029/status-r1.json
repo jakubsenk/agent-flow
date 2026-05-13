@@ -1,0 +1,8 @@
+{
+  "task": "T-029",
+  "revision": "r1",
+  "status": "DONE",
+  "file": "CHANGELOG.md",
+  "change": "Counts table row 'Core contracts (maxdepth-1)' corrected from '17 (+core/toml-overlay.md)' to '16 (unchanged; new files at sub-namespaces core/overlay/, core/aliases/)'. Inline path reference core/overlay/toml-overlay.md and prose 'maxdepth-1 count stays at 16' were already correct.",
+  "self_check": "grep -nE '16 → 17|17 core contracts|core/toml-overlay\\.md' CHANGELOG.md = 0 hits PASS"
+}

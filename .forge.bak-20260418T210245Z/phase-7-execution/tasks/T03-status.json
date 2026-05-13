@@ -1,0 +1,8 @@
+{
+  "task_id": "T03",
+  "status": "completed",
+  "files_modified": ["core/post-publish-hook.md"],
+  "verification_passed": true,
+  "maps_to": ["WEBHOOK-R1", "WEBHOOK-R2", "WEBHOOK-R3", "WEBHOOK-R4", "WEBHOOK-R5", "WEBHOOK-R6", "WEBHOOK-R7", "WEBHOOK-R8"],
+  "summary": "Updated Purpose line per WEBHOOK-R1. Added Section 4 documenting pipeline-started, step-completed, pipeline-completed events with exact JSON payloads from spec §4.3-4.5, run_id format {issue_id}_{YYYYMMDDTHHMMSSZ}, canonical stage names, strict state-commit fire ordering (WEBHOOK-R2..R4), no step-skipped note (WEBHOOK-R7), advisory curl pattern inherited from Section 3, On events filter with new tokens, and backward-compatibility clause (WEBHOOK-R8)."
+}

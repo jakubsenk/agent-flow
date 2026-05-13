@@ -1,0 +1,30 @@
+{
+  "pipeline_mode": {
+    "value": "adaptive",
+    "source": "default"
+  },
+  "skip_phases": {
+    "value": [],
+    "source": "default"
+  },
+  "approval_gates": {
+    "value": [3, 4, 6],
+    "source": "default"
+  },
+  "task_type": {
+    "value": "feature",
+    "source": "routing-decision"
+  },
+  "repo": {
+    "value": "ceos-agents",
+    "source": "detected"
+  },
+  "language": {
+    "value": "markdown",
+    "source": "detected"
+  },
+  "test_command": {
+    "value": "./tests/harness/run-tests.sh",
+    "source": "detected"
+  }
+}

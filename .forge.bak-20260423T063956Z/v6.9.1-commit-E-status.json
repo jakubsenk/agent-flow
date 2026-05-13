@@ -1,0 +1,46 @@
+{
+  "commit": "E",
+  "version": "v6.9.1",
+  "label": "code-polish-fixes",
+  "timestamp": "2026-04-19T00:00:00Z",
+  "harness_result": "183/183 PASS",
+  "hidden_test_result": "PASS: h-snippet-citation-marker-format",
+  "fixes_applied": [
+    {
+      "id": 1,
+      "label": "parse_pause_timeout() case-insensitive unit tokens",
+      "file": "skills/autopilot/SKILL.md",
+      "status": "APPLIED",
+      "detail": "Regex now accepts mixed-case units (Hours, Days, etc.) via [Hh][Oo]... character classes; unit_lower=$(tr [:upper:] [:lower:]) before case switch"
+    },
+    {
+      "id": 2,
+      "label": "BSD/macOS date -d portability in pause-detection block",
+      "file": "skills/autopilot/SKILL.md",
+      "status": "APPLIED",
+      "detail": "Added _iso_to_epoch_crossplatform() helper: tries python3 first (universally available), falls back to GNU date -d. Eliminates premature aborted_by_system on BSD/macOS hosts."
+    },
+    {
+      "id": 3,
+      "label": "Webhook_URL vs WEBHOOK_URL casing documentation clarification",
+      "file": "core/post-publish-hook.md",
+      "status": "APPLIED",
+      "detail": "Added variable-naming convention note in Curl Pattern section explaining Webhook_URL (config-key casing, heredoc curl) vs WEBHOOK_URL (uppercase, jq-pipe curl) are the same config value; warns maintainers to update both."
+    },
+    {
+      "id": 4,
+      "label": "sanitize_block_reason() LOWER-VAR bare-lowercase anchor",
+      "file": "core/post-publish-hook.md",
+      "status": "ALREADY_APPLIED",
+      "detail": "The LOWER-VAR sed pattern at line 270 already uses (^|[[:space:]]) anchor with \\1 capture-group preservation as of cycle-1. No code change needed; fix was applied in v6.9.0-cycle-1 (Phase 8 Scenario 4). Carry-over roadmap item confirmed resolved."
+    },
+    {
+      "id": 5,
+      "label": "h-snippet-citation-marker-format.sh test scope",
+      "file": ".forge/phase-5-tdd/tests-hidden/h-snippet-citation-marker-format.sh",
+      "status": "APPLIED",
+      "detail": "Assertions 3 and 4 now grep skills/ + core/ only (not $REPO_ROOT). Expected counts updated to actual post-cycle-1 values: webhook-curl=29, issue-id-validation=5, metrics-json-schema=1, pipeline-completion=3, architecture-freshness=2. Hidden test now PASS."
+    }
+  ],
+  "notes": "Fix 4 was already applied in v6.9.0-cycle-1 — roadmap carry-over item is resolved. The expected webhook-curl count is 29 (not 21 from the pre-cycle-1 spec) because cycle-1 added 8 new pipeline-paused firing sites."
+}

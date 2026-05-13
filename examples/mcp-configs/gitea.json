@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "gitea": {
+      "command": "gitea-mcp",
+      "args": [],
+      "env": {
+        "GITEA_HOST": "https://<YOUR_GITEA_INSTANCE>",
+        "GITEA_ACCESS_TOKEN": "<YOUR_GITEA_ACCESS_TOKEN>"
+      }
+    }
+  }
+}

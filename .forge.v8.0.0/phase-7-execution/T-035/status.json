@@ -1,0 +1,8 @@
+{
+  "task": "T-035",
+  "revision": "r1",
+  "status": "DONE",
+  "file": "skills/resume-ticket/SKILL.md",
+  "change": "Added '## --step-mode Abort Resume Logic (REQ-MODE-008a)' section before '## Rules'. Describes SIGTERM-interrupted step idempotent re-run: resumes from last_completed_step+1, no double-dispatch, emits [INFO] log.",
+  "self_check": "grep -c 'step_mode_abort|REQ-MODE-008a' skills/resume-ticket/SKILL.md = 2 PASS"
+}

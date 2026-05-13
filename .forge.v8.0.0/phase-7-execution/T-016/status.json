@@ -1,0 +1,12 @@
+{
+  "task": "T-016",
+  "title": "/pipeline-status skill v8 read logic (dedup v7+v8 keys)",
+  "status": "DONE",
+  "files_changed": ["skills/pipeline-status/SKILL.md"],
+  "changes": [
+    "Step 4c added: read state.json and apply v8.0.0 dedup logic before building Stage column",
+    "Section '## v8.0.0 State Key Reading' added before ## Rules with full dedup contract (4 cases), INFO log line, v7 alias list (5 keys), v8 preferred list (5 keys)"
+  ],
+  "ac_satisfied": ["REQ-AGT-008 deduplication contract (core/state-manager.md)", "AC-AGT-009 (single status line per role, [WARN] on differing values, [INFO] on v7+v8 presence, v7-only forward consistency)"],
+  "follow_up_warnings": []
+}

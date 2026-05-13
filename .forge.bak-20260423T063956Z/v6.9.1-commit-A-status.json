@@ -1,0 +1,77 @@
+{
+  "commit": "A",
+  "version": "v6.9.1",
+  "status": "DONE",
+  "timestamp": "2026-04-19T00:00:00Z",
+  "fixes_applied": [
+    {
+      "id": "A1",
+      "severity": "BLOCKING",
+      "file": "docs/reference/automation-config.md",
+      "description": "Added Autopilot and Pause Limits rows to Optional Sections quick-ref table"
+    },
+    {
+      "id": "A2",
+      "severity": "BLOCKING",
+      "file": "docs/reference/automation-config.md",
+      "description": "Fixed On events key in Notifications section: added pipeline-started, step-completed, pipeline-paused; fixed pipeline-complete -> pipeline-completed"
+    },
+    {
+      "id": "A3",
+      "severity": "HIGH",
+      "file": "docs/reference/automation-config.md",
+      "description": "Added complete ### Autopilot section with 7-key table and link to docs/guides/autopilot.md"
+    },
+    {
+      "id": "A4",
+      "severity": "HIGH",
+      "file": "docs/reference/automation-config.md",
+      "description": "Added complete ### Pause Limits section with Pause timeout key, defaults, valid range, and link to core/agent-states.md"
+    },
+    {
+      "id": "A5",
+      "severity": "MEDIUM",
+      "file": "docs/reference/automation-config.md",
+      "description": "Appended commented ### Autopilot and ### Pause Limits blocks to Complete Example after ### Pipeline Profiles"
+    },
+    {
+      "id": "B1",
+      "severity": "HIGH",
+      "file": "docs/reference/config.md",
+      "description": "Added pipeline-paused row to Event Tokens table"
+    },
+    {
+      "id": "B2",
+      "severity": "MEDIUM",
+      "file": "docs/reference/config.md",
+      "description": "Updated stale SSRF deferred note: --proto http,https shipped in v6.9.0; cross-run circuit breaker + URL allowlist deferred to v6.10.0"
+    },
+    {
+      "id": "templates-pause-limits",
+      "severity": "HIGH",
+      "file": "examples/configs/*.md (all 8)",
+      "description": "Added ### Pause Limits (optional, v6.9.0+) commented block to all 8 config templates"
+    },
+    {
+      "id": "templates-pipeline-complete",
+      "severity": "MEDIUM",
+      "file": "examples/configs/github-nextjs.md, examples/configs/redmine-oracle-plsql.md",
+      "description": "Fixed stale pipeline-complete -> pipeline-completed in Notifications On events example in 2 templates"
+    },
+    {
+      "id": "readme-skills",
+      "severity": "HIGH",
+      "file": "README.md",
+      "description": "Added /autopilot and /workflow-router rows to Skills table (now 29 rows)"
+    }
+  ],
+  "validation": {
+    "readme_skill_rows": 29,
+    "automation_config_autopilot_sections": 3,
+    "automation_config_pause_limits_sections": 3,
+    "pipeline_paused_in_config_md": true,
+    "pipeline_paused_in_automation_config_md": true,
+    "pause_limits_in_all_8_templates": true,
+    "stale_pipeline_complete_remaining": 0
+  }
+}

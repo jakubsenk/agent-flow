@@ -1,0 +1,9 @@
+{
+  "task_type": "feature",
+  "secondary_types": ["refactoring", "quality"],
+  "action": "full_pipeline",
+  "target_skill": null,
+  "confidence": 0.90,
+  "reasoning": "Comprehensive audit + implementation across 3 pipeline modes. Requires full research-brainstorm-spec-plan-execute-verify cycle. No shortcut possible — every agent and skill must be read and assessed.",
+  "skip_profile": null
+}

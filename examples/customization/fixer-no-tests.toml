@@ -1,0 +1,15 @@
+# Example: Fixer overlay for projects without unit test infrastructure (legacy, prototype)
+# Apply: copy to customization/fixer.toml
+
+[[constraints]]
+rule = "DO NOT generate test files in src/test/ — this project has no test infrastructure"
+
+[[constraints]]
+rule = "Verification by manual smoke check; do NOT call npm test or pytest"
+
+[limits]
+max_iterations = 3  # default 5
+max_test_attempts = 0  # no test infrastructure; skip test phase entirely
+
+[meta]
+note = "This overlay is appropriate for prototype repos only — production work should have tests"

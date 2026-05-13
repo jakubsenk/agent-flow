@@ -1,0 +1,2740 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prezentace pro CEO — ceos-agents (v7 → v9 + ACT)</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fafafa;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --border-strong: #d1d5db;
+  --text: #1f2937;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+  --accent: #0ea5e9;
+  --accent-soft: #e0f2fe;
+  --accent-strong: #0284c7;
+  --teal: #14b8a6;
+  --teal-soft: #ccfbf1;
+  --code-bg: #f3f4f6;
+  --warning: #dc2626;
+  --warning-soft: #fee2e2;
+  --success: #059669;
+  --success-soft: #d1fae5;
+  --amber: #f59e0b;
+  --amber-soft: #fef3c7;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, "Segoe UI", "Roboto", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  font-size: 19px;
+}
+
+code, pre {
+  font-family: 'JetBrains Mono', ui-monospace, "SF Mono", Consolas, monospace;
+  font-size: 0.875em;
+}
+
+pre {
+  background: var(--code-bg);
+  padding: 12px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+a { color: var(--accent-strong); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+h1, h2, h3, h4 { font-weight: 600; color: var(--text); letter-spacing: -0.01em; }
+h1 { font-size: 2rem; line-height: 1.3; }
+h2 { font-size: 1.65rem; line-height: 1.3; margin-top: 0; }
+h3 { font-size: 1.25rem; line-height: 1.4; }
+h4 { font-size: 1.1rem; line-height: 1.5; }
+
+.app-grid {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+aside.sidebar {
+  border-right: 1px solid var(--border);
+  background: var(--card);
+  padding: 24px 16px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+aside.sidebar .brand {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+aside.sidebar .title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+
+aside.sidebar nav .nav-group {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 16px 0 6px 8px;
+}
+
+aside.sidebar nav a {
+  display: block;
+  padding: 6px 12px;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin-bottom: 2px;
+  border-left: 2px solid transparent;
+}
+
+aside.sidebar nav a:hover {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  text-decoration: none;
+}
+
+aside.sidebar nav a.active {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  border-left: 2px solid var(--accent);
+  font-weight: 500;
+}
+
+aside.sidebar nav a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  text-decoration: none;
+}
+
+.decision-options input[type="radio"]:focus-visible + .opt {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+main.content {
+  padding: 48px 56px 80px;
+  max-width: 1100px;
+  width: 100%;
+}
+
+.hero {
+  padding: 24px 0 32px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 40px;
+}
+.hero .meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  margin-top: 16px;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+.hero .meta div b { color: var(--text); font-weight: 500; }
+
+section.section {
+  scroll-margin-top: 24px;
+  padding: 32px 0 48px;
+  border-bottom: 1px solid var(--border);
+}
+section.section:last-of-type { border-bottom: none; }
+
+.section-eyebrow {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-strong);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.section-time {
+  display: inline-block;
+  background: var(--code-bg);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-left: 8px;
+  vertical-align: middle;
+  font-weight: 500;
+}
+
+.section-content > * + * { margin-top: 24px; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px 24px;
+}
+
+.card ul:not(.no-bullets) {
+  margin: 8px 0 0;
+  padding-left: 22px;
+}
+
+.card ul:not(.no-bullets) li {
+  padding: 4px 0;
+  line-height: 1.55;
+}
+
+.card-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.callout {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  padding: 14px 18px;
+  border-radius: 0 6px 6px 0;
+  color: var(--text);
+}
+
+.callout.warn {
+  border-left-color: var(--warning);
+  background: var(--warning-soft);
+}
+
+.callout.amber {
+  border-left-color: var(--amber);
+  background: var(--amber-soft);
+}
+
+.callout.teal {
+  border-left-color: var(--teal);
+  background: var(--teal-soft);
+}
+
+.callout-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+}
+
+details.spoken {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0;
+}
+
+details.spoken > summary {
+  cursor: pointer;
+  padding: 12px 18px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+details.spoken > summary::-webkit-details-marker { display: none; }
+details.spoken > summary::after {
+  content: "skrýt";
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+details.spoken:not([open]) > summary::after { content: "rozbalit"; }
+
+details.spoken > .spoken-body {
+  padding: 0 24px 20px;
+  font-style: normal;
+  color: var(--text);
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+details.spoken > .spoken-body p { margin: 0 0 12px; }
+details.spoken > .spoken-body p:last-child { margin-bottom: 0; }
+details.spoken > .spoken-body ul { margin: 0 0 12px; padding-left: 22px; }
+details.spoken > .spoken-body ul li { padding: 4px 0; line-height: 1.55; }
+details.spoken > .spoken-body ul li + li { margin-top: 2px; }
+details.spoken > .spoken-body .lead { margin-bottom: 14px; font-weight: 500; }
+
+.diagram-frame {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  overflow-x: auto;
+}
+.diagram-frame .diagram-caption {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  letter-spacing: 0.02em;
+  text-align: left;
+}
+
+.diagram-frame svg { max-width: 100%; height: auto; display: inline-block; }
+
+.diagram-frame.boxed {
+  text-align: left;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 1rem;
+}
+
+thead {
+  background: var(--code-bg);
+  border-bottom: 1px solid var(--border-strong);
+}
+
+th {
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  vertical-align: bottom;
+}
+
+th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+th.sortable::after {
+  content: " ↕";
+  color: var(--text-tertiary);
+  font-size: 0.75rem;
+}
+th.sortable.sort-asc::after { content: " ↑"; color: var(--accent-strong); }
+th.sortable.sort-desc::after { content: " ↓"; color: var(--accent-strong); }
+
+td {
+  padding: 10px 14px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+tbody tr:last-child td { border-bottom: none; }
+
+tbody tr:hover { background: #fafbfc; }
+
+.table-frame {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.table-frame .table-caption {
+  background: var(--code-bg);
+  padding: 10px 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid var(--border);
+}
+.table-frame table { border: none; border-radius: 0; }
+
+.scroll-x { overflow-x: auto; }
+
+.tag {
+  display: inline-block;
+  font-size: 0.8rem;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.tag.opus { background: #fef3c7; color: #92400e; }
+.tag.sonnet { background: #dbeafe; color: #1e40af; }
+.tag.haiku { background: #d1fae5; color: #065f46; }
+.tag.muted { background: var(--code-bg); color: var(--text-secondary); }
+.tag.warn { background: var(--warning-soft); color: var(--warning); }
+.tag.success { background: var(--success-soft); color: var(--success); }
+
+.kv-list { display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; font-size: 0.95rem; }
+.kv-list dt { color: var(--text-secondary); font-weight: 500; }
+.kv-list dd { margin: 0; }
+
+.timeline-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+.timeline-cards .card .ver {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--accent-strong);
+  letter-spacing: 0.02em;
+}
+.timeline-cards .card .stage {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 6px 0 10px;
+}
+.timeline-cards .card .meta {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.5;
+}
+
+.agent-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+/* Ekosystém agentů — banner + 4 sloupce */
+.ecosystem {
+  display: grid;
+  gap: 12px;
+}
+
+.ecosystem-core {
+  background: linear-gradient(180deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 10px;
+  padding: 18px 24px;
+}
+.ecosystem-core-header {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.ecosystem-core-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #92400e;
+}
+.ecosystem-core-sub {
+  font-size: 0.9rem;
+  color: #78350f;
+  font-style: italic;
+}
+.ecosystem-core-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+@media (max-width: 768px) { .ecosystem-core-cards { grid-template-columns: repeat(2, 1fr); } }
+
+.agent-pill {
+  background: white;
+  border: 1px solid #fbbf24;
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+.agent-pill b { color: var(--text); font-weight: 600; }
+
+.ecosystem-arrows {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 0 4px;
+}
+.ecosystem-arrow {
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 6px 0;
+}
+.ecosystem-arrow.uses { color: #f59e0b; }
+.ecosystem-arrow.none { color: var(--text-tertiary); }
+@media (max-width: 1024px) { .ecosystem-arrows { display: none; } }
+
+.ecosystem-categories {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+@media (max-width: 1024px) { .ecosystem-categories { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .ecosystem-categories { grid-template-columns: 1fr; } }
+
+.ecosystem-cat {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--accent);
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+.ecosystem-cat.cat-bf { border-top-color: #0284c7; }
+.ecosystem-cat.cat-fs { border-top-color: #0d9488; }
+.ecosystem-cat.cat-sc { border-top-color: #7c3aed; }
+.ecosystem-cat.cat-pl { border-top-color: #dc2626; }
+
+.cat-header {
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+}
+.cat-name {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.cat-count {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.cat-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.cat-list li {
+  padding: 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.92rem;
+  flex-wrap: wrap;
+}
+.cat-list li b { font-weight: 600; color: var(--text); }
+
+.agent-cat {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+.agent-cat-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.agent-cat-count {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+.agent-cat ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.95rem;
+}
+.agent-cat ul li {
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.agent-cat ul li .name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+.agent-cat ul li .merge-note {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.decision-board { display: grid; gap: 16px; }
+.decision-card {
+  background: var(--card);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 20px 22px;
+}
+.decision-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.decision-id {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--accent-strong);
+  font-family: 'JetBrains Mono', monospace;
+}
+.decision-title {
+  font-weight: 600;
+  font-size: 1rem;
+}
+.decision-question {
+  color: var(--text-secondary);
+  margin: 8px 0 16px;
+  font-size: 0.9rem;
+}
+.decision-question p { margin: 0 0 6px; }
+.decision-options {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.decision-options label {
+  cursor: pointer;
+  padding: 6px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  background: white;
+  color: var(--text);
+  user-select: none;
+  transition: all 0.15s ease;
+}
+.decision-options label:hover {
+  border-color: var(--accent);
+}
+.decision-options input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.decision-options input[type="radio"]:checked + .opt {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-strong);
+  font-weight: 600;
+}
+.decision-options label.opt {
+  display: inline-block;
+}
+.decision-notes {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  background: var(--bg);
+  color: var(--text);
+  resize: vertical;
+  min-height: 60px;
+}
+.decision-notes:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: white;
+}
+.decision-status {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  margin-top: 6px;
+}
+.decision-status.saved { color: var(--success); }
+
+.decision-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+  font-size: 0.85rem;
+}
+.decision-controls button {
+  background: white;
+  border: 1px solid var(--border-strong);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text);
+}
+.decision-controls button:hover { background: var(--code-bg); }
+.decision-controls button.danger:hover { background: var(--warning-soft); color: var(--warning); border-color: var(--warning); }
+
+.weakness-grid {
+  display: grid;
+  gap: 16px;
+}
+.weakness-block { padding: 18px 20px; border-radius: 8px; }
+.weakness-block.behind { background: #fff7ed; border: 1px solid #fed7aa; }
+.weakness-block.outpaced { background: #f5f3ff; border: 1px solid #ddd6fe; }
+.weakness-block.unique { background: #ecfdf5; border: 1px solid #a7f3d0; }
+.weakness-block h3 { margin-top: 0; }
+.weakness-block ol { margin: 0; padding-left: 24px; }
+.weakness-block ol li { padding: 6px 0; }
+
+.numbered-list {
+  display: grid;
+  gap: 14px;
+  counter-reset: nlist;
+}
+.numbered-list .item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px 16px 56px;
+  position: relative;
+}
+.numbered-list .item::before {
+  counter-increment: nlist;
+  content: counter(nlist);
+  position: absolute;
+  left: 18px;
+  top: 16px;
+  width: 28px;
+  height: 28px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+@media (max-width: 1024px) { .split { grid-template-columns: 1fr; } }
+
+.evolution-stages { display: grid; gap: 14px; }
+.evo-stage {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 20px;
+  position: relative;
+}
+.evo-stage .label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.evo-stage.original { border-left: 4px solid var(--text-secondary); }
+.evo-stage.original .label { color: var(--text-secondary); }
+.evo-stage.pivot { border-left: 4px solid var(--accent); }
+.evo-stage.pivot .label { color: var(--accent-strong); }
+.evo-stage h4 { margin: 6px 0 10px; font-size: 1.2rem; }
+.evo-stage .desc { font-size: 1rem; color: var(--text); line-height: 1.6; }
+.evo-stage .desc code { background: white; }
+
+.v78-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 1024px) { .v78-grid { grid-template-columns: 1fr; } }
+
+.v78-block {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 22px 24px;
+}
+.v78-block .ver-label {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--accent-strong);
+}
+.v78-block h3 {
+  margin: 8px 0 8px;
+  font-size: 1.55rem;
+}
+.v78-block .ver-goal {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 18px;
+  line-height: 1.6;
+}
+.v78-action {
+  border-top: 1px solid var(--border);
+  padding: 14px 0;
+}
+.v78-action:last-child { padding-bottom: 0; }
+.v78-action .a-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent-strong);
+}
+.v78-action .a-name {
+  font-weight: 600;
+  font-size: 1.15rem;
+  margin: 6px 0 10px;
+}
+.v78-action .a-desc {
+  font-size: 1rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+.v78-action .a-desc ul { margin: 8px 0 0; padding-left: 22px; }
+.v78-action .a-validation {
+  margin-top: 10px;
+  font-size: 0.95rem;
+  color: var(--success);
+  line-height: 1.55;
+}
+.v78-block .ver-counts {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: var(--code-bg);
+  font-size: 1rem;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.55;
+}
+
+.release-track {
+  display: grid;
+  gap: 14px;
+}
+.release-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--accent);
+  border-radius: 8px;
+  padding: 18px 22px;
+}
+.release-card.demo { border-left-color: var(--teal); }
+.release-card.hosting { border-left-color: var(--amber); }
+.release-card.future { border-left-color: var(--text-tertiary); border-style: dashed; }
+.release-card .v {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--accent-strong);
+}
+.release-card.demo .v { color: var(--teal); }
+.release-card.hosting .v { color: var(--amber); }
+.release-card.future .v { color: var(--text-secondary); }
+.release-card h3 { margin: 4px 0 4px; }
+.release-card .release-tag {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 14px;
+  line-height: 1.55;
+}
+.release-card ul { padding-left: 22px; margin: 8px 0; }
+.release-card ul li { padding: 5px 0; font-size: 1.05rem; line-height: 1.6; }
+.release-card .pos { color: var(--success); font-size: 1rem; margin-top: 12px; line-height: 1.55; }
+.release-card .neg { color: var(--warning); font-size: 1rem; margin-top: 8px; line-height: 1.55; }
+.release-card h3 { font-size: 1.35rem; }
+.release-card h4 { font-size: 1.15rem; margin-top: 16px; }
+
+footer.page-footer {
+  margin-top: 64px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+footer.page-footer p { margin: 4px 0; }
+
+.no-bullets { list-style: none; padding: 0; margin: 0; }
+.no-bullets li { padding: 4px 0; }
+
+@media (max-width: 900px) {
+  .app-grid { grid-template-columns: 1fr; }
+  aside.sidebar {
+    position: relative;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  main.content { padding: 32px 24px 64px; }
+}
+
+@media print {
+  aside.sidebar { display: none; }
+  .app-grid { grid-template-columns: 1fr; }
+  main.content { padding: 0; max-width: none; }
+  details.spoken { border: none; }
+  details.spoken > summary { display: none; }
+  details.spoken > .spoken-body { border-top: none; padding: 0 0 12px; }
+  section.section { page-break-inside: avoid; page-break-after: always; border-bottom: none; }
+  .diagram-frame { border: 1px solid #ccc; box-shadow: none; }
+  body { font-size: 12pt; background: white; }
+  .card, .agent-cat, .decision-card, .v78-block, .release-card { break-inside: avoid; }
+  .decision-options input[type="radio"]:not(:checked) + .opt { display: none; }
+  .decision-options input[type="radio"]:checked + .opt { background: white; border: 1px solid #333; }
+  .decision-controls { display: none; }
+  a { color: var(--text); }
+  table { font-size: 9pt; }
+}
+</style>
+</head>
+<body>
+
+<div class="app-grid">
+
+<aside class="sidebar" aria-label="Navigace prezentací">
+  <div class="brand">Prezentace pro CEO</div>
+  <div class="title">ceos-agents — v7 → v9 + ACT relace</div>
+  <nav id="side-nav">
+    <div class="nav-group">Sekce</div>
+    <a href="#s1" data-target="s1">1. Otevření · rámec rozhodnutí</a>
+    <a href="#s2" data-target="s2">2. Co je ceos-agents</a>
+    <a href="#s3" data-target="s3">3. Proč filip-superpowers a forge</a>
+    <a href="#s4" data-target="s4">4. Evoluce vize · meta-agent → overlay</a>
+    <a href="#s5" data-target="s5">5. v7.0.0 + v8.0.0 hlavní změny</a>
+    <a href="#s6" data-target="s6">6. Kam směřujeme · v9 → v10</a>
+    <a href="#s7" data-target="s7">7. ROZHODNUTÍ — decision board</a>
+    <div class="nav-group">Přílohy</div>
+    <a href="#aA" data-target="aA">A. Srovnávací matice</a>
+    <a href="#aB" data-target="aB">B. Poctivé slabiny</a>
+    <a href="#aC" data-target="aC">C. Citace z výzkumu</a>
+    <a href="#aD" data-target="aD">D. Souhrn diagramů</a>
+    <a href="#aE" data-target="aE">E. Antivzory (čemu se vyhnout)</a>
+  </nav>
+</aside>
+
+<main class="content">
+
+<header class="hero">
+  <h1>Prezentace pro CEO — ceos-agents (v7 → v9 + ACT relace)</h1>
+  <div class="meta">
+    <div><b>Datum brainstormu:</b> 2026-04-27</div>
+    <div><b>Autor:</b> Filip Šabacký</div>
+    <div><b>Audience:</b> CEO (AI-savvy, používá starší verze) + 1 technický kolega</div>
+    <div><b>Forma:</b> ~75-90 min, 5-7 hlavních bloků, 11 diagramů</div>
+    <div><b>Tone:</b> Expert-to-expert, vykání, bez marketingového jazyka</div>
+  </div>
+  <div class="callout" style="margin-top: 20px;">
+    <div class="callout-title">Cíl prezentace</div>
+    <div>Společné rozhodnutí, co změnit pro rychlejší public release ceos-agents zdarma (marketing + community contributions). Plus uchopit interní rollout (zavádění do firemních týmů bez hluboké AI zkušenosti).</div>
+  </div>
+  <div class="callout teal" style="margin-top: 12px;">
+    <div class="callout-title">Strategie vyprávění</div>
+    <div>Chronologická "evoluce" s rámcem rozhodnutí na začátku a konci. Příběh: vize → výzkum → pivot → realizace → otevřené body. Pivot meta-agent → overlay je nejsilnější moment příběhu. Dva paralelní tlaky (public release + interní rollout) vedou produkt stejným směrem — optimalizujeme pro těžší cílovku, dostaneme i lehčí zdarma.</div>
+  </div>
+</header>
+
+<!-- ============== SEKCE 1 ============== -->
+<section id="s1" class="section">
+  <div class="section-eyebrow">Sekce 1</div>
+  <h2>Otevření · rámec rozhodnutí <span class="section-time">3 min</span></h2>
+
+  <div class="section-content">
+
+  <details class="spoken" open>
+    <summary>Co řeknete · úvodní rámec</summary>
+    <div class="spoken-body">
+      <p class="lead">Cíl dnešní schůzky: dohodnout se, co s ceos-agents udělat, aby šly co nejdříve veřejně zdarma.</p>
+      <p><b>Proč veřejně:</b></p>
+      <ul>
+        <li>Primárně jako reklama na nás (marketing).</li>
+        <li>Sekundárně s nadějí, že komunita přinese vylepšení.</li>
+      </ul>
+      <p><b>Druhý paralelní tlak — interní rollout:</b></p>
+      <ul>
+        <li>Zavádíme ceos-agents do dalších týmů ve firmě.</li>
+        <li>Mezi kolegy bez hluboké AI zkušenosti.</li>
+        <li>Produkt potřebuje úpravy, aby ho zvládli i nezkušení uživatelé.</li>
+      </ul>
+      <p><b>Klíčový insight:</b> oba tlaky (public release + interní rollout) vedou produkt stejným směrem — jednoduchost, onboarding, robustnost. Rozhodujeme jen jednou.</p>
+      <p><b>Co vám dnes nabídnu:</b></p>
+      <ul>
+        <li>Celý koncept v jednom celku (vy znáte části — claude-grade jste viděl, ceos-agents znáte dobře, filip-superpowers jste slyšel).</li>
+        <li>Propojení, jak to celé do sebe zapadá, a proč to vypadá tak, jak vypadá.</li>
+        <li>Na konci otevřené otázky, kde vás potřebuji.</li>
+      </ul>
+    </div>
+  </details>
+
+  <div class="diagram-frame">
+    <div class="diagram-caption">Diagram 1 · Mapa session</div>
+    <div class="mermaid">
+flowchart TB
+    subgraph DNES ["DNES — 6 bloků"]
+        direction TB
+        S1["1 · Co je ceos-agents<br/>(architektura)"]
+        S2["2 · Proč filip-superpowers a forge"]
+        S3["3 · Evoluce vize<br/>meta-agent + claude-grade → overlay"]
+        S4["4 · v7.0.0 + v8.0.0<br/>hlavní změny"]
+        S5["5 · Kam směřujeme<br/>v9.0.0 launch → v10.0.0 možnosti"]
+        S6["6 · ROZHODNUTÍ<br/>public release + interní rollout"]
+        S1 --> S2 --> S3 --> S4 --> S5 --> S6
+    end
+    subgraph TLAKY ["DVA PARALELNÍ TLAKY"]
+        direction TB
+        T1["Public release<br/>(zkušení devs)"]
+        T2["Interní rollout<br/>(AI-nepolíbení)"]
+        CONV["Optimalizujeme pro těžší<br/>→ dostaneme oba"]
+        T1 --> CONV
+        T2 --> CONV
+    end
+    classDef sub fill:#ffffff,stroke:#d1d5db,color:#1f2937
+    class S1,S2,S3,S4,S5,S6 sub
+    class T1,T2,CONV sub
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Čeho se vyhnout</h3>
+    <ul>
+      <li>Marketingový jazyk</li>
+      <li>"Slepá ulička" / "chyba" rétorika</li>
+      <li>Tykání</li>
+      <li>Stavění public a interního proti sobě (nejsou konkurence — jsou paralelní cesty)</li>
+    </ul>
+  </div>
+
+  </div>
+</section>
+
+<!-- ============== SEKCE 2 ============== -->
+<section id="s2" class="section">
+  <div class="section-eyebrow">Sekce 2</div>
+  <h2>Co je ceos-agents · architektura <span class="section-time">12 min</span></h2>
+
+  <div class="section-content">
+
+  <details class="spoken" open>
+    <summary>Co řeknete</summary>
+    <div class="spoken-body">
+      <p class="lead">Začnu od základu, protože budu navazovat. Co tedy ceos-agents přesně je:</p>
+      <ul>
+        <li>Claude Code plugin — běží v rámci platformy Anthropic Claude Code, kterou znáte.</li>
+        <li>Plugin distribuujeme přes marketplace, instalace je jeden příkaz.</li>
+        <li>Architektura je dvouvrstvá: <b>skills</b> jsou orchestrátory (vědí <b>CO</b> udělat), <b>agenti</b> jsou specialisté (vědí <b>JAK</b>).</li>
+        <li>18 specializovaných agentů, 28 skills.</li>
+      </ul>
+      <p><b>Markdown je strategická volba:</b></p>
+      <ul>
+        <li>Žádný runtime kód — vše je markdown, který Claude Code interpretuje.</li>
+        <li>100 % top-15 Claude Code pluginů používá markdown.</li>
+        <li>BMAD-METHOD (45 700 hvězd) v březnu 2026 dokonce odstranili YAML workflow engine ve verzi 6.1.0, package -91 % (z ~3 MB na ~270 kB).</li>
+        <li><b>Proč BMAD odešel od YAML:</b> YAML workflow engine se ukázal jako režie navíc — uživatelé strávili víc času laděním YAML schémat než vlastní logikou agentů, LLM si s markdown poradí lépe (čte ho jako přirozený text, YAML musí parsovat strukturně), a runtime engine přidával dependency, která se rozbíjela při upgradech. BMAD si přiznal, že "YAML jako primární orchestrace = anti-pattern pro LLM-driven systémy" a vrátil se k čistému markdown s persona handoffs.</li>
+        <li>My jsme markdown nikdy neopustili — z přesně stejných důvodů, které BMAD musel objevit cestou.</li>
+      </ul>
+      <p><b>Pipeline je sekvenční uvnitř ticketu, paralelní mezi tickety:</b></p>
+      <ul>
+        <li><b>Uvnitř jednoho ticketu</b> sekvenční: triage → analýza dopadu → fix ↔ review → test → publish. Agenti jsou na sebe závislí — paralelizace by přidala koordinační režii (Free-MAD: nezkoordinovaná paralelizace = 17.2× error amplification).</li>
+        <li><b>Mezi více tickety</b> paralelní: <code>/fix-bugs</code> + worktrees umožňují řešit X ticketů zároveň v izolovaných git worktree (každý nezávislý). Konfigurovatelné <code>Batch size</code> per projekt.</li>
+        <li>Cursor 3.2 má naopak 8 paralelních agentů <b>uvnitř</b> jednoho úkolu (worktrees), Anthropic Team Lead má peer-to-peer messaging mezi agenty. Pro náš task type by to přidávalo komplexitu bez zisku.</li>
+        <li>Sekvence + 18 specializovaných agentů — víc než kdokoli na trhu. BMAD má 6, Devin 4, Cursor specializované módy.</li>
+      </ul>
+    </div>
+  </details>
+
+  <div class="diagram-frame">
+    <div class="diagram-caption">Diagram 2 · Architektura ceos-agents (plugin model)</div>
+    <div class="mermaid">
+flowchart TB
+    CC["CLAUDE CODE PLATFORM<br/>Anthropic"]
+    MK["Plugin Marketplace"]
+    PL["ceos-agents PLUGIN<br/>čistý markdown"]
+    SK["SKILLS · 28<br/>orchestrátoři — CO<br/><i>/fix-ticket · /implement-feature<br/>/scaffold · /autopilot · /publish · …</i>"]
+    AG["AGENTI · 18<br/>specialisté — JAK<br/><i>opus: fixer · reviewer · architect<br/>sonnet: analyst · test-engineer · browser-agent<br/>haiku: publisher · rollback</i>"]
+    API["Claude subscription runtime<br/>Opus 4.7 · Sonnet 4.6 · Haiku 4.5"]
+    KEY["KLÍČOVÉ<br/>0 řádků runtime kódu<br/>Všechno markdown."]
+
+    CC --> MK --> PL
+    PL --> SK
+    PL --> AG
+    SK -.dispatch.-> AG
+    AG --> API
+
+    classDef plat fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+    classDef plug fill:#ccfbf1,stroke:#0d9488,color:#134e4a
+    classDef layer fill:#ffffff,stroke:#d1d5db,color:#1f2937
+    classDef key fill:#fef3c7,stroke:#f59e0b,color:#92400e
+    class CC,MK,API plat
+    class PL plug
+    class SK,AG layer
+    class KEY key
+    </div>
+  </div>
+
+  <div class="diagram-frame">
+    <div class="diagram-caption">Diagram 3 · Bug-fix pipeline flow (po v8.0.0 konsolidaci)</div>
+    <div class="mermaid">
+flowchart TD
+    IT["Issue tracker<br/>YouTrack · Jira · Linear · Gitea · Redmine · GitHub"]
+    AN["ANALYST · sonnet<br/>--phase triage → AC, complexity, repro<br/>--phase impact → affected files map"]
+    H1["[Pre-fix hook]"]
+    FX["FIXER · opus"]
+    RV["REVIEWER · opus"]
+    RB["rollback-agent · haiku<br/>(on block)"]
+    H2["[Post-fix hook]<br/>smoke test · build + test"]
+    TE["TEST-ENGINEER · sonnet<br/>(--e2e pro browser flow)"]
+    AGT["[Acceptance gate]<br/>AC ≥ 3 OR complexity ≥ M"]
+    H3["[Pre-publish hook]"]
+    PB["PUBLISHER · haiku<br/>PR with template"]
+    VR["Verify post-merge<br/>reopen if fail"]
+
+    IT --> AN --> H1 --> FX
+    FX <-->|"max 5 iterací"| RV
+    FX -.block.-> RB
+    RV --> H2 --> TE --> AGT --> H3 --> PB --> VR
+
+    classDef stage fill:#ffffff,stroke:#d1d5db,color:#1f2937
+    classDef opus fill:#fef3c7,stroke:#f59e0b,color:#92400e
+    classDef sonnet fill:#dbeafe,stroke:#3b82f6,color:#1e3a8a
+    classDef haiku fill:#d1fae5,stroke:#10b981,color:#065f46
+    classDef hook fill:#f3f4f6,stroke:#9ca3af,color:#4b5563
+    class AN,TE sonnet
+    class FX,RV opus
+    class RB,PB haiku
+    class H1,H2,H3,AGT hook
+    class IT,VR stage
+    </div>
+  </div>
+
+  <div class="diagram-frame">
+    <div class="diagram-caption">HITL mode framework (v8.0.0 D3) · 3 módy nad stejnou pipeline pro 3 uživatelské profily</div>
+    <div class="mermaid">
+flowchart LR
+    USER["Uživatel spustí<br/>/fix-ticket nebo /implement-feature"]
+    M1["--yolo<br/>ŽÁDNÉ gates<br/>pipeline běží end-to-end<br/><b>Pro:</b> autopilot · CI/CD · experti"]
+    M2["default<br/>STRATEGICKÉ gates<br/>pause před PR + na bloku<br/><b>Pro:</b> středně-zkušení (většina)"]
+    M3["--step-mode (NEW v8.0.0)<br/>PER-AGENT pause<br/>schválení po každém kroku<br/><b>Pro:</b> novice users · interní rollout"]
+
+    USER --> M1
+    USER --> M2
+    USER --> M3
+
+    classDef user fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+    classDef yolo fill:#fee2e2,stroke:#dc2626,color:#7f1d1d
+    classDef def fill:#ffffff,stroke:#9ca3af,color:#1f2937
+    classDef step fill:#d1fae5,stroke:#059669,color:#065f46,stroke-width:2px
+    class USER user
+    class M1 yolo
+    class M2 def
+    class M3 step
+    </div>
+  </div>
+
+  <div class="callout teal">
+    <div class="callout-title">Proč 3 módy = 3 profily uživatelů</div>
+    <div>
+      <ul style="margin: 6px 0; padding-left: 22px;">
+        <li><b>--yolo</b> pro autopilot scénáře (v6.8.0 cron-driven dispatch) a experty, kteří chtějí pipeline nepřerušovat. Risk acceptance je explicitní volba.</li>
+        <li><b>default</b> má strategické gates jen na klíčových místech (před PR, na bloku, na NEEDS_CLARIFICATION). Není to YOLO ani micromanagement.</li>
+        <li><b>--step-mode</b> je explicitně pro <b>interní rollout</b> — kolega bez AI zkušenosti vidí, co každý agent udělal, a může schválit / zastavit / opravit kontext před dalším krokem. Po pár pipelinech přejde na default. Bez --step-mode by se interní adopce zasekla na "kolega Pavel se bojí, že to udělá blbost".</li>
+      </ul>
+      <p style="margin-top: 10px;"><b>Tržní precedent:</b> Cline Auto Approve evolution (2025-2026) — single toggle → YOLO → 8 granular categories. Stejný směr jako náš mode framework, jen Cline má 8 podkategorií (read/write/exec/network atd.), my máme 3 ucelené módy.</p>
+    </div>
+  </div>
+
+  <h3>Engineering zajímavosti · ceos-agents (méně zřejmé, ale důležité)</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4>Sledovatelnost akceptačních kritérií (<code>maps_to</code>)</h4>
+      <p>Architect při decomposition feature emituje <code>maps_to: AC-{N}: "{text}"</code> u každého subtasku. Acceptance-gate na konci pipeline ověří per-AC fulfillment <b>s code + test evidence</b> (FULFILLED / PARTIALLY / NOT ADDRESSED). Spec-reviewer má <code>--verify</code> mode pro audit implementace proti spec. <b>Tržně unikátní</b> — Copilot Coding Agent má jen partial.</p>
+    </div>
+    <div class="card">
+      <h4>Když si agent není jistý, zeptá se uživatele (NEEDS_CLARIFICATION)</h4>
+      <p>Když fixer/triage narazí na <b>nejednoznačnost</b> v zadání (např. "issue říká 'oprav přihlášení', ale jsou tam 3 různé login flows — který z nich?"), neimprovizuje. Emituje fenced block s konkrétní otázkou, pipeline přejde do <code>paused</code> stavu. User odpoví přes <code>/resume-ticket --clarification "...odpověď..."</code>, pipeline pokračuje s odpovědí jako kontextem.</p>
+      <p style="margin-top: 8px;"><b>Ochrana proti zneužití:</b> max 3 clarifications per pipeline + per-iter cap (agent nemůže donekonečna zdržovat). Pause-timeout config (default 30 dní, min 1h, max 365d) — po vypršení se pipeline auto-aborte. Tracker-comment producer/receiver protokol s EXTERNAL INPUT marker wrap (proti prompt injection z odpovědí).</p>
+    </div>
+    <div class="card">
+      <h4>Pojmenované limity opakování (žádné nekonečné smyčky)</h4>
+      <p>Každý retry má pojmenovaný limit, konfigurovatelný per-projekt:</p>
+      <div class="kv-list" style="margin-top: 8px;">
+        <dt>Fixer↔Reviewer</dt><dd><b>5</b> iterací</dd>
+        <dt>Test fix attempts</dt><dd><b>3</b></dd>
+        <dt>Build retries</dt><dd><b>3</b></dd>
+        <dt>Spec iterations</dt><dd><b>5</b></dd>
+        <dt>Root cause</dt><dd><b>3</b></dd>
+      </div>
+      <p style="margin-top: 8px;">Když limit překročen → block + rollback + tracker comment. Žádné nekonečné smyčky.</p>
+    </div>
+    <div class="card">
+      <h4>Historie pipeline jako kontext pro další běhy</h4>
+      <p>Každý dokončený run zapíše metadata do <code>.ceos-agents/pipeline-history.md</code> (append-only, 50-run retention): issue_id, použití agenti, výsledek (success/blocked), block reason (sanitized), timestamps.</p>
+      <p style="margin-top: 8px;"><b>Není to ML learning</b> — LLM se nemění. Je to <b>context-aware připomenutí</b>: fixer při Step 1 dostane <b>posledních 5 runů</b> jako součást kontextu, reviewer <b>posledních 10</b>. V praxi to vypadá: <i>"v posledních 5 runech jsi v souboru auth.ts nedokázal opravit edge case X — pozor na něj"</i> nebo <i>"reviewer 3× po sobě blokoval kvůli chybějící null check"</i>. Agent to vidí <b>před</b> tím, než začne pracovat — zvyšuje to šanci, že se vyhne opakování stejných chyb v sérii podobných ticketů.</p>
+      <p style="margin-top: 8px;"><b>Sanitized:</b> 14 credential patterns (Bearer, AWS AKIDs, Slack/GitHub tokens, JWT, SSH/PGP keys atd.) automaticky stripped. Žádné PII, žádné sekrety v historii.</p>
+    </div>
+    <div class="card">
+      <h4>Webhooky (notifikace ven) — ochrana proti rozbité URL</h4>
+      <p><b>K čemu jsou webhooky:</b> ceos-agents umí posílat HTTP notifikace o událostech (PR vytvořen, ticket zablokován, pipeline doběhl) na URL, kterou si operátor nakonfiguruje v Automation Config — typicky napojení na interní Slack, Teams nebo monitoring (Grafana, Datadog).</p>
+      <p style="margin-top: 8px;"><b>Problém, který řešíme:</b> co když je ta URL pomalá nebo rozbitá? Bez ochrany by pipeline u každé události čekala na timeout (typicky 5-30 sekund) → fix by se prodloužil o minuty zbytečným čekáním.</p>
+      <p style="margin-top: 8px;"><b>Naše řešení (3 vrstvy):</b></p>
+      <ul style="margin: 6px 0; padding-left: 22px;">
+        <li><b>Po 3 selháních za sebou</b> se webhook pro zbytek pipeline runu vypne — žádné další požadavky tam neletí. Po dalším runu se začíná čistě.</li>
+        <li><b>Selhání webhook nikdy nezablokuje fix</b> — pipeline si jen zaloguje <code>[WARN] Webhook delivery failed</code> a pokračuje. Notifikace je advisory (informativní), ne kritická závislost.</li>
+        <li><b>Bezpečnost:</b> curl povoluje jen <code>http://</code> nebo <code>https://</code> — operátor nemůže (omylem ani záměrně) poslat na <code>file://</code>, <code>gopher://</code> a další schémata, která by mohla zneužít interní zdroje (SSRF útok).</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Strukturovaný komentář při zablokování ticketu</h4>
+      <p>Když agent blokuje issue, dostane se vždy strukturovaný komentář:</p>
+      <pre style="font-size: 0.82rem; line-height: 1.5; margin: 6px 0 0; padding: 10px 12px;">[ceos-agents] 🔴 Pipeline Block
+Agent: reviewer
+Step: fixer-reviewer iteration 5/5
+Reason: 2 sentences max
+Detail: error / diff / test output
+Recommendation: action for human</pre>
+      <p style="margin-top: 8px; font-size: 0.88rem;">Strojově parsovatelný (<code>[ceos-agents]</code> prefix). <code>/resume-ticket</code> ho detekuje a ví, kde pipeline pokračovat.</p>
+    </div>
+  </div>
+
+  <h3>Klíčové body (co CEO musí pochopit)</h3>
+  <div class="numbered-list">
+    <div class="item"><b>Plugin model = my žijeme uvnitř Claude Code</b>, neběhme samostatně. Důsledek: distribuce přes Anthropic marketplace (110k+ devs/měs visit), constraint = nelze používat hooks/MCP v agent frontmatter (Run 2 Oprava 2). To vysvětluje, proč máme skill-orchestraci.</div>
+    <div class="item"><b>Markdown je strategická volba.</b> 100 % top-15 plugins, AGENTS.md je AAIF-stewarded, BMAD reverted z YAML v 6.1.0 (březen 2026, package -91 %). Microsoft Agent Framework jde naopak (enterprise YAML, 1.0 GA Apr 6 2026) — to je jiná tržní část (enterprise .NET/Python), ne plugin space.</div>
+    <div class="item"><b>Sekvenční pipeline + 18 specializovaných agentů</b> = pozice mezi single-agent generalistou (Devin, Cursor, Cline) a paralelní orchestracemi (Cursor 3.2, Anthropic Team Lead). Každý agent má jednu věc. Reviewer ↔ fixer iteruje (max 5 cyklů).</div>
+    <div class="item"><b>Model tiering Opus/Sonnet/Haiku</b> = cost-aware už dnes. Opus 4.7 GA Apr 16 2026 přinesl ~35 % víc tokenů per token (nový tokenizer) → cost efektivně vzrostl.</div>
+  </div>
+
+  <div class="card">
+    <h3>Čeho se vyhnout</h3>
+    <ul>
+      <li>"Plugin = jen nástroj" — to neumí přenést konkurenční pozici</li>
+      <li>Detailní popis každého agenta (na tabuli vyjmenovat 3-4 nejvýraznější: fixer, reviewer, triage, publisher)</li>
+      <li>Tykání</li>
+    </ul>
+  </div>
+
+  </div>
+</section>
+
+<!-- ============== SEKCE 3 ============== -->
+<section id="s3" class="section">
+  <div class="section-eyebrow">Sekce 3</div>
+  <h2>Proč filip-superpowers a forge <span class="section-time">12 min</span></h2>
+
+  <div class="section-content">
+
+  <details class="spoken" open>
+    <summary>Co řeknete</summary>
+    <div class="spoken-body">
+      <p class="lead">Když ceos-agents začínalo, dělal jsem ho ad-hoc — psal jsem agenty rukou, testoval, opravoval, iteroval.</p>
+      <p><b>Brzo jsem narazil na strop kvality:</b></p>
+      <ul>
+        <li>LLM přijde s něčím, co vypadá dobře.</li>
+        <li>Já to zkontroluju, něco opravím.</li>
+        <li>Tři týdny později zjistím, že verze 5.x má 41 testů, které jsou jen doc-string grepy, ne skutečné testy.</li>
+        <li>To je přesně to, před čím varuje Karpathy v eseji "Vibe Coding" — bez evaluace nemáte pipeline, máte jen iluzi.</li>
+      </ul>
+      <p><b>filip-superpowers — odkud to vychází:</b></p>
+      <ul>
+        <li><b>Osobní motivace:</b> nesnáším se bavit s Claudem bez research. Bez něj mi vrací staré věci (knowledge cutoff několik měsíců zpátky), nebo věci špatně (halucinuje API, deprecated patterns, fake citace). Research-first pipeline je pro mě nepostradatelná disciplína, ne nice-to-have.</li>
+        <li>Můj soukromý plugin, fork komunitního <a href="https://github.com/obra/superpowers" target="_blank" rel="noopener">superpowers Jesseho Vincenta</a> (GitHub: obra/superpowers).</li>
+        <li>Vincent dnes vede #2 nejpoužívanější Claude Code framework — 121 tisíc hvězd.</li>
+        <li>Po lednu 2026, kdy ho Anthropic přijal do oficiálního marketplace, akcentoval: "don't trust LLM output without process".</li>
+        <li>Z toho vychází i moje filip-superpowers.</li>
+      </ul>
+      <p><b>Forge — core orchestrace v té paměti:</b></p>
+      <ul>
+        <li>Multi-fázová pipeline pro vývoj komplexních věcí.</li>
+        <li>10 fází: research → brainstorm → spec → TDD → plan → execute → verify.</li>
+        <li>Pro kontext: tahle prezentace zrovna teď jede v jedné z těch fází (brainstorming).</li>
+        <li>v6.9.0 ceos-agents byla forged, v6.10.0 forged, v7.0.0 právě běží paralelně přes forge, v8.0.0 specs jsou hotové.</li>
+        <li><b>Nezapisujeme features, forge-ujeme je.</b></li>
+      </ul>
+    </div>
+  </details>
+
+  <div class="diagram-frame">
+    <div class="diagram-caption">Diagram 4 · Forge pipeline architektura — 10 fází</div>
+    <div class="mermaid">
+flowchart TB
+    P0["Phase 0 · Routing gate<br/>klasifikace task type → výběr fází"]
+    P1["Phase 1 · Research questions<br/>1 LEAD agent (sonnet)<br/>5–25 otázek"]
+    P2["Phase 2 · Research answers<br/>N PARALELNÍCH (sonnet)<br/>5 lenses · synth (opus)"]
+    P3["Phase 3 · Brainstorm<br/>3 PROPOSALS (heterogenní)<br/>+ JUDGE (opus)"]
+    P4["Phase 4 · Spec EARS<br/>1 SPEC-WRITER (opus)<br/>+ 3 REVIEWERS · max 3 cycles"]
+    P5["Phase 5 · TDD<br/>TEST-WRITER (sonnet)<br/>mutation gate 70 % kill rate"]
+    P6["Phase 6 · Plan<br/>PLAN-WRITER (opus)<br/>dependency graph + parallelism"]
+    P7["Phase 7 · Execute<br/>N PARALELNÍCH FIXERS (opus)<br/>isolated worktrees · ↔ REVIEWER loops"]
+    P8["Phase 8 · Verification<br/>5 PARALELNÍCH verifikátorů<br/>COMMANDER VERDICT (opus) · skóre 0–1"]
+    P9["Phase 9 · Completion<br/>changelog · version-bump · tag"]
+    GATES["3 USER APPROVAL GATES<br/>(after Phase 3, 4, 6)"]
+
+    P0 --> P1 --> P2 --> P3 -.->|gate| GATES
+    GATES -.-> P4 -.->|gate| GATES
+    GATES -.-> P5 --> P6 -.->|gate| GATES
+    GATES -.-> P7 --> P8 --> P9
+
+    classDef phase fill:#ffffff,stroke:#d1d5db,color:#1f2937
+    classDef gate fill:#fef3c7,stroke:#f59e0b,color:#92400e
+    class P0,P1,P2,P3,P4,P5,P6,P7,P8,P9 phase
+    class GATES gate
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Jak forge tvoří agenty a dělá zadání</h3>
+    <div class="split">
+      <div>
+        <h4>Tvoří agenty</h4>
+        <ul>
+          <li>Každá fáze má TEMPLATE prompt (markdown soubor) s placeholders</li>
+          <li>Substituce: <code>{task}</code>, <code>{research_findings}</code>, <code>{spec_path}</code>, <code>{file_list}</code></li>
+          <li>Multi-agent dispatch: parent skill volá <code>Task()</code> N-krát s jiným zadáním</li>
+          <li>Heterogenita = záměrně různé úhly pohledu ("lenses"). Konkrétně <b>5 perspektiv</b>:
+            <ul style="margin: 6px 0 6px; padding-left: 22px;">
+              <li><b>academic</b> — peer-review studie, arXiv</li>
+              <li><b>production</b> — case studies firem, post-mortems</li>
+              <li><b>OSS code</b> — čtení skutečných implementací na GitHubu</li>
+              <li><b>community</b> — HN, Reddit, Discord diskuze</li>
+              <li><b>vendor docs</b> — oficiální dokumentace Anthropic, OpenAI atd.</li>
+            </ul>
+            Každý research agent dostane jinou perspektivu — vyhýbáme se group-think (viz Free-MAD: heterogenní paralelní agenti +12-16 % kvality vs uniformní).
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h4>Dělá zadání</h4>
+        <ul>
+          <li>Phase 0 routing analyzuje user vstup, vybírá fáze (bug-fix neskáče celé 10 fází)</li>
+          <li>Phase 1 LEAD agent rozloží task na ≤25 zkoumatelných otázek (decomposition)</li>
+          <li>Spec phase generuje EARS-format requirements (machine-checkable: WHEN/WHILE/IF)</li>
+          <li>Plan phase generuje task graph s blokádami a paralelismem</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout teal">
+    <div class="callout-title">Jak forge měří kvalitu — commander-verdict skóre</div>
+    <div>
+      <p>Phase 8 verification spustí <b>5 paralelních verifikátorů</b>, každý hodnotí jinou dimenzi (skóre 0-1):</p>
+      <ul style="margin: 8px 0; padding-left: 22px;">
+        <li><b>security</b> — vulnerabilities, prompt-injection, credentials handling</li>
+        <li><b>correctness</b> — splňuje implementace EARS requirements?</li>
+        <li><b>spec-alignment</b> — neodchýlil se kód od spec phase 4?</li>
+        <li><b>robustness</b> — error handling, edge cases, retry logic</li>
+        <li><b>devils-advocate</b> — co může selhat v produkci, na co jsme zapomněli</li>
+      </ul>
+      <p>Šestý agent — <b>COMMANDER VERDICT (opus)</b> — agreguje 5 dimenzí do jednoho skóre + verdiktu (FULL_PASS / PARTIAL_PASS / FAIL).</p>
+      <p><b>Reálná čísla z posledních 4 forge runů na ceos-agents:</b></p>
+      <div class="kv-list" style="margin: 10px 0 6px;">
+        <dt>v6.8.0</dt><dd><b>0.857</b> FULL_PASS · 3.67M tokens</dd>
+        <dt>v6.8.1</dt><dd><b>0.907</b> FULL_PASS · 2.34M tokens</dd>
+        <dt>v6.9.0</dt><dd><b>0.953</b> FULL_PASS · ~5M tokens (cycle-1, po 8 fixech z cycle-0 0.887)</dd>
+        <dt>v6.10.0</dt><dd><b>0.862</b> FULL_PASS · 4.3M tokens, ~13h (security 0.80 / correctness 0.918 / spec-alignment 0.89 / robustness 0.82)</dd>
+      </div>
+      <p style="margin-top: 8px;"><b>Proč to záleží:</b> bez objektivního skóre je "kvalita" pocit. Commander verdict dává threshold (FULL_PASS ≥ ~0.85), který nelze obejít subjektivním "vypadá to dobře". Pokud cycle-0 nedosáhne thresholdu, forge automaticky spustí cycle-1 s opravami a re-verifikuje (přesně tohle se stalo u v6.9.0: 0.887 → fixy → 0.953).</p>
+    </div>
+  </div>
+
+  <h3>Další engineering zajímavosti · forge</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4>Mutační testování · brána 70 % zachycených mutací</h4>
+      <p>Phase 5 TDD generuje testy <b>ze spec, ne z kódu</b> (testy nesmí vědět, jak je implementace napsaná). Pak forge automaticky <b>mutuje produkční kód</b> (změní operátory, hodnoty, podmínky) a měří, kolik mutací testy zachytí.</p>
+      <p style="margin-top: 8px;"><b>Pod 70 % kill rate</b> = testy jsou slabé, zachytávají jen happy path → forge přidá generování dalších testů. <b>AdverTest research:</b> 70 % gate dává 8.56 % quality improvement vs no-gate.</p>
+    </div>
+    <div class="card">
+      <h4>Skrytá rezerva testů (20 %) jako slepý benchmark</h4>
+      <p>Phase 5 vygeneruje sadu testů, ale <b>20 % drží jako "hidden reserve"</b> — agent v phase 7 (execute) je nikdy neuvidí. Když phase 8 verifikuje, hidden testy fungují jako <b>blind benchmark</b>: kolik scénářů agent vyřešil bez toho, aby věděl, že existují?</p>
+      <p style="margin-top: 8px;">Tohle je obrana proti "test-driven memorization" — agent by mohl optimalizovat pro viditelné testy a fail na unseen edge cases. Hidden reserve to ošetřuje.</p>
+    </div>
+    <div class="card">
+      <h4>Strojově ověřitelné požadavky ve formátu EARS</h4>
+      <p>Phase 4 spec generuje requirements v <b>EARS formátu</b> (Easy Approach to Requirements Syntax) — <code>WHEN {trigger} THE SYSTEM SHALL {response}</code>, <code>WHILE {state} ...</code>, <code>IF {condition} THEN ...</code>.</p>
+      <p style="margin-top: 8px;">Strojově parsovatelné — phase 5 z toho generuje testy automaticky, phase 8 reviewer ověřuje per-REQ pokrytí. Žádné natural-language ambiguity ("user-friendly", "fast"). <b>v6.9.0 spec: 90 EARS REQs / 118 ACs.</b></p>
+    </div>
+    <div class="card">
+      <h4>3 alternativní návrhy → soudce vybere (proti uniformnímu uvažování)</h4>
+      <p>Phase 3 brainstorm generuje <b>3 heterogenní návrhy</b> řešení, každý jiným "lens":</p>
+      <ul style="margin: 6px 0 0; padding-left: 20px;">
+        <li><b>Conservative</b> — minimální risk, proven patterns</li>
+        <li><b>Innovative</b> — best-in-class, nejmodernější přístupy</li>
+        <li><b>Skeptical</b> — co může selhat, devil's advocate</li>
+      </ul>
+      <p style="margin-top: 8px;">Pak <b>JUDGE agent (opus)</b> rozhodne mezi nimi (nebo synthesize). <b>Free-MAD research:</b> heterogenní agenti +12-16 % vs uniformní; nezkoordinovaná paralelizace 17.2× error amplification — proto judge layer.</p>
+    </div>
+    <div class="card">
+      <h4>Přesné měření spotřeby tokenů</h4>
+      <p>Každá fáze má token tracking, <code>state.json</code> má <code>tokens_used</code> / <code>duration_ms</code> / <code>tool_uses</code> per stage. <code>/metrics</code> dual-mode: <b>measured</b> (z state.json, real numbers) vs <b>estimated</b> (heuristic pre-run).</p>
+      <p style="margin-top: 8px;">Reálný spend posledních 4 ceos-agents runů: <b>3.67M / 2.34M / ~5M / 4.3M tokens</b>. Bez tohoto by se nedalo říct, jestli phase 8 verification stojí za to (stojí — odhalí 5-15 % chyb).</p>
+    </div>
+    <div class="card">
+      <h4>Strop 3 revizních cyklů (rychlé selhání místo nekonečna)</h4>
+      <p>Phase 4 spec ↔ reviewers loop má <b>max 3 revize cycles</b>. Když po 3 cyklech reviewers stále nesouhlasí → fail-fast, forge zastaví, user musí intervenovat.</p>
+      <p style="margin-top: 8px;"><b>Proč ne unlimited:</b> bez capu by mohly reviewers donekonečna měnit nuance. Cap nutí k závazku. <b>v6.9.0:</b> 3 Phase 4 revision cycles využity, dosáhly konsensu.</p>
+    </div>
+  </div>
+
+  <div class="diagram-frame">
+    <div class="diagram-caption">Diagram 5 · Cross-plugin dogfooding</div>
+    <div class="mermaid">
+flowchart LR
+    FP["filip-superpowers (forge)<br/><i>jak vyvíjím</i>"]
+    CA["ceos-agents<br/><i>co vyvíjím</i>"]
+    EU["end-user → fixne bug → PR"]
+    DE["developer (já) → forge-uje feature → commit"]
+
+    FP -->|"dělá"| CA
+    CA --> EU
+    FP --> DE
+
+    SHARED["OBĚ POUŽÍVAJÍ STEJNÉ PRINCIPY:<br/>multi-fázová pipeline · specializovaní agenti<br/>verifikace > inspekce · evaluace na konci"]
+    FP -.-> SHARED
+    CA -.-> SHARED
+
+    classDef product fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+    classDef user fill:#ffffff,stroke:#d1d5db,color:#1f2937
+    classDef shared fill:#fef3c7,stroke:#f59e0b,color:#92400e
+    class FP,CA product
+    class EU,DE user
+    class SHARED shared
+    </div>
+  </div>
+
+  <h3>Anthropic 5 patternů — proč ceos-agents bug-fix pipeline používá jen 3</h3>
+  <div class="table-frame">
+    <div class="table-caption">5 patternů z Anthropic "Building Effective Agents" — naše použití</div>
+    <table data-sortable>
+      <thead>
+        <tr>
+          <th class="sortable">Pattern</th>
+          <th>Co dělá</th>
+          <th class="sortable">ceos-agents bug-fix</th>
+          <th>Proč / proč ne</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><b>Routing</b></td><td>Vstup → výběr handler</td><td><span class="tag success">Ano</span></td><td><code>/workflow-router</code> → fix-ticket / implement-feature / scaffold</td></tr>
+        <tr><td><b>Chaining</b></td><td>Sekvenční LLM volání</td><td><span class="tag success">Ano</span></td><td>triage → code-analyst → fixer → reviewer → test → publish</td></tr>
+        <tr><td><b>Parallelization</b></td><td>Více agentů paralelně</td><td><span class="tag success">Ano (na úrovni ticketů)</span></td><td><b>Uvnitř jednoho bug-fixu:</b> sekvenční (triage → analyst → fixer ↔ reviewer → test → publisher) — agenti jsou na sebe závislí, paralelizace by přidala koordinační režii (Free-MAD: nezkoordinovaná paralelizace = 17.2× error amplification). <b>Mezi více bug-fixy:</b> paralelní přes <code>/fix-bugs</code> + worktrees — každý ticket běží v izolovaném git worktree, neovlivňují se. Konfigurovatelné: <code>Worktrees → Batch size</code> v Automation Config. <b>Tedy: paralelizace tam, kde dává smysl (independent tickets), sekvence tam, kde je závislost (uvnitř jednoho).</b></td></tr>
+        <tr><td><b>Orchestrator-workers</b></td><td>Lead + sub-agenti</td><td><span class="tag warn">Ne (záměrně)</span></td><td><b>Anthropic pattern:</b> LEAD agent (LLM) dynamicky volá sub-agenty (LLM) = 2-úrovňová LLM hierarchie. <b>ceos-agents:</b> deterministický skill (markdown s explicitní sekvencí, ŽÁDNÝ LLM) volá specializované agenty (LLM) = 1 úroveň LLM. <b>Proč:</b> bug-fix je předvídatelná sekvence — když selže, <code>state.json</code> přesně řekne kde. LLM orchestrátor by mohl vymyslet nečekané kroky → těžší debugging, harder rollback, nepředvídatelné token spendy. Pro náš task type je deterministický skill robustnější. <b>Forge naopak orchestrator-workers POUŽÍVÁ</b> (phase 2 lead+N parallel research, phase 4 spec+3 reviewers) — protože dev process potřebuje dynamický dispatch.</td></tr>
+        <tr><td><b>Evaluator-optimizer</b></td><td>Iterativní refinement</td><td><span class="tag muted">Ano (omezeně, záměrně)</span></td><td><b>Anthropic pattern (full):</b> agent vyprodukuje výstup → evaluator skóruje → pokud nedostatečné, evaluator <i>upraví prompt</i> a re-spustí agent. Tedy <b>self-modifying prompts</b>. <b>ceos-agents:</b> reviewer (opus) zkontroluje fixer výstup → vrátí konkrétní výtky → fixer opraví podle výtek (max 5 iterací, pak block + rollback). <b>Prompt fixera se NEMĚNÍ</b> — mění se jen kontext (předchozí pokus + výtky). <b>Proč:</b> self-modifying prompts znamenají, že nikdy nevíte, jaký prompt agent reálně dostal. Auditovatelnost zmizí, debugging se rozpadne. Pro produkční pipeline, kde musíme vysvětlit "proč fixer udělal X", je deterministický prompt + iterativní výtky čitelný a opravitelný. Plný evaluator-optimizer (s mutation testing 70 % kill gate) má forge phase 5 — protože tam je cílem najít hranice prompt kvality, ne shipnout kód.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">Proč nepoužíváme všech 5</div>
+    <div>ceos-agents není obecný framework, je to <b>specializovaná pipeline pro bug-fix / feature / scaffold</b>. Pro ten task type je sekvenční chaining + iterativní review nejvhodnější. Forge naopak používá všech 5 — protože dev process je obecnější. <b>Je to vědomá volba pro náš use case, ne mezera.</b></div>
+  </div>
+
+  <h3>Reálná skepse k autonomii (poctivé přiznání)</h3>
+  <details class="spoken" open>
+    <summary>Co řeknete o autonomii</summary>
+    <div class="spoken-body">
+      <p class="lead">Vím, co lidé říkají o filip-superpowers a podobných nástrojích — že nerozumí té autonomii, nevěří jí, že to lze použít jen na část práce, že stejně musí připravit zadání. Ten pocit je oprávněný a já souhlasím.</p>
+      <p><b>Forge NENÍ "klikni a hotovo". Realita:</b></p>
+      <ul>
+        <li>Počáteční zadání (1-3 odstavce) píšu já. Forge to nedělá za mě.</li>
+        <li>Po fázi 1-3 (research → brainstorm) je gate — schvaluji směr. Forge se zeptá, nediktuje.</li>
+        <li>Po fázi 4 (spec) je gate — schvaluji formální požadavky.</li>
+        <li>Po fázi 6 (plan) je gate — schvaluji task graph.</li>
+        <li>Phase 8 verification odhalí ~5-15 % chyb i v tom, co projde phase 7 → fix → re-verify.</li>
+      </ul>
+      <p>Tedy: <b>forge je "discipline collaborator", ne "autonomous engineer".</b> Vyřeší 70-80 % typing, validuje, vede strukturu. Ale posledních 20 % — rozhodnutí, kontext, business priority — to dělám já. Karpathy to přesně popsal: "pull deterministic steps OUT of LLM" — gates jsou determinismus, agenti jsou kreativita.</p>
+      <p><b>Co to znamená pro public release ceos-agents (NE forge — ceos-agents):</b></p>
+      <ul>
+        <li>Stejně jako forge potřebuje user-prepared zadání, ceos-agents potřebuje user-prepared issue v trackeru s aspoň částečně srozumitelnou triáží.</li>
+        <li>NEEDS_CLARIFICATION mechanika (od v6.9.0) PŘESNĚ řeší pochybnosti AI — pipeline se zeptá uživatele, neimprovizuje.</li>
+        <li>Default mode má strategické gates, není to YOLO. v8.0.0 přidává <code>--step-mode</code> (per-agent pause) pro novice users.</li>
+      </ul>
+    </div>
+  </details>
+
+  <h3>Diagram 6 · ceos-agents přes forge — timeline</h3>
+  <div class="diagram-frame boxed">
+    <div class="timeline-cards">
+      <div class="card">
+        <div class="ver">2026-03-21</div>
+        <div class="stage">Forge architektura dokončena</div>
+        <div class="meta">— design</div>
+      </div>
+      <div class="card">
+        <div class="ver">2026-03-25</div>
+        <div class="stage">První forge run na ceos-agents</div>
+        <div class="meta">+3 dny</div>
+      </div>
+      <div class="card">
+        <div class="ver">v6.8.0 · 2026-04-17</div>
+        <div class="stage">forge-2026-04-17-001</div>
+        <div class="meta">3.67M tokens · 0.857 FULL_PASS</div>
+      </div>
+      <div class="card">
+        <div class="ver">v6.8.1 · 2026-04-18</div>
+        <div class="stage">forge-2026-04-18-001</div>
+        <div class="meta">2.34M tokens · 0.907 FULL_PASS</div>
+      </div>
+      <div class="card">
+        <div class="ver">v6.9.0 · 2026-04-19</div>
+        <div class="stage">forge-2026-04-19-001</div>
+        <div class="meta">~5M tokens · 0.953 FULL_PASS</div>
+      </div>
+      <div class="card">
+        <div class="ver">v6.10.0 · 2026-04-23</div>
+        <div class="stage">forge-2026-04-23-002</div>
+        <div class="meta">4.3M tokens · 0.862 · ~13h</div>
+      </div>
+      <div class="card">
+        <div class="ver">v8.0.0 · 2026-04-26</div>
+        <div class="stage">A research run 1+2</div>
+        <div class="meta">research-only</div>
+      </div>
+      <div class="card">
+        <div class="ver">v7.0.0 · dnes</div>
+        <div class="stage">běží paralelně</div>
+        <div class="meta">TBD</div>
+      </div>
+    </div>
+    <div style="margin-top: 16px; padding: 18px 22px; background: var(--code-bg); border-radius: 6px; font-size: 1rem; line-height: 1.7;">
+      <b>Souhrn:</b><br>
+      Celkem forge runů: <b>46</b> · Tempo: <b>~1,4 běhu denně</b> · 33 dní od prvního běhu.<br>
+      Zdokumentovaný kumulativní spend (4 major běhy): <b>~15,3 M tokenů</b>.<br>
+      Odhad celkový (všech 46 běhů): <b>~20–25 M tokenů</b>, ~150–200 h wallclock.<br>
+      Nejstarší záloha: <code>.forge.bak-20260325-204006</code> · Nejnovější: <code>.forge.bak-2026-04-27T044940Z</code>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title">Poctivé upozornění (důležité)</div>
+    <div>
+      <b>46 ≠ 46 plně dokončených pipeline.</b> Některé backupy jsou mid-pipeline checkpoints, jeden je explicitně <code>aborted</code>. Realisticky cca <b>15-25 plně dokončených</b> pipeline-runů, zbytek partial / iterace stejného běhu.<br>
+      <b>Forge sám se v té době vyvíjel</b> — early March runy používaly proto-verzi, dnešní pipeline (10 fází + commander-verdict) se ustálila kolem v6.8.0.
+    </div>
+  </div>
+
+  <h3>Srovnávací tabulka — forge / filip-superpowers vs trh</h3>
+  <div class="table-frame scroll-x">
+    <div class="table-caption">Klikněte na hlavičku pro řazení (Hvězdy / Multi-LLM / TDD enforced atd.)</div>
+    <table data-sortable>
+      <thead>
+        <tr>
+          <th class="sortable">Nástroj</th>
+          <th class="sortable">Hvězdy / Adoption</th>
+          <th class="sortable">Pattern</th>
+          <th class="sortable">Multi-LLM</th>
+          <th class="sortable">HITL gates</th>
+          <th class="sortable">TDD enforced</th>
+          <th class="sortable">Production deployments</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><b>superpowers</b> (Vincent, OG)</td><td>121k★</td><td>Skill-driven, 2-stage review</td><td>Claude only</td><td>Manual</td><td>Implicit</td><td>Hundreds public</td></tr>
+        <tr><td><b>filip-superpowers + forge</b> (já)</td><td>private</td><td>10-phase pipeline, 5-agent verification</td><td>Claude only</td><td>3 explicit gates + auto</td><td>Mutation 70 % kill rate</td><td>1 (ceos-agents)</td></tr>
+        <tr><td><b>BMAD-METHOD</b></td><td>45.7k★</td><td>Persona menu, agile lifecycle</td><td>Multi (CC/Cursor/Windsurf/9+)</td><td>Persona handoffs</td><td>No</td><td>Significant adoption</td></tr>
+        <tr><td><b>Anthropic Skills</b> (vanilla)</td><td>— (official)</td><td>Primitives, no process</td><td>Claude only</td><td>None built-in</td><td>No</td><td>Native</td></tr>
+        <tr><td><b>Cursor 3.2</b> (Apr 24, 2026)</td><td>$2B ARR</td><td>8 parallel agents in worktrees</td><td>Multi providers</td><td>Per-rule allow/deny</td><td>No</td><td>Massive</td></tr>
+        <tr><td><b>Devin / Cognition</b></td><td>$25B raise talks · $20/mo</td><td>Cloud orchestrator + managed units</td><td>Closed</td><td>2 checkpoints (Plan + PR)</td><td>Implicit</td><td>Goldman Sachs etc.</td></tr>
+        <tr><td><b>Cline</b></td><td>3.7M VSCode</td><td>Auto Approve → 8 categories</td><td>Multi (75+ via OpenRouter)</td><td>Granular per-action</td><td>No</td><td>Massive</td></tr>
+        <tr><td><b>GitHub Copilot Coding Agent</b> (GA Apr 20, 2026)</td><td>bundled</td><td>Issue → Actions sandbox → PR</td><td>OpenAI / Anthropic</td><td>Self-review</td><td>Yes (in workflow)</td><td>All Copilot Enterprise/Pro+</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout teal">
+    <div class="callout-title">Kde forge sedí</div>
+    <div>Mezi BMAD (proces s personami, ale méně rigorózní gates) a vanilla Anthropic Skills (primitives bez procesu). <b>Forge unikum: 5-paralelní phase 8 verification + commander-verdict aggregator + mutation gate na phase 5 TDD.</b> Žádný z trhu nemá tu kombinaci.</div>
+  </div>
+
+  </div>
+</section>
+
+<!-- ============== SEKCE 4 ============== -->
+<section id="s4" class="section">
+  <div class="section-eyebrow">Sekce 4</div>
+  <h2>Evoluce vize · meta-agent + claude-grade → overlay <span class="section-time">10 min</span></h2>
+
+  <div class="section-content">
+
+  <div class="split">
+    <div class="callout">
+      <div class="callout-title">Co je "pivot" (krátké vysvětlení)</div>
+      <div><i>"Pivot = strategická změna směru na základě dat. Když mám původní vizi, zkoumám trh a výzkum, a oboje řekne 'tohle nikde neprodukuje produkční systémy', neignoruju to a trvám na své vizi — pivotuju. Změním směr."</i></div>
+    </div>
+    <div class="callout">
+      <div class="callout-title">Co je TOML (krátké vysvětlení)</div>
+      <div><i>"TOML je config formát, něco jako .ini, ale s vnořenými strukturami. Pravděpodobně ho znáte z <code>pyproject.toml</code>, <code>Cargo.toml</code>, <code>next.config.toml</code>. Pro nás to znamená: jednoduchý textový soubor, kde uživatel napíše projekt-specifická pravidla, která se mergnou nad generic agent prompt."</i></div>
+    </div>
+  </div>
+
+  <details class="spoken" open>
+    <summary>Co řeknete</summary>
+    <div class="spoken-body">
+      <p class="lead">Tento blok je důležitý, protože vám ukáže, jak se moje myšlení vyvíjelo na základě dat. Nebyl to lineární plán → execution. Byla to vize → research → pivot.</p>
+      <p><b>Původní vize, kterou jsem měl ještě před vznikem forge:</b></p>
+      <ul>
+        <li>Meta-agent generuje všechny agenty per-project.</li>
+        <li>Tedy ne 18 generických agentů, ale 18 projekt-specific agentů, vyladěných podle konkrétního kódu, technologie a konvencí daného projektu.</li>
+
+        <li>Validace by probíhala nezávisle — tady jste poprvé viděl claude-grade.</li>
+      </ul>
+      <p><b>Smyčka byla:</b> meta-agent vygeneruje agenty per-project → claude-grade (audit nezávislé instance LLM) zhodnotí kvalitu (skóre A-F + Top 3 to fix) → meta-agent opraví → ship.</p>
+      <p>Krásný princip. Self-improving system, žádné generic kompromisy. <b>Ale data ukázala něco jiného.</b></p>
+    </div>
+  </details>
+
+  <h3>Diagram 7 · Evoluce vize</h3>
+  <div class="evolution-stages">
+    <div class="evo-stage original">
+      <div class="label">Q1 2026 · Původní vize</div>
+      <h4>Meta-agent generuje agenty per project</h4>
+      <div class="desc">User instaluje → <b>META-AGENT</b> generuje sadu agentů per-project → <b>claude-grade</b> nezávisle audituje (skóre A-F) → meta-agent opraví → ship.</div>
+    </div>
+    <div class="evo-stage pivot">
+      <div class="label">Q2 2026 · Pivot (po research)</div>
+      <h4>Generic agents + TOML overlay (BMAD-style 3-tier)</h4>
+      <div class="desc">ceos-agents přibaluje 18 GENERIC agentů. User spustí <code>/setup-agents</code> → meta-agent generuje malý TOML overlay → merge generic + overlay → ship. <br><br><b>claude-grade dnes:</b> samostatný produkt (ClaudeGrade v0.8.0), nepatří sem.</div>
+    </div>
+  </div>
+
+  <h3>Co jsou ti agenti — ekosystém</h3>
+  <div style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 16px;">
+    <b>18 agentů.</b> Distribuce model: opus 6 / sonnet 10 / haiku 2.
+  </div>
+
+  <div class="ecosystem">
+
+    <div class="ecosystem-core">
+      <div class="ecosystem-core-header">
+        <span class="ecosystem-core-label">CORE AGENTI</span>
+        <span class="ecosystem-core-sub">sdílené napříč Bug-fix + Feature/Spec pipelines · 4 agenti</span>
+      </div>
+      <div class="ecosystem-core-cards">
+        <div class="agent-pill"><b>fixer</b> <span class="tag opus">opus</span></div>
+        <div class="agent-pill"><b>reviewer</b> <span class="tag opus">opus</span></div>
+        <div class="agent-pill"><b>test-engineer</b> <span class="tag sonnet">sonnet</span></div>
+        <div class="agent-pill"><b>publisher</b> <span class="tag haiku">haiku</span></div>
+      </div>
+    </div>
+
+    <div class="ecosystem-arrows">
+      <div class="ecosystem-arrow uses">↓ používá core ↓</div>
+      <div class="ecosystem-arrow uses">↓ používá core ↓</div>
+      <div class="ecosystem-arrow none">↕ samostatná pipeline</div>
+      <div class="ecosystem-arrow none">↕ standalone</div>
+    </div>
+
+    <div class="ecosystem-categories">
+      <div class="ecosystem-cat cat-bf">
+        <div class="cat-header">
+          <span class="cat-name">BUG-FIX</span>
+          <span class="cat-count">4 exclusive + 4 core = 8</span>
+        </div>
+        <ul class="cat-list">
+          <li><b>analyst</b> <span class="tag sonnet">sonnet</span></li>
+          <li><b>browser-agent</b> <span class="tag sonnet">sonnet</span></li>
+          <li><b>rollback-agent</b> <span class="tag haiku">haiku</span></li>
+          <li><b>acceptance-gate</b> <span class="tag sonnet">sonnet</span></li>
+        </ul>
+      </div>
+
+      <div class="ecosystem-cat cat-fs">
+        <div class="cat-header">
+          <span class="cat-name">FEATURE / SPEC</span>
+          <span class="cat-count">2 exclusive + 4 core = 6</span>
+        </div>
+        <ul class="cat-list">
+          <li><b>spec-analyst</b> <span class="tag sonnet">sonnet</span></li>
+          <li><b>architect</b> <span class="tag opus">opus</span></li>
+        </ul>
+      </div>
+
+      <div class="ecosystem-cat cat-sc">
+        <div class="cat-header">
+          <span class="cat-name">SCAFFOLD</span>
+          <span class="cat-count">5 exclusive (vlastní pipeline)</span>
+        </div>
+        <ul class="cat-list">
+          <li><b>spec-writer</b> <span class="tag opus">opus</span></li>
+          <li><b>spec-reviewer</b> <span class="tag opus">opus</span></li>
+          <li><b>stack-selector</b> <span class="tag sonnet">sonnet</span></li>
+          <li><b>scaffolder</b> <span class="tag sonnet">sonnet</span></li>
+          <li><b>deployment-verifier</b> <span class="tag sonnet">sonnet</span></li>
+        </ul>
+      </div>
+
+      <div class="ecosystem-cat cat-pl">
+        <div class="cat-header">
+          <span class="cat-name">PLANNING</span>
+          <span class="cat-count">3 exclusive (standalone)</span>
+        </div>
+        <ul class="cat-list">
+          <li><b>priority-engine</b> <span class="tag opus">opus</span></li>
+          <li><b>backlog-creator</b> <span class="tag sonnet">sonnet</span></li>
+          <li><b>sprint-planner</b> <span class="tag sonnet">sonnet</span></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">Klíčový insight pro CEO</div>
+    <div>
+      <ul style="margin: 6px 0; padding-left: 22px;">
+        <li><b>4 core agenti</b> (fixer, reviewer, test-engineer, publisher) tvoří jádro — bug-fix i feature/spec pipeline je staví na nich. Když zlepšíme jednoho z nich, zlepší se obě pipelines současně.</li>
+        <li><b>Bug-fix + Feature/Spec sdílí stejný core</b> — proto v praxi v6.x → v8.x evoluce zlepšuje obě cesty paralelně, ne sériově.</li>
+        <li><b>Scaffold má vlastní pipeline</b> (5 exclusive agentů) — protože vytváření nového projektu má jiný shape (spec-writer vede, ne fixer/reviewer iteruje).</li>
+        <li><b>Planning/Management jsou standalone</b> — neběží v pipeline, jsou to ad-hoc skill calls (priority-engine seřadí backlog, sprint-planner naplánuje sprint).</li>
+      </ul>
+    </div>
+  </div>
+
+
+  <h3>Co data ukázala (citovatelné — pro CEO oprávněnost pivotu)</h3>
+  <div class="numbered-list">
+    <div class="item"><b>"Per-project full-duplication has zero vendor exemplars; meta-gen has zero production deployments"</b> — Run 1, lensový konsensus 5/5. MetaGen (arxiv 2601.19290), ADAS, MetaSynth — všechno academic-only, žádné production.</div>
+    <div class="item"><b>"Generic+overlay (append-to-prompt or TOML merge) is the only production-validated pattern"</b> — Run 1. Důkazy: BMAD-METHOD <code>customize.toml</code> 3-tier pattern (45.7k★ produkce); Anthropic 5-tier subagent priority <b>explicitně endorses</b> append-to-prompt overlay; Codex Subagents TOML inherit-with-override.</div>
+    <div class="item"><b>"LLM-as-config-interpreter is the weakest link in any meta-agent design"</b> — Run 2 synthesis. Tedy: meta-agent může generovat overlay (malý, kontrolovatelný), ale negenerovat celý agent prompt (velký, fragile, neudržovatelný).</div>
+    <div class="item"><b>"Prompt optimization +6% quality vs agent scaling +3%"</b> — research z 01-prompt-engineering. Nevyplatí se per-project tvořit nové prompty; vyplatí se per-project doladit overlay nad ověřený generic.</div>
+  </div>
+
+  <h3>Klíčové body pro CEO</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4>Pivot není "porážka", je to discipline</h4>
+      <p>Pokud bych pokračoval v meta-gen, šel bych proti tomu, co celý trh udělal (BMAD, Anthropic, Codex). Research ukázal, že ten směr nikde neprodukuje produkční systémy.</p>
+    </div>
+    <div class="card">
+      <h4>Overlay přístup ŘEŠÍ původní problém</h4>
+      <p>Cíl byl "agenti pro tenhle konkrétní projekt". Overlay umí to samé — generic přidá projektovým specifickým instrukcím (tech stack, konvence, business pravidla) — ale bez fragility full-gen. Generic jádro je rigorózně testované (forge); overlay je malý fragment, který je řízeně rizikový.</p>
+    </div>
+    <div class="card">
+      <h4><code>/setup-agents</code> = realizace nového směru</h4>
+      <p>Skill v8.0.0 D1 — naskenuje projekt, vygeneruje smart TOML defaulty, jednorázový run, idempotent. D původně součást v9.0.0 (public launch katalog), nyní absorbováno do v8.0.0, protože onboarding overlay logika patří k architecture, ne UI.</p>
+    </div>
+    <div class="card">
+      <h4>claude-grade JE NEZÁVISLÝ produkt</h4>
+      <p>Když jste ho viděl, byla to ještě smyčka v původní vizi. Dnes ClaudeGrade v0.8.0 je samostatný produkt (Stripe + Clerk + Neon + AI Gateway + Vercel) — AI readiness grader pro CLAUDE.md / AGENTS.md / .cursorrules ve veřejnosti. Není to ceos-agents příslušenství. Dvě nezávislé linky práce.</p>
+    </div>
+  </div>
+
+  <h3>Pozice vůči konkurenci</h3>
+  <div class="table-frame">
+    <table data-sortable>
+      <thead>
+        <tr>
+          <th class="sortable">Tool</th>
+          <th class="sortable">Per-project agent strategy</th>
+          <th>Poznámka</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><b>BMAD-METHOD</b></td><td><code>customize.toml</code> overlay (3-tier merge)</td><td>Ten samý směr jako my po pivotu, <b>45.7k★ tržní validace</b></td></tr>
+        <tr><td><b>Anthropic Skills</b></td><td>5-tier subagent priority (CLAUDE.md → ./.../skill → user-level)</td><td>Append-to-prompt = explicitní endorsement overlay přístupu</td></tr>
+        <tr><td><b>Codex Subagents</b></td><td>TOML inherit-with-override</td><td>Ten samý vzor</td></tr>
+        <tr><td><b>superpowers</b> (Vincent)</td><td>Primarily generic + occasional skill overrides</td><td>Méně formální overlay</td></tr>
+        <tr><td><b>Cursor / Devin / Cline</b></td><td>Žádný per-project agent customization (chat-driven)</td><td>Výrazně jiný UX</td></tr>
+        <tr><td><b>MetaGen / ADAS</b></td><td>Full per-project meta-gen</td><td>Academic only, zero production</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  </div>
+</section>
+
+<!-- ============== SEKCE 5 ============== -->
+<section id="s5" class="section">
+  <div class="section-eyebrow">Sekce 5</div>
+  <h2>v7.0.0 + v8.0.0 hlavní změny <span class="section-time">15-18 min</span></h2>
+
+  <div class="section-content">
+
+  <details class="spoken" open>
+    <summary>Co řeknete</summary>
+    <div class="spoken-body">
+      <p class="lead">Toto je nejdelší blok, protože tady se rozhoduje, co je dnes ceos-agents schopné.</p>
+      <ul>
+        <li>Pokud používáte starší verzi (řekněme něco z v5-v6.7), většina toho, co teď ukážu, je nová.</li>
+        <li>Aktivní vývoj soustředěně přes forge jsem začal v polovině března 2026 — ~6 týdnů, z toho vznikla řada v6.8 → v8.0.</li>
+        <li>Nebudu vyjmenovávat všechno, vyberu ze v7 a v8 změny s největším tržním/uživatelským dopadem.</li>
+      </ul>
+      <p><b>Princip:</b></p>
+      <ul>
+        <li><b>v7.0.0</b> je o čištění před public release — méně friction, méně kolizí.</li>
+        <li><b>v8.0.0</b> je o architektuře — připravit produkt tak, aby ho zvládli i nezkušení uživatelé z firmy a aby udržel krok s tržními trendy (BMAD, Cline, Anthropic Skills).</li>
+      </ul>
+    </div>
+  </details>
+
+  <h3>Diagram 8 · v7+v8 timeline</h3>
+  <div class="v78-grid">
+
+    <div class="v78-block">
+      <div class="ver-label">v7.0.0 · CLEANUP před public release</div>
+      <h3>6 akcí · 4 breaking</h3>
+      <div class="ver-goal">Cíl: odstranit friction před zdarma launchem · Důvod MAJOR: 4 ze 6 jsou breaking changes</div>
+
+      <div class="v78-action">
+        <div class="a-id">1 · NAMING KOLIZE</div>
+        <div class="a-name">Public launch blocker</div>
+        <div class="a-desc">
+          <code>/ceos-agents:status</code> → <code>/pipeline-status</code> (kolidoval s built-in <code>/status</code>)<br>
+          <code>/ceos-agents:init</code> → <code>/setup-mcp</code> (kolidoval s built-in <code>/init</code>)
+        </div>
+      </div>
+
+      <div class="v78-action">
+        <div class="a-id">2 · AUTO-DETECT TRACKER</div>
+        <div class="a-name">UX zjednodušení v <code>/publish</code></div>
+        <div class="a-desc">
+          Smazán <code>/create-pr</code> (duplikát).<br>
+          <code>/publish</code> → issue ID → tracker update + PR.<br>
+          <code>/publish</code> → bez ID → jen PR.<br>
+          <code>/publish</code> → tracker down → fail s návodem.
+        </div>
+      </div>
+
+      <div class="v78-action">
+        <div class="a-id">3 · CONFIG CLEANUP</div>
+        <div class="a-name">Méně rozhodování pro uživatele</div>
+        <div class="a-desc">
+          Smazána sekce "Extra labels" (duplikovala <code>PR Rules → Labels</code>).<br>
+          Pause Limits doc fix (applies to 6 skills, ne jen autopilot).
+        </div>
+      </div>
+
+      <div class="v78-action">
+        <div class="a-id">4 · README + DOCS varování</div>
+        <div class="a-name">Edukace pro novice</div>
+        <div class="a-desc">Krátké slash formy (<code>/init</code>, <code>/status</code>, atd.) kolidují s Claude Code builtins.</div>
+      </div>
+
+      <div class="ver-counts">
+        Counts: 29 → <b>28 skills</b> · 19 → <b>18 config sekcí</b> · agentů beze změny
+      </div>
+    </div>
+
+    <div class="v78-block">
+      <div class="ver-label">v8.0.0 · ARCHITECTURE REWORK</div>
+      <h3>5 + 1 rozhodnutí · breaking</h3>
+      <div class="ver-goal">Cíl: novice-friendly + tržní validace + konsolidace · Důvod MAJOR: TOML overlay + agent renamy = breaking</div>
+
+      <div class="v78-action">
+        <div class="a-id">D1 · GENERIC AGENTS + TOML OVERLAY</div>
+        <div class="a-name"><code>/setup-agents</code> skill</div>
+        <div class="a-desc">Realizace pivotu z evoluce vize (Sekce 4). BMAD-style 3-tier merge (scalar/array/table).</div>
+        <div class="a-validation">✓ Anthropic 5-tier subagent priority endorses tento pattern · ✓ BMAD <code>customize.toml</code> 45.7k★ produkční validace</div>
+      </div>
+
+      <div class="v78-action">
+        <div class="a-id">D2 · MARKDOWN SKILLS DECOMPOSITION</div>
+        <div class="a-name">steps/*.md</div>
+        <div class="a-desc">Monolitické ~600-line SKILL.md → entry (~100) + steps/*.md (5-8 × 150-200). Token reduction ~80% (15k monolithic → 2-3k per step).</div>
+        <div class="a-validation">✓ BMAD v6.1.0 odstranil YAML workflow engine, package -91% (březen 2026)</div>
+      </div>
+
+      <div class="v78-action">
+        <div class="a-id">D3 · HITL MODE FRAMEWORK</div>
+        <div class="a-name">3 mode flags</div>
+        <div class="a-desc">
+          <code>--yolo</code> (zero gates, pro experty / autopilot)<br>
+          <code>default</code> (strategic conditional gates)<br>
+          <code>--step-mode</code> (NEW, per-agent pause — pro novice users z firmy)
+        </div>
+        <div class="a-validation">✓ Cline Auto Approve → 8 granular categories (5 měsíců produkce)</div>
+      </div>
+
+      <div class="v78-action">
+        <div class="a-id">D4 · STATELESS DISPATCH</div>
+        <div class="a-name">status quo, zachováno</div>
+        <div class="a-desc">Žádná migrace. Stateless agents + externalized state (state.json + git).</div>
+        <div class="a-validation">✓ Devin "Manages Devins" (březen 2026) potvrzuje stejný pattern</div>
+      </div>
+
+      <div class="v78-action">
+        <div class="a-id">D5 · KONSOLIDACE 3 PÁRŮ</div>
+        <div class="a-name">Sloučení dvojic agentů přes --phase / --e2e flag</div>
+        <div class="a-desc">
+          triage-analyst + code-analyst → <code>analyst --phase</code><br>
+          test-engineer + e2e-test-engineer → <code>test-engineer --e2e</code><br>
+          reproducer + browser-verifier → <code>browser-agent --phase</code>
+        </div>
+        <div class="a-validation">✓ BMAD v6.3.0 (10. dubna 2026) merged 4 agents → 1 'Amelia' (17 dní zpět) · ✓ Kim et al. arXiv 2512.08296: per-agent reasoning thins past 3-4 under fixed compute</div>
+      </div>
+
+      <div class="v78-action">
+        <div class="a-id">B6 · SCAFFOLD MODE HARMONIZACE</div>
+        <div class="a-name">align s A.1 (--yolo / default / --step-mode)</div>
+        <div class="a-desc"><code>/scaffold</code> mode flags align s A.1 (sjednocený mode framework napříč skills).</div>
+      </div>
+
+      <div class="ver-counts">
+        D V8 ABSORBOVÁNO: <code>/setup-agents</code> skill je realizace toho, co bylo plánované jako "v9.0.0 D katalog/onboarding wizard"
+      </div>
+    </div>
+
+  </div>
+
+  <h3 style="margin-top: 32px;">Showcase · <code>/setup-agents</code> flow (klíčová UX pro novice users)</h3>
+  <div style="font-size: 1.05rem; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.6;">
+    Skill, který user spustí jednou po instalaci. Naskenuje projekt, vygeneruje TOML overlay, hotovo. Idempotentní — opakované spuštění detekuje změny a nabídne diff.
+  </div>
+  <div class="diagram-frame boxed" style="text-align: left;">
+    <pre style="background: #0f172a; color: #e2e8f0; padding: 18px 22px; border-radius: 8px; font-size: 0.92rem; line-height: 1.6; margin: 0; overflow-x: auto;">$ /ceos-agents:setup-agents
+
+<span style="color: #38bdf8;">[1/4] Skenuji projekt…</span>
+      Detekováno: <b>Node.js 20 + TypeScript 5.4 + Vitest</b>
+      Tracker: <b>Gitea</b> (instance gitea.internal.ceosdata.com,
+              project found: BIFITO-app, 23 open issues)
+      Konvence: ESLint config detected (.eslintrc.json),
+                Prettier config NOT found → použiji default
+      Kódbase: 142 soubory, 18.4k LOC, dominantní pattern: hexagonal
+
+<span style="color: #38bdf8;">[2/4] Generuji TOML overlay…</span>
+      → <b>customization/reviewer.toml</b>     (52 řádků)
+        · prompt-injection check pro Gitea issue body
+        · TypeScript strict mode validation
+        · hexagonal layer boundaries enforce
+      → <b>customization/test-engineer.toml</b> (38 řádků)
+        · Vitest místo Jest defaultu
+        · coverage threshold 80% (project standard)
+      → <b>customization/fixer.toml</b>        (24 řádků)
+        · ESLint auto-fix po editaci
+        · konvence: arrow functions, no class components
+
+<span style="color: #38bdf8;">[3/4] Validuji merge generic + overlay…</span>
+      ✓ Žádné konflikty
+      ✓ 3-tier merge OK (scalar/array/table)
+      ✓ Schema valid
+
+<span style="color: #4ade80;">[4/4] Hotovo. Generic agenti + váš overlay = připraveno.</span>
+      Příští krok: <code>/ceos-agents:fix-bugs --step-mode</code>
+      (doporučujeme --step-mode pro první 3-5 ticketů,
+       pak přejít na default)</pre>
+  </div>
+
+  <div class="callout teal">
+    <div class="callout-title">Proč je <code>/setup-agents</code> klíčová UX pro CEO</div>
+    <div>
+      <ul style="margin: 6px 0; padding-left: 22px;">
+        <li><b>Bez setup-agents:</b> user dostane 18 generických agentů, které neví o jeho projektu nic. První bug-fix → reviewer hlásí false positives na věcech, které jsou v tom projektu konvence. Frustrace, abandon.</li>
+        <li><b>Se setup-agents:</b> user spustí jednou (~30 sekund), získá projekt-specific overlay. Generic 18 + overlay = 18 vyladěných agentů pro konkrétně jeho codebase. <b>Tohle je realizace pivotu z meta-agent vize</b> (Sekce 4) — mám výhody projekt-specific bez fragility full-gen.</li>
+        <li><b>Pro novice users z firmy:</b> setup-agents → step-mode → po pár ticketech default. Jasná onboarding cesta.</li>
+        <li><b>Idempotentní:</b> opakované spuštění (např. po refactoru) detekuje změny a nabídne diff. Není to one-shot setup, je to průběžné re-tunování.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Klíčové body pro CEO</h3>
+  <div class="numbered-list">
+    <div class="item"><b>v7.0.0 je všech 6 akcí "veřejná friction"</b>, ne nové features. Pokud bychom šli na trh bez toho, první uživatelé by hlásili: "váš <code>/init</code> mi přepsal Claude Code builtin". Není to glamourous práce, ale je nutná.</div>
+    <div class="item"><b>v8.0.0 je 4 z 5 rozhodnutí TRŽNĚ VALIDOVÁNO</b> v posledních 30 dnech: D1 overlay = BMAD customize.toml (45.7k★) + Anthropic 5-tier; D2 markdown = BMAD v6.1.0 YAML rollback (březen 2026); D3 mode framework = Cline Auto Approve evolution; D4 stateless = Devin "Manages Devins" (březen 2026); D5 konsolidace = BMAD v6.3.0 4→1 merge (Apr 10, 2026 — 17 dní zpátky). <b>Tedy: nejsme alone. Trh konverguje stejným směrem.</b></div>
+    <div class="item"><b><code>--step-mode</code> v D3 je explicitně pro interní rollout</b> (kolegové bez AI experience). Default mode je pro středně-zkušené, <code>--yolo</code> je pro pokročilé / autopilot. Tři módy = tři uživatelské profily.</div>
+    <div class="item"><b>Konsolidace 3 párů NENÍ snížení funkčnosti</b> — je to logické párování. 3 dvojice, které jsou koncepčně 1 práce s 2 fázemi. Stejné jako když BMAD sloučil 4 agenty do 'Amelie' — žádná feature loss, jen lepší dispatch.</div>
+    <div class="item"><b>v8.0.0 absorbuje původní v9.0.0 D</b> (<code>/setup-agents</code> skill). Onboarding logika patří k architektuře, ne UI vrstvě. v9 family se proto rozdělila: <b>v9.0.0 = E + F (pure FE)</b>, <b>v9.1.0 = Demo projekt (NEW)</b>, <b>v9.2.0 = G + hosting + announcement</b>.</div>
+  </div>
+
+  <h3>Pozice vůči trhu (2026-04-27)</h3>
+  <div class="table-frame">
+    <table data-sortable>
+      <thead>
+        <tr>
+          <th class="sortable">Naše rozhodnutí</th>
+          <th class="sortable">Trh udělal totéž</th>
+          <th class="sortable">Když</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>v7 cleanup před launchem</td><td>BMAD v6.1.0 odstranil YAML workflow engine</td><td>Březen 2026</td></tr>
+        <tr><td>v8 D1 TOML overlay</td><td>BMAD customize.toml + Anthropic 5-tier</td><td>2025-2026 ongoing</td></tr>
+        <tr><td>v8 D2 markdown decomposition</td><td>BMAD v6.1.0 (-91% package size)</td><td>Březen 2026</td></tr>
+        <tr><td>v8 D3 mode framework</td><td>Cline Auto Approve → 8 categories</td><td>2025-2026 (5 měs.)</td></tr>
+        <tr><td>v8 D5 konsolidace 3 párů</td><td>BMAD v6.3.0 4→1 'Amelia' merge</td><td>10. dubna 2026 (17 dní)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout teal">
+    <div class="callout-title">Frontier věci děláme jinde</div>
+    <div>Forge multi-phase verification, AC traceability, NEEDS_CLARIFICATION state machine — to nikdo z velkých nemá.</div>
+  </div>
+
+  </div>
+</section>
+
+<!-- ============== SEKCE 6 ============== -->
+<section id="s6" class="section">
+  <div class="section-eyebrow">Sekce 6</div>
+  <h2>Kam směřujeme · v9.0.0 launch → v10.0.0 možnosti <span class="section-time">12 min</span></h2>
+
+  <div class="section-content">
+
+  <details class="spoken" open>
+    <summary>Co řeknete</summary>
+    <div class="spoken-body">
+      <p class="lead">Public release ceos-agents není jeden release. Po detailním re-readu A.1 specu jsem si uvědomil, že potřebujeme tři verze za sebou.</p>
+      <ul>
+        <li><b>v9.0.0, v9.1.0, v9.2.0</b> — každá řeší jiný conversion gap.</li>
+        <li>Plus dlouhodobá možnost <b>v10.0.0 Node.js Runtime</b> — dnes ji nechceme rozhodnout, ale chci ji vám představit, abyste věděl, co by stálo za úvahu, kdybychom měli kapacitu.</li>
+      </ul>
+    </div>
+  </details>
+
+  <h3>Diagram 9 · Public release timeline</h3>
+  <div class="release-track">
+
+    <div class="release-card">
+      <div class="v">v9.0.0 · UI vrstva (E + F)</div>
+      <h3>Pure FE · žádný backend</h3>
+      <div class="release-tag">Statický HTML/JS na 1 stránce</div>
+
+      <h4>E · PLNÝ SHOWCASE</h4>
+      <ol>
+        <li>Hero + video/GIF "ceos-agents fixne bug za 8 minut" (real screenrecord, ne marketing animace)</li>
+        <li>18-agent gallery (karty: role + model + příklad výstupu)</li>
+        <li>Config wizard stepper se živým TOML preview → download bundle (CLAUDE.md + customization/*.toml)</li>
+        <li>"Co dál" minimal: install snippet + docs link + teaser "Demo project coming in v9.1.0"</li>
+      </ol>
+      <div class="pos">✓ Tržní precedenty: Tailwind Play, shadcn/ui, create-next-app web, Linear/Resend/Prisma hero showcases</div>
+      <div class="neg">✗ Suchý config formulář bez showcase nekonvertuje</div>
+
+      <h4 style="margin-top: 14px;">F · READ-ONLY DASHBOARD</h4>
+      <ul>
+        <li>Čte <code>.ceos-agents/pipeline-history.md</code> + <code>state.json</code></li>
+        <li>Vizualizuje: seznam runů, fáze, tokeny, čas, výsledek</li>
+        <li>Žádné akce (žádný approve, abort, retry) — to je v10.0.0</li>
+      </ul>
+    </div>
+
+    <div class="release-card demo">
+      <div class="v">v9.1.0 · DEMO PROJEKT (NEW · conversion mechanism)</div>
+      <h3>Vlastní repo: ceos-agents-demo</h3>
+      <div class="release-tag">Pre-configured CLAUDE.md + customization/*.toml + záměrné bugy/features jako tracker issues</div>
+      <ul>
+        <li><b>Walkthrough README:</b> "spusťte <code>/fix-bugs</code>, podívejte se jak agent rozhoduje"</li>
+        <li><b>PROČ — bez demo je E "krásná stránka, prohlédne, odejde"</b>. Demo = aktivní zkušenost = adoption conversion.</li>
+        <li><b>BONUS SELF-REINFORCING LOOP:</b> Demo run produkuje state.json snapshoty → E hero "fixne bug za 8 minut" replay scenarios. Demo + E si navzájem dodávají autenticitu.</li>
+      </ul>
+      <h4>Scope OPEN (delegováno na forge phase 1 research)</h4>
+      <ul>
+        <li>Stack? (Node? Python? Go? něco jiného?)</li>
+        <li>Tracker? (Gitea? GitHub Issues? embedded?)</li>
+        <li>Repo location? (ceosdata? komunitní mirror?)</li>
+        <li>Walkthrough length? (5 min? 30 min?)</li>
+      </ul>
+      <div class="pos">✓ Precedenty: shadcn/ui example, Next.js examples, BMAD-METHOD tutorial, create-* CLI ship example app</div>
+    </div>
+
+    <div class="release-card hosting">
+      <div class="v">v9.2.0 · G + HOSTING + ANNOUNCEMENT</div>
+      <h3>Public mirror, deploy, marketplace submission</h3>
+      <ul>
+        <li>Canonical repo URL (<code>plugin.json.repository</code> → veřejný GitHub)</li>
+        <li>SECURITY contact channel (secondary kromě e-mailu)</li>
+        <li>README rewrite (anglicky, public audience)</li>
+        <li>Hosting deploy E + F (decision: GitHub Pages / Gitea Pages / Vercel)</li>
+        <li>Announcement (Anthropic plugin marketplace submission, Show HN, awesome-lists)</li>
+      </ul>
+    </div>
+
+    <div class="release-card future">
+      <div class="v">v10.0.0 · NODE.JS RUNTIME (možnost · dnes ne)</div>
+      <h3>Separátní repo · "biggest investment"</h3>
+      <ul>
+        <li>Standalone runtime → ceos-agents bez Claude Code CLI dependency</li>
+        <li>Backend pro F INTERAKTIVITU (klik = spuštění pipeline z webu)</li>
+        <li>Pro hosty/use-cases, kde Claude Code CLI nelze instalovat</li>
+      </ul>
+      <h4>NENÍ:</h4>
+      <ul>
+        <li>Headless dispatch (máme přes Autopilot)</li>
+        <li>Telemetry dashboard (to má ACT, internal AI Control Tower)</li>
+        <li>Multi-LLM (ACT)</li>
+        <li>Enterprise compliance (ACT)</li>
+      </ul>
+      <div class="neg" style="color: var(--warning); font-weight: 600; margin-top: 8px;">ROZHODOVAT AŽ PO MĚŘENÍ v9.0.0 LAUNCHU (jestli F interaktivita je hodnota, nebo read-only stačí)</div>
+    </div>
+
+  </div>
+
+  <h3>Diagram 10 · Závislost graf</h3>
+  <div class="diagram-frame">
+    <div class="mermaid">
+flowchart TB
+    V8["v8.0.0<br/>architecture"]
+    A1["A.1<br/>TOML overlay"]
+    B1["B.1<br/>HITL gates"]
+    E["E<br/>showcase"]
+    F["F<br/>dashboard"]
+    V90["v9.0.0<br/>E + F"]
+    V91["v9.1.0<br/>Demo projekt"]
+    V92["v9.2.0<br/>G + hosting + announcement"]
+    V10["v10.0.0<br/>Node.js Runtime — možnost"]
+    REPLAY["E hero replay<br/>(self-reinforcing)"]
+
+    V8 --> A1
+    V8 --> B1
+    A1 -->|"config wizard schema"| E
+    B1 -->|"dashboard čte gates state"| F
+    E --> V90
+    F --> V90
+    V90 --> V91
+    V91 -.->|"state.json snapshots"| REPLAY
+    REPLAY -.-> E
+    V91 --> V92
+    V92 -.->|"měření"| V10
+
+    classDef done fill:#d1fae5,stroke:#059669,color:#065f46
+    classDef next fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+    classDef demo fill:#ccfbf1,stroke:#0d9488,color:#134e4a
+    classDef hosting fill:#fef3c7,stroke:#f59e0b,color:#92400e
+    classDef maybe fill:#f3f4f6,stroke:#9ca3af,color:#4b5563,stroke-dasharray: 5 5
+    class V8,A1,B1 done
+    class V90,E,F next
+    class V91,REPLAY demo
+    class V92 hosting
+    class V10 maybe
+    </div>
+  </div>
+
+  <h3>Klíčové body pro CEO</h3>
+  <div class="numbered-list">
+    <div class="item"><b>v9.0.0 SAMOTNÉ není dostatečné pro úspěšný launch.</b> E je krásná stránka, ale bez demo (v9.1.0) si user prohlédne, řekne 'super', odejde. Demo je conversion mechanism — aktivní zkušenost ("spusťte <code>/fix-bugs</code>, sledujte jak rozhoduje") převede prohlížeče na uživatele.</div>
+    <div class="item"><b>v9.1.0 demo má self-reinforcing loop s E.</b> Demo run produkuje state.json snapshoty, které pak E používá pro hero replay scenarios.</div>
+    <div class="item"><b>Scope demo záměrně delegovaný na forge phase 1 research.</b> Nevím, jestli demo má být Node.js / Python / Go aplikace, jaký tracker, jaké bugy. To není moje doména — to je výsledek research o cílové audience.</div>
+    <div class="item"><b>v9.2.0 hosting decision je netriviální.</b> GitHub Pages = jednoduché ale jen statika; Gitea Pages = vlastní infra; Vercel = best DX ale závislost na třetím partneru.</div>
+    <div class="item"><b>v10.0.0 explicitně NEDNES.</b> Rozhoduje se po měření v9.0.0 launchu. Bez dat nedává smysl 3-6 měsíců eng work na něco, co možná nepotřebujeme.</div>
+  </div>
+
+  <h3>Pozice vůči trhu</h3>
+  <div class="table-frame">
+    <table data-sortable>
+      <thead>
+        <tr>
+          <th class="sortable">Náš plán</th>
+          <th class="sortable">Tržní precedent</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>E pure FE showcase (statický)</td><td>Tailwind Play, shadcn/ui, create-next-app web (vše statika + JS)</td></tr>
+        <tr><td>v9.1.0 demo projekt</td><td>shadcn/ui example, Next.js examples directory, BMAD tutorial project, create-* CLI ship app</td></tr>
+        <tr><td>v9.2.0 plugin marketplace submission</td><td>superpowers (121k★) — star curve breaks na den marketplace acceptance (Jan 15, 2026)</td></tr>
+        <tr><td>v10.0.0 standalone runtime</td><td>Devin (cloud-managed), Cursor (remote machines) — rozdílné, ale stejný problem space</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  </div>
+</section>
+
+<!-- ============== SEKCE 7 — DECISION BOARD ============== -->
+<section id="s7" class="section">
+  <div class="section-eyebrow">Sekce 7</div>
+  <h2>ROZHODNUTÍ · public release + interní rollout <span class="section-time">15-20 min</span></h2>
+
+  <div class="section-content">
+
+  <details class="spoken" open>
+    <summary>Co řeknete · úvod do rozhodovacího bloku</summary>
+    <div class="spoken-body">
+      <p class="lead">Tím se dostáváme k rozhodnutí, kvůli kterému jsme tady.</p>
+      <ul>
+        <li>Některé otázky, které jsem si připravil, jste mi předem odložil — hosting, scope demo projektu, announcement strategie. To řeším později, abychom se na schůzce nezasekli na detailu.</li>
+        <li>Co tady chci s vámi rozhodnout, jsou věci, kde já vlastní rozhodnutí udělat nemůžu — strategická, prioritizace, risk acceptance.</li>
+      </ul>
+    </div>
+  </details>
+
+  <div class="diagram-frame">
+    <div class="diagram-caption">Diagram 11 · Decision board — interaktivní (uloží se do localStorage)</div>
+    <p style="font-size: 0.875rem; color: var(--text-secondary); text-align: left; margin-bottom: 16px;">
+      Označte prosím vaši volbu u každé otázky. Stav se ukládá automaticky a přežije refresh stránky.
+    </p>
+  </div>
+
+  <div class="decision-controls">
+    <button id="decision-export" type="button">Exportovat odpovědi (JSON)</button>
+    <button id="decision-clear" class="danger" type="button">Vymazat všechny odpovědi</button>
+    <span id="decision-summary" style="color: var(--text-secondary);"></span>
+  </div>
+
+  <div class="decision-board" id="decision-board">
+
+    <div class="decision-card" data-decision="DA">
+      <div class="decision-header">
+        <span class="decision-id">D-A</span>
+        <span class="decision-title">Priorita / pace</span>
+      </div>
+      <div class="decision-question">
+        <p>Má ceos-agents v9.x dnes právo na soustředěný čas?</p>
+        <p>Nebo je něco důležitějšího (drmax, BIFITO, jiný klient, ACT)?</p>
+        <p>Reálná cílová data: v8.0.0 forge run? v9.0.0 ready? v9.2.0 launch?</p>
+      </div>
+      <div class="decision-options" data-group="DA-choice">
+        <label><input type="radio" name="DA-choice" value="ano"><span class="opt">Ano — soustředěný čas</span></label>
+        <label><input type="radio" name="DA-choice" value="ne"><span class="opt">Ne — jiné priority</span></label>
+        <label><input type="radio" name="DA-choice" value="pozdeji"><span class="opt">Později</span></label>
+      </div>
+      <textarea class="decision-notes" data-key="DA-notes" placeholder="Cílové datum / poznámky…"></textarea>
+      <div class="decision-status"></div>
+    </div>
+
+    <div class="decision-card" data-decision="DB">
+      <div class="decision-header">
+        <span class="decision-id">D-B</span>
+        <span class="decision-title">Risk acceptance — známé gapy v9.0.0</span>
+      </div>
+      <div class="decision-question">
+        <p>Shipping bez:</p>
+        <ul style="margin: 4px 0 8px 20px; padding: 0;">
+          <li>Cloud-managed runtime (Devin, Copilot Coding Agent mají, my ne)</li>
+          <li>Telemetry dashboard tier (Datadog/Grafana) — ACT, ne v9.0.0</li>
+          <li>Self-review code/secret/dependency scanning v PR pipeline (Copilot má)</li>
+          <li>Marketshare baseline (0 hvězd dnes vs Superpowers 121k, BMAD 45.7k)</li>
+        </ul>
+        <p>Akceptujeme tyto gapy, nebo zdržuje launch jeden z nich?</p>
+      </div>
+      <div class="decision-options">
+        <label><input type="radio" name="DB-choice" value="ano"><span class="opt">Ano — akceptujeme</span></label>
+        <label><input type="radio" name="DB-choice" value="ne"><span class="opt">Ne — blokuje konkrétní gap</span></label>
+        <label><input type="radio" name="DB-choice" value="pozdeji"><span class="opt">Později</span></label>
+      </div>
+      <textarea class="decision-notes" data-key="DB-notes" placeholder="Který gap blokuje (pokud) / poznámky…"></textarea>
+      <div class="decision-status"></div>
+    </div>
+
+    <div class="decision-card" data-decision="DC">
+      <div class="decision-header">
+        <span class="decision-id">D-C</span>
+        <span class="decision-title">ceos-agents vs ACT identita v public komunikaci</span>
+      </div>
+      <div class="decision-question">
+        <p>Kdy řekneme "to je ACT scope, ne ceos-agents"?</p>
+        <p>Mělo by se ACT vůbec zmiňovat v ceos-agents public docs?</p>
+        <p><i>Risk: lidi se ptají "máte něco lepšího?", redirect na interní produkt může působit jako "bait and switch".</i></p>
+      </div>
+      <div class="decision-options">
+        <label><input type="radio" name="DC-choice" value="ano"><span class="opt">Zmínit jako "enterprise verze"</span></label>
+        <label><input type="radio" name="DC-choice" value="ne"><span class="opt">Nezmiňovat</span></label>
+        <label><input type="radio" name="DC-choice" value="pozdeji"><span class="opt">Rozhodnout později</span></label>
+      </div>
+      <textarea class="decision-notes" data-key="DC-notes" placeholder="Jak rámovat / kde zmínit…"></textarea>
+      <div class="decision-status"></div>
+    </div>
+
+    <div class="decision-card" data-decision="DD">
+      <div class="decision-header">
+        <span class="decision-id">D-D</span>
+        <span class="decision-title">Interní rollout vs public sequencing</span>
+      </div>
+      <div class="decision-question">
+        <p>Pilotně interně → feedback → public? Nebo paralelně?</p>
+        <p>Kdo je pilotní tým ve firmě? (drmax? BIFITO? jiní?)</p>
+        <p>Kdo z firmy se stará o non-AI-savvy onboarding feedback?</p>
+      </div>
+      <div class="decision-options">
+        <label><input type="radio" name="DD-choice" value="ano"><span class="opt">Pilotně interně PŘED launchem</span></label>
+        <label><input type="radio" name="DD-choice" value="ne"><span class="opt">Paralelně</span></label>
+        <label><input type="radio" name="DD-choice" value="pozdeji"><span class="opt">Později</span></label>
+      </div>
+      <textarea class="decision-notes" data-key="DD-notes" placeholder="Pilotní tým + kdy začíná + kdo sbírá feedback…"></textarea>
+      <div class="decision-status"></div>
+    </div>
+
+    <div class="decision-card" data-decision="DE">
+      <div class="decision-header">
+        <span class="decision-id">D-E</span>
+        <span class="decision-title">Public mirror + licence status</span>
+      </div>
+      <div class="decision-question">
+        <p>Repo dnes na privátním Gitea (<code>gitea.internal.ceosdata.com</code>).</p>
+        <p>Public mirror (GitHub) pro v9.2.0 announcement — <b>kdo provisionuje?</b></p>
+        <p>LICENSE = MIT zafixované, no decision.</p>
+        <p><code>plugin.json.repository</code> = <code>example.invalid</code> placeholder, čeká na canonical URL.</p>
+      </div>
+      <div class="decision-options">
+        <label><input type="radio" name="DE-choice" value="ano"><span class="opt">Provisionuju já / náš tým</span></label>
+        <label><input type="radio" name="DE-choice" value="ne"><span class="opt">Někdo jiný (delegate)</span></label>
+        <label><input type="radio" name="DE-choice" value="pozdeji"><span class="opt">Později</span></label>
+      </div>
+      <textarea class="decision-notes" data-key="DE-notes" placeholder="Kdo provisionuje + do kdy + GitHub org name…"></textarea>
+      <div class="decision-status"></div>
+    </div>
+
+    <div class="decision-card" data-decision="DF">
+      <div class="decision-header">
+        <span class="decision-id">D-F</span>
+        <span class="decision-title">Co byste od ceos-agents chtěl vidět, co tam dnes není?</span>
+      </div>
+      <div class="decision-question">
+        <p>Otevřená otázka, vstup od vás. Vy jste user — co byste chtěl jako uživatel jinak?</p>
+        <p><i>CEO používá v5-v6.7 — může mít konkrétní pain points (rate limits, bugs ve workflow-router, slow autopilot, něco jiného), které jsou v6.x už opraveny, nebo jsou v8/v9 plánovány.</i></p>
+      </div>
+      <textarea class="decision-notes" data-key="DF-notes" placeholder="Seznam 1-3 vašich pain pointů z používání starší verze…" style="min-height: 100px;"></textarea>
+      <div class="decision-status"></div>
+    </div>
+
+  </div>
+
+  <h3>Klíčové body (jak rámovat své vstupy)</h3>
+  <div class="numbered-list">
+    <div class="item"><b>D-A je nejdůležitější.</b> Pokud ceos-agents nemá v9.x soustředěný čas, launch se neuskuteční. Memory ukazuje, že dnes paralelně běží: drmax-readmine demo, BIFITO autopilot pilot (paused), v7.0.0 forge run, v8.0.0 forge plánovaný. Pokud je ceos-agents v9.x na 5. místě v prioritách, řekněte to teď, abych mohl rozumně plánovat.</div>
+    <div class="item"><b>D-B se týká strategie "ship vs polish".</b> Klasický dilema: vydat ASAP s gapy a sbírat feedback, nebo ladit, dokud nebude 100 % featured-parity. Pro ceos-agents argumentuju shipnout — superpowers (121k★) také začínal jako "ne featured-complete" a feedback formoval roadmapu. Featured parity vůči Cursor / Devin nikdy nedosáhneme; positioning je jiný (specialized SDLC pipeline + tracker abstrakce + AC traceability).</div>
+    <div class="item"><b>D-C je jemná.</b> ACT je interní, ceos-agents public. Public ceos-agents user nemůže dnes získat ACT. Pokud budou hledat "klik = spuštění pipeline", redirect na "máme interní produkt, ale není pro veřejnost" může působit nefér. Možná vůbec nezmiňovat ACT v ceos-agents public docs — držet hranice.</div>
+    <div class="item"><b>D-D je o feedback loopu.</b> Pokud interní rollout produkuje konkrétní pain points (např. "kolega Pavel se zasekl na NEEDS_CLARIFICATION, protože nepochopil, co po něm chce"), to je gold pro public release — protože to samé budou hlásit veřejní uživatelé. Doporučuju pilotně interně PŘED public launchem.</div>
+    <div class="item"><b>D-E je infra.</b> Public mirror = někdo z týmu provisionuje GitHub org / repo. Pokud to máme udělat my, je to na ToDo. Nedráží launch o víc než pár dní.</div>
+    <div class="item"><b>D-F je vaše vstup.</b> Vy jste user — co byste chtěl, co tam dnes není?</div>
+  </div>
+
+  <div class="callout teal">
+    <div class="callout-title">Doporučený výstup ze schůzky</div>
+    <div>Cíl: opustit místnost s těmito odpověďmi:
+      <ul style="margin: 8px 0 0 20px; padding: 0;">
+        <li><b>D-A:</b> ano/ne na soustředěný čas; cílové datum pro v9.0.0 launch (nebo "kdykoli to bude ready")</li>
+        <li><b>D-B:</b> akceptujeme gapy / nebo blokuje něco specifického</li>
+        <li><b>D-C:</b> ACT v public docs ano/ne / "zmínit jako 'enterprise verze'" / nezmiňovat</li>
+        <li><b>D-D:</b> kdo je interní pilotní tým, kdy začíná</li>
+        <li><b>D-E:</b> kdo provisionuje public mirror, do kdy</li>
+        <li><b>D-F:</b> seznam 1-3 vašich pain pointů z používání starší verze</li>
+      </ul>
+    </div>
+  </div>
+
+  <details class="spoken" open>
+    <summary>Závěrečné shrnutí pro CEO</summary>
+    <div class="spoken-body">
+      <p class="lead">Toto je rozhodovací blok. Šest otevřených otázek.</p>
+      <ul>
+        <li>Některé mají jasnou doporučenou odpověď z mé strany, jiné jsou opravdu vaše.</li>
+        <li><b>Cíl schůzky:</b> opustit místnost s alespoň D-A, D-B, D-D, D-F rozhodnutými, zbytek si dohrajeme do týdne.</li>
+        <li>Pokud máte otázku, kterou jsem nezachytil, doplníme ji teď.</li>
+      </ul>
+    </div>
+  </details>
+
+  </div>
+</section>
+
+<!-- ============== APPENDIX A ============== -->
+<section id="aA" class="section">
+  <div class="section-eyebrow">Appendix A</div>
+  <h2>Srovnávací matice · hlavní konkurence</h2>
+
+  <div class="section-content">
+
+  <div class="table-frame scroll-x">
+    <div class="table-caption">Klikněte na hlavičku pro řazení sloupce</div>
+    <table data-sortable>
+      <thead>
+        <tr>
+          <th class="sortable">Capability</th>
+          <th class="sortable">ceos-agents</th>
+          <th class="sortable">superpowers</th>
+          <th class="sortable">BMAD</th>
+          <th class="sortable">Anthropic Skills</th>
+          <th class="sortable">Cursor</th>
+          <th class="sortable">Devin</th>
+          <th class="sortable">Cline</th>
+          <th class="sortable">Copilot Coding Agent</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Markdown + YAML plugin</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>Sequential pipeline</td><td>✓ (specialized)</td><td>partial</td><td>partial</td><td>—</td><td>—</td><td>—</td><td>—</td><td>✓ (Actions sandbox)</td></tr>
+        <tr><td>Multi-tracker abstraction</td><td>✓ (6 trackers)</td><td>—</td><td>—</td><td>—</td><td>—</td><td>GH only</td><td>—</td><td>GH only</td></tr>
+        <tr><td>NEEDS_CLARIFICATION state machine</td><td>✓</td><td>—</td><td>—</td><td>—</td><td>—</td><td>partial</td><td>—</td><td>—</td></tr>
+        <tr><td>AC traceability (<code>maps_to</code>)</td><td>✓</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>partial</td></tr>
+        <tr><td>Webhook events</td><td>✓</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>GH Actions</td></tr>
+        <tr><td>HITL mode framework</td><td>v8.0.0</td><td>manual</td><td>persona handoffs</td><td>—</td><td>per-rule allow/deny</td><td>2 checkpoints</td><td>8 categories</td><td>self-review</td></tr>
+        <tr><td>Multi-LLM</td><td>Claude only</td><td>Claude only</td><td>9+ platforms</td><td>Claude only</td><td>multi providers</td><td>Claude (closed)</td><td>75+ providers</td><td>OpenAI/Anthropic</td></tr>
+        <tr><td>Cloud-managed runtime</td><td>—</td><td>—</td><td>—</td><td>—</td><td>remote machines</td><td>✓ ($20/mo)</td><td>—</td><td>Actions sandbox</td></tr>
+        <tr><td>Telemetry dashboard tier</td><td>basic JSON</td><td>—</td><td>—</td><td>—</td><td>enterprise</td><td>ACU benchmarks</td><td>—</td><td>GH Insights</td></tr>
+        <tr><td>Stars / Adoption</td><td>private</td><td>121k★</td><td>45.7k★</td><td>native</td><td>$2B ARR</td><td>$25B raise talks</td><td>3.7M VSCode</td><td>All Copilot users</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  </div>
+</section>
+
+<!-- ============== APPENDIX B ============== -->
+<section id="aB" class="section">
+  <div class="section-eyebrow">Appendix B</div>
+  <h2>Poctivé slabiny · transparentnost vůči CEO</h2>
+
+  <div class="section-content">
+
+  <div class="weakness-grid">
+
+    <div class="weakness-block behind">
+      <h3>3 věci, kde jsme významně pozadu (years, not months)</h3>
+      <ol>
+        <li><b>Cloud-managed runtime</b> — Devin, Cursor remote machines, Copilot Actions sandbox umožňují ship while laptop sleeps. ceos-agents vyžaduje aktivní Claude Code CLI na hostu. Greenfield GitHub teams chtějí "$20/mo button", to my dnes nejsme.</li>
+        <li><b>Telemetry, observability, benchmarks</b> — Devin publikuje ACU benchmarks, MS Agent Framework má native OpenTelemetry, Cursor enterprise admin console. My máme <code>/metrics</code> (stdout JSON), <code>/dashboard</code> (static HTML), webhook events. CTO doing vendor evaluation uvidí gap.</li>
+        <li><b>Mindshare a distribuce</b> — superpowers 121k★, BMAD 45.7k★, opencode 140k★, Cline 5M+ VSCode installs. ceos-agents je private bez veřejného listingu. Buyer's first question — "who else uses this?" — nemáme veřejnou odpověď. v9.2.0 to řeší launchem.</li>
+      </ol>
+    </div>
+
+    <div class="weakness-block outpaced">
+      <h3>5 věcí, kde nás konkurence předbíhá</h3>
+      <ol>
+        <li><b>Parallel agent execution</b> — Cursor 8 paralelních, Anthropic Team Lead, Devin clone. Náš pipeline je sekvenční (záměrně, ale méně rich UX).</li>
+        <li><b>Spec-first / brainstorming workflow</b> — BMAD personas + curated workflow menus, superpowers <code>brainstorming</code> skill enforced. My máme spec-analyst + architect, ale méně discoverable.</li>
+        <li><b>Self-review</b> — Copilot runs code-scanning + secret-scanning + dep CVE check uvnitř workflow. My spoléháme na consuming project's CI.</li>
+        <li><b>Plan / approval mode s diff preview</b> — opencode Plan/Build, Cursor accept/reject hunks, Cline Plan/Act. v8.0.0 <code>--step-mode</code> to dotáhne.</li>
+        <li><b>Multi-LLM</b> — opencode 75+ providers, Cline OpenRouter, MS AF connectors. Anthropic-only blokuje GPT/Gemini/local users.</li>
+      </ol>
+    </div>
+
+    <div class="weakness-block unique">
+      <h3>5 věcí, kde jsme unikátní (true differentiators)</h3>
+      <ol>
+        <li><b>Issue-tracker-aware pipeline s multi-tracker abstrakcí</b> (YouTrack/Jira/Linear/Gitea/Redmine/GitHub) jako first-class config contract.</li>
+        <li><b>NEEDS_CLARIFICATION state machine</b> s typed state schema, DoS counters, pause-timeout config, tracker-comment producer/receiver protocol.</li>
+        <li><b>AC traceability</b> — acceptance-gate verifikuje per-AC fulfillment s code+test evidence; architect emit <code>maps_to: AC-{N}</code>; spec-reviewer <code>--verify</code> mode.</li>
+        <li><b>Webhook event stream s run_id correlation + circuit breaker</b> (<code>pipeline-started</code>, <code>step-completed</code>, <code>pipeline-completed</code>, <code>ceos-agents-block</code>, <code>pipeline-paused</code>).</li>
+        <li><b>Per-pipeline retry budgets s named limits</b> (5 fixer↔reviewer, 3 test, 3 build, 5 spec, 3 root cause) konfigurovatelné per-project.</li>
+      </ol>
+    </div>
+
+  </div>
+
+  </div>
+</section>
+
+<!-- ============== APPENDIX C ============== -->
+<section id="aC" class="section">
+  <div class="section-eyebrow">Appendix C</div>
+  <h2>Citace klíčových výzkumných zjištění</h2>
+
+  <div class="section-content">
+
+  <div class="card">
+    <ul style="line-height: 1.7;">
+      <li><b>Anthropic "Building Effective Agents"</b> — 5 patternů: routing, chaining, parallelization, orchestrator-workers, evaluator-optimizer</li>
+      <li><b>TDFlow</b> (arXiv 2510.23761): 94.3 % SWE-bench s 4 sub-agenty</li>
+      <li><b>AdverTest mutation testing</b>: 70 % kill rate gate, 8.56 % quality improvement</li>
+      <li><b>Free-MAD</b> (arXiv 2502.02533): heterogenní paralelní agenti +12-16 %; nezkoordinovaní 17.2× error amplification</li>
+      <li><b>Karpathy "Vibe Coding"</b>: "March of Nines" 90→99 % = 99→99.9 %; "pull deterministic steps OUT of LLM"</li>
+      <li><b>MetaGen / ADAS / MetaSynth</b>: full per-project meta-gen academic-only, zero produkce</li>
+      <li><b>BMAD-METHOD v6.1.0</b> (březen 2026): odstranil YAML workflow engine, package -91 %</li>
+      <li><b>BMAD-METHOD v6.3.0</b> (10. dubna 2026): 4 agenty → 1 'Amelia' merge</li>
+      <li><b>Cline Auto Approve evolution</b>: single toggle → YOLO → 8 granular categories</li>
+      <li><b>Devin "Manages Devins"</b> (březen 2026): orchestrator stateful + managed clean-slate</li>
+      <li><b>Cursor 3.2</b> (24. dubna 2026): async subagents, multi-root workspaces</li>
+      <li><b>GitHub Copilot Coding Agent GA</b> (20. dubna 2026): assign issue → Actions sandbox → PR</li>
+      <li><b>Claude Opus 4.7 GA</b> (16. dubna 2026): same price, ~35 % víc tokenů (nový tokenizer)</li>
+      <li><b>superpowers (Jesse Vincent)</b> Anthropic marketplace acceptance 15. ledna 2026 — star curve breakpoint</li>
+    </ul>
+  </div>
+
+  </div>
+</section>
+
+<!-- ============== APPENDIX D ============== -->
+<section id="aD" class="section">
+  <div class="section-eyebrow">Appendix D</div>
+  <h2>Souhrn diagramů ke kreslení</h2>
+
+  <div class="section-content">
+
+  <div class="card">
+    <ol style="margin: 0; padding-left: 24px; font-size: 0.9rem; line-height: 1.8;">
+      <li><b>Mapa session</b> (Sekce 1) — 6 položek + dva paralelní tlaky</li>
+      <li><b>Architektura ceos-agents</b> (Sekce 2) — Claude Code platform → plugin → skills → agents → API</li>
+      <li><b>Bug-fix pipeline flow</b> (Sekce 2) — issue tracker → triage → … → publisher → verify</li>
+      <li><b>Forge pipeline architektura</b> (Sekce 3) — 10 fází + JAK forge tvoří agenty / dělá zadání</li>
+      <li><b>Cross-plugin dogfooding</b> (Sekce 3) — filip-superpowers (forge) ←→ ceos-agents</li>
+      <li><b>Forge timeline</b> (Sekce 3) — od 2026-03-21 design po dnes, 46 runs</li>
+      <li><b>Evoluce vize + 4 kategorie agentů</b> (Sekce 4) — meta-gen → overlay + bug-fix/feature/scaffold/planning</li>
+      <li><b>v7+v8 timeline</b> (Sekce 5) — 6 cleanup actions + 5+1 architecture decisions</li>
+      <li><b>Public release timeline</b> (Sekce 6) — v9.0.0 → v9.1.0 → v9.2.0 → v10.0.0</li>
+      <li><b>Závislost graf</b> (Sekce 6) — v8 (A→E, B→F) → v9.0 → v9.1 → v9.2 → v10</li>
+      <li><b>Decision board</b> (Sekce 7) — 6 otevřených otázek</li>
+    </ol>
+  </div>
+
+  </div>
+</section>
+
+<!-- ============== APPENDIX E ============== -->
+<section id="aE" class="section">
+  <div class="section-eyebrow">Appendix E</div>
+  <h2>Antivzory · čeho se vyhnout napříč prezentací</h2>
+
+  <div class="section-content">
+
+  <div class="card">
+    <ul style="line-height: 1.8;">
+      <li>Marketingový jazyk ("revoluční", "next-gen", "cutting-edge")</li>
+      <li>Tykání (vykání bezvýjimečně)</li>
+      <li>"Slepá ulička" / "chyba" rétorika k meta-gen pivotu (evoluce, ne porážka)</li>
+      <li>Tvrdit "lepší než Cursor / Devin" (jiný segment, ne lepší univerzálně)</li>
+      <li>Detailní vyjmenování každého agenta / každé fáze forge / každé akce v7</li>
+      <li>Skrývat gapy (D-B explicitně otevřená — to buduje trust)</li>
+      <li>Lobby za "permission to focus" v D-A (CEO rozhodne sám)</li>
+      <li>Slibovat v10.0.0 implementaci (je to možnost, ne plán)</li>
+      <li>Zmiňovat ACT v public ceos-agents docs (D-C otevřená otázka)</li>
+      <li>Investor pitch tone (zaměstnanec → nadřízený, společné rozhodnutí)</li>
+    </ul>
+  </div>
+
+  </div>
+</section>
+
+<footer class="page-footer">
+  <p><b>Prezentace pro CEO</b> · ceos-agents v7 → v9 + ACT relace</p>
+  <p>Datum: 2026-04-27 · Autor: Filip Šabacký · Konvence: čeština pro komunikaci, angličtina pro obsah souborů</p>
+  <p>Zdroj: <code>docs/superpowers/specs/2026-04-27-ceo-presentation-narrative.md</code></p>
+</footer>
+
+</main>
+
+</div>
+
+<script>
+// ===== Mermaid initialization =====
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'base',
+  themeVariables: {
+    primaryColor: '#ffffff',
+    primaryTextColor: '#1f2937',
+    primaryBorderColor: '#9ca3af',
+    lineColor: '#6b7280',
+    secondaryColor: '#f3f4f6',
+    tertiaryColor: '#e0f2fe',
+    background: '#fafafa',
+    mainBkg: '#ffffff',
+    secondaryBkg: '#f3f4f6',
+    tertiaryBkg: '#f9fafb',
+    edgeLabelBackground: '#fafafa',
+    fontFamily: '"Inter", -apple-system, "Segoe UI", sans-serif',
+    fontSize: '16px',
+    nodeBorder: '#9ca3af',
+    clusterBkg: '#fafafa',
+    clusterBorder: '#d1d5db',
+    titleColor: '#1f2937'
+  },
+  flowchart: {
+    htmlLabels: true,
+    curve: 'basis',
+    padding: 12,
+    nodeSpacing: 36,
+    rankSpacing: 50
+  }
+});
+
+// ===== Sortable tables =====
+document.querySelectorAll('table[data-sortable]').forEach(table => {
+  const headers = table.querySelectorAll('th.sortable');
+  headers.forEach((header, colIndex) => {
+    header.addEventListener('click', () => {
+      const tbody = table.querySelector('tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      const isAsc = !header.classList.contains('sort-asc');
+
+      headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+      header.classList.add(isAsc ? 'sort-asc' : 'sort-desc');
+
+      rows.sort((a, b) => {
+        const aText = a.children[colIndex].textContent.trim();
+        const bText = b.children[colIndex].textContent.trim();
+        const aNum = parseFloat(aText.replace(/[^\d.,-]/g, '').replace(',', '.'));
+        const bNum = parseFloat(bText.replace(/[^\d.,-]/g, '').replace(',', '.'));
+        const numericMode = !isNaN(aNum) && !isNaN(bNum) && aText.match(/[\d]/) && bText.match(/[\d]/);
+        let cmp;
+        if (numericMode) {
+          cmp = aNum - bNum;
+        } else {
+          cmp = aText.localeCompare(bText, 'cs', { numeric: true, sensitivity: 'base' });
+        }
+        return isAsc ? cmp : -cmp;
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    });
+  });
+});
+
+// ===== Sticky scrollspy nav =====
+(function() {
+  const navLinks = document.querySelectorAll('aside.sidebar nav a');
+  const sections = Array.from(document.querySelectorAll('section.section'));
+  const map = {};
+  navLinks.forEach(a => map[a.dataset.target] = a);
+
+  function setActive(id) {
+    navLinks.forEach(a => a.classList.remove('active'));
+    if (map[id]) map[id].classList.add('active');
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    let bestEntry = null;
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        if (!bestEntry || entry.intersectionRatio > bestEntry.intersectionRatio) {
+          bestEntry = entry;
+        }
+      }
+    });
+    if (bestEntry) setActive(bestEntry.target.id);
+  }, { rootMargin: '-20% 0px -60% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] });
+
+  sections.forEach(s => observer.observe(s));
+})();
+
+// ===== Decision board persistence =====
+(function() {
+  const STORAGE_KEY = 'ceos-presentation-decisions-v1';
+  const board = document.getElementById('decision-board');
+  if (!board) return;
+
+  let state = {};
+  try {
+    state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  } catch (e) {
+    state = {};
+  }
+
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    updateSummary();
+  }
+
+  function updateSummary() {
+    const decisions = ['DA', 'DB', 'DC', 'DD', 'DE', 'DF'];
+    let answered = 0;
+    decisions.forEach(d => {
+      if (d === 'DF') {
+        if (state[`${d}-notes`]) answered++;
+      } else {
+        if (state[`${d}-choice`]) answered++;
+      }
+    });
+    const summary = document.getElementById('decision-summary');
+    if (summary) summary.textContent = `${answered} / 6 zodpovězeno`;
+  }
+
+  function markStatus(card, savedAt) {
+    const status = card.querySelector('.decision-status');
+    if (status) {
+      status.textContent = `Uloženo ${new Date(savedAt).toLocaleTimeString('cs-CZ')}`;
+      status.classList.add('saved');
+      setTimeout(() => status.classList.remove('saved'), 1500);
+    }
+  }
+
+  // Restore + bind radios
+  board.querySelectorAll('.decision-card').forEach(card => {
+    const id = card.dataset.decision;
+    const radios = card.querySelectorAll(`input[name="${id}-choice"]`);
+    radios.forEach(radio => {
+      const choiceKey = `${id}-choice`;
+      if (state[choiceKey] === radio.value) radio.checked = true;
+      radio.addEventListener('change', () => {
+        state[choiceKey] = radio.value;
+        save();
+        markStatus(card, Date.now());
+      });
+    });
+
+    const textarea = card.querySelector('textarea.decision-notes');
+    if (textarea) {
+      const key = textarea.dataset.key;
+      if (state[key]) textarea.value = state[key];
+      let timer;
+      textarea.addEventListener('input', () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          state[key] = textarea.value;
+          save();
+          markStatus(card, Date.now());
+        }, 400);
+      });
+    }
+  });
+
+  // Controls
+  const exportBtn = document.getElementById('decision-export');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ceo-presentation-decisions.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  const clearBtn = document.getElementById('decision-clear');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      if (confirm('Opravdu vymazat všechny odpovědi?')) {
+        state = {};
+        localStorage.removeItem(STORAGE_KEY);
+        board.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+        board.querySelectorAll('textarea').forEach(t => t.value = '');
+        board.querySelectorAll('.decision-status').forEach(s => s.textContent = '');
+        updateSummary();
+      }
+    });
+  }
+
+  updateSummary();
+})();
+</script>
+
+</body>
+</html>

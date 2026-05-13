@@ -1,0 +1,9 @@
+{
+  "task_id": "T-11",
+  "status": "DONE",
+  "files_modified": ["core/block-handler.md"],
+  "revision_cycle": null,
+  "concerns": [],
+  "test_results": "AC-024: jq -n -> jq -nc at line ~43; no bare jq -n remaining",
+  "completed_at": "2026-04-20T13:00:30Z"
+}

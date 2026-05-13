@@ -1,0 +1,28 @@
+{
+  "task": "T-034",
+  "revision": 2,
+  "status": "DONE",
+  "fixes_applied": [
+    {
+      "id": "CR-1",
+      "description": "Opraveno 5 malformed dispatch sites — flag přesunut z subagent_type do prompt textu",
+      "sites": [
+        "line 177: analyst --phase triage",
+        "line 278: analyst --phase impact",
+        "line 387: browser-agent --phase reproduce",
+        "line 571: test-engineer --e2e",
+        "line 584: browser-agent --phase verify"
+      ]
+    },
+    {
+      "id": "CR-2",
+      "description": "Přidán --step-mode flag: argument-hint, Mode flag parsing blok, mutex check s textem 'Flags --yolo and --step-mode are mutually exclusive', dokumentace v Arguments sekci"
+    }
+  ],
+  "self_review": {
+    "malformed_subagent_type_check": "0 matches (PASS)",
+    "step_mode_count": "7 (PASS, >= 2)",
+    "mutex_error_text_count": "1 (PASS, >= 1)"
+  },
+  "file_edited": "skills/fix-ticket/SKILL.md"
+}

@@ -1,0 +1,93 @@
+{
+  "pipeline_mode": "adaptive",
+  "pipeline_mode__provenance": {
+    "source": "meta-agent",
+    "reason": "default; multi-phase task benefits from JIT-refined prompts"
+  },
+  "jit": {
+    "enabled": true,
+    "enabled__provenance": {
+      "source": "meta-agent",
+      "reason": "composite complexity 5 (>= 3)"
+    },
+    "timeout": 120,
+    "fallback_timeout": 60,
+    "max_consecutive_fallbacks": 2
+  },
+  "replanning": {
+    "enabled": true,
+    "max_cycles": 1,
+    "max_cycles__provenance": {
+      "source": "meta-agent",
+      "reason": "ambiguity score 3; Phase 3 brainstorm covers most design ambiguity; raising max_cycles would balloon token budget on a 9-phase pipeline"
+    },
+    "divergence_threshold": 0.3,
+    "divergence_threshold__provenance": {
+      "source": "meta-agent",
+      "reason": "default; not security-critical refactor"
+    },
+    "trigger_classes": [
+      "PIVOTED"
+    ]
+  },
+  "fast_track": {
+    "enabled": false,
+    "enabled__provenance": {
+      "source": "meta-agent",
+      "reason": "composite complexity 5 fails precondition (<=2)"
+    }
+  },
+  "meta_agent": {
+    "confidence_threshold": 0.7
+  },
+  "routing": {
+    "enabled": true,
+    "enabled__provenance": {
+      "source": "meta-agent",
+      "reason": "default; routing decision computed and full_pipeline routed"
+    },
+    "confidence_threshold": 0.85,
+    "auto_select_template": false,
+    "default_template": null
+  },
+  "templates": {},
+  "verification": {
+    "dimension_weights": {
+      "correctness": 0.35,
+      "security": 0.25,
+      "spec_alignment": 0.25,
+      "robustness": 0.15
+    },
+    "dimension_weights__provenance": {
+      "source": "meta-agent",
+      "reason": "spec_alignment raised from default 0.20 to 0.25 because principal failure mode for multi-item bundles is items being half-shipped or under-specified; correctness raised from 0.30 to 0.35 because most items are functional behavior changes; security 0.25 retained because of webhook SSRF and license correctness; robustness 0.15 lowered because pure-markdown plugin has limited robustness surface"
+    }
+  },
+  "skip_phases": [],
+  "skip_phases__provenance": {
+    "source": "meta-agent",
+    "reason": "full_pipeline routing; no skip profile applies"
+  },
+  "approval_gates": [
+    3,
+    4,
+    6
+  ],
+  "approval_gates__provenance": {
+    "source": "meta-agent",
+    "reason": "default; Phase 3 brainstorm review essential due to open design space, Phase 4 spec gate strongly recommended for multi-item release, Phase 6 planning gate always"
+  },
+  "tdd": {
+    "mutation_threshold": 60,
+    "mutation_threshold__provenance": {
+      "source": "meta-agent",
+      "reason": "lowered from 70 to 60: bash + markdown plugin has limited mutation surface (most edits are documentation, config, or single-line shell fixes); 60 retains mutation discipline without false-positive overhead"
+    }
+  },
+  "review": {
+    "triage_enabled": false
+  },
+  "oracle": {
+    "enabled": true
+  }
+}

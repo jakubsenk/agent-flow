@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.5.0",
+  "id": "forge-2026-04-15-003",
+  "plugin_version": "0.9.12",
+  "input": "Implement v6.7.0 (Pipeline Hardening) — two items from external review report.\n\n## Item 1: Prompt Injection Protection (D2)\nWrap all external tracker content (issue title, description, comments) in delimited markers before passing to agents. Add constraint to all agents that process external data.\n- A. Define core/external-input-sanitizer.md contract\n- B. Add wrapping instruction to pipeline skills (fix-ticket, fix-bugs, implement-feature, resume-ticket, scaffold)\n- C. Add NEVER constraint to agents (triage-analyst, code-analyst, fixer, reviewer, spec-analyst)\n- D. Update CLAUDE.md core count from 13 to 14\n- E. Add test scenario\n\n## Item 2: Plugin Version Tracking (D12)\nAdd plugin_version field to pipeline state so resume-ticket can detect version mismatches.\n- A. Update state/schema.md\n- B. Update core/state-manager.md\n- C. Update skills/resume-ticket/SKILL.md with version comparison\n\n## Post-implementation\n1. Update roadmap.md — move v6.7.0 to DONE\n2. Update Current version to v6.7.0\n3. Run tests and fix failures\n\nVersion: MINOR (v6.7.0). No new config contract keys.",
+  "status": "completed",
+  "current_phase": 9,
+  "phases": {
+    "0": {"status": "completed", "started_at": "2026-04-15T11:30:15Z", "completed_at": "2026-04-15T11:41:00Z", "duration_ms": 650000, "tokens_estimated": 117773},
+    "1": {"status": "completed", "started_at": "2026-04-15T11:42:00Z", "completed_at": "2026-04-15T11:48:00Z", "duration_ms": 360000, "tokens_estimated": 129825},
+    "2": {"status": "completed", "started_at": "2026-04-15T11:48:30Z", "completed_at": "2026-04-15T11:56:00Z", "duration_ms": 450000, "tokens_estimated": 152547},
+    "3": {"status": "completed", "started_at": "2026-04-15T11:56:30Z", "completed_at": "2026-04-15T12:08:00Z", "duration_ms": 690000, "tokens_estimated": 230678},
+    "4": {"status": "completed", "started_at": "2026-04-15T12:10:00Z", "completed_at": "2026-04-15T12:16:00Z", "duration_ms": 360000, "tokens_estimated": 75073},
+    "5": {"status": "completed", "started_at": "2026-04-15T12:18:00Z", "completed_at": "2026-04-15T12:25:00Z", "duration_ms": 420000, "tokens_estimated": 30339},
+    "6": {"status": "completed", "started_at": "2026-04-15T12:25:30Z", "completed_at": "2026-04-15T12:28:30Z", "duration_ms": 180000, "tokens_estimated": 40657},
+    "7": {"status": "completed", "started_at": "2026-04-15T12:30:00Z", "completed_at": "2026-04-15T12:37:00Z", "duration_ms": 420000, "tokens_estimated": 103360},
+    "8": {"status": "completed", "started_at": "2026-04-15T12:37:30Z", "completed_at": "2026-04-15T20:15:00Z", "duration_ms": 27450000, "tokens_estimated": 85000},
+    "9": {"status": "completed", "started_at": "2026-04-15T20:15:30Z", "completed_at": "2026-04-15T20:25:00Z", "duration_ms": 570000, "tokens_estimated": 15000}
+  },
+  "config": {
+    "pipeline_mode": {"value": "adaptive", "source": "default"},
+    "jit.enabled": {"value": true, "source": "meta-agent"},
+    "jit.timeout": {"value": 120, "source": "default"},
+    "jit.fallback_timeout": {"value": 60, "source": "default"},
+    "jit.max_consecutive_fallbacks": {"value": 2, "source": "default"},
+    "replanning.enabled": {"value": true, "source": "default"},
+    "replanning.max_cycles": {"value": 1, "source": "default"},
+    "replanning.divergence_threshold": {"value": 0.3, "source": "default"},
+    "replanning.trigger_classes": {"value": ["PIVOTED"], "source": "default"},
+    "fast_track.enabled": {"value": false, "source": "meta-agent"},
+    "meta_agent.confidence_threshold": {"value": 0.7, "source": "default"},
+    "routing.enabled": {"value": null, "source": "default"},
+    "routing.confidence_threshold": {"value": 0.85, "source": "default"},
+    "routing.auto_select_template": {"value": false, "source": "default"},
+    "routing.default_template": {"value": null, "source": "default"},
+    "templates": {"value": {}, "source": "default"},
+    "verification.dimension_weights": {"value": {"security": 0.3, "correctness": 0.3, "spec_alignment": 0.2, "robustness": 0.2}, "source": "default"},
+    "skip_phases": {"value": [], "source": "meta-agent"},
+    "approval_gates": {"value": [3, 4, 6], "source": "default"},
+    "tdd.mutation_threshold": {"value": 70, "source": "default"},
+    "review.triage_enabled": {"value": false, "source": "default"},
+    "oracle.enabled": {"value": true, "source": "default"}
+  },
+  "metrics": {
+    "total_tokens_estimated": 980252,
+    "total_duration_ms": 30900000,
+    "review_rounds_used": 0,
+    "escalations_to_human": 0,
+    "verification_scores": {
+      "security": 0.88,
+      "correctness": 0.95,
+      "spec_alignment": 0.92,
+      "robustness": 0.82,
+      "aggregate": 0.897,
+      "verdict": "FULL_PASS"
+    },
+    "verification_score_history": {
+      "0": {
+        "aggregate": 0.897,
+        "commander_reported_aggregate": 0.897,
+        "recomputed_aggregate": 0.897,
+        "verdict": "FULL_PASS",
+        "failed_dimensions": [],
+        "dimensions": {
+          "security": {"score": 0.88, "weight": 0.3},
+          "correctness": {"score": 0.95, "weight": 0.3},
+          "spec_alignment": {"score": 0.92, "weight": 0.2},
+          "robustness": {"score": 0.82, "weight": 0.2}
+        },
+        "arithmetic_verified": true,
+        "arithmetic_correction_delta": 0.0,
+        "completed_at": "2026-04-15T20:15:00Z"
+      }
+    }
+  },
+  "fast_track": false,
+  "fast_track_decision": null,
+  "phase_8_revision": null,
+  "replanning_state": null,
+  "abort_reason": null,
+  "aborted_at": null,
+  "explicit_invocation": true,
+  "redirect_decision": null,
+  "template_decision": null,
+  "task_type_skip_profile": null,
+  "skip_confirmation_decision": null,
+  "post_skip_validation_result": null
+}

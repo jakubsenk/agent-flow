@@ -1,0 +1,27 @@
+{
+  "task_type": "feature",
+  "composite_score": 2,
+  "confidence": 0.95,
+  "fast_track": {
+    "eligible": true,
+    "tier_a": "pass",
+    "tier_b": "pass",
+    "security_concerns": []
+  },
+  "routing": {
+    "mode": "fast-track",
+    "skip_phases": [1, 2, 3, 4, 5],
+    "execute_phases": [6, 7, 8, 9],
+    "rationale": "Composite score 2, confidence 0.95, no security concerns. Task is fully specified with format reference and content sources. No research, brainstorming, specification, or TDD needed for a markdown template addition."
+  },
+  "domains": ["plugin-template-authoring", "oracle-plsql-toolchain", "redmine-tracker"],
+  "files": {
+    "create": ["examples/configs/redmine-oracle-plsql.md"],
+    "modify": ["skills/template/SKILL.md"],
+    "reference": [
+      "examples/configs/redmine-rails.md",
+      "examples/configs/github-nextjs.md",
+      "docs/plans/readmine-project/ceos-agents-gap-analysis.md"
+    ]
+  }
+}

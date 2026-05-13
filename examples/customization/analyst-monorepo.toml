@@ -1,0 +1,15 @@
+# Example: Analyst overlay for monorepo (workspaces, multiple packages)
+# Apply: copy to customization/analyst.toml
+
+model = "sonnet"
+
+[[process_additions]]
+step = "after_codebase_scan"
+instruction = "Identify which workspace package the issue affects. Check workspaces in root package.json or pnpm-workspace.yaml. Report package name in impact analysis."
+
+[[process_additions]]
+step = "after_call_hierarchy"
+instruction = "If call chain crosses package boundary (workspace import), flag for cross-package review. List all affected packages explicitly."
+
+[meta]
+applies_to = ["pnpm-monorepo", "yarn-workspaces", "lerna"]

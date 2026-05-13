@@ -1,0 +1,47 @@
+{
+  "commit": "G",
+  "version": "v6.9.1",
+  "timestamp": "2026-04-19T00:00:00Z",
+  "harness": {
+    "result": "PASS",
+    "total": 184,
+    "pass": 184,
+    "fail": 0,
+    "skip": 0
+  },
+  "fixes_applied": [
+    {
+      "scenario": 1,
+      "title": "_iso_to_epoch_crossplatform() WARN on BusyBox Alpine silent failure",
+      "severity": "MEDIUM",
+      "file": "skills/autopilot/SKILL.md",
+      "change": "Added local epoch variable, capture output from python3/GNU-date calls, then emit [WARN] when epoch is empty but input is non-empty",
+      "warn_message": "[WARN] Pause timeout calc failed: neither python3 nor GNU date available. Pause-timeout auto-abort disabled on this host. Install python3 to enable.",
+      "grep_verified": true
+    },
+    {
+      "scenario": 4,
+      "title": "sanitize_block_reason() LOWER-VAR bare-keyword gap",
+      "severity": "LOW",
+      "file": "core/post-publish-hook.md",
+      "change": "Added Pattern 18 (LOWER-VAR-BARE) BEFORE existing LOWER-VAR compound pattern. Covers: pass, password, secret, token, key, api-key, access-key, auth as bare variable names. Pattern count updated: 17 → 18.",
+      "pattern": "sed -E 's!(^|[[:space:]])(pass(word)?|secret|token|key|api[-_]?key|access[-_]?key|auth)=[^[:space:]]+!\\1\\2=[REDACTED-LOWER-VAR-BARE]!gi'",
+      "aws_overlap": "AWS_SECRET_KEY=abc is uppercase — caught by UPPER-VAR (row 2) before reaching LOWER-VAR-BARE; no overlap issue"
+    }
+  ],
+  "spot_checks": {
+    "bare_keyword_password": {"input": "password=secret", "output_contains": "[REDACTED", "pass": true},
+    "bare_keyword_secret": {"input": "secret=foo", "output_contains": "[REDACTED", "pass": true},
+    "bare_keyword_token": {"input": "token=bar", "output_contains": "[REDACTED", "pass": true},
+    "bare_keyword_key": {"input": "key=xyz", "output_contains": "[REDACTED", "pass": true},
+    "bare_keyword_auth": {"input": "auth=mytoken", "output_contains": "[REDACTED", "pass": true},
+    "regression_upper_var": {"input": "APP_PASSWORD=xyz", "output_contains": "APP_PASSWORD=[REDACTED-LOWER-VAR]", "pass": true, "note": "UPPER-VAR pattern (row 2) fires first for all-caps names"},
+    "regression_compound_lower": {"input": "db_password=hunter2", "output_contains": "db_password=[REDACTED-LOWER-VAR]", "pass": true},
+    "regression_bearer": {"input": "Bearer abc123", "output_contains": "[REDACTED-BEARER]", "pass": true}
+  },
+  "files_modified": [
+    "skills/autopilot/SKILL.md",
+    "core/post-publish-hook.md"
+  ],
+  "verdict": "FULL_PASS"
+}

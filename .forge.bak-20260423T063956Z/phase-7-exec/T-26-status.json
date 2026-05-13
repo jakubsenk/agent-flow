@@ -1,0 +1,9 @@
+{
+  "task_id": "T-26",
+  "status": "DONE",
+  "files_modified": ["docs/reference/skills.md"],
+  "revision_cycle": null,
+  "concerns": [],
+  "test_results": "REQ-053 doc pointer: pipeline-history.md location + contents + read-by + cross-link to core/post-publish-hook.md Section 5",
+  "completed_at": "2026-04-19T00:00:00Z"
+}

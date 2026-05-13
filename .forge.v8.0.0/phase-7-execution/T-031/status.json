@@ -1,0 +1,11 @@
+{
+  "task_id": "T-031",
+  "status": "DONE",
+  "files_moved": 80,
+  "source": ".forge/phase-5-tdd/tests/v8-*.sh",
+  "destination": "tests/scenarios/v8-*.sh",
+  "method": "cp (source preserved)",
+  "permissions": "chmod +x applied",
+  "sample_test_result": "PASS (v8-invariant-license-spdx.sh executed cleanly from canonical location)",
+  "concerns": "None — REPO_ROOT guard confirmed functional; staging guard exits 1 when run from .forge path"
+}

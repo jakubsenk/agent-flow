@@ -1,0 +1,26 @@
+{
+  "task": "T13",
+  "file": "CLAUDE.md",
+  "status": "done",
+  "changes": [
+    {
+      "change": "Add Autopilot row to optional sections table",
+      "keys": "Max issues per run, Lock timeout, Log file, Bug limit, Feature limit, On error, Dry run",
+      "defaults": "1, 120, .ceos-agents/autopilot.log, 0, 0, skip, false"
+    },
+    {
+      "change": "Update Notifications On events to include new pipeline event tokens",
+      "tokens_added": ["pipeline-started", "step-completed", "pipeline-completed"],
+      "tokens_existing": ["pr-created", "issue-blocked"]
+    }
+  ],
+  "notes": [
+    "No explicit '17 optional' text existed in CLAUDE.md — section count is implicit in table row count",
+    "Optional sections table now has 18 rows (was 17)"
+  ],
+  "verification": {
+    "grep_Autopilot": "PASS",
+    "grep_18_optional_total": "N/A (no explicit count text in file)",
+    "grep_pipeline_events": "PASS"
+  }
+}

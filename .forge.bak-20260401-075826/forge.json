@@ -1,0 +1,84 @@
+{
+  "schema_version": "1.5.0",
+  "id": "forge-2026-03-31-001",
+  "plugin_version": "0.7.0",
+  "input": "E2E Pipeline Validation — generic end-to-end test harness for all three pipelines (bug-fix, feature, scaffold). Project-independent, must work against any project with valid Automation Config. Identify gaps between markdown definitions and actual runtime behavior. Ensure any change to ceos-agents doesn't break existing pipeline behavior.",
+  "status": "running",
+  "current_phase": 1,
+  "phases": {
+    "0": {"status": "completed", "started_at": "2026-03-31T10:00:00Z", "completed_at": "2026-03-31T10:07:00Z"}
+  },
+  "config": {
+    "pipeline_mode": {"value": "adaptive", "source": "meta-agent"},
+    "jit": {
+      "enabled": {"value": false, "source": "meta-agent"},
+      "timeout": {"value": 120, "source": "default"},
+      "fallback_timeout": {"value": 60, "source": "default"},
+      "max_consecutive_fallbacks": {"value": 2, "source": "default"}
+    },
+    "replanning": {
+      "enabled": {"value": true, "source": "meta-agent"},
+      "max_cycles": {"value": 1, "source": "default"},
+      "divergence_threshold": {"value": 0.3, "source": "default"},
+      "trigger_classes": {"value": ["PIVOTED"], "source": "default"}
+    },
+    "fast_track": {
+      "enabled": {"value": false, "source": "meta-agent"}
+    },
+    "meta_agent": {
+      "confidence_threshold": {"value": 0.7, "source": "default"}
+    },
+    "routing": {
+      "enabled": {"value": false, "source": "meta-agent"},
+      "confidence_threshold": {"value": 0.85, "source": "default"},
+      "auto_select_template": {"value": false, "source": "default"},
+      "default_template": {"value": null, "source": "default"}
+    },
+    "templates": {"value": {}, "source": "default"},
+    "verification": {
+      "dimension_weights": {
+        "value": {"security": 0.3, "correctness": 0.3, "spec_alignment": 0.2, "robustness": 0.2},
+        "source": "default"
+      }
+    },
+    "tdd": {
+      "mutation_threshold": {"value": 70, "source": "default"}
+    },
+    "agents": {
+      "research": {"value": 2, "source": "meta-agent"},
+      "brainstorm": {"value": 3, "source": "meta-agent"},
+      "execution": {"value": 3, "source": "meta-agent"},
+      "verification": {"value": 2, "source": "meta-agent"}
+    },
+    "models": {
+      "research": {"value": "sonnet", "source": "meta-agent"},
+      "brainstorm": {"value": "opus", "source": "meta-agent"},
+      "spec": {"value": "opus", "source": "meta-agent"},
+      "tdd": {"value": "sonnet", "source": "meta-agent"},
+      "plan": {"value": "opus", "source": "meta-agent"},
+      "execute": {"value": "sonnet", "source": "meta-agent"},
+      "verify": {"value": "opus", "source": "meta-agent"}
+    },
+    "review_rounds": {"value": 2, "source": "meta-agent"}
+  },
+  "metrics": {
+    "total_tokens_estimated": 98831,
+    "total_duration_ms": 439906,
+    "review_rounds_used": 0,
+    "escalations_to_human": 0,
+    "verification_scores": null,
+    "verification_score_history": {}
+  },
+  "fast_track": false,
+  "fast_track_decision": null,
+  "phase_8_revision": null,
+  "replanning_state": null,
+  "abort_reason": null,
+  "aborted_at": null,
+  "explicit_invocation": true,
+  "redirect_decision": null,
+  "template_decision": null,
+  "task_type_skip_profile": null,
+  "skip_confirmation_decision": null,
+  "post_skip_validation_result": null
+}

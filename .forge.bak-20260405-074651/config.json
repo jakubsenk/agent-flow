@@ -1,0 +1,89 @@
+{
+  "_provenance": {
+    "generated_by": "phase-0-meta-agent",
+    "generated_at": "2026-04-05",
+    "task_type": "feature",
+    "task_complexity": 2,
+    "task_confidence": 0.95,
+    "fast_track": true,
+    "version_target": "6.3.0"
+  },
+  "pipeline_mode": "adaptive",
+  "pipeline_mode._source": "L1-default",
+
+  "jit.enabled": false,
+  "jit.enabled._source": "phase-0-meta (composite ≤ 2 → no lazy loading needed)",
+  "jit.timeout": 120,
+  "jit.timeout._source": "L1-default",
+  "jit.fallback_timeout": 60,
+  "jit.fallback_timeout._source": "L1-default",
+  "jit.max_consecutive_fallbacks": 2,
+  "jit.max_consecutive_fallbacks._source": "L1-default",
+
+  "replanning.enabled": true,
+  "replanning.enabled._source": "L1-default",
+  "replanning.max_cycles": 1,
+  "replanning.max_cycles._source": "L1-default",
+  "replanning.divergence_threshold": 0.3,
+  "replanning.divergence_threshold._source": "L1-default",
+  "replanning.trigger_classes": ["PIVOTED"],
+  "replanning.trigger_classes._source": "L1-default",
+
+  "fast_track.enabled": true,
+  "fast_track.enabled._source": "phase-0-meta (composite=2 ≤ 2, confidence=0.95 ≥ 0.9, all 8 security checks PASS)",
+
+  "meta_agent.confidence_threshold": 0.7,
+  "meta_agent.confidence_threshold._source": "L1-default",
+
+  "routing.enabled": null,
+  "routing.enabled._source": "L1-default",
+  "routing.confidence_threshold": 0.85,
+  "routing.confidence_threshold._source": "L1-default",
+  "routing.auto_select_template": false,
+  "routing.auto_select_template._source": "L1-default",
+  "routing.default_template": null,
+  "routing.default_template._source": "L1-default",
+
+  "templates": {},
+  "templates._source": "L1-default",
+
+  "verification.dimension_weights": {
+    "security": 0.3,
+    "correctness": 0.3,
+    "spec_alignment": 0.2,
+    "robustness": 0.2
+  },
+  "verification.dimension_weights._source": "L1-default",
+
+  "skip_phases": [],
+  "skip_phases._source": "L1-default (no phases skipped — fast-track may compress but not skip)",
+
+  "approval_gates": [3, 4, 6],
+  "approval_gates._source": "L1-default",
+
+  "tdd.mutation_threshold": 70,
+  "tdd.mutation_threshold._source": "L1-default",
+
+  "review.triage_enabled": false,
+  "review.triage_enabled._source": "L1-default",
+
+  "oracle.enabled": true,
+  "oracle.enabled._source": "L1-default",
+
+  "_notes": {
+    "fast_track_rationale": "Composite complexity 2 (scope=2, ambiguity=2, risk=1). Confidence 0.95. All 8 security checks (4 Tier A + 4 Tier B) pass. Task is additive-only markdown edits to agent definitions — zero destructive potential.",
+    "jit_rationale": "JIT disabled because composite ≤ 2. All phases are lightweight and can load eagerly. No benefit from lazy phase loading.",
+    "phase_adaptation": "Phase 5 (TDD) adapted for structural bash tests instead of runtime unit tests. Phase 7 (Execute) adapted for markdown editing instead of code implementation.",
+    "primary_files": [
+      "agents/scaffolder.md",
+      "CHANGELOG.md",
+      ".claude-plugin/plugin.json",
+      ".claude-plugin/marketplace.json",
+      "docs/plans/roadmap.md",
+      "tests/scenarios/"
+    ],
+    "secondary_files": [
+      "skills/scaffold/SKILL.md"
+    ]
+  }
+}

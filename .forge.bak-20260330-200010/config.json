@@ -1,0 +1,50 @@
+{
+  "pipeline_mode": "adaptive",
+  "jit": {
+    "enabled": false,
+    "timeout": 120,
+    "fallback_timeout": 60,
+    "max_consecutive_fallbacks": 2,
+    "_provenance": "JIT disabled — all target files already read during Phase 0 analysis. No external dependencies to discover."
+  },
+  "replanning": {
+    "enabled": false,
+    "max_cycles": 1,
+    "divergence_threshold": 0.3,
+    "trigger_classes": ["PIVOTED"],
+    "_provenance": "Replanning disabled — task is well-defined with 4 concrete items from roadmap. No ambiguity that would trigger PIVOTED."
+  },
+  "fast_track": {
+    "enabled": true,
+    "_provenance": "Phase 0 analysis: composite complexity 2, no security concerns, pure markdown edits, 3 files. Eligible for fast-track.",
+    "_decision_rationale": "All 4 items are localized text edits in existing markdown files. No new files, no runtime code, no contract changes. Estimated ~70 lines of diff."
+  },
+  "meta_agent": {
+    "confidence_threshold": 0.7,
+    "confidence_actual": 0.92,
+    "_provenance": "0.92 > 0.7 threshold — high confidence, no escalation needed."
+  },
+  "task_classification": {
+    "type": "enhancement",
+    "category": "ux-polish",
+    "version_bump": "patch",
+    "_provenance": "Roadmap section: PLANNED — v5.6.1 (UX Polish). PATCH per versioning policy — no contract changes."
+  },
+  "files_to_modify": [
+    {
+      "path": "commands/scaffold.md",
+      "items": [1, 3],
+      "_provenance": "Item 1: --infra flag parsing (lines 22, 36-40, 60-66). Item 3: MCP error messages (lines 147, 159, 163, 748-751)."
+    },
+    {
+      "path": "core/mcp-detection.md",
+      "items": [2, 3],
+      "_provenance": "Item 2: canary-write announcement (lines 39-43). Item 3: failure message rewrites (lines 56-61)."
+    },
+    {
+      "path": "commands/resume-ticket.md",
+      "items": [4],
+      "_provenance": "Item 4: new --infra flag support for scaffold resume (currently absent, needs addition)."
+    }
+  ]
+}

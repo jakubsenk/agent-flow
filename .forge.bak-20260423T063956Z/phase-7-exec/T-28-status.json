@@ -1,0 +1,9 @@
+{
+  "task_id": "T-28",
+  "status": "DONE",
+  "files_created": ["core/snippets/issue-id-validation.md"],
+  "revision_cycle": null,
+  "concerns": [],
+  "test_results": "AC-061/062/063b: file exists, regex + dot-only reject present, 4 sites under ## Used by:",
+  "completed_at": "2026-04-20T13:00:30Z"
+}

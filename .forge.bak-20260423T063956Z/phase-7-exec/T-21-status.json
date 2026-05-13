@@ -1,0 +1,9 @@
+{
+  "task_id": "T-21",
+  "status": "DONE",
+  "files_modified": ["docs/architecture.md"],
+  "revision_cycle": null,
+  "concerns": [],
+  "test_results": "AC-060/060a: 28→29 Skills; NEEDS_CLARIFICATION + pipeline-history + circuit + snippets + 16-core all present; staleness counter resets to 0 on v6.9.0 release commit",
+  "completed_at": "2026-04-20T14:51:00Z"
+}

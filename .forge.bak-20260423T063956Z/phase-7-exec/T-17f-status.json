@@ -1,0 +1,9 @@
+{
+  "task_id": "T-17f",
+  "status": "DONE",
+  "files_modified": ["CLAUDE.md", "skills/autopilot/SKILL.md", "core/post-publish-hook.md", "docs/guides/autopilot.md"],
+  "revision_cycle": null,
+  "concerns": [],
+  "test_results": "AC-050a/050b/050c/050d/050e/050f/046a: Pause Limits row in CLAUDE.md; parse_pause_timeout POSIX function + Autopilot pause detection; pipeline-paused webhook event added; autopilot guide updated",
+  "completed_at": "2026-04-19T00:00:00Z"
+}

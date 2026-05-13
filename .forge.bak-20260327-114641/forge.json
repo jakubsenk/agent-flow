@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.1.0",
+  "id": "forge-2026-03-27-001",
+  "plugin_version": "0.3.1",
+  "input": "Scaffold Infrastructure Integration (v5.5.0) — Redesign the scaffold command's infrastructure setup flow. Add Step 0-INFRA (infrastructure declaration) and Step 0-MCP (MCP verification) before mode selection. Modify Step 4 (Git Init) for auto-fill from MCP data. Add Step 4d (push to remote) and Step 4e (create tracker issues from spec). Remove Steps 4b, 4c, 9. Modify Step 10 report with infrastructure status. Files: commands/scaffold.md (primary), plus all docs referencing scaffold steps.",
+  "status": "running",
+  "current_phase": 3,
+  "phases": {
+    "0": {
+      "name": "meta-agent",
+      "status": "completed",
+      "started_at": "2026-03-27T08:30:30Z",
+      "completed_at": "2026-03-27T08:47:00Z"
+    },
+    "1": {
+      "name": "research-questions",
+      "status": "completed",
+      "started_at": "2026-03-27T08:48:00Z",
+      "completed_at": "2026-03-27T09:05:00Z",
+      "agents_dispatched": 5
+    },
+    "2": {
+      "name": "research-answers",
+      "status": "completed",
+      "started_at": "2026-03-27T09:05:00Z",
+      "completed_at": "2026-03-27T09:20:00Z",
+      "agents_dispatched": 5
+    }
+  },
+  "config": {
+    "agents": { "phase_1": 5, "phase_2": 5, "phase_3": 3 },
+    "models": {
+      "phase_0": "opus", "phase_1": "sonnet", "phase_2": "sonnet",
+      "phase_3": "opus", "phase_4": "opus", "phase_5": "sonnet",
+      "phase_6": "opus", "phase_7": "sonnet",
+      "phase_8_reviewers": "opus", "phase_8_correctness": "sonnet",
+      "phase_9": "sonnet"
+    },
+    "review": { "max_rounds": 3 },
+    "approval_gates": [3, 4, 6],
+    "skip_phases": [],
+    "timeout": { "per_agent": 300000, "per_phase": 900000, "total_pipeline": 7200000 },
+    "pipeline_mode": { "value": "adaptive", "source": "default" },
+    "jit": {
+      "enabled": { "value": false, "source": "meta-agent" },
+      "timeout": { "value": 120, "source": "default" },
+      "fallback_timeout": { "value": 60, "source": "default" },
+      "max_consecutive_fallbacks": { "value": 2, "source": "default" }
+    },
+    "replanning": {
+      "enabled": { "value": true, "source": "default" },
+      "max_cycles": { "value": 1, "source": "default" },
+      "divergence_threshold": { "value": 0.3, "source": "default" },
+      "trigger_classes": { "value": ["PIVOTED"], "source": "default" }
+    },
+    "fast_track": { "enabled": { "value": false, "source": "meta-agent" } },
+    "meta_agent": { "confidence_threshold": { "value": 0.7, "source": "default" } }
+  },
+  "metrics": {
+    "total_tokens_estimated": 95093,
+    "total_duration_ms": 531802,
+    "review_rounds_used": 0,
+    "escalations_to_human": 0
+  },
+  "fast_track": false,
+  "fast_track_decision": null,
+  "phase_8_revision": null,
+  "replanning_state": null,
+  "abort_reason": null,
+  "aborted_at": null
+}

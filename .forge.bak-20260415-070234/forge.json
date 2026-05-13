@@ -1,0 +1,96 @@
+{
+  "schema_version": "1.5.0",
+  "id": "forge-2026-04-14-002",
+  "plugin_version": "0.9.11",
+  "input": "Analyze whether the ceos-agents plugin documents (agent definitions, skill definitions, core contracts, config templates — all currently markdown) would benefit from switching to YAML or JSON format. Evaluate impact on: token consumption, output quality, parseability, maintainability. If changes are recommended, implement them within this forge run.",
+  "status": "completed",
+  "current_phase": 9,
+  "phases": {
+    "0": {"status": "completed", "started_at": "2026-04-14T11:00:30Z", "completed_at": "2026-04-14T11:06:00Z", "duration_ms": 351006, "tokens_estimated": 46505},
+    "1": {"status": "completed", "started_at": "2026-04-14T11:07:00Z", "completed_at": "2026-04-14T11:18:00Z", "duration_ms": 660000, "tokens_estimated": 143672},
+    "2": {"status": "completed", "started_at": "2026-04-14T11:18:30Z", "completed_at": "2026-04-14T11:27:00Z", "duration_ms": 517000, "tokens_estimated": 136514},
+    "3": {"status": "completed", "started_at": "2026-04-14T11:27:30Z", "completed_at": "2026-04-14T11:37:00Z", "duration_ms": 570000, "tokens_estimated": 173395},
+    "4": {"status": "completed", "started_at": "2026-04-14T11:40:30Z", "completed_at": "2026-04-14T11:44:30Z", "duration_ms": 219984, "tokens_estimated": 51879},
+    "5": {"status": "completed", "started_at": "2026-04-14T11:46:00Z", "completed_at": "2026-04-14T11:50:00Z", "duration_ms": 239496, "tokens_estimated": 49914},
+    "6": {"status": "completed", "started_at": "2026-04-14T11:50:30Z", "completed_at": "2026-04-14T11:52:00Z", "duration_ms": 78740, "tokens_estimated": 33563},
+    "7": {"status": "completed", "started_at": "2026-04-14T11:53:00Z", "completed_at": "2026-04-14T12:02:00Z", "duration_ms": 540000, "tokens_estimated": 15000},
+    "8": {"status": "completed", "started_at": "2026-04-14T12:02:30Z", "completed_at": "2026-04-14T12:08:00Z", "duration_ms": 321989, "tokens_estimated": 55072}
+  },
+  "config": {
+    "pipeline_mode": {"value": "adaptive", "source": "default"},
+    "jit.enabled": {"value": false, "source": "meta-agent"},
+    "jit.timeout": {"value": 120, "source": "default"},
+    "jit.fallback_timeout": {"value": 60, "source": "default"},
+    "jit.max_consecutive_fallbacks": {"value": 2, "source": "default"},
+    "replanning.enabled": {"value": true, "source": "meta-agent"},
+    "replanning.max_cycles": {"value": 1, "source": "default"},
+    "replanning.divergence_threshold": {"value": 0.3, "source": "default"},
+    "replanning.trigger_classes": {"value": ["PIVOTED"], "source": "default"},
+    "fast_track.enabled": {"value": false, "source": "meta-agent"},
+    "meta_agent.confidence_threshold": {"value": 0.7, "source": "default"},
+    "routing.enabled": {"value": false, "source": "meta-agent"},
+    "routing.confidence_threshold": {"value": 0.85, "source": "default"},
+    "routing.auto_select_template": {"value": false, "source": "default"},
+    "routing.default_template": {"value": null, "source": "default"},
+    "templates": {"value": {}, "source": "default"},
+    "verification.dimension_weights": {
+      "value": {"security": 0.10, "correctness": 0.30, "spec_alignment": 0.30, "robustness": 0.30},
+      "source": "meta-agent"
+    },
+    "skip_phases": {"value": [], "source": "meta-agent"},
+    "approval_gates": {"value": [3, 4, 6], "source": "default"},
+    "tdd.mutation_threshold": {"value": 70, "source": "default"},
+    "review.triage_enabled": {"value": false, "source": "default"},
+    "oracle.enabled": {"value": true, "source": "default"}
+  },
+  "metrics": {
+    "total_tokens_estimated": 555158,
+    "total_duration_ms": 2419989,
+    "review_rounds_used": 0,
+    "escalations_to_human": 0,
+    "verification_scores": {
+      "dimensions": {
+        "security": {"score": 1.0, "weight": 0.10},
+        "correctness": {"score": 1.0, "weight": 0.30},
+        "spec_alignment": {"score": 1.0, "weight": 0.30},
+        "robustness": {"score": 1.0, "weight": 0.30}
+      },
+      "aggregate": 1.0,
+      "commander_reported_aggregate": 1.0,
+      "recomputed_aggregate": 1.0,
+      "arithmetic_verified": true,
+      "arithmetic_correction_delta": 0.0,
+      "scoring_method": "weighted_sum"
+    },
+    "verification_score_history": {
+      "0": {
+        "aggregate": 1.0,
+        "commander_reported_aggregate": 1.0,
+        "recomputed_aggregate": 1.0,
+        "verdict": "FULL_PASS",
+        "failed_dimensions": [],
+        "dimensions": {
+          "security": {"score": 1.0, "weight": 0.10},
+          "correctness": {"score": 1.0, "weight": 0.30},
+          "spec_alignment": {"score": 1.0, "weight": 0.30},
+          "robustness": {"score": 1.0, "weight": 0.30}
+        },
+        "arithmetic_verified": true,
+        "arithmetic_correction_delta": 0.0,
+        "completed_at": "2026-04-14T12:08:00Z"
+      }
+    }
+  },
+  "fast_track": false,
+  "fast_track_decision": null,
+  "phase_8_revision": null,
+  "replanning_state": null,
+  "abort_reason": null,
+  "aborted_at": null,
+  "explicit_invocation": true,
+  "redirect_decision": null,
+  "template_decision": null,
+  "task_type_skip_profile": null,
+  "skip_confirmation_decision": null,
+  "post_skip_validation_result": null
+}

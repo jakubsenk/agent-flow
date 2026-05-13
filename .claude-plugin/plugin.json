@@ -1,0 +1,10 @@
+{
+  "name": "ceos-agents",
+  "description": "CEOS CLAUDE Agents — development automation: bug-fix, feature pipeline, scaffold, decomposition, dashboard",
+  "version": "10.2.0",
+  "author": {
+    "name": "Filip Sabacky"
+  },
+  "repository": "https://gitea.internal.ceosdata.com/fsabacky/ceos-agents.git",
+  "license": "MIT"
+}

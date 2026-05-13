@@ -1,0 +1,141 @@
+{
+  "pipeline_mode": "adaptive",
+  "pipeline_mode__provenance": {
+    "source": "meta-agent",
+    "reason": "Default kept; complexity 5 + ambiguity 4 benefits from JIT prompt refinement"
+  },
+  "jit": {
+    "enabled": true,
+    "enabled__provenance": {
+      "source": "meta-agent",
+      "reason": "Composite complexity = 5 >= 3 per JIT recommendation rule"
+    },
+    "timeout": 120,
+    "timeout__provenance": {
+      "source": "default",
+      "reason": "Default unchanged"
+    },
+    "fallback_timeout": 60,
+    "fallback_timeout__provenance": {
+      "source": "default",
+      "reason": "Default unchanged"
+    },
+    "max_consecutive_fallbacks": 2,
+    "max_consecutive_fallbacks__provenance": {
+      "source": "default",
+      "reason": "Default unchanged"
+    }
+  },
+  "replanning": {
+    "enabled": true,
+    "enabled__provenance": {
+      "source": "default",
+      "reason": "Default kept"
+    },
+    "max_cycles": 2,
+    "max_cycles__provenance": {
+      "source": "meta-agent",
+      "reason": "Default 1 insufficient for ambiguity score 4; cap at 2 to bound runtime"
+    },
+    "divergence_threshold": 0.3,
+    "divergence_threshold__provenance": {
+      "source": "default",
+      "reason": "No risk profile justifying tightening"
+    },
+    "trigger_classes": [
+      "PIVOTED"
+    ],
+    "trigger_classes__provenance": {
+      "source": "default",
+      "reason": "Default unchanged"
+    }
+  },
+  "fast_track": {
+    "enabled": null,
+    "enabled__provenance": {
+      "source": "default",
+      "reason": "Auto-detect; ineligible this run due to composite complexity 5 > 2"
+    }
+  },
+  "meta_agent": {
+    "confidence_threshold": 0.7,
+    "confidence_threshold__provenance": {
+      "source": "default",
+      "reason": "Default unchanged"
+    }
+  },
+  "routing": {
+    "enabled": null,
+    "enabled__provenance": {
+      "source": "default",
+      "reason": "Default; explicit invocation"
+    },
+    "confidence_threshold": 0.85,
+    "confidence_threshold__provenance": {
+      "source": "default",
+      "reason": "Default unchanged"
+    },
+    "auto_select_template": false,
+    "auto_select_template__provenance": {
+      "source": "default",
+      "reason": "Default unchanged"
+    },
+    "default_template": null,
+    "default_template__provenance": {
+      "source": "default",
+      "reason": "Default unchanged"
+    }
+  },
+  "templates": {},
+  "templates__provenance": {
+    "source": "default",
+    "reason": "No project templates configured"
+  },
+  "verification": {
+    "dimension_weights": {
+      "security": 0.2,
+      "correctness": 0.4,
+      "spec_alignment": 0.3,
+      "robustness": 0.1
+    },
+    "dimension_weights__provenance": {
+      "source": "meta-agent",
+      "reason": "Correctness-leaning (must not break v8 BC = correctness); spec_alignment elevated (deliverable IS a contract spec); security low (no credentials, no public API); robustness low (markdown plugin, no runtime fragility). Sum = 1.0."
+    }
+  },
+  "skip_phases": [],
+  "skip_phases__provenance": {
+    "source": "default",
+    "reason": "Full pipeline required per routing decision (action=full_pipeline)"
+  },
+  "approval_gates": [
+    3,
+    4,
+    6
+  ],
+  "approval_gates__provenance": {
+    "source": "default",
+    "reason": "Phase 6 mandatory; 3 (brainstorm) + 4 (spec) needed because user asked to verify best-practice and decide whether to do it"
+  },
+  "tdd": {
+    "mutation_threshold": 70,
+    "mutation_threshold__provenance": {
+      "source": "default",
+      "reason": "Default unchanged"
+    }
+  },
+  "review": {
+    "triage_enabled": false,
+    "triage_enabled__provenance": {
+      "source": "default",
+      "reason": "No triage needed for design-heavy work"
+    }
+  },
+  "oracle": {
+    "enabled": true,
+    "enabled__provenance": {
+      "source": "default",
+      "reason": "Useful for adversarial verification of contract design"
+    }
+  }
+}

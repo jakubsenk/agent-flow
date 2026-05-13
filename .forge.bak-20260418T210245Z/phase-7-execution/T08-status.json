@@ -1,0 +1,34 @@
+{
+  "task": "T08",
+  "file": "skills/implement-feature/SKILL.md",
+  "status": "done",
+  "changes": [
+    "Added Notifications config read (Webhook URL + On events token set) to Configuration section",
+    "Added run_id generation (compact ISO-8601 basic-format) and pipeline-started webhook after state.json init in Step 0 (MCP pre-flight)",
+    "Step 3 (spec-analyst): added pre-dispatch usage init writes (started_at, model, status: in_progress, counters=0) and post-dispatch usage capture + step-completed webhook (step_name: spec_analysis)",
+    "Step 3a (code-analyst): added pre-dispatch usage init writes and post-dispatch usage capture + step-completed webhook (step_name: code_analysis); skip webhook noted for skipped stage (WEBHOOK-R7)",
+    "Step 4 (architect): added pre-dispatch usage init writes and post-dispatch usage capture + step-completed webhook (step_name: architect)",
+    "Step 6b/6d (fixer-reviewer loop): added pre-loop stage init; cumulative usage accumulation per iteration (COST-R5, no per-iteration array); step-completed webhook fires once on APPROVE/block with iteration_count (WEBHOOK-R6)",
+    "Step 6e (test-engineer): added pre-dispatch usage init writes and post-dispatch usage capture + step-completed webhook (step_name: test); skip webhook excluded (WEBHOOK-R7)",
+    "Step 6f-deploy (deployment-verifier): added pre-dispatch usage init writes and post-dispatch usage capture + step-completed webhook (step_name: deployment); skip webhook excluded (WEBHOOK-R7)",
+    "Step 6g (e2e-test-engineer): added pre-dispatch usage init writes and post-dispatch usage capture + step-completed webhook (step_name: e2e_test); skip webhook excluded (WEBHOOK-R7)",
+    "Step 6h (acceptance-gate): added pre-dispatch usage init writes and post-dispatch usage capture + step-completed webhook (step_name: acceptance_gate); skip webhook excluded (WEBHOOK-R7)",
+    "Step 10 (publisher): added pre-dispatch usage init writes and post-dispatch usage capture + step-completed webhook; pipeline accumulator written before terminal status (COST-R6); summary_table echoed to stdout; pipeline-completed webhook fired after terminal status write",
+    "Step X (block handler): added pipeline accumulator write before terminal status; pipeline-completed webhook with outcome: blocked"
+  ],
+  "requirements_addressed": ["WEBHOOK-R2", "WEBHOOK-R3", "WEBHOOK-R4", "WEBHOOK-R5", "WEBHOOK-R6", "WEBHOOK-R7", "COST-R2", "COST-R3", "COST-R4", "COST-R5", "COST-R6", "COST-R10"],
+  "gate1_constraints_respected": [
+    "Existing spec-analyst / architect / decomposition flow unchanged",
+    "Acceptance gate logic unchanged (single-pass vs decomposition conditions preserved)",
+    "Retry limits unchanged",
+    "Decomposition pathway: events fire at stage boundaries; each subtask runs through the same fixer_reviewer+test stage with cumulative accumulation; parent run_id remains throughout; child subtasks dispatched via fix-ticket get their own run_ids",
+    "maps_to traceability in architect output unchanged",
+    "WEBHOOK-R6 respected: step-completed fires once per top-level stage, not per fixer-reviewer iteration",
+    "WEBHOOK-R7 respected: no step-skipped events, no webhooks for skipped stages"
+  ],
+  "feature_specific_notes": [
+    "Stage canonical names used: spec_analysis, code_analysis, architect, fixer_reviewer, test, e2e_test, deployment, acceptance_gate, publisher",
+    "Decomposition pathway: implement-feature retains its parent run_id throughout; when decomposition occurs and fix-ticket is eventually called per subtask, those child runs get their own run_ids",
+    "Fixer-reviewer cumulative accumulation restarts per subtask in decomposition mode (each subtask gets its own fixer_reviewer iteration set)"
+  ]
+}

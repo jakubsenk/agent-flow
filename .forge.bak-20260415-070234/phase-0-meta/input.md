@@ -1,0 +1,1 @@
+Všechny dokumenty jsou jako markdown... myslím definici tohoto pluginu i pak výstupy jako markdown... byl by na něco lepší YAML? nebo JSON? mělo by to vliv na menší spotřebu tokenů? na větší kvalitu? napadá mě X otázek... musíš si s tím poradit a pokud navrheš nějaké změny, musíme to v rámci forge běhu hned udělat.

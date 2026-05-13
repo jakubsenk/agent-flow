@@ -1,0 +1,51 @@
+{
+  "task_id": "T-006",
+  "status": "DONE",
+  "files_modified": [
+    "skills/migrate-config/SKILL.md"
+  ],
+  "ac_fulfillment": {
+    "AC-MIG-001": {
+      "verdict": "FULFILLED",
+      "evidence": "skills/migrate-config/SKILL.md exists, documents --to-v8 flag (Synopsis section) and --dry-run flag (Synopsis + Step 3 + Step 7)"
+    },
+    "AC-MIG-002": {
+      "verdict": "FULFILLED",
+      "evidence": "Step 3 (backup-before-write), Step 7 (# generated: header + [[process_additions]] step=after_default), REQ-MIG-003a handled explicitly in Step 7"
+    },
+    "AC-MIG-003": {
+      "verdict": "FULFILLED",
+      "evidence": "Step 7 and Step 8 both say 'In dry-run mode: do NOT write'; Step 3 says 'skip when --dry-run'"
+    },
+    "AC-MIG-004": {
+      "verdict": "FULFILLED",
+      "evidence": "Step 6 --yolo auto-resolution to b (both phases) with [WARN] log documented"
+    },
+    "AC-MIG-005": {
+      "verdict": "FULFILLED",
+      "evidence": "Step 8 rewrites Skip stages: [code-analyst] → [analyst-impact] and inserts <!-- migrated v7→v8 by /migrate-config --> HTML comment above ### Pipeline Profiles heading"
+    },
+    "AC-MIG-006": {
+      "verdict": "FULFILLED",
+      "evidence": "Step 3 backup failure → [ERROR] + abort, no .toml files written; atomicity contract stated explicitly"
+    },
+    "AC-MIG-007": {
+      "verdict": "FULFILLED",
+      "evidence": "Step 9 (Runtime legacy alias) documents [WARN] log for legacy Skip stages names at pipeline runtime, pipeline does NOT abort"
+    },
+    "AC-AGT-006": {
+      "verdict": "FULFILLED",
+      "evidence": "Step 4 rename mapping table + Step 7 [WARN] per .md migrated noting removal in v9.0.0; runtime alias in Step 9"
+    },
+    "AC-NF-009": {
+      "verdict": "FULFILLED",
+      "evidence": "Step 3: backup created BEFORE any modification; backup failure aborts with no writes"
+    }
+  },
+  "notes": [
+    "REQ-MIG-003a test-engineer non-rename case handled in Step 7 with both-present and e2e-only variants",
+    "AC-MIG-005 note: spec formal-criteria says '// migrated' but design.md §6.1 step 5 says HTML comment <!-- -->; implementation uses HTML comment per design.md (which is correct for Markdown table safety per task brief constraint)",
+    "Pipeline Profiles legacy alias runtime path (AC-MIG-007) documented in Step 9 to be implemented by pipeline skills reading Skip stages",
+    "Legacy v3.1 upgrade flow preserved in Legacy mode section"
+  ]
+}

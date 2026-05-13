@@ -1,0 +1,24 @@
+[2026-04-03T17:50:02Z] FORGE_START input="fix: Decomposition Persistence Parity (v6.1.9)" config={pipeline_mode:adaptive,skip_phases:[],approval_gates:[3,4,6]}
+[2026-04-03T17:50:26Z] PHASE_START phase=0 name=meta-agent
+[2026-04-03T17:55:32Z] AGENT_END phase=0 agent=meta-agent status=completed
+[2026-04-03T17:55:32Z] PHASE_END phase=0 status=completed
+[2026-04-03T17:55:50Z] TEMPLATE_SKIPPED reason="no template configured"
+[2026-04-03T17:55:50Z] ROUTING_FALLBACK reason="routing_decision missing required fields (task_type, action, confidence)"
+[2026-04-03T17:57:33Z] FAST_TRACK_ACTIVATE phase=0 complexity=2 confidence=1.0 fast_spec_path=.forge/fast_spec.json
+[2026-04-03T17:57:33Z] FAST_TRACK_SKIP skipped_phases=[1,2,3,4,5] skip_rationale="Mechanical port of 4 explicit fixes from reference implementation"
+[2026-04-03T17:57:33Z] SKIP_CONFIRMATION_GATE phases_to_skip=[1,2,3,4,5] user_decision=confirm gate_type=fast_track verbosity_tier=full
+[2026-04-03T17:57:49Z] PHASE_START phase=6 name=planning
+[2026-04-03T18:00:28Z] AGENT_END phase=6 agent=planning status=completed
+[2026-04-03T18:00:28Z] PHASE_END phase=6 status=completed
+[2026-04-03T18:00:28Z] APPROVAL_GATE phase=6
+[2026-04-04T16:58:32Z] PHASE_START phase=7 name=execution
+[2026-04-04T17:02:23Z] AGENT_END phase=7 agent=execution status=completed
+[2026-04-04T17:02:23Z] PHASE_END phase=7 status=completed
+[2026-04-04T17:02:40Z] PHASE_START phase=8 name=verification
+[2026-04-04T17:06:54Z] COMMANDER_ARITHMETIC_VERIFIED phase=8 commander_aggregate=0.91 recomputed_aggregate=0.9125 delta=0.0025
+[2026-04-04T17:06:54Z] AGENT_END phase=8 agent=verification status=completed
+[2026-04-04T17:06:55Z] PHASE_END phase=8 status=completed
+[2026-04-04T17:07:10Z] PHASE_START phase=9 name=completion
+[2026-04-04T17:09:37Z] AGENT_END phase=9 agent=completion status=completed
+[2026-04-04T17:09:37Z] PHASE_END phase=9 status=completed
+[2026-04-04T17:09:37Z] FORGE_END status=completed duration_ms=986701

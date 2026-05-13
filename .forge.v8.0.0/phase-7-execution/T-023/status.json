@@ -1,0 +1,31 @@
+{
+  "task_id": "T-023",
+  "status": "DONE",
+  "files_modified": [
+    "docs/reference/skills.md"
+  ],
+  "summary": "docs/reference/skills.md aktualizován z 28 na 29 skills. Přidán /setup-agents řádek do Skill Index (Config kategorie) a plná sekce s popisem flagů (--dry-run, --yolo, --force) a vazbou na docs/guides/setup-agents-skill.md. Aktualizován /scaffold index řádek + What it does + Syntax + Flags na flag-based mody (default + --yolo + --step-mode). /fix-bugs a /implement-feature dostaly --yolo a --step-mode do Syntax + Flags sekcí. /migrate-config dostal --to-v8, --dry-run, --yolo flagy do Syntax + Flags + What it does s popisem TOML overlay migrace. Přidána sekce ## Routing Skills s /workflow-router sekcí (byla jen v indexu). Odstraněn odkaz na interactive mode selection (a/b/c prompt) ze scaffold sekce.",
+  "ac_fulfillment": {
+    "AC-DOC-006": {
+      "verdict": "FULFILLED",
+      "evidence": "29 skill rows in main index table (grep ^| confirms 29 data rows + 1 header + 1 separator = 31). All 29 skill names from filesystem enumerated: analyze-bug, autopilot, changelog, check-deploy, check-setup, create-backlog, dashboard, discuss, estimate, fix-bugs, fix-ticket, implement-feature, metrics, migrate-config, onboard, pipeline-status, prioritize, publish, resume-ticket, scaffold, scaffold-add, scaffold-validate, setup-agents, setup-mcp, sprint-plan, template, version-bump, version-check, workflow-router. Each has a ### section. /setup-agents has description matching spec: 'One-shot project scanner that generates smart customization/*.toml defaults per agent', links to docs/guides/setup-agents-skill.md."
+    }
+  },
+  "self_review": {
+    "skill_count_29_throughout": true,
+    "setup_agents_row_present": true,
+    "setup_agents_section_present": true,
+    "scaffold_row_updated_flag_based": true,
+    "scaffold_no_interactive_abc_prompt": true,
+    "fix_bugs_step_mode_added": true,
+    "implement_feature_step_mode_added": true,
+    "migrate_config_to_v8_added": true,
+    "all_29_skills_enumerated": true,
+    "workflow_router_section_added": true,
+    "no_forbidden_interactive_strings": "grep '(a) Interactive|(b) YOLO with checkpoint|(c) Full YOLO' returns 0 hits"
+  },
+  "test_results": {
+    "v8-doc-skills-enumeration": "SIMULATED_PASS — 29 skill sections (### /name) present, all match filesystem find output; skill count string '29 skills' appears twice in line 3, no '28 skills' remaining",
+    "harness_regressions": "none introduced — changes are pure additions and description updates"
+  }
+}
