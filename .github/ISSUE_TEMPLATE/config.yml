@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: agent-flow Documentation
+    url: https://github.com/asysta-act/agent-flow/tree/main/docs
+    about: Browse installation guides, agent reference, and pipeline docs before filing.
+  - name: Security disclosure
+    url: https://github.com/asysta-act/agent-flow/security/policy
+    about: Report security issues privately per SECURITY.md (do NOT use public issues).
