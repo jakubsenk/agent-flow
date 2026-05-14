@@ -582,7 +582,7 @@ If your project uses an older Automation Config format, update it manually to ma
 
 ## Automation Config
 
-Canonical reference for the 18 Automation Config sections (5 required + 13 optional). Section ordering and key names must match between this file and the consumer project's CLAUDE.md (per `tests/scenarios/v10-counts-invariants.sh`).
+Canonical reference for the 23 Automation Config sections (5 required + 18 optional). Section ordering and key names must match between this file and the consumer project's CLAUDE.md (per `tests/scenarios/counts-invariants.sh`).
 
 ### Retry Limits
 

@@ -216,7 +216,7 @@ You now have a working agent-flow setup. Here are the recommended next steps:
 
 - **[Architecture](architecture.md)** — Understand the design philosophy, model selection rationale, and how skills and agents interact.
 
-- **[Skills Reference](reference/skills.md)** — Explore all 28 skills with syntax, flags, and usage examples. Key skills to try next:
+- **[Skills Reference](reference/skills.md)** — Explore all **17** skills with syntax, flags, and usage examples. Key skills to try next:
   - `/agent-flow:fix-bugs 3` — Fix multiple bugs in batch
   - `/agent-flow:prioritize` — AI-powered backlog prioritization
   - `/agent-flow:dashboard` — Visual overview of pipeline activity

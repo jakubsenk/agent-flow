@@ -2,7 +2,7 @@
 
 > This guide describes how the three pipeline skills (`fix-bugs`, `implement-feature`, `scaffold`)
 > are decomposed from a monolithic `SKILL.md` (~600 lines) into an entry `SKILL.md` (~100 lines)
-> and a set of step files (`steps/*.md`, 5–8 per skill). The architecture is inspired by the BMAD
+> and a set of step files (`steps/*.md`, 8–12 per skill). The architecture is inspired by the BMAD
 > framework, where this decomposition demonstrated ~80% token reduction per step and improved LLM
 > reliability due to a smaller context window. The remaining non-pipeline skills stay monolithic —
 > decomposition is explicitly limited to these three pipeline skills.
@@ -56,7 +56,7 @@ Each decomposed pipeline skill's `SKILL.md` is the **entry point** responsible f
 
 The entry `SKILL.md` does **not** contain per-step agent instructions. Those live in `steps/`.
 
-### Step files (`steps/{NN}-{name}.md`, 5–8 per skill)
+### Step files (`steps/{NN}-{name}.md`, 8–12 per skill)
 
 Each step file contains the **instructions for a single pipeline step**, including:
 
@@ -73,8 +73,8 @@ LLM context window for that step — not the full pipeline definition.
 
 | Skill | Entry SKILL.md | Step files | Total steps |
 |-------|---------------|------------|-------------|
-| `fix-bugs` | `skills/fix-bugs/SKILL.md` | `skills/fix-bugs/steps/` | 7 |
-| `implement-feature` | `skills/implement-feature/SKILL.md` | `skills/implement-feature/steps/` | 7 |
+| `fix-bugs` | `skills/fix-bugs/SKILL.md` | `skills/fix-bugs/steps/` | 12 |
+| `implement-feature` | `skills/implement-feature/SKILL.md` | `skills/implement-feature/steps/` | 8 |
 | `scaffold` | `skills/scaffold/SKILL.md` | `skills/scaffold/steps/` | 8 |
 
 ---
@@ -89,7 +89,7 @@ Step files follow the pattern `{NN}-{descriptive-name}.md`:
 - `{descriptive-name}` is **kebab-case**: lowercase letters, digits, hyphens only
 - Extension: `.md`
 
-Examples: `01-triage.md`, `04-fixer-reviewer-loop.md`, `07-publish.md`
+Examples: `01-triage.md`, `04-fixer-reviewer-loop.md`, `11-publish.md`
 
 ### Ordering
 
@@ -104,7 +104,7 @@ Some steps dispatch only when conditions are met (e.g., `03-reproduce.md` in `fi
 only when reproduction is required; `06-acceptance-gate.md` dispatches only when AC count ≥ 3 OR
 complexity ≥ M). Conditional steps are **still counted** in the step total displayed in `--step-mode`
 prompts — the step counter advances non-monotonically when a conditional step is not triggered
-(e.g., from step `02/7` directly to `04/7`). The step file header documents its skip condition.
+(e.g., from step `02/12` directly to `04/12`). The step file header documents its skip condition.
 
 ---
 
@@ -271,29 +271,35 @@ grep '\[WARN\]' .agent-flow/pipeline.log | grep -i "skip stages"
 
 ## 8. Pipeline-by-Pipeline Step Reference
 
-### fix-bugs (7 steps)
+### fix-bugs (12 steps)
 
-| Step file | Description | Conditional? |
-|-----------|-------------|--------------|
-| `01-triage.md` | Dispatch `analyst --phase triage`: AC extraction, complexity, duplication check | No |
-| `02-impact.md` | Dispatch `analyst --phase impact`: affected files, root cause analysis | No |
-| `03-reproduce.md` | Dispatch `browser-agent --phase reproduce`: reproduce bug in browser | Yes (optional) |
-| `04-fixer-reviewer-loop.md` | Fixer ↔ reviewer loop (max 5 iterations): code fix + AC fulfillment check | No |
-| `05-test.md` | Dispatch `test-engineer`: write/run tests, build smoke check | No |
-| `06-acceptance-gate.md` | Dispatch `acceptance-gate`: verify AC fulfillment with code+test evidence | Yes (AC ≥ 3 OR complexity ≥ M) |
-| `07-publish.md` | Dispatch `publisher`: create PR, update tracker, fire webhooks | No |
+| Step file | Agent | Description | Conditional? |
+|-----------|-------|-------------|--------------|
+| `01-triage.md` | analyst | Triage: severity, AC extraction, complexity | No |
+| `02-impact.md` | analyst | Impact analysis: affected files ≤5, root cause | No |
+| `03-reproduce.md` | browser-agent | Reproduce bug in browser | Yes (optional) |
+| `04-fixer-reviewer-loop.md` | fixer ↔ reviewer | Implement + review fix (≤5 iterations) | No |
+| `05-smoke.md` | — | Build + unit smoke check | No |
+| `06-test.md` | test-engineer | Write/run targeted tests | No |
+| `07-e2e.md` | test-engineer | E2E test run | Yes (optional) |
+| `08-browser-verify.md` | browser-agent | Browser verification of fix | Yes (optional) |
+| `09-acceptance-gate.md` | acceptance-gate | AC fulfillment check (AC ≥ 3 or complexity ≥ M) | Yes |
+| `10-pre-publish.md` | — | Pre-publish hook + custom agent | Yes (if configured) |
+| `11-publish.md` | publisher | Create PR, update tracker, fire webhooks | No |
+| `12-result.md` | — | Emit pipeline summary | No |
 
-### implement-feature (7 steps)
+### implement-feature (8 steps)
 
-| Step file | Description | Conditional? |
-|-----------|-------------|--------------|
-| `01-spec.md` | Dispatch `spec-analyst`: specification, AC writeback to tracker | No |
-| `02-architect.md` | Dispatch `architect`: task tree with `maps_to` AC traceability | No |
-| `03-decomposition.md` | Decomposition decision, create tracker subtasks if needed | Yes (decomposition path only) |
-| `04-fixer-reviewer-loop.md` | Fixer ↔ reviewer loop (max 5 iterations): implementation + AC fulfillment | No |
-| `05-test.md` | Dispatch `test-engineer`: write/run tests, build smoke check | No |
-| `06-acceptance-gate.md` | Dispatch `acceptance-gate`: verify AC fulfillment | Yes (always in decomposition; skipped in single-pass) |
-| `07-publish.md` | Dispatch `publisher`: create PR, update tracker, fire webhooks | No |
+| Step file | Agent | Description | Conditional? |
+|-----------|-------|-------------|--------------|
+| `01-spec.md` | spec-analyst | Specification + AC writeback to tracker | No |
+| `02-architect.md` | architect | Task tree with `maps_to` AC traceability | No |
+| `03-decomposition.md` | — | Decomposition decision, create tracker subtasks | Yes (decomposition path) |
+| `04-fixer-reviewer-loop.md` | fixer ↔ reviewer | Implement + review (≤5 iterations) | No |
+| `05-smoke.md` | — | Build + unit smoke check | No |
+| `06-test.md` | test-engineer | Write/run tests | No |
+| `07-acceptance-gate.md` | acceptance-gate | AC fulfillment verification | Yes (always in decomposition) |
+| `08-publish.md` | publisher | Create PR, update tracker, fire webhooks | No |
 
 ### scaffold (8 steps)
 
@@ -409,22 +415,27 @@ skills/fix-bugs/
 
 ```
 skills/fix-bugs/
-  SKILL.md                    (~110 lines — dispatch logic only)
+  SKILL.md                      (~200 lines — dispatch logic only)
   steps/
-    01-triage.md              (~150 lines)
-    02-impact.md              (~150 lines)
-    03-reproduce.md           (~120 lines, conditional)
-    04-fixer-reviewer-loop.md (~200 lines)
-    05-test.md                (~150 lines)
-    06-acceptance-gate.md     (~120 lines, conditional)
-    07-publish.md             (~100 lines)
+    01-triage.md
+    02-impact.md
+    03-reproduce.md
+    04-fixer-reviewer-loop.md
+    05-smoke.md
+    06-test.md
+    07-e2e.md
+    08-browser-verify.md
+    09-acceptance-gate.md
+    10-pre-publish.md
+    11-publish.md
+    12-result.md
 ```
 
 ---
 
 ## Related Documentation
 
-- `docs/guides/toml-overlay-syntax.md` — TOML overlay system for per-agent customization, including Pipeline Profiles syntax
-- `docs/guides/toml-overlay-syntax.md` — TOML overlay system for per-agent customization
-- `docs/reference/pipeline.md` — reference: entry SKILL.md responsibilities, step file contract
-- `docs/reference/automation-config.md` — Pipeline Profiles configuration reference (named-phase syntax)
+- [pipeline.md](../reference/pipeline.md) — full pipeline contract and mode flag reference
+- [automation-config.md](../reference/automation-config.md) — Automation Config schema including Pipeline Profiles
+- [custom-agents.md](custom-agents.md) — custom agent overrides and step override mechanism
+- [core/snippets/README.md](../../core/snippets/README.md) — reusable snippet catalogue

@@ -6,7 +6,7 @@ behaviors. Each AC is referenced by harness scenarios in `tests/scenarios/`.
 
 ---
 
-## AC-MODE-005 — Step-mode escape switch
+## Step-mode escape switch
 
 WHEN a pipeline running in `--step-mode` receives an escape command (user enters
 `y` or `yolo` at any step prompt),
@@ -19,12 +19,11 @@ for all remaining steps).
 grep -qE 'step-mode escape|switched.*yolo|yolo.*remaining' skills/fix-bugs/SKILL.md
 ```
 
-Verifying scenarios:
-- `tests/scenarios/v8-mode-stepmode-skip-escape.sh` (Assertion 5)
+Verifying scenarios: (none currently active)
 
 ---
 
-## AC-MODE-009 — Vague-description heuristic: brainstorm skipped for long technical descriptions
+## Vague-description heuristic: brainstorm skipped for long technical descriptions
 
 WHEN the scaffold description has word_count >= 20 AND contains at least one technical term,
 THEN brainstorm SHALL be skipped automatically (description is classified as non-vague),
@@ -35,15 +34,14 @@ AND the pipeline SHALL proceed directly to spec-writer without asking for more d
 grep -qiE 'word.count.*20.*technical|>=.*20.*AND|technical.*>=.*20' skills/scaffold/SKILL.md
 ```
 
-Verifying scenarios:
-- `tests/scenarios/v8-mode-vague-heuristic-boundaries.sh` (existing — already PASSes; AC-MODE-009 is the formal-criteria entry that documents the contract)
+Verifying scenarios: (none currently active)
 
 Source-of-truth substance: `skills/scaffold/SKILL.md:72-74` —
 > "brainstorm triggers only for vague descriptions (heuristic: word count < 20 OR no technical term detected)... Long technical descriptions (>=20 words AND technical terms) skip brainstorm automatically."
 
 ---
 
-## AC-STEPS-005 — Override body REPLACES default step (replace-only semantics)
+## Override body REPLACES default step (replace-only semantics)
 
 WHEN `customization/steps/fix-bugs/04-fixer-reviewer-loop.md` exists with content "OVERRIDE BODY MARKER 12345",
 THEN the dispatched fixer-reviewer prompt SHALL contain ONLY the OVERRIDE BODY content.
@@ -60,5 +58,4 @@ grep -qiE 'replace.only|override.*replace|replaces.*default|replace.*default.*st
   docs/reference/pipeline.md
 ```
 
-Verifying scenarios:
-- `tests/scenarios/v8-steps-override-replace.sh` (Assertion 3)
+Verifying scenarios: (none currently active)
