@@ -41,10 +41,9 @@ graph LR
 
 - **Bug-fix pipeline** — Triage, analyze, fix, review, test, and publish. Fully automated from issue tracker query to merged PR.
 - **Feature pipeline** — Specification extraction, architecture design, task decomposition, implementation, review, test, and publish.
-- **Project scaffolding (v2)** — Describe a project in natural language. Get a specification, buildable skeleton, and fully implemented features with tests.
+- **Project scaffolding** — Describe a project in natural language. Get a specification, buildable skeleton, and fully implemented features with tests. Use `--yolo` for full automation or `--step-mode` for per-step debugging.
 - **17 specialized agents** — Each with a defined role, model assignment (opus/sonnet/haiku), and constraints. Read-only analysts never touch code; execution agents make changes.
-- **Scaffold v2** — Describe a project → get a specification, skeleton, and fully implemented features with tests. Use `--yolo` for full automation or `--step-mode` for per-step debugging.
-- **Zero dependencies** — Pure markdown definitions. No build system, no runtime, no package manager.
+- **Zero dependencies** — Pure markdown definitions. No build system, no runtime, no package manager. Works on macOS, Linux, and Windows (Git Bash required on Windows).
 
 ---
 
@@ -70,8 +69,6 @@ graph LR
 The `/onboard` wizard will guide you through setting up your issue tracker, source control, PR rules, and build commands. No manual copy-paste needed.
 
 > **New to agent-flow?** See the [Getting Started tutorial](docs/getting-started.md) for a complete walkthrough.
-
-> **Upgrading?** Check the [CHANGELOG](CHANGELOG.md) for breaking changes between versions and update your `## Automation Config` to match the current format documented in `docs/reference/automation-config.md`.
 
 ---
 
@@ -132,7 +129,7 @@ flowchart TD
     style Report fill:#e0ffe0,stroke:#00cc00
 ```
 
-With `--no-implement`: Infrastructure Declaration → Scaffolder (with stack flags) → Validate → Git Init + Push (v3.x skeleton only).
+With `--no-implement`: Infrastructure Declaration → Scaffolder (with stack flags) → Validate → Git Init + Push (skeleton only, no implementation).
 
 Hook integration points (pre-fix, post-fix, pre-publish, post-publish) and pipeline profiles are supported. See [Pipeline Reference](docs/reference/pipelines.md) for full details.
 
@@ -164,15 +161,7 @@ All skills are namespaced: `/agent-flow:<skill>`. Most support additional flags 
 
 Full syntax, flags, and examples: [Skills Reference](docs/reference/skills.md)
 
-### Slash command collision with Claude Code builtins
-
-> **Warning:** The short form `/init` collides with Claude Code's built-in slash command. Always use the namespaced form when invoking agent-flow skills:
-
-| You want this skill | Use this exact command | NOT this (Claude Code builtin) |
-|---|---|---|
-| Configure MCP servers | `/agent-flow:setup-mcp` | `/init` |
-
-The namespaced form `/agent-flow:*` is always unambiguous. See CHANGELOG.md for historical rename/removal migration notes.
+> **Tip:** Always use the namespaced form `/agent-flow:<skill>` to avoid conflicts with Claude Code built-in commands.
 
 ---
 
@@ -285,4 +274,4 @@ For security vulnerability reports, see [SECURITY.md](SECURITY.md).
 
 ---
 
-Built by [Filip Sabacky](mailto:filip.sabacky@ceosdata.com) · [CEOS Data](https://ceosdata.com)
+Built by [Filip Sabacky](https://www.linkedin.com/in/sabacky/) · [CEOS Data](https://ceosdata.com)
