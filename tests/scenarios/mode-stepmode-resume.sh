@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-MODE-007, REQ-MODE-008
+# Verifies: AC-MODE-007
 # Description: /resume-ticket BUG-1 with state.json having pause_reason="step_mode_abort"
 #   and last_completed_step="04-fixer-reviewer-loop" MUST begin from step 05-test
 #   (not 04, not 06). Happy-path visible test; adversarial off-by-one edge case

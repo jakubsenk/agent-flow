@@ -23,7 +23,7 @@ The plugin will emit `[WARN] Possible misnamed step override: customization/step
 
 ## Override scope
 
-Override REPLACES the entire step body. Insert/before/after semantics are not supported in v8.0.0.
+Override REPLACES the entire step body. Insert/before/after semantics are not currently supported.
 
 ## See also
 

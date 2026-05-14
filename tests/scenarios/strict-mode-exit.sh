@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # ===========================================================================
 # Test:     v10-strict-mode-exit.sh
-# Falsifies: REQ-REL-3.1..6  FC mapped: FC-REL-3
 # Checks: (1) CEOS_STRICT_DISPATCH=1 + WITNESS_MISMATCH => exit 2 + audit entry
 #         (2) advisory mode => exit 0  (3) CEOS_STRICT_DISPATCH=0 => exit 0
 #         (4) WITNESS_MISSING does NOT trigger strict exit 2

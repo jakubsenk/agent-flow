@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-MODE-MATRIX-004, REQ-MODE-002
+# Verifies: AC-MODE-MATRIX-004
 # Description: implement-feature + --yolo = zero checkpoints, autonomous spec->architect->fixer->publisher
 # NOTE: REPO_ROOT assumes test file location is tests/scenarios/. Run after Phase 7 has moved files.
 # Do NOT execute from staging location .forge/phase-5-tdd/tests/.

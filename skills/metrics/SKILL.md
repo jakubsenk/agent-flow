@@ -114,7 +114,7 @@ Total estimate for the period.
 For each issue identified in Step 4, glob `.agent-flow/*/state.json` to locate per-run state files. Classify each pipeline run:
 
 - **MEASURED**: `pipeline.total_tokens` is present in state.json → use `pipeline.total_tokens` directly; do NOT apply heuristic constants.
-- **ESTIMATED**: `pipeline.total_tokens` is absent (pre-v6.8.0 run or incomplete pipeline) → apply heuristic constants from Step 6.
+- **ESTIMATED**: `pipeline.total_tokens` is absent (legacy run or incomplete pipeline) → apply heuristic constants from Step 6.
 - **HYBRID** (partial measurement): state.json has some stages with `tokens_used` but no top-level `pipeline.total_tokens` → classify the pipeline as ESTIMATED at the pipeline level, but note which stages had measured data in the detail section.
 
 For each pipeline run, collect:
@@ -202,7 +202,7 @@ Pipeline PROJ-42 (2026-04-18):
   Estimated: 12,500 tokens (2 stages, heuristic)
   Total: 54,650 tokens
 
-Pipeline PROJ-37 (2026-04-17):  [ESTIMATED — pre-v6.8.0 state]
+Pipeline PROJ-37 (2026-04-17):  [ESTIMATED — legacy state]
   Estimated: 85,000 tokens (heuristic: 2×opus + 1×sonnet + 1×haiku)
 
 Pipeline PROJ-55 (2026-04-19):  [MEASURED]
@@ -254,7 +254,7 @@ Top block reasons:
 Data source: measured={X} pipelines (state.json.pipeline.total_tokens present), estimated={Y} pipelines (heuristic fallback).
 **Provenance:** {X} pipeline(s) used measured token data from state.json (pipeline.total_tokens).
 {Y} pipeline(s) fell back to heuristic estimates (sonnet ~30k, opus ~50k, haiku ~5k per stage).
-{If Y > 0}: Pipelines run before v6.8.0 upgrade lack per-stage usage fields and are reported as estimated.
+{If Y > 0}: Pipelines run before per-stage usage tracking was introduced lack per-stage usage fields and are reported as estimated.
 Estimated pipelines: {comma-separated list of estimated issue IDs and run dates}.
 
 Generated: {timestamp} | agent-flow v{version}

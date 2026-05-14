@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-SETUP-004, REQ-SETUP-003
+# Verifies: AC-SETUP-004
 # Description: Every file written by /setup-agents begins with "# generated: " header
 #   matching regex: ^# generated: [0-9TZ:-]+ by /setup-agents v[0-9]+\.[0-9]+\.[0-9]+$
 set -uo pipefail

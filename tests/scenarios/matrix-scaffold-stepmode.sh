@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-MODE-MATRIX-009, REQ-MODE-004
+# Verifies: AC-MODE-MATRIX-009
 # Description: scaffold + --step-mode = per-step prompt after each of 8 scaffold steps
 set -uo pipefail
 

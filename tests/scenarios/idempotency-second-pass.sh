@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # ===========================================================================
 # Test:        v10-idempotency-second-pass.sh  [HIDDEN -- 20%]
-# Falsifies:   REQ-B-4 (idempotency)
 # FC mapped:   FC-B-7
 # Phase:       5 (TDD -- FAIL expected until Phase 7 lands, then must PASS)
 # What it checks:
@@ -11,7 +10,7 @@
 #   re-application (e.g., `../../core/X.md` -> `../../../../core/X.md`).
 #
 # Design note on pattern:
-#   The canonical REQ-B-2 sed uses `([^./])core/` to avoid matching already-
+#   The canonical sed uses `([^./])core/` to avoid matching already-
 #   prefixed paths. This test validates that invariant holds for ALL 4 depth classes.
 # Cross-platform: Win Git-Bash + Linux GNU + macOS BSD
 # Exit codes: 0=PASS, 1=FAIL, 77=SKIP
@@ -43,11 +42,11 @@ fi
 
 # ---------------------------------------------------------------------------
 # Helper: run ONE depth-class sed transformation (in-memory, no file mutation)
-# Applies the canonical pattern from REQ-B-2 / design.md §B.1 to each file
+# Applies the canonical pattern / design.md §B.1 to each file
 # in the glob, returns lines that changed (empty = idempotent).
 # ---------------------------------------------------------------------------
 
-# The 4 canonical sed patterns (2-backslash ERE, as specified REQ-B-2):
+# The 4 canonical sed patterns (2-backslash ERE, as specified):
 #   Depth 1: agents/*.md           `([^./])core/X.md` -> `\1../core/X.md`
 #   Depth 2: skills/*/SKILL.md     `([^./])core/X.md` -> `\1../../core/X.md`
 #   Depth 3: skills/*/steps/*.md   `([^./])core/X.md` -> `\1../../../core/X.md`

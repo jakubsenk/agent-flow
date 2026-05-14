@@ -9,7 +9,7 @@ The canonical Bash conditional for validating an `$ISSUE_ID` value before it is 
 ```
 
 **Why two clauses:**
-1. `^[A-Za-z0-9#._-]+$` — accepted character class (Jira dotted-keys like `PROJ.NAME-123` permitted in v6.9.0+).
+1. `^[A-Za-z0-9#._-]+$` — accepted character class (Jira dotted-keys like `PROJ.NAME-123` are permitted).
 2. `! "$ISSUE_ID" =~ ^\.+$` — REJECT dot-only inputs (`.`, `..`, `...`). Without this guard, the regex would accept `..`, which produces `.agent-flow/../state.json` — path-traversal escapes the plugin state directory.
 
 ## Used by:
@@ -17,4 +17,3 @@ The canonical Bash conditional for validating an `$ISSUE_ID` value before it is 
 
 **Expected citation count:** 1 (verifier `tests/scenarios/v690-snippet-citation-counts.sh`).
 
-(Historical: prior to v9.3.0 the citation map also covered the legacy `skills/fix-ticket/SKILL.md:90`, `skills/implement-feature/SKILL.md:92`, and the former `skills/resume-ticket/SKILL.md:86`. The legacy `fix-ticket` skill was merged into `fix-bugs`, the legacy `resume-ticket` skill was deleted, and the implement-feature citation has likewise been removed.)

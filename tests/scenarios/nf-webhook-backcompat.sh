@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-NF-008, REQ-NF-008
+# Verifies: AC-NF-008
 # Description: Webhook payload schema in core/post-publish-hook.md contains
 #   NO renamed fields; new optional fields are additive only.
 #   Asserts all canonical payload field names still present in documentation.

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-OVR-001, REQ-OVR-001, REQ-OVR-002 Tier 1
+# Verifies: AC-OVR-001 Tier 1
 # Description: TOML overlay scalar override — customization/reviewer.toml model="sonnet"
 #   merges into reviewer agent prompt, overriding plugin default "opus"
 set -uo pipefail
@@ -84,7 +84,7 @@ fi
 # Assertion 4: toml-overlay-syntax.md documents the override precedence rule
 # ---------------------------------------------------------------------------
 echo "--- Assertion 4: toml-overlay-syntax.md documents overlay wins over plugin default ---"
-if grep -qiE 'overlay.*wins|vždy vyhrává|overlay.*vyhrává' "$TOML_SYNTAX_DOC"; then
+if grep -qiE 'overlay.*wins|overlay.*always.*wins' "$TOML_SYNTAX_DOC"; then
   echo "OK: toml-overlay-syntax.md documents overlay wins precedence"
 else
   fail "toml-overlay-syntax.md does not document overlay-wins-over-plugin-default rule"

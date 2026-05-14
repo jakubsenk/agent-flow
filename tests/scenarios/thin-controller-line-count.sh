@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # ===========================================================================
 # Test:        v10-thin-controller-line-count.sh
-# Falsifies:   REQ-A-1, REQ-A-2, REQ-A-3, REQ-A-4, REQ-A-7
 # FC mapped:   FC-1 (sub-assertions A, B, C, D)
 # What it checks:
 #   A) skills/fix-bugs/SKILL.md ≤ 260 lines
@@ -27,7 +26,7 @@ count_lines() {
   tr -d '\r' < "$1" | wc -l | tr -d ' '
 }
 
-# --- A. Line-count ceilings (REQ-A-1, REQ-A-2) ---
+# --- A. Line-count ceilings ---
 FB_SKILL="skills/fix-bugs/SKILL.md"
 IF_SKILL="skills/implement-feature/SKILL.md"
 
@@ -44,7 +43,7 @@ if [ "$IF_LINES" -gt 200 ]; then
   fail "FC-1.A2: $IF_SKILL = ${IF_LINES}L (ceiling 200)"
 fi
 
-# --- B. Verbatim dispatch-table phrase present (REQ-A-3) ---
+# --- B. Verbatim dispatch-table phrase present ---
 if ! grep -q 'Use the Read tool to load' "$FB_SKILL"; then
   fail "FC-1.B1: $FB_SKILL missing 'Use the Read tool to load' phrase"
 fi
@@ -52,7 +51,7 @@ if ! grep -q 'Use the Read tool to load' "$IF_SKILL"; then
   fail "FC-1.B2: $IF_SKILL missing 'Use the Read tool to load' phrase"
 fi
 
-# --- C. Guard-block load instruction at <6% file position (REQ-A-4) ---
+# --- C. Guard-block load instruction at <6% file position ---
 FB_GUARD_LINE=$(grep -n 'data/guard-block.md' "$FB_SKILL" | head -n 1 | cut -d: -f1)
 IF_GUARD_LINE=$(grep -n 'data/guard-block.md' "$IF_SKILL" | head -n 1 | cut -d: -f1)
 
@@ -68,7 +67,7 @@ elif [ "$IF_GUARD_LINE" -gt 12 ]; then
   fail "FC-1.C2: $IF_SKILL guard-block load at L${IF_GUARD_LINE} (must be ≤12, i.e. 6% of 200)"
 fi
 
-# --- D. No inline Task() dispatch directives in SKILL.md body (REQ-A-3 corollary) ---
+# --- D. No inline Task() dispatch directives in SKILL.md body ---
 # Allowed: dispatch table introductory paragraph references in code-fence examples.
 # Forbidden: imperative dispatch directives matching either trigger phrase.
 FB_TASK=$(grep -cE 'You MUST invoke Task|Task\(subagent_type' "$FB_SKILL" || true)

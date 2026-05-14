@@ -33,7 +33,7 @@ Execute pipeline hooks and fire webhooks at stage boundaries.
 - Webhook failure (non-2xx or timeout) → log warning "[WARN] Webhook delivery failed: {error}", continue.
 - All post-publish hooks are advisory only. Failures here never block the pipeline.
 
-## Section 4: Pipeline lifecycle events (v6.8.0+)
+## Section 4: Pipeline lifecycle events
 
 Observability Hooks for headless + monitoring integrations. Three events fire at pipeline lifecycle boundaries.
 
@@ -44,7 +44,7 @@ Observability Hooks for headless + monitoring integrations. Three events fire at
 | `pipeline-started` | When a pipeline (fix-bugs/implement-feature/scaffold) begins processing an issue | Notify monitoring that work has started |
 | `step-completed` | When a top-level pipeline stage (e.g., triage, code_analysis, fixer_reviewer, publisher) completes successfully or is blocked | Real-time progress and cost visibility |
 | `pipeline-completed` | When a pipeline finishes (success OR block) | Final outcome + totals |
-| `pipeline-resumed` | When a paused pipeline resumes (operator answers NEEDS_CLARIFICATION by re-invoking the entry-point skill with `--clarification`; auto-resume is detected inline by `core/resume-detection.md`, the legacy resume-ticket skill was deleted in v9.3.0) | Close the pause/resume lifecycle loop |
+| `pipeline-resumed` | When a paused pipeline resumes (operator answers NEEDS_CLARIFICATION by re-invoking the entry-point skill with `--clarification`; auto-resume is detected inline by `core/resume-detection.md`) | Close the pause/resume lifecycle loop |
 
 ### Granularity Decision
 
@@ -103,7 +103,7 @@ Observability Hooks for headless + monitoring integrations. Three events fire at
 
 Transport, curl invocation, and failure handling are identical to Section 3. Use the same `curl --max-time 5 --retry 0` pattern with a heredoc to pass the JSON body. Advisory failure: log `[WARN] Webhook delivery failed: {error}` and continue pipeline. Never block.
 
-**Variable naming convention (v6.9.1):** Skills read the `Webhook URL` config key into a bash variable named `${Webhook_URL}` (config-key casing, mixed-case). For heredoc-style curl calls the variable is used directly as `"${Webhook_URL}"`. For jq-pipe-style calls (e.g., pipeline-paused), skills first assign `WEBHOOK_URL="${Webhook_URL}"` and use the uppercase form `"${WEBHOOK_URL}"`. Both refer to the same `Webhook URL` config value — the two variable names are not different config keys. Maintainers MUST update BOTH if renaming.
+**Variable naming convention:** Skills read the `Webhook URL` config key into a bash variable named `${Webhook_URL}` (config-key casing, mixed-case). For heredoc-style curl calls the variable is used directly as `"${Webhook_URL}"`. For jq-pipe-style calls (e.g., pipeline-paused), skills first assign `WEBHOOK_URL="${Webhook_URL}"` and use the uppercase form `"${WEBHOOK_URL}"`. Both refer to the same `Webhook URL` config value — the two variable names are not different config keys. Maintainers MUST update BOTH if renaming.
 
 **Field value safety:** The heredoc prevents shell-word-splitting and glob expansion, but a raw
 `"${var}"` substitution inside a heredoc JSON literal does NOT JSON-encode field values. Any field
@@ -133,16 +133,16 @@ The `--proto "=http,https"` flag restricts the transport to HTTP/HTTPS only. Thi
 ### On events Filter
 
 Project CLAUDE.md Automation Config "Notifications" section supports these `On events` tokens (CSV):
-- Existing: `pr-created`, `issue-blocked`
-- New (v6.8.0): `pipeline-started`, `step-completed`, `pipeline-completed`
-- New (v6.9.0): `pipeline-paused`
-- New (v6.9.1): `pipeline-resumed`
+- `pr-created`, `issue-blocked`
+- `pipeline-started`, `step-completed`, `pipeline-completed`
+- `pipeline-paused`
+- `pipeline-resumed`
 
 If a token is present in the `On events` list, the webhook fires for that event. If omitted, the event is skipped silently.
 
-### Webhook event: pipeline-paused (NEW in v6.9.0)
+### Webhook event: pipeline-paused
 
-Fires once per `paused` transition (NEEDS_CLARIFICATION pause). Optional in `On events` config — absence preserves v6.8.x default behavior. MUST NOT fire `pipeline-completed` on the same pause transition (REQ-050d).
+Fires once per `paused` transition (NEEDS_CLARIFICATION pause). Optional in `On events` config — absence preserves default behavior. MUST NOT fire `pipeline-completed` on the same pause transition.
 
 Subject to the in-memory circuit breaker (Section 4.2) — the failure counter is shared with `pipeline-completed` et al. Curl invocation MUST use `--proto "=http,https"`, `--max-time 5`, `--retry 0`, and advisory-failure logging (same pattern as other Section 4 events).
 
@@ -189,13 +189,13 @@ jq -nc \
     > /dev/null 2>&1 || echo "[WARN] Webhook delivery failed"
 ```
 
-REQ-050d invariant: `pipeline-completed` MUST NOT fire on a pause transition. `pipeline-paused` is the dedicated terminal-of-segment event for the pause transition. The firing site lives in `core/agent-states.md`.
+Invariant: `pipeline-completed` MUST NOT fire on a pause transition. `pipeline-paused` is the dedicated terminal-of-segment event for the pause transition. The firing site lives in `core/agent-states.md`.
 
-### Webhook event: pipeline-resumed (NEW in v6.9.1)
+### Webhook event: pipeline-resumed
 
-Fires once when inline auto-resume detection (`core/resume-detection.md`; replaces the legacy `skills/resume-ticket/SKILL.md` deleted in v9.3.0) transitions state from `paused` → `running` (immediately after the state.json write). Optional in `On events` config — absence preserves v6.9.0 and earlier default behavior.
+Fires once when inline auto-resume detection (`core/resume-detection.md`) transitions state from `paused` → `running` (immediately after the state.json write). Optional in `On events` config — absence preserves default behavior.
 
-**REQ-049 negative invariant (unchanged):** `pipeline-completed` MUST NOT fire at the paused→running transition. `pipeline-resumed` is the counterpart to `pipeline-paused` — it signals that the pipeline has re-entered active processing. `pipeline-completed` fires only at the final `completed` state, which may follow after the resumed pipeline runs to completion.
+**Negative invariant (unchanged):** `pipeline-completed` MUST NOT fire at the paused→running transition. `pipeline-resumed` is the counterpart to `pipeline-paused` — it signals that the pipeline has re-entered active processing. `pipeline-completed` fires only at the final `completed` state, which may follow after the resumed pipeline runs to completion.
 
 Subject to the in-memory circuit breaker (Section 4.2) — the failure counter is shared with `pipeline-paused`, `pipeline-completed`, and all other Section 4 events. Curl invocation MUST use `--proto "=http,https"`, `--max-time 5`, `--retry 0`, and advisory-failure logging (same pattern as other Section 4 events).
 
@@ -221,7 +221,7 @@ Example curl invocation (uses `jq -n --arg` structural construction for safe fie
 
 <!-- @snippet:webhook-curl -->
 ```bash
-# pipeline-resumed webhook firing site (v6.9.1 — circuit-breaker scope shared with Section 4 events)
+# pipeline-resumed webhook firing site (circuit-breaker scope shared with Section 4 events)
 # Subject to in-memory circuit breaker (counter shared with pipeline-paused, pipeline-completed et al.)
 jq -nc \
   --arg event "pipeline-resumed" \
@@ -240,7 +240,7 @@ jq -nc \
     > /dev/null 2>&1 || echo "[WARN] Webhook delivery failed"
 ```
 
-Fired by inline auto-resume detection (`core/resume-detection.md`; replaces the legacy `skills/resume-ticket/SKILL.md` deleted in v9.3.0) at the point where state transitions from `paused` back to `running`, after the state.json write. Gated on: `On events` config includes `pipeline-resumed`.
+Fired by inline auto-resume detection (`core/resume-detection.md`) at the point where state transitions from `paused` back to `running`, after the state.json write. Gated on: `On events` config includes `pipeline-resumed`.
 
 ### State-Commit Ordering (WEBHOOK-R2..R4)
 
@@ -257,7 +257,7 @@ The system does NOT emit any webhook for skipped stages. Skipped stages produce 
 
 Existing events (`pr-created`, `agent-flow-block`) are unchanged. No existing payload field has been renamed. Section 3 curl invocation is unchanged. Webhook payloads are forward-compatible — additive fields may be added in future MINOR versions. Consumers should use lenient JSON parsing (ignore unknown fields).
 
-### 4.2 Circuit breaker semantics (v6.9.0+)
+### 4.2 Circuit breaker semantics
 
 To prevent runaway latency from a dead webhook endpoint (each call costs up to 5s with `--max-time 5`), the post-publish hook maintains an **in-memory per-pipeline-run failure counter**:
 
@@ -271,7 +271,7 @@ To prevent runaway latency from a dead webhook endpoint (each call costs up to 5
 
 Operators monitoring a pipeline log should treat repeated `Circuit breaker open` lines across runs as a misconfiguration signal (dead webhook endpoint) OR a malicious-PR signal (covert-channel DoS via injected `Webhook URL`). See `docs/guides/autopilot.md` "Webhook Reliability" subsection.
 
-## Section 5: pipeline-history.md append (v6.9.0+)
+## Section 5: pipeline-history.md append
 
 Fires AFTER Section 4 `pipeline-completed` webhook. Advisory failure semantics — never blocks the pipeline.
 
@@ -292,14 +292,14 @@ Fires AFTER Section 4 `pipeline-completed` webhook. Advisory failure semantics �
 - duration_s: {pipeline.total_duration_ms / 1000 or null}
 ```
 
-### Sensitive field exclusion (cite REQ-030 hard contract)
+### Sensitive field exclusion (hard contract)
 This Section 5 stores `block.reason` (a sanitized 2-sentence summary) ONLY. NEVER `block.detail`. See `state/schema.md` Sensitive field exclusion contract.
 
 ### `sanitize_block_reason()` Bash function (centralized credential redaction — POSIX-portable, 18 patterns)
 
-**Round-2 revision (Devil's-Advocate F-02 + F-03):** Rewritten to use ONLY POSIX-portable regex constructs (no word-boundary, non-whitespace, digit, or word-char shorthand escapes — those are PCRE/Perl extensions that GNU `sed -E` accepts but BSD `sed -E` on macOS/FreeBSD silently treats as literal characters, causing silent credential leakage). Replacements: word-boundary → `(^|[[:space:]])` with capture-group preservation; non-whitespace class → `[^[:space:]]+`; digit class → `[0-9]`. All anchored alternation explicit; `LC_ALL=C` set for byte-locale stability.
+Uses ONLY POSIX-portable regex constructs (no word-boundary, non-whitespace, digit, or word-char shorthand escapes — those are PCRE/Perl extensions that GNU `sed -E` accepts but BSD `sed -E` on macOS/FreeBSD silently treats as literal characters, causing silent credential leakage). Replacements: word-boundary → `(^|[[:space:]])` with capture-group preservation; non-whitespace class → `[^[:space:]]+`; digit class → `[0-9]`. All anchored alternation explicit; `LC_ALL=C` set for byte-locale stability.
 
-Expanded from 9 → 14 patterns in v6.9.0-cycle-0 (JWT, SSH/PGP private-key BEGIN line, Stripe live, Google API, OAuth refresh — Devil's-Advocate F-03 long-tail credential coverage). Expanded again from 14 → 17 patterns in v6.9.0-cycle-1 (Phase 8 robustness scenario 4): lowercase env-var assignments (`db_password=hunter2`), JSON-style credential fields (`{"password": "secret"}`), and the PGP/SSH `-----END … PRIVATE KEY-----` sentinel (the BEGIN line was already captured; the END line was leaking). Expanded again from 17 → 18 patterns in v6.9.1-cycle-0 (Phase 8 robustness scenario 4 carry-over): bare-keyword credential variable names (`password=secret`, `secret=foo`, `token=bar`, `key=xyz`, `auth=…`) that slip through the greedy-name LOWER-VAR compound pattern — the new LOWER-VAR-BARE pattern fires BEFORE LOWER-VAR to prevent greedy-name interception.
+Covers 18 patterns including: URL credentials, env-var assignments (upper and lowercase), Bearer/Authorization headers, AWS access keys, Slack tokens, GitHub tokens, generic API keys, JWTs, PGP/SSH private-key BEGIN/END sentinels, Stripe live keys, Google API keys, OAuth refresh tokens, bare-keyword credential variable names (`password=`, `secret=`, `token=`, `key=`, `auth=`), and JSON-style credential fields (`{"password": "secret"}`).
 
 ```bash
 sanitize_block_reason() {
@@ -328,15 +328,15 @@ sanitize_block_reason() {
 }
 ```
 
-**Multi-line credential limitation:** `sed -E` operates line-by-line (no `N` accumulator in the pattern list above), so multi-line credential bodies (e.g., the base64 body lines between `-----BEGIN PRIVATE KEY-----` and `-----END PRIVATE KEY-----`) are NOT redacted as a single block. The cycle-1 fix adds the explicit `-----END […]-----` sentinel pattern so both delimiters are captured (`[REDACTED-PRIVATE-KEY]` for BEGIN, `[REDACTED-PRIVATE-KEY-END]` for END), but the body lines in-between still leak through. Operators with multi-line PGP/SSH key material in `block.detail` SHOULD use the upstream defense at the issue-tracker comment layer (`block.reason` is the only field surfaced to webhook/history channels — see Sensitive field exclusion contract in `state/schema.md`); full multi-line redaction via `awk`-style accumulator is documented as a v6.9.1+ enhancement.
+**Multi-line credential limitation:** `sed -E` operates line-by-line (no `N` accumulator in the pattern list above), so multi-line credential bodies (e.g., the base64 body lines between `-----BEGIN PRIVATE KEY-----` and `-----END PRIVATE KEY-----`) are NOT redacted as a single block. Both delimiters are captured (`[REDACTED-PRIVATE-KEY]` for BEGIN, `[REDACTED-PRIVATE-KEY-END]` for END), but the body lines in-between still leak through. Operators with multi-line PGP/SSH key material in `block.detail` SHOULD use the upstream defense at the issue-tracker comment layer (`block.reason` is the only field surfaced to webhook/history channels — see Sensitive field exclusion contract in `state/schema.md`); full multi-line redaction via `awk`-style accumulator is a future enhancement.
 
-**POSIX portability test recommendation:** the test scenario `tests/scenarios/v690-pipeline-history-credential-redaction.sh` MUST be runnable on both GNU sed (Linux + Git-Bash on Windows) AND BSD sed (macOS, FreeBSD) — preferably as a CI matrix entry covering `ubuntu-latest` AND `macos-latest`. As a fallback validation when only one platform is available, the test SHOULD assert the function output for inputs containing `PASSWORD=secret123` (no leading word boundary) results in `[REDACTED-VAR]` — proves the `(^|[[:space:]])` anchored-alternation portable substitute is working.
+**POSIX portability test recommendation:** the credential-redaction test scenario MUST be runnable on both GNU sed (Linux + Git-Bash on Windows) AND BSD sed (macOS, FreeBSD) — preferably as a CI matrix entry covering `ubuntu-latest` AND `macos-latest`. As a fallback validation when only one platform is available, the test SHOULD assert the function output for inputs containing `PASSWORD=secret123` (no leading word boundary) results in `[REDACTED-VAR]` — proves the `(^|[[:space:]])` anchored-alternation portable substitute is working.
 
 **Pattern enumeration verification (machine-checkable):** All 18 redaction tags MUST appear in the function body. Verifier greps:
 - `[REDACTED-URL]`, `[REDACTED-VAR]`, `[REDACTED-BEARER]`, `[REDACTED-AUTH]`, `[REDACTED-AWS-AKID]`, `[REDACTED-AWS-VAR]`, `[REDACTED-SLACK-TOKEN]`, `[REDACTED-GITHUB-TOKEN]`, `[REDACTED-APIKEY]`, `[REDACTED-JWT]`, `[REDACTED-PRIVATE-KEY]`, `[REDACTED-PRIVATE-KEY-END]`, `[REDACTED-STRIPE-LIVE]`, `[REDACTED-GOOGLE-API-KEY]`, `[REDACTED-OAUTH-REFRESH]`, `[REDACTED-LOWER-VAR-BARE]`, `[REDACTED-LOWER-VAR]`, `[REDACTED-JSON-FIELD]`.
 
 ### Retention
-After every append, count H2 anchors (`## ` at line start). If `count > 50`, trim oldest H2 sections until `count == 50`. Implementation (Bash) — section-count-aware (the previous v6.9.0-cycle-0 line-counter approximation `awk '/^## /{i++} i>=NR-50'` was incorrect: it counted by file line number, not section count, and so silently truncated arbitrary numbers of sections depending on per-section line length):
+After every append, count H2 anchors (`## ` at line start). If `count > 50`, trim oldest H2 sections until `count == 50`. Implementation (Bash) — section-count-aware (a prior line-counter approximation `awk '/^## /{i++} i>=NR-50'` was incorrect: it counted by file line number, not section count, and so silently truncated arbitrary numbers of sections depending on per-section line length):
 
 ```bash
 file=".agent-flow/pipeline-history.md"

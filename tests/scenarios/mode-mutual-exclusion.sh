@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-MODE-001, REQ-MODE-006
+# Verifies: AC-MODE-001
 # Description: /fix-ticket --yolo --step-mode exits with code 2 and emits
 #   "[ERROR] Flags --yolo and --step-mode are mutually exclusive" to stderr
 # NOTE: REPO_ROOT assumes test file location is tests/scenarios/. Run after Phase 7 has moved files.

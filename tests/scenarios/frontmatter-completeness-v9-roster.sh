@@ -2,7 +2,7 @@
 # PURPOSE: Validate frontmatter for the 17-agent roster.
 #          Stale names (triage-analyst, code-analyst, e2e-test-engineer, reproducer,
 #          browser-verifier, stack-selector) must not be present. Validates 4 required
-#          frontmatter fields (name, description, model, style) for all 17 agents (REQ-H-037, AC-H-082).
+#          frontmatter fields (name, description, model, style) for all 17 agents.
 # AC-H-N covered: AC-H-082
 # INVOKED BY: tests/harness/run-tests.sh
 # EXPECTED: PASS (17 agents, all with correct frontmatter)
@@ -17,7 +17,7 @@ fi
 FAIL=0
 fail() { echo "FAIL: $1" >&2; FAIL=1; }
 
-# Current roster: 17 agents (stack-selector deleted per REQ-H-080)
+# Current roster: 17 agents (stack-selector deleted)
 AGENTS=(
   acceptance-gate analyst architect backlog-creator browser-agent
   deployment-verifier fixer priority-engine publisher reviewer
@@ -39,9 +39,9 @@ for agent in "${AGENTS[@]}"; do
   done
 done
 
-# Assert stack-selector is NOT present (AC-H-040 / REQ-H-080)
+# Assert stack-selector is NOT present (AC-H-040 / )
 if [ -f "$REPO_ROOT/agents/stack-selector.md" ]; then
-  fail "agents/stack-selector.md exists — must be deleted per REQ-H-080; v9 roster has 17 agents"
+  fail "agents/stack-selector.md exists — must be deleted; v9 roster has 17 agents"
 fi
 
 # Assert agent count is exactly 17

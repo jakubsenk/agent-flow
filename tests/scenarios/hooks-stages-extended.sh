@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # ===========================================================================
 # Test:        v10-hooks-stages-extended.sh
-# Falsifies:   REQ-B-3
 # FC mapped:   FC-4 (hook STAGES array exact set of 10)
 # What it checks:
 #   A) hooks/validate-dispatch.sh defines `STAGES=(...)` line
@@ -10,7 +9,7 @@
 #       test, e2e_test, browser_verification, acceptance_gate, publisher
 #   C) NEW v10 stages present (sanity sub-asserts):
 #       reproduce_browser, smoke_check, e2e_test, browser_verification, acceptance_gate
-#   D) Hook sources core/lib/stage-invariant.sh (per REQ-B-3)
+#   D) Hook sources core/lib/stage-invariant.sh
 # Expected RED phase: FAIL — current STAGES has 5 entries
 # Expected GREEN phase (post-impl): PASS
 # ===========================================================================
@@ -54,7 +53,7 @@ fi
 # C. Count check (≥10; tolerates harmless extras — but B above enforces exactness).
 ACTUAL_COUNT=$(printf '%s\n' $NAMES | wc -l | tr -d ' ')
 if [ "$ACTUAL_COUNT" -lt 10 ]; then
-  fail "FC-4.C: STAGES has only ${ACTUAL_COUNT} entries (REQ-B-3 expects ≥10)"
+  fail "FC-4.C: STAGES has only ${ACTUAL_COUNT} entries"
 fi
 
 # D. Sanity sub-asserts for the 5 NEW stages
@@ -64,9 +63,9 @@ for new_stage in reproduce_browser smoke_check e2e_test browser_verification acc
   fi
 done
 
-# E. Hook should source core/lib/stage-invariant.sh (REQ-B-3)
+# E. Hook should source core/lib/stage-invariant.sh
 if ! grep -qE 'source[[:space:]]+.*core/lib/stage-invariant\.sh|\.[[:space:]]+.*core/lib/stage-invariant\.sh' "$HOOK"; then
-  fail "FC-4.E: $HOOK does not source 'core/lib/stage-invariant.sh' (REQ-B-3)"
+  fail "FC-4.E: $HOOK does not source 'core/lib/stage-invariant.sh'"
 fi
 
 if [ "$FAIL" -eq 0 ]; then

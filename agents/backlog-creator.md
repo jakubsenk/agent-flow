@@ -23,7 +23,7 @@ effort estimation, dependency detection, verification strategy inference.
 
 1. Receive input and detect mode:
    - **Spec mode** (default): Input is specification documents.
-     - **spec/ folder (scaffold v2):** Read `spec/epics/*.md` files sorted by filename prefix. Each file = one epic.
+     - **spec/ folder (spec-based scaffold):** Read `spec/epics/*.md` files sorted by filename prefix. Each file = one epic.
      - **Single markdown file:** Parse top-level sections (H1 or H2 headings). Each section = one epic.
      - **Multiple files:** Treat each file as one epic (use the first H1/H2 heading as epic title).
    - **Task mode** (when input contains `### Story` or `### Task` sections with `maps_to` fields):

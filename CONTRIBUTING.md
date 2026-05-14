@@ -96,12 +96,12 @@ Add to `examples/mcp-configs/`:
 
 ## Functional test scenarios — security expectations
 
-New test scenarios added under `tests/scenarios/` are reviewed against the following checklist at PR time. There is no automated CI gate enforcing these rules in v6.10.0; enforcement is at PR review. Scenarios that violate these expectations will be sent back for revision before merge.
+New test scenarios added under `tests/scenarios/` are reviewed against the following checklist at PR time. There is no automated CI gate enforcing these rules; enforcement is at PR review. Scenarios that violate these expectations will be sent back for revision before merge.
 
 1. No `$(...)` command-substitution in fixture construction — use pre-assigned variables or heredocs instead.
 2. No `eval` in any scenario — dynamic code execution in test fixtures is never necessary and introduces injection risk.
 3. No out-of-tree sourcing — only `tests/lib/fixtures.sh` or inline bash is permitted; no sourcing of files outside the `tests/` directory.
-4. **No `awk` + `source` code-lift pattern** — do not extract functions from production scripts via `awk` then `source` them in tests. Use inline-redefine instead. (Enforced by `tests/scenarios/v6.10.0-no-awk-source-in-rewrites.sh`; see Phase 4 spec REQ-T1-5.)
+4. **No `awk` + `source` code-lift pattern** — do not extract functions from production scripts via `awk` then `source` them in tests. Use inline-redefine instead.
 5. `set -uo pipefail` mandatory at scenario start — catches unbound variables and pipeline failures that would otherwise silently mask test errors.
 6. All filesystem operations (paths, filenames, directory references) must be double-quoted to handle spaces and special characters correctly.
 7. Scratch directory hygiene — use `mktemp -d` (never `$TMPDIR` or `$HOME`) and register `trap 'rm -rf "$SCRATCH"' EXIT` to guarantee cleanup on any exit path.

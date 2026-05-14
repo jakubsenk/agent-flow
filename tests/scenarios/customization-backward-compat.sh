@@ -1,6 +1,6 @@
 #!/bin/bash
 # PURPOSE: Assert backward-compatibility of customization/{agent}.md override files per AC-H-120.
-#          Verifies: (1) core/agent-override-injector.md is unchanged (REQ-H-020),
+#          Verifies: (1) core/agent-override-injector.md is unchanged,
 #          (2) examples/customization/ example files exist and do not contain reserved headings
 #          that would collide with ## Output Contract or ## Project-Specific Instructions,
 #          (3) the override injector flow is append-only (no Output Contract stripping).
@@ -22,7 +22,7 @@ INJECTOR="$REPO_ROOT/core/agent-override-injector.md"
 
 # AC-H-020: agent-override-injector.md must exist and be unmodified
 if [ ! -f "$INJECTOR" ]; then
-  fail "core/agent-override-injector.md not found — injector must remain unchanged per REQ-H-020"
+  fail "core/agent-override-injector.md not found — injector must remain unchanged"
   exit 1
 fi
 
@@ -34,7 +34,7 @@ fi
 
 # The injector must NOT contain logic that strips or skips ## Output Contract sections
 if grep -qiE '(strip|skip|remove|filter|block|reject).*[Oo]utput [Cc]ontract' "$INJECTOR"; then
-  fail "core/agent-override-injector.md contains Output Contract filtering logic — injector must be structure-blind (REQ-H-020)"
+  fail "core/agent-override-injector.md contains Output Contract filtering logic — injector must be structure-blind"
 fi
 
 # Check examples/customization/ directory: example override files must not use reserved headings
@@ -45,9 +45,9 @@ if [ -d "$EXAMPLES_CUSTOM" ]; then
     # Only check .md files for reserved heading collision (TOML files can't have markdown headings)
     if echo "$override_file" | grep -q '\.md$'; then
       if grep -qE '^## Project-Specific Instructions$' "$override_file"; then
-        fail "examples/customization/$(basename "$override_file") contains reserved heading '## Project-Specific Instructions' — collision risk per REQ-H-022"
-        # Note: ## Output Contract collision is documented but not blocked (REQ-H-023)
-        # We only fail on ## Project-Specific Instructions (which IS blocked by REQ-H-022)
+        fail "examples/customization/$(basename "$override_file") contains reserved heading '## Project-Specific Instructions' — collision risk"
+        # Note: ## Output Contract collision is documented but not blocked
+        # We only fail on ## Project-Specific Instructions (which IS blocked)
       fi
     fi
   done
@@ -63,7 +63,7 @@ fi
 for agent_file in "$REPO_ROOT/agents"/*.md; do
   agent_name=$(basename "$agent_file" .md)
   if grep -qE '^## Project-Specific Instructions$' "$agent_file"; then
-    fail "$agent_name.md contains reserved heading '## Project-Specific Instructions' in base agent — REQ-H-022 violation"
+    fail "$agent_name.md contains reserved heading '## Project-Specific Instructions' in base agent — violation"
     # Mutation catch: accidentally adding the reserved heading to an agent file fails here
   fi
 done

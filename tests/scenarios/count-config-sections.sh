@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-CT-003, REQ-DOC-007
+# Verifies: AC-CT-003
 # Description: CLAUDE.md and docs/reference/automation-config.md both list exactly 18
 #   optional config sections (level-3 headings under ## Automation Config)
 set -uo pipefail

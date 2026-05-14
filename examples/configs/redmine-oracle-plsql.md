@@ -4,13 +4,7 @@
 
 ## Automation Config
 
-> **Migration note (v7 → v8):** v8.0.0 introduces per-agent TOML overlay files in
-> `customization/` (e.g., `customization/*.toml`) for fine-grained customization without forking the plugin. See
-> `docs/guides/toml-overlay-syntax.md` and example overlays in `examples/customization/`.
-> Agent names have also changed: `triage-analyst`/`code-analyst` → `analyst`;
-> `e2e-test-engineer` → `test-engineer --e2e`; `reproducer`/`browser-verifier` →
-> `browser-agent`. Update any Pipeline Profiles `Skip stages` values accordingly.
-> Upgrading? See the [CHANGELOG](../../CHANGELOG.md) for breaking changes and update your `## Automation Config` to match the current format.
+> **Note:** Per-agent TOML overlay files in `customization/` (e.g., `customization/*.toml`) enable fine-grained customization without forking the plugin. See `docs/guides/toml-overlay-syntax.md` and example overlays in `examples/customization/`. Agent names: `triage-analyst`/`code-analyst` → `analyst`; `e2e-test-engineer` → `test-engineer --e2e`; `reproducer`/`browser-verifier` → `browser-agent`. Update any Pipeline Profiles `Skip stages` values accordingly. See the [CHANGELOG](../../CHANGELOG.md) for the full list of changes.
 
 ### Issue Tracker
 | Key | Value |

@@ -6,8 +6,6 @@ Parse `customization/{agent}.toml` overlay files in the consuming project, valid
 contents against the per-agent schema, apply 3-tier merge semantics against the plugin-default
 agent prompt, and emit a provenance log entry for every agent dispatch.
 
-Fulfils: REQ-OVR-001..007, REQ-NF-001, REQ-NF-006.
-
 ---
 
 ## Contract
@@ -20,7 +18,7 @@ skill MUST:
 
 1. Resolve the overlay path: `{project_root}/customization/{agent-name}.toml`
 2. If overlay exists → parse, validate, apply 3-tier merge, log provenance.
-3. If no `.toml` but a legacy `{agent-name}.md` exists → apply v7 fallback, log provenance.
+3. If no `.toml` but a legacy `{agent-name}.md` exists → reject (legacy `.md` overlay is unsupported).
 4. If neither exists → log provenance with `overlay_source=none`.
 
 **Exactly once per dispatch** — the provenance log entry is written once per agent invocation,
@@ -31,14 +29,14 @@ not once per pipeline run.
 ```
 {project_root}/
   customization/
-    {agent-name}.toml          ← primary (v8.0.0+)
-    {agent-name}.md            ← legacy v7; deprecated; hard-removed in v9.0.0
+    {agent-name}.toml          ← primary
+    {agent-name}.md            ← legacy; unsupported (manual conversion required)
 ```
 
 `{project_root}` is the directory containing `CLAUDE.md`, or the git repository root when
 `CLAUDE.md` is absent.
 
-`{agent-name}` MUST be one of the 18 canonical agent names (post-v8.0.0 rename):
+`{agent-name}` MUST be one of the 18 canonical agent names:
 `analyst`, `fixer`, `reviewer`, `test-engineer`, `acceptance-gate`, `publisher`,
 `rollback-agent`, `spec-analyst`, `architect`, `stack-selector`, `scaffolder`,
 `priority-engine`, `spec-writer`, `spec-reviewer`, `browser-agent`, `deployment-verifier`,
@@ -104,7 +102,7 @@ test_framework           = "pytest"  # test-engineer; free-form string
 # All sub-keys are accepted without validation.
 # NOT consumed by plugin dispatch logic — reserved for project-side annotations.
 [meta]
-priority_label = "ceos-priority"
+priority_label = "team-priority"
 team_owner     = "backend-team"
 cost_center    = "PROJ-42"
 ```
@@ -175,7 +173,7 @@ are global-limit keys available to any agent where they are semantically applica
 
 **TOML overlay always wins over plugin default** at the same path. There is no "merge order"
 ambiguity because the schema is a single 2-layer stack (plugin default + project overlay).
-v8.0.0 does NOT introduce user-level overlays (3-layer stack deferred to a future version).
+User-level overlays (3-layer stack) are deferred to a future version.
 
 ---
 
@@ -185,7 +183,7 @@ v8.0.0 does NOT introduce user-level overlays (3-layer stack deferred to a futur
 
 WHEN the TOML file fails to parse (invalid TOML 1.0 syntax), the plugin SHALL:
 1. Emit `[ERROR] TOML overlay validation failed for {agent}: syntax error in {file_path}` (with
-   line number if the chosen parser reports one — line number is **optional** per REQ-OVR-004).
+   line number if the chosen parser reports one — line number is **optional**).
 2. Halt agent dispatch (non-zero exit).
 3. NOT proceed with any partial merge.
 
@@ -206,7 +204,7 @@ Unknown-key rejection applies to:
 - Keys inside `[[constraints]]` entries other than `rule`
 
 **`[meta]` sub-keys are EXEMPT from unknown-key rejection** (free-form table, any sub-key
-accepted without validation per REQ-OVR-003).
+accepted without validation).
 
 Error format: `[ERROR] TOML overlay validation failed for {agent}: unknown key '{key}' (file: {overlay_path})`
 
@@ -214,22 +212,18 @@ The error message MUST include the **offending key name** so the operator can im
 identify and fix the offending entry. Dispatch is halted with non-zero exit (exit code 1) on
 any unknown-key violation.
 
-### `.md` + `.toml` coexistence (REQ-OVR-005)
+### `.md` + `.toml` coexistence
 
-WHEN both `customization/{agent}.md` AND `customization/{agent}.toml` exist (v9.0.0 — hard error;
-pre-announced removal of legacy `.md` overlay):
+WHEN both `customization/{agent}.md` AND `customization/{agent}.toml` exist (hard error):
 - Refuse the dispatch path.
 - Emit: `[ERROR] Legacy .md overlay format is not supported; remove customization/{agent}.md (TOML takes precedence). See docs/guides/toml-overlay-syntax.md for manual conversion steps.` (to
   `pipeline.log` and stderr) and exit non-zero.
 
-### Legacy `.md`-only fallback (REQ-OVR-006) — REMOVED in v9.0.0
+### Legacy `.md`-only fallback — unsupported
 
-WHEN only `customization/{agent}.md` exists (no `.toml`) in v9.0.0:
-- Refuse the dispatch path (the `.md` legacy fallback is hard-removed).
+WHEN only `customization/{agent}.md` exists (no `.toml`):
+- Refuse the dispatch path (the `.md` legacy fallback is unsupported).
 - Emit: `[ERROR] Legacy .md overlay format is not supported; convert .md to .toml manually (see docs/guides/toml-overlay-syntax.md).` and exit non-zero.
-
-v8.0.0 preserved v7 backward compatibility via `[WARN]` here. v9.0.0 ships the pre-announced
-breaking change.
 
 ---
 
@@ -258,16 +252,17 @@ agent={name} overlay_source={toml|md|none} overlay_path={path}
 | No overlay | `none` | `agent=reviewer overlay_source=none overlay_path=(none)` |
 
 A 4th branch — `md_rejected` — is emitted by `core/agent-override-injector.md` (Layer 3) when the
-`.md`-only short-circuit fires BEFORE `resolve_overlay()` is called (legacy `.md`-only case, v9.0.0
-hard removal). The injector calls `log_overlay_provenance "$agent_name" "md_rejected" "$md_path"`
-explicitly on that branch. The `md_rejected` value MUST NOT be emitted in any other code path.
+`.md`-only short-circuit fires BEFORE `resolve_overlay()` is called (legacy `.md`-only case;
+the legacy `.md` overlay is unsupported). The injector calls
+`log_overlay_provenance "$agent_name" "md_rejected" "$md_path"` explicitly on that branch. The
+`md_rejected` value MUST NOT be emitted in any other code path.
 
 | Scenario | `overlay_source` value | Emitted by |
 |----------|------------------------|------------|
 | `.toml` overlay applied | `toml` | `resolve_overlay()` (lib) |
-| `.md` legacy overlay (v8 and earlier) | `md` | `resolve_overlay()` (lib) |
+| `.md` legacy overlay (historical) | `md` | `resolve_overlay()` (lib) |
 | No overlay file found | `none` | `resolve_overlay()` (lib) |
-| `.md`-only short-circuit (v9.0.0+) | `md_rejected` | injector (`core/agent-override-injector.md`) |
+| `.md`-only short-circuit | `md_rejected` | injector (`core/agent-override-injector.md`) |
 
 The provenance log entry is written **exactly once per dispatch** (once per agent invocation,
 not once per pipeline run or per overlay key).
@@ -301,15 +296,6 @@ Summary:
 
 ## Backwards Compatibility
 
-### v7 → v8 single major hop (REQ-NF-001)
-
-v8.0.0 MUST operate correctly on v7.0.0 consuming projects without requiring manual conversion
-of `.md` overlays first:
-
-- Legacy `customization/*.md` overlays MUST be parsed per REQ-OVR-006 (raw append-text).
-- Each legacy usage MUST emit a `[WARN]` log naming the deprecation removal version (v9.0.0).
-- The pipeline MUST NOT abort on a legacy `.md` overlay — deprecation warnings are advisory.
-
 ### Legacy `.md` overlay removal
 
 - `customization/{agent}.md` legacy overlay support has been **removed**.
@@ -322,7 +308,7 @@ of `.md` overlays first:
 
 The reference implementation lives at `skills/setup-agents/lib/toml-merge.sh`.
 It uses `python3 tomllib` (Python 3.11+ stdlib) as the TOML parser, with a graceful error
-on missing `python3`. Per REQ-NF-006, the spec does NOT mandate a specific parser; any
+on missing `python3`. The spec does NOT mandate a specific parser; any
 TOML 1.0 compliant parser is acceptable.
 
 See also: `docs/guides/toml-overlay-syntax.md` (user-facing syntax guide with worked examples).

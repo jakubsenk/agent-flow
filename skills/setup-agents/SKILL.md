@@ -136,10 +136,10 @@ After detection, construct the set of `PlannedOverlays`: a mapping of
 
 Each generated TOML file begins with:
 ```
-# generated: {ISO-8601-timestamp} by /setup-agents v8.0.0
+# generated: {ISO-8601-timestamp} by /setup-agents
 ```
 
-Example header line: `# generated: 2026-04-27T10:00:00Z by /setup-agents v8.0.0`
+Example header line: `# generated: 2026-04-27T10:00:00Z by /setup-agents`
 
 The `# generated:` header MUST be the first line of every file written by this skill.
 This sentinel enables idempotent regen detection (Step 4).
@@ -197,12 +197,12 @@ All writes are restricted to `${CUSTOMIZATION_DIR}/`.
 
 ### Legacy `.md` overlay coexistence
 
-When scanning `customization/`, `/setup-agents` may encounter legacy v7 `.md` overlay files
-(REMOVED in v9.0.0 — hard error):
+When scanning `customization/`, `/setup-agents` may encounter legacy `.md` overlay files
+(unsupported — hard error):
 
 - **Only legacy `.md` exists**: emit `[ERROR] Legacy .md overlay format is not supported for {agent}; manual conversion required — see docs/guides/toml-overlay-syntax.md for TOML overlay format examples.` and refuse to proceed.
 - **Both legacy `.md` and `.toml` exist**: emit `[ERROR] Legacy .md overlay found alongside {agent}.toml; remove the .md file (TOML takes precedence). See docs/guides/toml-overlay-syntax.md.` and refuse to proceed.
-- **Only `.toml` exists**: normal v8/v9 path, no warning.
+- **Only `.toml` exists**: normal path, no warning.
 
 ## Step 5 — TOML output content
 
@@ -211,7 +211,7 @@ Each generated TOML file is minimal, idiomatic, and documented inline.
 ### Python project — `analyst.toml`
 
 ```toml
-# generated: {ISO-8601} by /setup-agents v8.0.0
+# generated: {ISO-8601} by /setup-agents
 # Python project detected via: pyproject.toml / requirements.txt / setup.py
 
 [[constraints]]
@@ -224,7 +224,7 @@ rule = "Report import structure issues (circular imports, unused imports)."
 ### Python project — `fixer.toml`
 
 ```toml
-# generated: {ISO-8601} by /setup-agents v8.0.0
+# generated: {ISO-8601} by /setup-agents
 # Python project detected. Mypy detected: {true|false}
 
 [[constraints]]
@@ -238,7 +238,7 @@ rule = "Use type hints on all new public functions and methods."
 ### Python project — `test-engineer.toml` (when pytest.ini detected)
 
 ```toml
-# generated: {ISO-8601} by /setup-agents v8.0.0
+# generated: {ISO-8601} by /setup-agents
 # Test framework detected: pytest
 
 [limits]
@@ -248,7 +248,7 @@ test_framework = "pytest"
 ### Monorepo — `analyst.toml`
 
 ```toml
-# generated: {ISO-8601} by /setup-agents v8.0.0
+# generated: {ISO-8601} by /setup-agents
 # Monorepo detected via: {trigger-file or >=2 sub-packages}
 
 [[process_additions]]
@@ -263,7 +263,7 @@ instruction = "For multi-package changes, list each affected package separately 
 ### TypeScript project — `reviewer.toml`
 
 ```toml
-# generated: {ISO-8601} by /setup-agents v8.0.0
+# generated: {ISO-8601} by /setup-agents
 # TypeScript project detected via: tsconfig.json
 
 [[constraints]]
@@ -276,7 +276,7 @@ rule = "Flag any use of 'any' type without explicit justification comment."
 ### Test framework — `test-engineer.toml` (jest/vitest/playwright)
 
 ```toml
-# generated: {ISO-8601} by /setup-agents v8.0.0
+# generated: {ISO-8601} by /setup-agents
 # Test framework detected: {framework-name}
 
 [limits]
@@ -305,7 +305,7 @@ Print count: `{N} files written, {M} skipped.`
 - NEVER modify `agents/`, `skills/`, `docs/`, `CLAUDE.md`, or any plugin source files.
 - NEVER read or write CLAUDE.md of the consuming project (only used for project root detection).
 - NEVER follow symbolic links for write operations when the link target lies outside `customization/`.
-- Every generated file MUST begin with `# generated: {ISO-8601} by /setup-agents v8.0.0` on line 1.
+- Every generated file MUST begin with `# generated: {ISO-8601} by /setup-agents` on line 1.
 - The `--force` flag MUST create a `.bak-{ISO-8601-timestamp}` backup before overwriting.
 - Preview prompt MUST be shown before every write UNLESS `--yolo` is supplied.
 - All 17 agents may have customization templates (analyst, fixer, reviewer, test-engineer,

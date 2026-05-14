@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-DOC-004, REQ-DOC-004
+# Verifies: AC-DOC-004
 # Description: docs/guides/steps-decomposition.md has >= 1 step override example per pipeline
 #   and documents customization/steps/{skill}/{step}.md resolution rules
 set -uo pipefail

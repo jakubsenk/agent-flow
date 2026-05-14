@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-DOC-003, REQ-DOC-003
+# Verifies: AC-DOC-003
 # Description: docs/guides/setup-agents-skill.md has >= 3 worked examples with input + output
 set -uo pipefail
 

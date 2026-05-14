@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-SETUP-005, REQ-SETUP-004
+# Verifies: AC-SETUP-005
 # Description: When customization/reviewer.toml exists with non-# generated: first line
 #   and /setup-agents runs WITHOUT --force, file is unchanged + [WARN] "User-edited overlay"
 set -uo pipefail

@@ -1,7 +1,7 @@
 #!/bin/bash
 # PURPOSE: Assert no skill uses the legacy prose dispatch idiom "Run `agent-flow:X` (Task tool, ...)"
 #          or "Dispatch `agent-flow:X` (Task tool, ...)". All dispatches must use the strict form
-#          Task(subagent_type='agent-flow:{name}', model='{tier}') (REQ-H-090, AC-H-050).
+#          Task(subagent_type='agent-flow:{name}', model='{tier}').
 # AC-H-N covered: AC-H-050
 # INVOKED BY: tests/harness/run-tests.sh
 # EXPECTED: PASS (all dispatches harmonized to strict idiom)
@@ -25,14 +25,14 @@ fi
 # Pattern 1: Run `agent-flow:X` (Task tool, ...)
 # Pattern 2: Dispatch `agent-flow:X` (Task tool, ...)
 # Pattern 3: Run agent-flow:X (Task tool, ...)  (without backticks)
-# All are legacy prose idioms per design.md §5 and REQ-H-090
+# All are legacy prose idioms per design.md §5
 
 prose_matches=$(grep -rnE "(Run|Dispatch)\s+\`?agent-flow:[a-z-]+\`?\s*\(Task tool" "$SKILLS_DIR" --include="*.md" 2>/dev/null || true)
 
 if [ -n "$prose_matches" ]; then
   echo "FAIL: Found legacy prose dispatch idiom(s) in skills:" >&2
   echo "$prose_matches" >&2
-  fail "Skills still contain prose dispatch idiom 'Run/Dispatch agent-flow:X (Task tool, ...)' — must be harmonized to Task(subagent_type=...) per REQ-H-090"
+  fail "Skills still contain prose dispatch idiom 'Run/Dispatch agent-flow:X (Task tool, ...)' — must be harmonized to Task(subagent_type=...)"
   # Mutation catch: reverting one dispatch to prose idiom fails here
 fi
 
@@ -42,14 +42,14 @@ prose_agent_matches=$(grep -rnE "Run the [a-z-]+ agent \(Task tool" "$SKILLS_DIR
 if [ -n "$prose_agent_matches" ]; then
   echo "FAIL: Found 'Run the X agent (Task tool, ...)' prose idiom in skills:" >&2
   echo "$prose_agent_matches" >&2
-  fail "Skills still contain 'Run the {name} agent (Task tool, ...)' prose idiom — must be harmonized per REQ-H-090"
+  fail "Skills still contain 'Run the {name} agent (Task tool, ...)' prose idiom — must be harmonized"
 fi
 
 # Also check create-backlog style: "Run the architect agent (Task tool, model: opus)"
 # (already caught by the pattern above, but add a named check for traceability)
 architect_prose=$(grep -rnE "Run the architect agent \(Task tool" "$SKILLS_DIR" --include="*.md" 2>/dev/null || true)
 if [ -n "$architect_prose" ]; then
-  fail "skills/create-backlog/ still has 'Run the architect agent (Task tool, ...)' prose idiom — REQ-H-090"
+  fail "skills/create-backlog/ still has 'Run the architect agent (Task tool, ...)' prose idiom"
 fi
 
 # Positive assertion: verify strict idiom appears in at least some skill files

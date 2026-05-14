@@ -24,4 +24,4 @@ curl --proto "=http,https" --max-time 5 --retry 0 \
 - `core/block-handler.md` issue-blocked webhook firing site (citation marker `<!-- @snippet:webhook-curl -->`)
 - `core/agent-states.md` pipeline-paused webhook firing site (citation marker `<!-- @snippet:webhook-curl -->`) — added per Devil's-Advocate Round-2 F-21
 
-**Expected citation count:** 31 (post-cycle-1 + v6.9.1 pipeline-resumed additions; verifier `.forge/phase-5-tdd/tests-hidden/h-snippet-citation-marker-format.sh`). Count excludes self-references in this file. (Historical: prior to v9.3.0 the citation map listed `skills/fix-ticket/SKILL.md` lines 106, 183 as legacy citation sites; that skill was merged into `fix-bugs`. Specific line numbers in the former enumeration are historical and have shifted across decompositions.)
+**Expected citation count:** 31 (verifier checks the citation marker format across the cited sites). Count excludes self-references in this file.

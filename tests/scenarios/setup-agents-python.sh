@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-SETUP-002, REQ-SETUP-002 (Python heuristic)
+# Verifies: AC-SETUP-002 (Python heuristic)
 # Description: /setup-agents in a project root containing pyproject.toml generates
 #   customization/analyst.toml with at least one [[constraints]] entry referencing
 #   PEP 8 or Python keyword.

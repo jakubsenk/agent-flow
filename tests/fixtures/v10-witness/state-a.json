@@ -1,5 +1,5 @@
 {
-  "_comment": "FIXTURE: refresh when prompt template changes (REQ-B-2 v1.2). Valid witness present for all 10 stages (acceptance_gate has lowercase 64-hex). check_dispatch_witness MUST return WITNESS_OK / exit 0 for every stage.",
+  "_comment": "FIXTURE: refresh when prompt template changes. Valid witness present for all 10 stages (acceptance_gate has lowercase 64-hex). check_dispatch_witness MUST return WITNESS_OK / exit 0 for every stage.",
   "schema_version": "1.0",
   "fixture_kind": "valid_witness_present",
   "stages": {

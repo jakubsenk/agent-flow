@@ -68,7 +68,7 @@ make_state_json() {
 #
 # Accepts an optional JSON fragment argument. Flat top-level key overrides
 # are applied via naive string concat (last-write-wins for duplicate keys).
-# Nested overrides are explicitly out of scope (REQ-V902-020).
+# Nested overrides are explicitly out of scope.
 #
 # Usage:
 #   make_state_json_bash                         # minimal default object
@@ -90,7 +90,7 @@ make_state_json_bash() {
 
   # Flat override merge via naive concat (produces duplicate keys; JSON parsers
   # use last-write-wins semantics per RFC 8259 §4 — the override wins).
-  # This is sufficient for all known callers (REQ-V902-020: nested out of scope).
+  # This is sufficient for all known callers (nested out of scope).
   local override_inner="${override#\{}"
   override_inner="${override_inner%\}}"
   local base_no_close="${base_json%\}}"

@@ -215,14 +215,14 @@ This line is informational. It does **not** detect cross-host contention — it 
 
 ## Multi-Host Coordination
 
-If you run Autopilot from multiple hosts (e.g., 2-cron split for high-volume teams), v6.9.0 supports **disjoint queries only** — each cron config MUST query a non-overlapping subset of issues. Example with two hosts:
+If you run Autopilot from multiple hosts (e.g., 2-cron split for high-volume teams), Autopilot supports **disjoint queries only** — each cron config MUST query a non-overlapping subset of issues. Example with two hosts:
 
 - Host A `Bug query`: `priority:high state:open`
 - Host B `Bug query`: `priority:medium,low state:open`
 
-The operator is responsible for query disjointness. Two hosts running an overlapping query may both pick up the same issue, race on the same branch, and produce conflicting PRs. There is no v6.9.0 cross-host lock to detect this.
+The operator is responsible for query disjointness. Two hosts running an overlapping query may both pick up the same issue, race on the same branch, and produce conflicting PRs. There is no cross-host lock to detect this.
 
-Distributed locking (flock, external coordinator) is deferred to v6.9.1.
+Distributed locking (flock, external coordinator) is on the roadmap.
 
 ---
 
@@ -475,6 +475,6 @@ If `pipeline-paused` is added to `On events` in your `### Notifications` config,
 
 ## Webhook Reliability
 
-Webhook delivery failures (HTTP timeout, DNS error, 4xx/5xx) emit `[WARN] Webhook delivery failed` log lines. To prevent latency runaway from a dead endpoint, agent-flow v6.9.0+ implements an **in-memory per-run circuit breaker** that opens after 3 consecutive failures and suppresses remaining webhooks for that run only.
+Webhook delivery failures (HTTP timeout, DNS error, 4xx/5xx) emit `[WARN] Webhook delivery failed` log lines. To prevent latency runaway from a dead endpoint, agent-flow implements an **in-memory per-run circuit breaker** that opens after 3 consecutive failures and suppresses remaining webhooks for that run only.
 
 **Operator action:** monitor pipeline logs for repeated `[WARN] Circuit breaker open` lines. Repeated openings across runs indicate either (a) a misconfigured `Webhook URL` in Automation Config or (b) a covert-channel DoS via a malicious `Webhook URL` PR change. For multi-contributor environments, treat CLAUDE.md `Webhook URL` PR changes as security-relevant and review carefully.

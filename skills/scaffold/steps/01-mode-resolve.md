@@ -75,7 +75,7 @@ Fire `pipeline-started` webhook if configured (per `../../../core/post-publish-h
 
 ## 01d. Brainstorm (vague descriptions only)
 
-**Vague description heuristic (REQ-MODE-009a):**
+**Vague description heuristic:**
 A description is **vague** unless BOTH conditions hold:
 - `word_count >= 20` (count whitespace-delimited tokens in description)
 - Contains at least one technical term matching POSIX ERE:

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-OVR-002, REQ-OVR-001, REQ-OVR-002 Tier 2
+# Verifies: AC-OVR-002 Tier 2
 # Description: TOML overlay array append — [[process_additions]] entries appended after plugin defaults
 set -uo pipefail
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-STEPS-002, REQ-STEPS-001
+# Verifies: AC-STEPS-002
 # Description: Each pipeline's steps/ dir has 5–8 files matching [0-9][0-9]-*.md
 set -uo pipefail
 

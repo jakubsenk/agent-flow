@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-AGT-001, AC-CT-001, REQ-AGT-001, REQ-AGT-005
+# Verifies: AC-AGT-001, AC-CT-001
 # Description: agents/ contains exactly 17 .md files with canonical names
 set -uo pipefail
 

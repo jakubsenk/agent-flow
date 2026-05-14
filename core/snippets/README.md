@@ -1,4 +1,4 @@
-# core/snippets/ — sub-namespace introduction (v6.9.0+)
+# core/snippets/ — sub-namespace introduction
 
 Canonical snippet files cited by skill orchestration via `<!-- @snippet:<name> -->` markers. The `core/snippets/` sub-namespace does NOT count toward the top-level core-contracts count (verified non-recursive by `tests/scenarios/prompt-injection-protection.sh` per REQ-063 + REQ-063a).
 
@@ -31,7 +31,7 @@ Drift (over-cite or under-cite) FAILS the test.
 If a snippet is found broken in production (e.g., regex typo propagated to all callers), the operator MUST revert the snippet's content inline at every citation site BEFORE deleting or modifying the snippet file. Pure citation form has no fallback — the snippet IS the source of truth for the cited content.
 
 **Recovery procedure:**
-1. `git show v6.9.0:core/snippets/<name>.md` — retrieve canonical content from the v6.9.0 release tag.
+1. `git show <release-tag>:core/snippets/<name>.md` — retrieve canonical content from a known-good release tag.
 2. For each `<!-- @snippet:<name> -->` site, re-inline the canonical content immediately after the marker (or remove the marker if reverting fully to inline-only).
 3. Only then delete or fix the snippet file.
 

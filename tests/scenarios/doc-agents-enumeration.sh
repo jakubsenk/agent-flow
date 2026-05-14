@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-DOC-005, REQ-DOC-005
+# Verifies: AC-DOC-005
 # Description: docs/reference/agents.md contains exactly the 17 canonical agent names
 #   as table rows — no more, no less
 set -uo pipefail

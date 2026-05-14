@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-NF-004, REQ-NF-004
+# Verifies: AC-NF-004
 # Description: agents/analyst.md, agents/test-engineer.md, agents/browser-agent.md
 #   each contain the prompt-injection constraint paragraph
 set -uo pipefail
@@ -32,7 +32,7 @@ for agent in "${MERGED_AGENTS[@]}"; do
   if grep -qiE "$INJECTION_REGEX" "$AGENT_FILE"; then
     echo "OK: agents/$agent.md contains prompt-injection constraint"
   else
-    fail "agents/$agent.md missing prompt-injection constraint (required per REQ-NF-004)"
+    fail "agents/$agent.md missing prompt-injection constraint (required)"
   fi
 done
 

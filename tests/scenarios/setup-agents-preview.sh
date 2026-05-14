@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-SETUP-007, REQ-SETUP-005
+# Verifies: AC-SETUP-007
 # Description: /setup-agents without --yolo shows preview diff and waits for user input
 #   before writing each file
 set -uo pipefail

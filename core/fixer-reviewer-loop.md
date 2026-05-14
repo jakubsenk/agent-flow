@@ -41,5 +41,5 @@ On `BLOCKED`: set `fixer_reviewer.status` to `"blocked"`, write `block` object i
 ## Failure Handling
 
 - `BLOCKED` → caller invokes `core/block-handler.md`.
-- `NEEDS_DECOMPOSITION` → returned to caller; caller handles decomposition logic (see `core/decomposition-heuristics.md`). Callers: `skills/fix-bugs/SKILL.md` step 4 (revert + re-decompose per-bug, max 1), `skills/implement-feature/SKILL.md` step 6b (block current subtask or block issue in single-pass). (Historical: prior to v9.3.0 a legacy `skills/fix-ticket/SKILL.md` step 5 was also a caller — that skill was merged into `fix-bugs`.)
+- `NEEDS_DECOMPOSITION` → returned to caller; caller handles decomposition logic (see `core/decomposition-heuristics.md`). Callers: `skills/fix-bugs/SKILL.md` step 4 (revert + re-decompose per-bug, max 1), `skills/implement-feature/SKILL.md` step 6b (block current subtask or block issue in single-pass).
 - Build failure counts as a BLOCKED result, not a fixer iteration.

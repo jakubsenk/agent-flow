@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # ===========================================================================
 # Test:        v10-guard-block-fail-loud.sh
-# Falsifies:   REQ-A-1, REQ-A-2, REQ-A-3, REQ-A-4, REQ-A-6
 # FC mapped:   FC-A-1, FC-A-2, FC-A-3, FC-A-5, FC-A-6
 # Phase:       5 (TDD -- FAIL expected until Phase 7 lands)
 # What it checks:
@@ -11,7 +10,7 @@
 #   ASSERT-4) `exit 2` present in all 3 guard-block.md files (FC-A-3 exit-code)
 #   ASSERT-5) B3 documentary clarifier present in all 3 (FC-A-5)
 #   ASSERT-6) Depth-3 PROBE assignment verbatim in all 3 (FC-A-6)
-#   ASSERT-7) scaffold/data/guard-block.md EXISTS (REQ-A-4 item 3 -- new file)
+#   ASSERT-7) scaffold/data/guard-block.md EXISTS
 # Cross-platform: Win Git-Bash + Linux GNU + macOS BSD
 # Exit codes: 0=PASS, 1=FAIL, 77=SKIP
 # ===========================================================================
@@ -67,7 +66,7 @@ check_fixed() {
 }
 
 # ---------------------------------------------------------------------------
-# ASSERT-7: scaffold/data/guard-block.md must exist (new file REQ-A-4 item 3)
+# ASSERT-7: scaffold/data/guard-block.md must exist (new file item 3)
 # ---------------------------------------------------------------------------
 SCAFFOLD_GUARD="$REPO_ROOT/skills/scaffold/data/guard-block.md"
 if [ -f "$SCAFFOLD_GUARD" ]; then

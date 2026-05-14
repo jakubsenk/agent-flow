@@ -205,9 +205,9 @@ The architect produces a task tree in YAML format:
 
 ## Scaffold Pipeline
 
-The scaffold pipeline creates a new project from scratch. In v2 mode (default), it generates a specification, builds the skeleton, and implements all features. It is invoked by `/agent-flow:scaffold`.
+The scaffold pipeline creates a new project from scratch. In spec-first mode (default), it generates a specification, builds the skeleton, and implements all features. It is invoked by `/agent-flow:scaffold`.
 
-### Scaffold v2 Pipeline (default)
+### Scaffold Pipeline (default)
 
 ```mermaid
 flowchart TD

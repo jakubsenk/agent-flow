@@ -31,7 +31,7 @@ skipped=0
 for agent_file in "$AGENTS_DIR"/*.md; do
   agent_name=$(basename "$agent_file" .md)
 
-  # SKIP-guard: if the agent has no ## Output Contract yet, skip this file (transition window REQ-H-032)
+  # SKIP-guard: if the agent has no ## Output Contract yet, skip this file (transition window )
   if ! grep -qE '^## Output Contract$' "$agent_file"; then
     skipped=$((skipped + 1))
     continue
@@ -77,15 +77,15 @@ for agent_file in "$AGENTS_DIR"/*.md; do
       fail "$agent_name: ## Output Contract section missing Outputs table header '| Section produced | When | Required fields |'"
       # Mutation catch: wrong column name (e.g., 'Output' instead of 'Section produced') fails here
     fi
-    # Assert at least one backtick-quoted ## Heading in Outputs table (REQ-H-006)
+    # Assert at least one backtick-quoted ## Heading in Outputs table
     if ! echo "$oc_section" | grep -qE '`## [A-Za-z][A-Za-z _:-]*`'; then
-      fail "$agent_name: ## Output Contract Outputs table has no backtick-quoted ## Heading row (REQ-H-006)"
+      fail "$agent_name: ## Output Contract Outputs table has no backtick-quoted ## Heading row"
     fi
     # Negative assertion: no prose-only output description (if section has >10 lines and no table, that's wrong)
     line_count=$(echo "$oc_section" | wc -l)
     table_lines=$(echo "$oc_section" | grep -c '|' || true)
     if [ "$line_count" -gt 10 ] && [ "$table_lines" -lt 4 ]; then
-      fail "$agent_name: ## Output Contract section appears to be prose-only (no table rows) — REQ-H-003 requires tables"
+      fail "$agent_name: ## Output Contract section appears to be prose-only (no table rows) requires tables"
     fi
   fi
 done

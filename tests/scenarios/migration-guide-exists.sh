@@ -1,7 +1,7 @@
 #!/bin/bash
 # PURPOSE: Assert docs/guides/migration-v8-to-v9.md exists and contains the 4 required H2
 #          section headings in order: Overview, Breaking Changes, Migration Steps, Compatibility
-#          Check. Also verifies Breaking Changes enumerates the 4 required changes (REQ-H-070..H-074).
+#          Check. Also verifies Breaking Changes enumerates the 4 required changes.
 # AC-H-N covered: AC-H-070, AC-H-071, AC-H-072, AC-H-073
 # INVOKED BY: tests/harness/run-tests.sh
 # EXPECTED: PASS (migration guide exists with all required sections and content)
@@ -20,7 +20,7 @@ MIGRATION_FILE="$REPO_ROOT/docs/guides/migration-v8-to-v9.md"
 
 # AC-H-070: file must exist and be non-empty
 if [ ! -f "$MIGRATION_FILE" ]; then
-  fail "docs/guides/migration-v8-to-v9.md does not exist — required per REQ-H-070"
+  fail "docs/guides/migration-v8-to-v9.md does not exist — required"
   exit 1
 fi
 if [ ! -s "$MIGRATION_FILE" ]; then

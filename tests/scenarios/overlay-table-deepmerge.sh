@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-OVR-003, REQ-OVR-001, REQ-OVR-002 Tier 3
+# Verifies: AC-OVR-003 Tier 3
 # Description: TOML overlay table deep merge — [limits] key overrides plugin default,
 #   absent keys inherited from plugin default (e.g., max_review_iterations=3 wins,
 #   max_diff_lines=100 inherited)

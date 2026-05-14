@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # ===========================================================================
 # Test:        v10-dual-pattern-line.sh  [HIDDEN -- 20%]
-# Falsifies:   REQ-B-3 (185 occurrences including 3 dual-pattern lines)
 # FC mapped:   FC-B-3, FC-B-4 (dual-pattern lines span depth-2 and depth-3 files)
 # Phase:       5 (TDD -- FAIL expected until Phase 7 lands, then must PASS)
 # What it checks:
@@ -10,7 +9,7 @@
 #   second token bare. This test synthesizes those lines and verifies a
 #   single sed -E pass rewrites BOTH tokens.
 #
-# Known dual-pattern lines (from REQ-B-3 / phase-2 final.md §C1):
+# Known dual-pattern lines (from / phase-2 final.md §C1):
 #   1. skills/implement-feature/SKILL.md:130 (depth-2, expects ../../core/)
 #   2. skills/implement-feature/steps/03-decomposition.md:91 (depth-3, expects ../../../core/)
 #   3. skills/publish/SKILL.md:176 (depth-2, expects ../../core/)

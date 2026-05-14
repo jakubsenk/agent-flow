@@ -147,7 +147,7 @@ fixer_reviewer.tool_uses    += iteration_tool_uses
 
 No per-iteration breakdown array is persisted. The final `fixer_reviewer.tokens_used` equals the cumulative sum across all iterations. This single-stage object is consistent with all other stage objects written by the accumulator pass.
 
-<!-- v6.7.x backward-compat read removed in v9.5.0 (lenient-read promise of schema_version 1.0 still honored for unknown fields; missing-field defaults removed because all v9 writers populate these fields) -->
+<!-- Lenient-read promise of schema_version 1.0 is honored for unknown fields; all writers populate the documented fields. -->
 
 ## Failure Handling
 

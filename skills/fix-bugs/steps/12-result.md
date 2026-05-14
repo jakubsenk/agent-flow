@@ -1,7 +1,7 @@
 # Step 12 — Terminal Result + Dispatch-Audit Surfacing
 
-Compute pipeline accumulator, emit the per-issue summary table, surface dispatch-audit anomalies
-(REQ-D-1..D-5), and fire the terminal `pipeline-completed` webhook.
+Compute pipeline accumulator, emit the per-issue summary table, surface dispatch-audit anomalies,
+and fire the terminal `pipeline-completed` webhook.
 
 This step is NOT a Task() dispatch — it is the orchestrator's terminal infrastructure.
 
@@ -27,7 +27,7 @@ Set top-level `status` to `"completed"` (success path), `"blocked"` (block path)
 After state.json commit, echo `pipeline.summary_table` to stdout so the user sees the per-stage
 cost breakdown inline.
 
-## Step 12.3: Dispatch-Audit Surfacing (WITNESS_MISSING terminal block — REQ-D-1..D-5)
+## Step 12.3: Dispatch-Audit Surfacing (WITNESS_MISSING terminal block)
 
 Read `.agent-flow/dispatch-audit.log` (top-level path per QB1 resolution, NOT under
 `{ISSUE-ID}/`). For this run's stages, classify each entry against the per-skill
@@ -38,7 +38,7 @@ The per-skill `stage_allowlist` for fix-bugs is:
 - **optional:** `reproduce_browser`, `e2e_test`, `browser_verification`, `acceptance_gate`
 
 Parse the allow-list from the parent `skills/fix-bugs/SKILL.md` `<stage_allowlist>` ... `</stage_allowlist>`
-block at file-position L11-14 (REQ-D-5). Use awk or grep-block-extract:
+block at file-position L11-14. Use awk or grep-block-extract:
 
 ```bash
 SKILL_DIR="${CLAUDE_SKILL_DIR:-skills/fix-bugs}"
@@ -46,7 +46,7 @@ ALLOWLIST_BLOCK=$(awk '/<stage_allowlist>/{f=1;next} /<\/stage_allowlist>/{exit}
 # Parse required + optional stages from the YAML-like body of the block.
 ```
 
-**Parser hardening (REQ-REL-4.2 — prose-discipline contract):** After executing the awk extraction
+**Parser hardening (prose-discipline contract):** After executing the awk extraction
 above, validate that `ALLOWLIST_BLOCK` contains at least one `required:` line. If the extracted
 block is empty, contains no `required:` line, or contains no `optional:` line (i.e., the
 `<stage_allowlist>` block was malformed or missing its closing tag), emit the following WARN line

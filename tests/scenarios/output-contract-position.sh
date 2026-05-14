@@ -1,6 +1,6 @@
 #!/bin/bash
 # PURPOSE: Assert positional invariant — when ## Output Contract is present, it sits AFTER the
-#          last ^## Process line and BEFORE ^## Constraints in every agent file (REQ-H-002).
+#          last ^## Process line and BEFORE ^## Constraints in every agent file.
 #          Handles browser-agent edge case: its Process headings are '## Process: Phase X' not
 #          '## Process' bare, so we anchor to the LAST process-family line (review finding f-d2e44f).
 # AC-H-N covered: AC-H-002
@@ -59,7 +59,7 @@ for agent_file in "$AGENTS_DIR"/*.md; do
     continue
   fi
 
-  # Assert: last_process_line < oc_line < cons_line (REQ-H-002 / AC-H-002)
+  # Assert: last_process_line < oc_line < cons_line
   if [ "$process_line" -ge "$oc_line" ]; then
     fail "$agent_name: '## Output Contract' (line $oc_line) must come AFTER last '## Process' line (line $process_line)"
     # Mutation catch: inserting ## Output Contract before ## Process fails here

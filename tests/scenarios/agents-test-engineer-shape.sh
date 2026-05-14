@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-AGT-004, REQ-AGT-003
+# Verifies: AC-AGT-004
 # Description: agents/test-engineer.md describes --e2e flag, name: test-engineer, model: sonnet
 set -uo pipefail
 

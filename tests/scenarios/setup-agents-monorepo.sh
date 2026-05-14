@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-SETUP-003, REQ-SETUP-002 (monorepo heuristic)
+# Verifies: AC-SETUP-003 (monorepo heuristic)
 # Description: /setup-agents in a project root containing pnpm-workspace.yaml AND
 #   >=2 sub-package package.json files generates customization/analyst.toml with
 #   at least one [[process_additions]] entry referencing multi-package OR monorepo.

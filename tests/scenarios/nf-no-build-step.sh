@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-NF-002, REQ-NF-002
+# Verifies: AC-NF-002
 # Description: No build manifest (package.json, pyproject.toml, Makefile, Dockerfile)
 #   at repository root
 set -uo pipefail

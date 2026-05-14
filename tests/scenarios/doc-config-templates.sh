@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-DOC-010, REQ-DOC-010
+# Verifies: AC-DOC-010
 # Description: All 8 config templates have "Migration note: v7 → v8" callout + reference
 #   customization/*.toml not legacy .md
 set -uo pipefail

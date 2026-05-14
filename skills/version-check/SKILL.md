@@ -40,7 +40,7 @@ All steps below use `{plugin}` and `{marketplace}` from this table.
      3. If neither source yields a URL → report: "Remote version check skipped — no remote URL available." Skip to step 4 (show installed version only).
    - Before running the remote call, check whether the URL is a placeholder. This check applies to source-2 only (plugin.json `repository`); source-1 (user `git remote`) is trusted by definition.
      ```bash
-     # RFC 2606 reserved TLD fast-fail (v9.0.1 hardened):
+     # RFC 2606 reserved TLD fast-fail:
      # source-2 only; HTTPS-only scope; SSH SCP-style deferred (no source-1 check)
      # Extract hostname from URL, then match (test|example|invalid|localhost) as last DNS label
      # or as the bare host. Path-anchored matching avoids false positives where a reserved
@@ -51,7 +51,7 @@ All steps below use `{plugin}` and `{marketplace}` from this table.
      last_label=$(echo "$host" | awk -F. '{print $NF}')
      if [ "$last_label" = "test" ] || [ "$last_label" = "example" ] || [ "$last_label" = "invalid" ] || [ "$last_label" = "localhost" ] \
         || [ "$host" = "test" ] || [ "$host" = "example" ] || [ "$host" = "invalid" ] || [ "$host" = "localhost" ]; then
-       echo "Remote version check skipped — plugin.json \`repository\` field is a placeholder. Set it to a real URL via plugin v9.3.0 G."
+       echo "Remote version check skipped — plugin.json \`repository\` field is a placeholder. Set it to a real URL."
        exit 0
      fi
      ```

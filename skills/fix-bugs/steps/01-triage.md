@@ -2,13 +2,13 @@
 
 Dispatch `analyst --phase triage` for each bug that passed the issue-ID validation gate.
 
-## Set issue tracker state + self-assign (v9.6.1)
+## Set issue tracker state + self-assign
 
 Before dispatching the analyst, set the tracker state per Automation Config (`Issue Tracker → On start set`). Read `Type` for the correct MCP server.
 
 After the status-set MCP call, follow `../../../core/status-verification.md` to verify the transition succeeded.
 
-**Self-assign (since v9.6.1):** Immediately after a successful On start set transition, also assign the issue to the MCP-authenticated user (self) so the tracker UI accurately shows pipeline ownership. Use the tracker's assignee tool — per `Issue Tracker → Type`:
+**Self-assign:** Immediately after a successful On start set transition, also assign the issue to the MCP-authenticated user (self) so the tracker UI accurately shows pipeline ownership. Use the tracker's assignee tool — per `Issue Tracker → Type`:
 
 | Type | Tool | Self-assign parameter |
 |------|------|-----------------------|

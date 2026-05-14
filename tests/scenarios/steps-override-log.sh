@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-STEPS-003, REQ-STEPS-002, REQ-STEPS-003
+# Verifies: AC-STEPS-003
 # Description: When customization/steps/fix-bugs/04-fixer-reviewer-loop.md exists,
 #   fix-bugs pipeline logs "[INFO] Step override active: fix-bugs/04-fixer-reviewer-loop from project customization"
 set -uo pipefail

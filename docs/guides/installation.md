@@ -81,7 +81,7 @@ The plugin writes runtime state files to `.agent-flow/` in your project root. Th
 `.agent-flow/pipeline-history.md` is an append-only run log that accumulates cross-run block patterns and outcomes. Operators have two options:
 
 - **Gitignore it (default):** Add `.agent-flow/pipeline-history.md` to `.gitignore` to keep it local. Suitable for single-developer or ephemeral CI environments.
-- **Commit it (shared learning):** Omit it from `.gitignore` to commit and share cross-pipeline learning across team members. If you commit this file, note that `block_reason` values are redacted via `sanitize_block_reason()` (18-pattern credential scrubbing including bare-keyword variables added in v6.9.1), but you should still review the file for any sensitive operational details before committing.
+- **Commit it (shared learning):** Omit it from `.gitignore` to commit and share cross-pipeline learning across team members. If you commit this file, note that `block_reason` values are redacted via `sanitize_block_reason()` (18-pattern credential scrubbing including bare-keyword variables), but you should still review the file for any sensitive operational details before committing.
 
 ## Platform Notes
 
@@ -108,6 +108,6 @@ Not explicitly supported, but likely functional (analogous to Linux).
 
 The short form `/init` collides with Claude Code's built-in slash command. Use the namespaced form instead:
 
-- `/agent-flow:setup-mcp` (renamed from `/agent-flow:init` in v7.0.0)
+- `/agent-flow:setup-mcp`
 
 The namespaced form `/agent-flow:*` is unambiguous. See CHANGELOG.md for full migration notes.

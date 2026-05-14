@@ -2,7 +2,7 @@
 
 This document defines the structure of `.agent-flow/{RUN-ID}/state.json`, the pipeline run state file written and updated by agent-flow commands.
 
-> **Note (v6.8.0 additive update):** The six per-stage usage fields (`tokens_used`, `duration_ms`, `tool_uses`, `model`, `started_at`, `completed_at`) and the top-level `pipeline` accumulator are additive additions. `schema_version` remains `"1.0"`. Readers from v6.7.x that do not recognize these fields will ignore them — no schema version bump is needed. See "Reading v6.7.x state.json under v6.8.0" below.
+> **Note:** The six per-stage usage fields (`tokens_used`, `duration_ms`, `tool_uses`, `model`, `started_at`, `completed_at`) and the top-level `pipeline` accumulator are additive additions. `schema_version` remains `"1.0"`. Older readers that do not recognize these fields will ignore them — no schema version bump is needed.
 
 ## Directory Layout
 
@@ -319,7 +319,7 @@ Each entry in `decomposition.subtasks[]` has the following structure:
 
 ### Clarification Object Fields
 
-`clarification` (top-level, optional, additive in v6.9.0)
+`clarification` (top-level, optional)
 
 Parallel to the `block` object. Present only when an agent has emitted `## NEEDS_CLARIFICATION`. Cleared (set to `null`) when answered via `resume-ticket --clarification`.
 
@@ -343,10 +343,10 @@ Parallel to the `block` object. Present only when an agent has emitted `## NEEDS
 | `clarification.asked_by_agent` | string | Agent that emitted NEEDS_CLARIFICATION: `"fixer"` or `"analyst"`. |
 | `clarification.asked_at_step` | string | Canonical stage name from the skill orchestrator (e.g., `"fixer_reviewer"`, `"triage"`). |
 | `clarification.asked_at_iteration` | integer or null | Current fixer iteration at the time of the clarification, or `null` when emitted during triage. |
-| `clarification.asked_at` | ISO 8601 string | UTC timestamp of when the clarification was detected and persisted (written by skill orchestrator at detection time, format `YYYY-MM-DDTHH:MM:SSZ`). Read by autopilot's pause-state detection (REQ-050b) to compute `pause_age_seconds = now − asked_at` against the configured pause timeout. MUST be written at every detection site; absence causes autopilot to compute the full epoch as the pause age and prematurely abort the issue. |
+| `clarification.asked_at` | ISO 8601 string | UTC timestamp of when the clarification was detected and persisted (written by skill orchestrator at detection time, format `YYYY-MM-DDTHH:MM:SSZ`). Read by autopilot's pause-state detection to compute `pause_age_seconds = now − asked_at` against the configured pause timeout. MUST be written at every detection site; absence causes autopilot to compute the full epoch as the pause age and prematurely abort the issue. |
 | `clarification.context` | string or null | Optional additional context provided by the agent (max 500 chars). `null` when absent. |
 | `clarification.answer` | string or null | Human-provided answer, written by `resume-ticket --clarification`. `null` until answered. |
-| `clarification.clarifications_consumed` | integer | Running total of clarifications consumed this run (max 3). Incremented EXACTLY ONCE per clarification round-trip — at NEEDS_CLARIFICATION detection by the skill orchestrator, BEFORE transitioning to `paused`. The increment-side-of-truth lives in skill orchestrators (fix-ticket, fix-bugs, implement-feature, scaffold) — `resume-ticket` MUST NOT also increment, or the per-run cap (REQ-045) would fire at half the documented rate. Hard cap enforced by skill orchestrators per REQ-045. |
+| `clarification.clarifications_consumed` | integer | Running total of clarifications consumed this run (max 3). Incremented EXACTLY ONCE per clarification round-trip — at NEEDS_CLARIFICATION detection by the skill orchestrator, BEFORE transitioning to `paused`. The increment-side-of-truth lives in skill orchestrators (fix-bugs, implement-feature, scaffold). Hard cap enforced by skill orchestrators. |
 | `clarification.last_clarification_iteration` | integer or null | Fixer iteration index of the most recent NEEDS_CLARIFICATION emission. Used by per-iteration cap check. `null` when no fixer iteration has emitted a clarification yet. |
 
 DoS caps enforced by skill orchestrators (see `core/agent-states.md` Section 2):
@@ -363,10 +363,10 @@ DoS caps enforced by skill orchestrators (see `core/agent-states.md` Section 2):
 | `.agent-flow/pipeline-history.md` | EXCLUDE | `block_reason` row uses `block.reason` only, additionally filtered through `sanitize_block_reason()` (18-pattern POSIX-portable redaction; see `core/post-publish-hook.md` Section 5). |
 | `pipeline-completed` webhook payload | EXCLUDE | Payload `block` object includes `reason` only. `detail` never included. |
 | `issue-blocked` (`agent-flow-block`) webhook payload | EXCLUDE | Payload `block` object includes `reason` only. `detail` never included. |
-| `pipeline-paused` webhook payload (NEW v6.9.0) | EXCLUDE | Payload includes `clarification.question` (sanitized) only. `block.detail` never relevant for pause; full exclusion. |
+| `pipeline-paused` webhook payload | EXCLUDE | Payload includes `clarification.question` (sanitized) only. `block.detail` never relevant for pause; full exclusion. |
 | Issue tracker block COMMENT (`core/block-handler.md`) | INCLUDE — first 100 chars only, redacted | Human-readable debugging requires SOME detail. Posts `Detail: {first 100 chars of block.detail filtered through sanitize_block_reason()}`. Full unredacted detail available only via local `state.json` read. |
 | `state.json` on disk (`.agent-flow/{run-id}/state.json`) | INCLUDE — full text, operator-controlled location | Operator-controlled local file; not transmitted. Operators in multi-user environments SHOULD treat `.agent-flow/` as sensitive (advisory). |
-| Future analytics/export skills | EXCLUDE — default | Any new consumer added in v6.10.x+ MUST update this table when introduced. Default posture is EXCLUDE unless explicitly justified. |
+| Future analytics/export skills | EXCLUDE — default | Any new consumer MUST update this table when introduced. Default posture is EXCLUDE unless explicitly justified. |
 
 Violations are caught by hidden test scenarios:
 - `v690-metrics-format-json.sh` injects `password=secret` into `block.detail` and asserts it does NOT appear in JSON output.
@@ -375,7 +375,7 @@ Violations are caught by hidden test scenarios:
 
 ### Pipeline Accumulator Fields
 
-Written once at pipeline end (before terminal status write). Optional in v6.7.x-era state files.
+Written once at pipeline end (before terminal status write).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -384,67 +384,63 @@ Written once at pipeline end (before terminal status write). Optional in v6.7.x-
 | `pipeline.total_tool_uses` | integer | `0` | Sum of `tool_uses` across all completed stages. |
 | `pipeline.summary_table` | string | `null` | Markdown table string for human display. Bounded by COST-R10: max 20 data rows and 4000 characters; when the limit is exceeded, truncation is row-wise (never mid-row) and a truncation notice row `| ... | (truncated, N more stages in pipeline.log) | ... |` is appended immediately before the `Total` row. Consumers SHOULD derive their own tables from the structured fields above rather than parsing this string; the markdown layout may evolve without a schema_version bump. |
 
-### Stage metadata (additive, v6.10.0+)
+### Stage metadata (additive)
 
 #### `stages.{stage}.dispatched_at`
 
 - **Type:** ISO-8601 UTC timestamp (string)
-- **Added in:** v6.10.0
 - **Purpose:** Populated when a pipeline stage dispatches its subagent via Task tool. Consumed by PostToolUse hook `hooks/validate-dispatch.sh` for dispatch enforcement audit.
-- **Absence:** field MAY be absent for stages completed before v6.10.0 or in older pipeline runs. The PostToolUse hook treats absence as MISSING (audit-log line), NEVER as a pipeline failure.
+- **Absence:** field MAY be absent for stages completed in older pipeline runs. The PostToolUse hook treats absence as MISSING (audit-log line), NEVER as a pipeline failure.
 - **Added by:** orchestrator, immediately before Task tool dispatch.
 
-Applies to all stages in the hardcoded `STAGES` whitelist (v10.0.0 expanded to 10 entries per REQ-B-3): `triage`, `code_analysis`, `reproduce_browser`, `fixer_reviewer`, `smoke_check`, `test`, `e2e_test`, `browser_verification`, `acceptance_gate`, `publisher`.
+Applies to all stages in the hardcoded `STAGES` whitelist (10 entries): `triage`, `code_analysis`, `reproduce_browser`, `fixer_reviewer`, `smoke_check`, `test`, `e2e_test`, `browser_verification`, `acceptance_gate`, `publisher`.
 
 #### `stages.{stage}.dispatch_witness`
 
 - **Type:** string (lowercase hex sha256, exactly 64 characters; pattern `^[0-9a-f]{64}$`)
-- **Added in:** v10.0.0
 - **Purpose:** Cryptographic receipt of the Task() dispatch parameters, computed before Task tool invocation. Consumed by PostToolUse hook `hooks/validate-dispatch.sh` via `core/lib/stage-invariant.sh::check_dispatch_witness` for runtime dispatch enforcement audit.
-- **Absence:** field MAY be absent for stages completed before v10.0.0 or for stages legitimately skipped (legitimate skips write `status: "skipped"` separately). The PostToolUse hook treats absence as `WITNESS_MISSING` (audit-log line), NEVER as a pipeline failure unless `CEOS_STRICT_DISPATCH=1` is set (in which case `WITNESS_MISMATCH` - not MISSING - causes exit 2).
+- **Absence:** field MAY be absent for stages completed in older pipeline runs or for stages legitimately skipped (legitimate skips write `status: "skipped"` separately). The PostToolUse hook treats absence as `WITNESS_MISSING` (audit-log line), NEVER as a pipeline failure unless `CEOS_STRICT_DISPATCH=1` is set (in which case `WITNESS_MISMATCH` - not MISSING - causes exit 2).
 - **Added by:** orchestrator, immediately before Task tool dispatch, in the same atomic state.json write as `dispatched_at`, `agent_name`, `stage_name`, and `status = "in_progress"`.
 - **Canonicalization:** `sha256("<subagent_type>|<model>|<prompt_head_128>")` where:
   - `subagent_type` = the Task tool's `subagent_type` argument (e.g., `agent-flow:test-engineer`).
   - `model` = the agent's `model:` frontmatter field (e.g., `sonnet`, `opus`, `haiku`).
   - `prompt_head_128` = the first 128 UTF-8-safe bytes of the prompt template string BEFORE Tier-1 variable substitution (i.e., with `${VAR}` placeholders un-expanded). UTF-8 safety means the truncation boundary aligns with the last whole codepoint within the 128-byte budget.
 - **Stability guarantee:** the witness is stable across resume cycles (the same template renders to the same witness regardless of how many times the stage is resumed).
-- **Applicable stages:** `triage`, `code_analysis`, `reproduce_browser`, `fixer_reviewer`, `smoke_check`, `test`, `e2e_test`, `browser_verification`, `acceptance_gate`, `publisher` (the v10.0.0 10-stage STAGES whitelist in `hooks/validate-dispatch.sh:22`).
-- **Schema version impact:** `schema_version` REMAINS `"1.0"`. This field is additive per the v6.8.0 / v6.10.0 / v8.0.0 / v9.x precedent that additive fields do NOT bump schema_version (REQ-B-6).
+- **Applicable stages:** `triage`, `code_analysis`, `reproduce_browser`, `fixer_reviewer`, `smoke_check`, `test`, `e2e_test`, `browser_verification`, `acceptance_gate`, `publisher` (the 10-stage STAGES whitelist in `hooks/validate-dispatch.sh:22`).
+- **Schema version impact:** `schema_version` REMAINS `"1.0"`. This field is additive — additive fields do NOT bump schema_version.
 
 #### `stages.{stage}.agent_name`
 
 - **Type:** string (Task subagent_type, e.g., `"agent-flow:fixer"`, `"agent-flow:test-engineer"`)
-- **Added in:** v10.0.0
-- **Purpose:** Cross-check anchor for L3 agent self-verification (REQ-C-1 v1.2). The agent reads this field at runtime and compares it against the prompt-injected `EXPECTED_AGENT_NAME` variable to verify dispatch integrity.
-- **Absence:** field MAY be absent in state.json blocks for stages completed before v10.0.0. Agent self-check treats absence as a Block condition (Reason: `completion_invariant_violated:agent_name_absent`).
+- **Purpose:** Cross-check anchor for L3 agent self-verification. The agent reads this field at runtime and compares it against the prompt-injected `EXPECTED_AGENT_NAME` variable to verify dispatch integrity.
+- **Absence:** field MAY be absent in state.json blocks for stages completed in older pipeline runs. Agent self-check treats absence as a Block condition (Reason: `completion_invariant_violated:agent_name_absent`).
 - **Added by:** orchestrator, in the same atomic state.json write as `dispatched_at` and `dispatch_witness`, immediately before Task() dispatch.
-- **Companion prompt variable:** the orchestrator separately injects `EXPECTED_AGENT_NAME=<this value>` as a Tier-1 prompt template variable so the agent has an orchestrator-supplied reference value to compare against (non-vacuity per REQ-C-1 v1.2).
-- **Used by:** all 17 agents via the `## Step Completion Invariants` section introduced in v10.0.0; PostToolUse hook does NOT consume this field directly.
+- **Companion prompt variable:** the orchestrator separately injects `EXPECTED_AGENT_NAME=<this value>` as a Tier-1 prompt template variable so the agent has an orchestrator-supplied reference value to compare against (non-vacuity).
+- **Used by:** all 17 agents via the `## Step Completion Invariants` section; PostToolUse hook does NOT consume this field directly.
 - **Schema version impact:** `schema_version` REMAINS `"1.0"`. Additive.
 
 #### `stages.{stage}.stage_name`
 
-- **Type:** string (canonical stage name from the v10.0.0 10-stage list - `"triage"`, `"code_analysis"`, `"reproduce_browser"`, `"fixer_reviewer"`, `"smoke_check"`, `"test"`, `"e2e_test"`, `"browser_verification"`, `"acceptance_gate"`, `"publisher"`)
-- **Added in:** v10.0.0
-- **Purpose:** Cross-check anchor for L3 agent self-verification (REQ-C-1 v1.2). The agent reads this field at runtime and compares it against the prompt-injected `EXPECTED_STAGE_NAME` variable to verify dispatch integrity.
+- **Type:** string (canonical stage name from the 10-stage list - `"triage"`, `"code_analysis"`, `"reproduce_browser"`, `"fixer_reviewer"`, `"smoke_check"`, `"test"`, `"e2e_test"`, `"browser_verification"`, `"acceptance_gate"`, `"publisher"`)
+- **Purpose:** Cross-check anchor for L3 agent self-verification. The agent reads this field at runtime and compares it against the prompt-injected `EXPECTED_STAGE_NAME` variable to verify dispatch integrity.
 - **Redundancy with stages map key:** yes - the value matches the parent key in the `stages.<stage>` map. The redundancy is deliberate: a misbehaving orchestrator that constructs the parent key as `"foo"` but writes `stage_name = "bar"` inside that block produces an internal inconsistency the agent's check catches.
-- **Absence:** field MAY be absent in state.json blocks for stages completed before v10.0.0. Agent self-check treats absence as a Block condition (Reason: `completion_invariant_violated:stage_name_absent`).
+- **Absence:** field MAY be absent in state.json blocks for stages completed in older pipeline runs. Agent self-check treats absence as a Block condition (Reason: `completion_invariant_violated:stage_name_absent`).
 - **Added by:** orchestrator, in the same atomic state.json write as `dispatched_at`, `dispatch_witness`, and `agent_name`, immediately before Task() dispatch.
 - **Companion prompt variable:** the orchestrator separately injects `EXPECTED_STAGE_NAME=<this value>` as a Tier-1 prompt template variable.
-- **Used by:** all 17 agents via the `## Step Completion Invariants` section introduced in v10.0.0.
+- **Used by:** all 17 agents via the `## Step Completion Invariants` section.
 - **Schema version impact:** `schema_version` REMAINS `"1.0"`. Additive.
 
-#### Threat model (v10.0.0 dispatch witness - honest acknowledgment)
+#### Threat model (dispatch witness - honest acknowledgment)
 
 The `dispatch_witness` field is a **dispatch RECEIPT, not a cryptographic ATTESTATION**. The threat model is explicit about three properties:
 
 1. **Witness attests "orchestrator WROTE the witness," not "subagent RAN."** All three witness inputs (`subagent_type`, `model`, `prompt_head_128`) are public - anyone with read access to the repo can compute the expected witness. An orchestrator that silently skips Task() can ALSO write the correct witness to state.json with no Task() invocation, producing WITNESS_OK indistinguishable from a real dispatch.
 2. **Defense relies on COMBINATION** of L2 (witness presence) + L1 (thin-controller prose forces the orchestrator's mental model toward the dispatch table) + L4 (terminal surface for residual anomalies). No single layer is sufficient against an adversarial or hallucinating orchestrator.
-3. **Pre-dispatch write + crash window:** if the orchestrator writes both `dispatched_at` and `dispatch_witness` atomically then crashes before Task(), the witness is present but the subagent never ran. Hook reports WITNESS_OK. Resume detection treats `dispatched_at` + `status="in_progress"` as "agent was dispatched but didn't complete" and may resume from the next stage. This is a known limitation; mitigation in v10.0.0 is L1 (thin-controller minimizes the window) and L4 (resumed run will surface the inconsistency in the audit log).
+3. **Pre-dispatch write + crash window:** if the orchestrator writes both `dispatched_at` and `dispatch_witness` atomically then crashes before Task(), the witness is present but the subagent never ran. Hook reports WITNESS_OK. Resume detection treats `dispatched_at` + `status="in_progress"` as "agent was dispatched but didn't complete" and may resume from the next stage. This is a known limitation; mitigation relies on L1 (thin-controller minimizes the window) and L4 (resumed run will surface the inconsistency in the audit log).
 
-Future hardening (deferred to v10.1.0+ per scope discipline): a post-dispatch witness-confirmation written by the subagent (rather than by the orchestrator) would attest subagent execution. v10.0.0 explicitly accepts the receipt-not-attestation tradeoff.
+Future hardening (deferred): a post-dispatch witness-confirmation written by the subagent (rather than by the orchestrator) would attest subagent execution. The current design explicitly accepts the receipt-not-attestation tradeoff.
 
-**Witness compatibility on prompt edits:** witness changes are EXPECTED on prompt template edits and are NOT a contract violation. Harness fixtures (`tests/fixtures/v10-witness/state-*.json`) MUST be refreshed alongside any prompt-template change.
+**Witness compatibility on prompt edits:** witness changes are EXPECTED on prompt template edits and are NOT a contract violation. Harness fixtures (`tests/fixtures/witness/state-*.json`) MUST be refreshed alongside any prompt-template change.
 
 ### Per-Stage Usage Fields
 
@@ -477,9 +473,9 @@ Applied additively to every stage object. All pre-existing stage fields remain u
 | `deployment.verified_at` | string | ISO 8601 timestamp of health check pass |
 | `deployment.result_path` | string | Path to detailed result JSON |
 
-### Reading v6.7.x state.json under v6.8.0
+### Reading older state.json files
 
-All six per-stage usage fields and the top-level `pipeline` accumulator are **optional**. A v6.7.x-era state.json that lacks these fields is valid under v6.8.0. Consumers MUST default absent usage fields to `0` (integers) or `null` (strings/objects). The `pipeline` object, when absent, is treated as `{total_tokens: 0, total_duration_ms: 0, total_tool_uses: 0, summary_table: null}`. `/resume-ticket` does not read `schema_version` and does not block on absence of usage fields. `/metrics` treats any state.json where `pipeline.total_tokens` is absent as ESTIMATED and applies heuristic constants rather than summing zero.
+All six per-stage usage fields and the top-level `pipeline` accumulator are **optional**. A state.json that lacks these fields is valid. Consumers MUST default absent usage fields to `0` (integers) or `null` (strings/objects). The `pipeline` object, when absent, is treated as `{total_tokens: 0, total_duration_ms: 0, total_tool_uses: 0, summary_table: null}`. `/metrics` treats any state.json where `pipeline.total_tokens` is absent as ESTIMATED and applies heuristic constants rather than summing zero.
 
 ### Sprint State Object
 
@@ -566,23 +562,21 @@ Used when `mode` is `backlog-creation` (pipeline: `create-backlog`). The `backlo
 | `backlog.created_issues[].size` | string | T-shirt size estimate: `"XS"`, `"S"`, `"M"`, `"L"`, or `"XL"`. |
 | `backlog.created_issues[].sp` | integer | Story points assigned to this issue. |
 
-## v8.0.0 Additive Keys
+## Merged-Agent Additive Keys
 
-> **Note (v8.0.0 additive update):** The following keys are added for the merged agents introduced by the v8.0.0 agent consolidation (21 → 18 agents). All new keys are optional and additive. `schema_version` remains `"1.0"`. v6.x and v7.x readers that do not recognise these fields will ignore them — no schema version bump is required.
-
-During v8.0.0 skill orchestrators write BOTH the v7 alias key and the corresponding v8 key with the same value. v9.0.0 removes the v7 alias keys (write-side removal; existing on-disk state.json files are never retroactively modified).
+> **Note:** The following keys correspond to the merged agents in the current agent consolidation (18 agents). All keys are optional and additive. `schema_version` remains `"1.0"`. Older readers that do not recognise these fields will ignore them — no schema version bump is required.
 
 ### Top-level additive fields
 
-| v8 key | Type | v7 alias (written in v8.0.0, removed v9.0.0) | Description |
-|--------|------|----------------------------------------------|-------------|
-| `analyst_triage_completed_at` | ISO 8601 string or null | `triage_completed_at` | Timestamp when `analyst --phase triage` completed. Null until triage phase finishes. |
-| `analyst_impact_completed_at` | ISO 8601 string or null | `code_analyst_completed_at` | Timestamp when `analyst --phase impact` completed. Null until impact phase finishes. |
-| `test_engineer_e2e_invoked` | boolean | _(no v7 alias — net-new)_ | `true` when test-engineer was dispatched with `--e2e=true`; `false` otherwise. Written at test-engineer dispatch. |
-| `test_engineer_e2e_completed_at` | ISO 8601 string or null | `e2e_test_completed_at` | Timestamp when `test-engineer --e2e=true` completed. Null if `--e2e` was not invoked. |
-| `browser_agent_verify_completed_at` | ISO 8601 string or null | `browser_verifier_completed_at` | Timestamp when `browser-agent --phase verify` completed. Null if not invoked. |
+| Key | Type | Description |
+|-----|------|-------------|
+| `analyst_triage_completed_at` | ISO 8601 string or null | Timestamp when `analyst --phase triage` completed. Null until triage phase finishes. |
+| `analyst_impact_completed_at` | ISO 8601 string or null | Timestamp when `analyst --phase impact` completed. Null until impact phase finishes. |
+| `test_engineer_e2e_invoked` | boolean | `true` when test-engineer was dispatched with `--e2e=true`; `false` otherwise. Written at test-engineer dispatch. |
+| `test_engineer_e2e_completed_at` | ISO 8601 string or null | Timestamp when `test-engineer --e2e=true` completed. Null if `--e2e` was not invoked. |
+| `browser_agent_verify_completed_at` | ISO 8601 string or null | Timestamp when `browser-agent --phase verify` completed. Null if not invoked. |
 
-### Example (v8.0.0 transitional — both v7 alias and v8 keys present)
+### Example
 
 ```json
 {
@@ -593,29 +587,22 @@ During v8.0.0 skill orchestrators write BOTH the v7 alias key and the correspond
   "test_engineer_e2e_invoked": false,
   "test_engineer_e2e_completed_at": null,
   "browser_agent_reproduce_completed_at": null,
-  "browser_agent_verify_completed_at": null,
-
-  "triage_completed_at": "2026-04-27T10:05:00Z",
-  "code_analyst_completed_at": "2026-04-27T10:08:00Z"
+  "browser_agent_verify_completed_at": null
 }
 ```
 
-### Step-mode abort keys (additive, v8.0.0)
+### Step-mode abort keys (additive)
 
-When the user aborts with `a` in `--step-mode`, skill orchestrators write the following top-level keys atomically (written ONLY AFTER the in-progress step has completed — never mid-step; a SIGTERM before the write leaves these keys absent, causing `/resume-ticket` to re-execute the interrupted step from scratch per REQ-MODE-008a):
+When the user aborts with `a` in `--step-mode`, skill orchestrators write the following top-level keys atomically (written ONLY AFTER the in-progress step has completed — never mid-step; a SIGTERM before the write leaves these keys absent, causing resume-detection to re-execute the interrupted step from scratch):
 
 | Field | Type | Description |
 |-------|------|-------------|
 | `outcome` | string | Set to `"paused"` — graceful pause (exit 0), not an error. |
-| `pause_reason` | string | Set to `"step_mode_abort"` — machine-readable signal consumed by `/resume-ticket`. |
-| `last_completed_step` | string | Step name that completed before the abort (e.g., `"04-fixer-reviewer-loop"`). `/resume-ticket` resumes from `last_completed_step + 1`. |
+| `pause_reason` | string | Set to `"step_mode_abort"` — machine-readable signal consumed by resume-detection. |
+| `last_completed_step` | string | Step name that completed before the abort (e.g., `"04-fixer-reviewer-loop"`). Resume continues from `last_completed_step + 1`. |
 | `paused_at` | ISO 8601 string | UTC timestamp when the abort was detected. |
 
 `last_completed_step` is written to `state.json` ONLY after the step fully completes (write-after-complete atomicity). A SIGTERM or interrupt before the write causes `last_completed_step` to remain at the previous value — the in-flight step is NOT recorded as done and will be re-executed on resume.
-
-### Reading v7.x state.json under v8.0.0
-
-A v7.x-era state.json that lacks the v8 additive keys is valid under v8.0.0. The autopilot deduplication logic in `core/state-manager.md` falls back to v7 alias keys when v8 keys are absent (deduplication contract Rule 3).
 
 ## Step Status Enum
 

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # core/lib/stage-invariant.sh
-# v10.0.0 - Runtime dispatch invariant helpers (Area B).
+# Runtime dispatch invariant helpers.
 #
 # Sourced by hooks/validate-dispatch.sh. Skills do NOT source this file
 # directly; thin-controller prose instructs the orchestrator what to write
 # to state.json (witness, agent_name, stage_name) before each Task() call.
 #
 # POSIX-compatible. Tested on Windows Git-Bash, macOS BSD-grep, Linux GNU-grep.
-# jq-free per fix-bugs convention (v9.3.0 sentinel.sh precedent).
+# jq-free per fix-bugs convention.
 #
 # Tools used: bash builtins + printf + grep -E + sed -E + awk + sha256sum
 # (or shasum -a 256 fallback for macOS systems without coreutils).
@@ -49,7 +49,7 @@ compute_dispatch_witness() {
   fi
 }
 
-# v10.1.0 POL-2 internal helpers (private, double-underscore prefix).
+# Internal helpers (private, double-underscore prefix).
 # __regex_escape_stage escapes POSIX BRE metacharacters in user-controlled
 # stage names before they reach the grep pattern in check_dispatch_witness.
 # __validate_witness_format gates the witness shape early so a malformed

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ===========================================================================
 # Test:        v10-step-completion-invariants-completeness-EXTENDED.sh
-# Falsifies:   REQ-REL-2.1, REQ-REL-2.2, REQ-REL-2.3, REQ-REL-2.4,
-#              REQ-REL-2.5 (this is the EXTENDED version for Phase 5 TDD;
+# Falsifies:,
+#              (this is the EXTENDED version for Phase 5 TDD;
 #              Phase 7 edits the existing scenario in-place — this file
 #              documents the target shape)
 # FC mapped:   FC-REL-2 (a/b/c/d)

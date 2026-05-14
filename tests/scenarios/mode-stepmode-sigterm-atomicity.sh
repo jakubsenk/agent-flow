@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-MODE-008a, REQ-MODE-008a
+# Verifies: AC-MODE-008aa
 # Description: SIGTERM before last_completed_step write completes → step NOT recorded as done
 #   On resume, interrupted step is re-executed from scratch
 set -uo pipefail

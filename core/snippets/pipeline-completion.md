@@ -28,7 +28,7 @@ jq -nc \
 
 **`outcome` enum:** one of `"success"`, `"blocked"`, `"failed"`.
 
-**`outcome: "failed"` limitation:** covers logical fall-through ONLY — does NOT fire on process death (OOM, Claude API timeout, SIGKILL). True crash detection requires architecture-level work (heartbeat, external watchdog) deferred beyond v6.9.0.
+**`outcome: "failed"` limitation:** covers logical fall-through ONLY — does NOT fire on process death (OOM, Claude API timeout, SIGKILL). True crash detection requires architecture-level work (heartbeat, external watchdog) deferred to a future release.
 
 **`pr_url`:** nullable. `null` for `outcome: "blocked"` or `outcome: "failed"`; populated for `outcome: "success"`.
 
@@ -39,4 +39,3 @@ jq -nc \
 
 **Expected citation count:** 3 (verifier `tests/scenarios/v690-snippet-citation-counts.sh`).
 
-(Historical: prior to v9.3.0 the citation map listed `skills/fix-ticket/SKILL.md` Step Z, `skills/fix-bugs/SKILL.md` Step Z, and `skills/implement-feature/SKILL.md` Step Z. The legacy `fix-ticket` skill was merged into `fix-bugs`; the citation now lives in the decomposed `steps/07-publish.md` files plus a residual SKILL.md citation in `fix-bugs`.)

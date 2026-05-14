@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-CT-002, REQ-SETUP-001
+# Verifies: AC-CT-002
 # Description: skills/ contains exactly 29 SKILL.md files (not counting steps/ subdirs)
 set -uo pipefail
 

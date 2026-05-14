@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-OVR-005, REQ-OVR-004
+# Verifies: AC-OVR-005
 # Description: TOML overlay with unknown key (not_a_real_key) halts dispatch with [ERROR]
 #   naming the offending key + non-zero exit
 set -uo pipefail

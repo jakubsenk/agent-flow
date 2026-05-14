@@ -90,7 +90,7 @@ Follow atomic write protocol from `../../core/state-manager.md`.
 ### Step 1: Read specification
 
 Read the spec path provided in `$ARGUMENTS`:
-- **Directory:** Glob `{spec-path}/epics/*.md` (scaffold v2 format). If no `epics/` subdir exists, glob `{spec-path}/*.md`.
+- **Directory:** Glob `{spec-path}/epics/*.md` (spec-based scaffold format). If no `epics/` subdir exists, glob `{spec-path}/*.md`.
 - **Single file:** Read the single file.
 - **Multiple files (space-separated or glob pattern):** Read each matched file in order.
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 # PURPOSE: Hard enforcement gate — every agent file under agents/*.md MUST have a ## Output Contract
-#          section. No SKIP-guard. This is the mandatory contract assertion (REQ-H-001, REQ-H-033).
+#          section. No SKIP-guard. This is the mandatory contract assertion.
 # AC-H-N covered: AC-H-001, AC-H-004
 # INVOKED BY: tests/harness/run-tests.sh
 # EXPECTED: PASS (all 17 agents have ## Output Contract)
@@ -28,13 +28,13 @@ for agent_file in "$AGENTS_DIR"/*.md; do
   agent_name=$(basename "$agent_file" .md)
   agent_count=$((agent_count + 1))
 
-  # Primary assertion: ## Output Contract heading must exist (REQ-H-001)
+  # Primary assertion: ## Output Contract heading must exist
   if ! grep -qE '^## Output Contract$' "$agent_file"; then
-    fail "$agent_name: missing '## Output Contract' section — mandatory per REQ-H-001"
+    fail "$agent_name: missing '## Output Contract' section — mandatory"
     missing_count=$((missing_count + 1))
   fi
 
-  # Secondary assertion: no agent may claim ## Project-Specific Instructions (reserved heading REQ-H-022 / AC-H-004)
+  # Secondary assertion: no agent may claim ## Project-Specific Instructions (reserved heading / AC-H-004)
   if grep -qE '^## Project-Specific Instructions$' "$agent_file"; then
     fail "$agent_name: contains reserved heading '## Project-Specific Instructions' — this heading is reserved for the override injector"
     # Mutation catch: if someone accidentally adds this heading to an agent, it is caught here
@@ -48,7 +48,7 @@ fi
 
 # Negative assertion: verify stack-selector is deleted (post-deletion agent count = 17)
 if [ -f "$AGENTS_DIR/stack-selector.md" ]; then
-  fail "agents/stack-selector.md still exists — must be deleted per REQ-H-080 (AC-H-040)"
+  fail "agents/stack-selector.md still exists — must be deleted (AC-H-040)"
   # Mutation catch: forgetting to delete stack-selector.md fails here
 fi
 

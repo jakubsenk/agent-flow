@@ -1,7 +1,7 @@
 #!/bin/bash
 # PURPOSE: For the 4 polymorphic agents (analyst, test-engineer, browser-agent, spec-reviewer),
 #          assert per-phase H3 sub-block headings exist inside ## Output Contract. Each sub-block
-#          must independently contain Inputs + Outputs table headers (REQ-H-010..H-015).
+#          must independently contain Inputs + Outputs table headers.
 # AC-H-N covered: AC-H-010, AC-H-011, AC-H-012, AC-H-013, AC-H-014
 # INVOKED BY: tests/harness/run-tests.sh
 # EXPECTED: PASS (all 4 polymorphic agents have correct per-phase sub-blocks)
@@ -50,7 +50,7 @@ check_polymorphic() {
     fail "$agent_name: missing H3 sub-block '$block_b' inside ## Output Contract"
   fi
 
-  # Assert each sub-block independently contains Inputs + Outputs table headers (REQ-H-015)
+  # Assert each sub-block independently contains Inputs + Outputs table headers
   # Extract content from block_a up to block_b or end
   block_a_content=$(echo "$oc_section" | awk "/$(echo "$block_a" | sed 's/[()--]/\\&/g')/{found=1; next} found && /^### /{exit} found{print}")
   # If extraction is empty (awk escaping complexity), fall back to checking the whole oc_section
@@ -81,22 +81,22 @@ te_skip=0
 ba_skip=0
 sr_skip=0
 
-# analyst: triage + impact (REQ-H-011 / AC-H-010)
+# analyst: triage + impact
 check_polymorphic "analyst" \
   "### Output Contract — Phase: triage" \
   "### Output Contract — Phase: impact" || analyst_skip=77
 
-# test-engineer: default (no flag) + --e2e (REQ-H-012 / AC-H-011)
+# test-engineer: default (no flag) + --e2e
 check_polymorphic "test-engineer" \
   "### Output Contract — Default (no flag)" \
   "### Output Contract — Phase: --e2e" || te_skip=77
 
-# browser-agent: reproduce + verify (REQ-H-013 / AC-H-012)
+# browser-agent: reproduce + verify
 check_polymorphic "browser-agent" \
   "### Output Contract — Phase: reproduce" \
   "### Output Contract — Phase: verify" || ba_skip=77
 
-# spec-reviewer: default review mode + --verify (REQ-H-014 / AC-H-013)
+# spec-reviewer: default review mode + --verify
 check_polymorphic "spec-reviewer" \
   "### Output Contract — Default (review mode)" \
   "### Output Contract — Phase: --verify" || sr_skip=77

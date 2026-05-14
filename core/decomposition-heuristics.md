@@ -33,7 +33,7 @@ Flag parsing from `$ARGUMENTS`:
 
 | Result | Meaning |
 |--------|---------|
-| `DECOMPOSE` | Run architect agent, build task tree, execute per-subtask (see `skills/fix-bugs/SKILL.md` decomposition steps; the legacy `skills/fix-ticket/SKILL.md` was merged into `fix-bugs` in v9.3.0) |
+| `DECOMPOSE` | Run architect agent, build task tree, execute per-subtask (see `skills/fix-bugs/SKILL.md` decomposition steps) |
 | `SINGLE_PASS` | Skip decomposition, proceed directly to pre-fix hook and fixer-reviewer loop |
 
 ## Failure Handling

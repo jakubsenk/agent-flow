@@ -2,7 +2,7 @@
 # PURPOSE: Validate the 9-agent read-only roster.
 #          Stale names (triage-analyst, code-analyst, stack-selector) must not be present. Verifies
 #          none of the 9 read-only agents contain write-tool phrases in their Process sections.
-#          Final list per REQ-H-038: analyst reviewer spec-analyst architect priority-engine
+#          Final list: analyst reviewer spec-analyst architect priority-engine
 #          spec-reviewer acceptance-gate backlog-creator sprint-planner (AC-H-083).
 # AC-H-N covered: AC-H-083
 # INVOKED BY: tests/harness/run-tests.sh
@@ -18,7 +18,7 @@ fi
 FAIL=0
 fail() { echo "FAIL: $1" >&2; FAIL=1; }
 
-# Read-only agents per REQ-H-038 (9 agents)
+# Read-only agents (9 agents)
 READ_ONLY_AGENTS=(
   analyst reviewer spec-analyst architect priority-engine
   spec-reviewer acceptance-gate backlog-creator sprint-planner

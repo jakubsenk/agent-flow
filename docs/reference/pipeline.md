@@ -97,8 +97,6 @@ customization/steps/fix-bugs/04-fixer-reviewer-loop.md
 
 ## Step override resolution
 
-Per `REQ-STEPS-002`, `REQ-STEPS-003`, and `REQ-STEPS-003a`:
-
 **Resolution algorithm (per step, per pipeline run):**
 
 ```bash
@@ -112,7 +110,7 @@ if [ -f "${PROJECT_OVERRIDE}/${STEP_NAME}.md" ]; then
   STEP_FILE="${PROJECT_OVERRIDE}/${STEP_NAME}.md"
   echo "[INFO] Step override active: fix-bugs/${STEP_NAME} from project customization"
 else
-  # Near-miss detection (REQ-STEPS-003a)
+  # Near-miss detection
   NEAR=$(find "${PROJECT_OVERRIDE}/" -maxdepth 1 -name "*.md" 2>/dev/null | while IFS= read -r f; do
     b="$(basename "$f")"
     norm_b="$(printf '%s' "$b" | tr '[:upper:]' '[:lower:]' | tr '_' '-')"
@@ -348,7 +346,7 @@ auto-resume detection (`core/resume-detection.md`) which reads
 flag provided at resume time (default / `--yolo` / `--step-mode`).
 
 `last_completed_step` is written to `state.json` ONLY after the step fully completes (atomic).
-A SIGTERM before the write causes the step to re-execute on resume (REQ-MODE-008a).
+A SIGTERM before the write causes the step to re-execute on resume.
 
 ---
 

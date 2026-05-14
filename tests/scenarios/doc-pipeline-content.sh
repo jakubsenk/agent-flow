@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-DOC-009, REQ-DOC-009
+# Verifies: AC-DOC-009
 # Description: docs/reference/pipeline.md has all required section headings + code block
 set -uo pipefail
 

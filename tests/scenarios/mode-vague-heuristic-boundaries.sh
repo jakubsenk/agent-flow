@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Verifies: REQ-MODE-009a, AC-MODE-009 (boundary cases)
 # Description: 4 boundary cases for the vague-description heuristic:
 #   Case 1: exactly 19 words + NO technical term → vague (brainstorm triggered)
 #   Case 2: exactly 20 words + technical term → NOT vague (brainstorm skipped)
@@ -162,6 +161,6 @@ fi
 # Final result
 # ---------------------------------------------------------------------------
 if [ "$FAIL" -eq 0 ]; then
-  echo "PASS: REQ-MODE-009a — all 4 vague heuristic boundary cases verified"
+  echo "PASS: all 4 vague heuristic boundary cases verified"
 fi
 exit "$FAIL"

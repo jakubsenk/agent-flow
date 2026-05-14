@@ -9,7 +9,7 @@
 # EXIT: always 0 (advisory-only; PostToolUse cannot block tool execution).
 # LOG:  .agent-flow/dispatch-audit.log (append-only, plain text).
 #
-# Security contracts (REQ-T2-4):
+# Security contracts:
 #   - STAGES are hardcoded; never derived from state.json field names
 #   - All jq calls redirect stderr to /dev/null
 #   - jq -e used for boolean branching
@@ -17,12 +17,12 @@
 set -uo pipefail   # NOT -e: script must not exit on jq miss
 
 # ---------------------------------------------------------------------------
-# Hardcoded STAGES whitelist (REQ-T2-4: no dynamic discovery)
+# Hardcoded STAGES whitelist (no dynamic discovery)
 # ---------------------------------------------------------------------------
 STAGES=(triage code_analysis reproduce_browser fixer_reviewer smoke_check test e2e_test browser_verification acceptance_gate publisher)
 
 # ---------------------------------------------------------------------------
-# Source core/lib/stage-invariant.sh for dispatch witness audit (v10.0.0 REQ-B-3).
+# Source core/lib/stage-invariant.sh for dispatch witness audit.
 # Resolves plugin-relative or repo-relative; silent no-op if not found.
 # ---------------------------------------------------------------------------
 STAGE_LIB="${CLAUDE_PLUGIN_DIR:-$(dirname "$0")/..}/core/lib/stage-invariant.sh"
@@ -114,9 +114,9 @@ for stage in "${STAGES[@]}"; do
 done
 
 # ---------------------------------------------------------------------------
-# v10.0.0 dispatch-witness audit loop (REQ-B-1/B-2/B-3).
+# Dispatch-witness audit loop.
 # Emits one WITNESS_OK / WITNESS_MISSING / WITNESS_MISMATCH line per stage.
-# Strict mode (REQ-B-5): CEOS_STRICT_DISPATCH=1 causes exit 2 on MISMATCH.
+# Strict mode: CEOS_STRICT_DISPATCH=1 causes exit 2 on MISMATCH.
 # MISSING is NEVER exit-2-worthy (legitimate skips produce MISSING).
 # ---------------------------------------------------------------------------
 if declare -F check_dispatch_witness >/dev/null 2>&1; then
@@ -133,5 +133,5 @@ if declare -F check_dispatch_witness >/dev/null 2>&1; then
   fi
 fi
 
-# Exit 0 ALWAYS -- advisory mode per REQ-T2-4.
+# Exit 0 ALWAYS -- advisory mode.
 exit 0

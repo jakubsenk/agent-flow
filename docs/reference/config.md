@@ -54,7 +54,7 @@ Optional section. Enables unattended continuous processing via `/agent-flow:auto
 
 Optional section. Configures webhook delivery for pipeline lifecycle events.
 
-**Operator trust required**: The `Webhook URL` value is dispatched via `curl`. SSRF defense (`--proto "=http,https"`) shipped in v6.9.0 and restricts delivery to HTTP/HTTPS schemes only. Cross-run circuit-breaker persistence and URL allowlist are deferred to v6.10.0. Operators are responsible for configuring trusted URLs pointing to internal observability endpoints. Per spec design §3.6.
+**Operator trust required**: The `Webhook URL` value is dispatched via `curl`. SSRF defense (`--proto "=http,https"`) restricts delivery to HTTP/HTTPS schemes only. Cross-run circuit-breaker persistence and URL allowlist are on the roadmap. Operators are responsible for configuring trusted URLs pointing to internal observability endpoints. Per spec design §3.6.
 
 | Key | Default | Description |
 |-----|---------|-------------|

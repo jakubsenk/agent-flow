@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-DOC-008, REQ-DOC-008
+# Verifies: AC-DOC-008
 # Description: docs/architecture.md has "17 agents", "18 skills", named-phase identifiers,
 #   and step-count annotations for all 3 pipelines
 # Post-cleanup baseline: skills reduced from 22 to 18.

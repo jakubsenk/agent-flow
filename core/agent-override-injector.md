@@ -64,7 +64,7 @@ toml_path="${override_path}/${agent_name}.toml"
 md_path="${override_path}/${agent_name}.md"
 
 if [ ! -f "$toml_path" ] && [ -f "$md_path" ]; then
-    # .md-only: v9.0.0 hard removal — emit [ERROR], log provenance, return empty
+    # .md-only: unsupported — emit [ERROR], log provenance, return empty
     echo "[ERROR] Legacy .md overlay format is not supported; manual conversion required — see docs/guides/toml-overlay-syntax.md for TOML overlay format examples." >&2
     log_overlay_provenance "$agent_name" "md_rejected" "$md_path"
     additional_instructions=""
@@ -160,11 +160,11 @@ On every dispatch the injector emits exactly ONE provenance log line via
 | `overlay_source` | Emitted by | Condition |
 |-----------------|-----------|-----------|
 | `toml` | `resolve_overlay()` (lib) | `.toml` overlay loaded and merged |
-| `md` | `resolve_overlay()` (lib) | Reserved for v8-era backward-compat in lib; structurally unreachable in v9.0.2 because the injector short-circuits before calling `resolve_overlay()` on `.md`-only paths |
+| `md` | `resolve_overlay()` (lib) | Reserved for backward-compat in lib; structurally unreachable because the injector short-circuits before calling `resolve_overlay()` on `.md`-only paths |
 | `none` | `resolve_overlay()` (lib) | No overlay file exists for this agent |
-| `md_rejected` | injector (Step 2) | `.md` exists, `.toml` does NOT exist; v9.0.0 hard removal branch |
+| `md_rejected` | injector (Step 2) | `.md` exists, `.toml` does NOT exist; legacy `.md` overlay is unsupported |
 
-The v9.0.2 injector emits only `toml`, `none`, or `md_rejected` itself; `md` is handled
+The injector emits only `toml`, `none`, or `md_rejected` itself; `md` is handled
 internally by lib but is unreachable via this injector's call path.
 
 Format: `agent={name} overlay_source={toml|md|none|md_rejected} overlay_path={path|(none)}`

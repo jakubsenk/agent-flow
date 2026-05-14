@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-AGT-005, REQ-AGT-004
+# Verifies: AC-AGT-005
 # Description: agents/browser-agent.md has Phase Dispatch with reproduce and verify,
 #   name: browser-agent, model: sonnet
 set -uo pipefail

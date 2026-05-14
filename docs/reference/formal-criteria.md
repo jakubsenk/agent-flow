@@ -1,6 +1,6 @@
-# Formal Criteria — v9.0.0 Mode and Step Decomposition
+# Formal Criteria — Mode and Step Decomposition
 
-This document specifies machine-checkable acceptance criteria for v8.0.0 / v9.0.0
+This document specifies machine-checkable acceptance criteria for
 mode selection (`--yolo` / default / `--step-mode`) and step decomposition
 behaviors. Each AC is referenced by harness scenarios in `tests/scenarios/`.
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-DOC-006, REQ-DOC-006
+# Verifies: AC-DOC-006
 # Description: docs/reference/skills.md contains exactly 29 canonical skill names
 #   as table rows
 set -uo pipefail

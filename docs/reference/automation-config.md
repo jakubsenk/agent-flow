@@ -27,7 +27,7 @@ All skills read Automation Config at the start of execution. Skills contain zero
 | Worktrees | No | /fix-bugs |
 | E2E Test | No | /fix-bugs, /implement-feature, /scaffold |
 | Browser Verification | No | /fix-bugs |
-| Local Deployment | No | (removed in v9.2.0; deployment-verifier dispatched by pipelines) |
+| Local Deployment | No | (deployment-verifier dispatched by pipelines) |
 | Sprint Planning | No | /sprint-plan, /create-backlog |
 | Error Handling | No | /fix-bugs, /implement-feature |
 | Feature Workflow | No | /implement-feature |
@@ -51,7 +51,7 @@ Configures which issue tracker to use and how to interact with it.
 | Project | Project identifier |
 | Bug query | Query to find open bugs |
 | State transitions | Mapping of pipeline states to tracker states |
-| On start set | State to set when pipeline begins processing. **Since v9.6.1:** the pipeline also implicitly self-assigns the issue to the MCP-authenticated user after the state transition. Per-tracker assignee tool reference is in `skills/fix-bugs/SKILL.md` Step 1. Failure mode is advisory (WARN, never blocks pipeline) per `core/status-verification.md` pattern. |
+| On start set | State to set when pipeline begins processing. The pipeline also implicitly self-assigns the issue to the MCP-authenticated user after the state transition. Per-tracker assignee tool reference is in `skills/fix-bugs/SKILL.md` Step 1. Failure mode is advisory (WARN, never blocks pipeline) per `core/status-verification.md` pattern. |
 
 **GitHub example:**
 
@@ -294,7 +294,7 @@ Optional. Enables browser-based bug reproduction (before fixer) and verification
 
 ### Local Deployment
 
-Optional. Configures local deployment health checks. The `deployment-verifier` agent is dispatched directly by pipeline skills (`/fix-bugs`, `/implement-feature`, `/scaffold`) when this section is present. (Note: the standalone `/agent-flow:check-deploy` skill was removed in v9.2.0.)
+Optional. Configures local deployment health checks. The `deployment-verifier` agent is dispatched directly by pipeline skills (`/fix-bugs`, `/implement-feature`, `/scaffold`) when this section is present.
 
 | Key | Description | Default |
 |-----|-------------|---------|
@@ -415,7 +415,7 @@ Optional directory with per-agent customization files. For each agent, create a 
 
 Create `customization/reviewer.toml` to add project-specific reviewer instructions, `customization/fixer.toml` for fixer instructions, and so on. See [Custom Agents Guide](../guides/custom-agents.md) for details.
 
-**v8.0.0 — TOML overlay format (preferred):** In v8.0.0 the preferred override format is a TOML file at `{path}/{agent-name}.toml` instead of `{agent-name}.md`. The `.md` format is a deprecated alias — it still works but emits `[WARN] Deprecated override format: {file}. Migrate to .toml.` Use `/agent-flow:setup-agents` to auto-generate TOML stubs with smart defaults. See [TOML overlay syntax guide](../guides/toml-overlay-syntax.md) for the full schema, 3-tier merge rules, and worked examples.
+**TOML overlay format (preferred):** The preferred override format is a TOML file at `{path}/{agent-name}.toml` instead of `{agent-name}.md`. The `.md` format is a deprecated alias — it still works but emits `[WARN] Deprecated override format: {file}. Migrate to .toml.` Use `/agent-flow:setup-agents` to auto-generate TOML stubs with smart defaults. See [TOML overlay syntax guide](../guides/toml-overlay-syntax.md) for the full schema, 3-tier merge rules, and worked examples.
 
 **TOML merge tiers (summary):** Tier 1 — scalar overrides (`model`, `style`): overlay value replaces plugin default from agent frontmatter. Tier 2 — array of tables (`[[process_additions]]`, `[[constraints]]`): overlay entries appended after plugin defaults (order preserved). Tier 3 — deep merge (`[limits]`): overlay keys override corresponding plugin-default keys; absent keys are inherited unchanged. The `[meta]` free-form table accepts arbitrary annotation keys without schema validation and is not consumed by dispatch logic.
 
@@ -550,7 +550,7 @@ The `/agent-flow:check-setup` skill validates your Automation Config. Here is wh
 
 ## Pipeline Profiles
 
-Profiles allow you to customize which stages run. They are defined as rows in a table within the Pipeline Profiles subsection. v8.0.0 introduces **named-phase identifiers** for consolidated agents:
+Profiles allow you to customize which stages run. They are defined as rows in a table within the Pipeline Profiles subsection. The plugin uses **named-phase identifiers** for consolidated agents:
 
 ```markdown
 ### Pipeline Profiles
@@ -751,7 +751,7 @@ Closes #{issue_id}
 | fast | analyst-triage, analyst-impact, test-engineer | (none) |
 | strict | (none) | test-engineer-e2e |
 
-<!-- ### Autopilot (optional, v6.8.0+)
+<!-- ### Autopilot (optional)
 | Key | Value |
 |-----|-------|
 | Max issues per run | 1 |
@@ -762,7 +762,7 @@ Closes #{issue_id}
 | On error | skip |
 | Dry run | false |
 
-### Pause Limits (optional, v6.9.0+)
+### Pause Limits (optional)
 | Key | Value |
 |-----|-------|
 | Pause timeout | 30 days |

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-DOC-002, REQ-DOC-002, REQ-OVR-003
+# Verifies: AC-DOC-002
 # Description: docs/guides/toml-overlay-syntax.md has >= 5 TOML code blocks,
 #   all 18 agent names referenced, [meta] free-form table documented
 set -uo pipefail

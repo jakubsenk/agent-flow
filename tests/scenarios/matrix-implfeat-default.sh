@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-MODE-MATRIX-005, REQ-MODE-003
+# Verifies: AC-MODE-MATRIX-005
 # Description: implement-feature + default mode = Spec Checkpoint, Decomposition Approval,
 #   AC coverage prompts visible
 set -uo pipefail

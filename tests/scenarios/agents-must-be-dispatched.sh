@@ -1,5 +1,5 @@
 #!/bin/bash
-# PURPOSE: Prevent future orphan agents (REQ-H-035, REQ-H-081). Every agent file under
+# PURPOSE: Prevent future orphan agents. Every agent file under
 #          agents/*.md MUST appear as a subagent_type='agent-flow:{name}' literal in at
 #          least one file under skills/**/*.md. Catches the stack-selector orphan defect.
 # AC-H-N covered: AC-H-034
@@ -69,7 +69,7 @@ fi
 # Negative assertion: assert stack-selector is NOT present (AC-H-040)
 # If stack-selector.md exists it will fail (file should have been deleted)
 if [ -f "$AGENTS_DIR/stack-selector.md" ]; then
-  fail "agents/stack-selector.md still exists — must be deleted per REQ-H-080 (AC-H-040)"
+  fail "agents/stack-selector.md still exists — must be deleted (AC-H-040)"
   # This test doubles as AC-H-040 enforcement
 fi
 

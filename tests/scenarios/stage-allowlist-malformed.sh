@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # ===========================================================================
 # Test:        v10-stage-allowlist-malformed.sh
-# Falsifies:   REQ-REL-4.1, REQ-REL-4.2, REQ-REL-4.3, REQ-REL-4.4,
-#              REQ-REL-4.5, REQ-REL-4.6
+# Falsifies:,
 # FC mapped:   FC-REL-4 (a/b/c/d/e/f/g/h)
 # What it checks:
 #   ASSERT-1) 3 malformed fixture files exist in tests/fixtures/v10-stage-allowlist/
@@ -13,7 +12,7 @@
 #   ASSERT-6) awk parser on malformed-empty.md => empty output (zero-content trigger)
 #   ASSERT-7) awk parser on malformed-truncated.md reads body to EOF + prose covers it
 #   ASSERT-8) awk parser on malformed-extra-tags.md produces unrecognized lines
-# Line budget: 50-100 lines (per REQ-REL-4.6).
+# Line budget: 50-100 lines.
 # Expected RED phase: ASSERT-2/3 FAIL (WARN prose not yet in step files).
 # Expected GREEN phase (post-impl): all ASSERTs PASS.
 # ===========================================================================
@@ -39,7 +38,7 @@ done
 for step in "$STEP_FB" "$STEP_IF"; do
   [ -f "$step" ] || { fail "FC-REL-4.c-missing: $step not found"; continue; }
   grep -q '\[WARN\] malformed' "$step" \
-    || fail "FC-REL-4.c: $step missing [WARN] malformed prose (REQ-REL-4.2/4.3)"
+    || fail "FC-REL-4.c: $step missing [WARN] malformed prose (/4.3)"
 done
 
 # ASSERT-3: allow-all-stages fallback prose in both step files

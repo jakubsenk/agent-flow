@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-STEPS-003a, REQ-STEPS-003a
+# Verifies: AC-STEPS-003aa
 # Description: Near-miss step override filenames (wrong zero-pad, wrong case, underscore vs hyphen)
 #   emit [WARN] "Possible misnamed step override: {file} — did you mean {canonical-name}?"
 #   and fall through to plugin-default step (3 cases: zero-pad, case-fold, underscore-hyphen)

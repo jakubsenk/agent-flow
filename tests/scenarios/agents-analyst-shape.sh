@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-AGT-003, REQ-AGT-002
+# Verifies: AC-AGT-003
 # Description: agents/analyst.md has Phase Dispatch section, name: analyst, model: sonnet
 set -uo pipefail
 

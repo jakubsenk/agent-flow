@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-SETUP-006, REQ-SETUP-004
+# Verifies: AC-SETUP-006
 # Description: /setup-agents --force creates backup customization/reviewer.toml.bak-{ISO-8601}
 #   then writes new file with # generated: header
 set -uo pipefail

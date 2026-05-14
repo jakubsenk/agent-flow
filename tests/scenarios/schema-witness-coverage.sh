@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 # ===========================================================================
 # Test:        v10-schema-witness-coverage.sh
-# Falsifies:   REQ-B-4, REQ-B-6, REQ-B-2 (v1.2: agent_name/stage_name addition)
 # FC mapped:   FC-3 (schema documents witness + agent_name + stage_name; schema_version stable)
 # What it checks:
 #   A)  state/schema.md contains '#### `stages.{stage}.dispatch_witness`' sub-section
 #   A') state/schema.md contains '#### `stages.{stage}.agent_name`' sub-section
 #   A") state/schema.md contains '#### `stages.{stage}.stage_name`' sub-section
 #   B)  All 10 stage names appear in state/schema.md
-#   C)  schema_version literal `"1.0"` still present (REQ-B-6 invariant)
+#   C)  schema_version literal `"1.0"` still present
 # Expected RED phase: FAIL — state/schema.md does not yet document these fields
 # Expected GREEN phase (post-impl): PASS
 # ===========================================================================
@@ -26,17 +25,17 @@ if [ ! -f "$SCHEMA" ]; then
   exit 1
 fi
 
-# A. dispatch_witness sub-section header (REQ-B-4)
+# A. dispatch_witness sub-section header
 if ! grep -qE '^#### `stages\.\{stage\}\.dispatch_witness`$' "$SCHEMA"; then
   fail "FC-3.A: $SCHEMA missing '#### \`stages.{stage}.dispatch_witness\`' sub-section header"
 fi
 
-# A'. agent_name sub-section header (REQ-B-2 v1.2 expansion)
+# A'. agent_name sub-section header
 if ! grep -qE '^#### `stages\.\{stage\}\.agent_name`$' "$SCHEMA"; then
   fail "FC-3.A-prime-1: $SCHEMA missing '#### \`stages.{stage}.agent_name\`' sub-section header"
 fi
 
-# A". stage_name sub-section header (REQ-B-2 v1.2 expansion)
+# A". stage_name sub-section header
 if ! grep -qE '^#### `stages\.\{stage\}\.stage_name`$' "$SCHEMA"; then
   fail "FC-3.A-prime-2: $SCHEMA missing '#### \`stages.{stage}.stage_name\`' sub-section header"
 fi
@@ -49,12 +48,12 @@ for stage in "${STAGES[@]}"; do
   fi
 done
 
-# C. schema_version still "1.0" (REQ-B-6 stability invariant)
+# C. schema_version still "1.0"
 # Accept either:
 #   `schema_version` ... `"1.0"`
 #   OR the legacy form `"schema_version": "1.0"` in JSON example block.
 if ! grep -qE '`schema_version`.*`"1\.0"`|"schema_version"[[:space:]]*:[[:space:]]*"1\.0"' "$SCHEMA"; then
-  fail "FC-3.C: $SCHEMA schema_version no longer '1.0' (bump is FORBIDDEN per REQ-B-6)"
+  fail "FC-3.C: $SCHEMA schema_version no longer '1.0' (bump is FORBIDDEN)"
 fi
 
 if [ "$FAIL" -eq 0 ]; then

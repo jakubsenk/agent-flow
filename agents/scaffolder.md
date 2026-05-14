@@ -20,7 +20,7 @@ testing setup, linter/formatter configuration, CLAUDE.md Automation Config gener
 ## Process
 
 1. Read the tech stack input:
-   - If a `spec/README.md` file is provided in the context (scaffold v2 mode), read the Tech Stack section from it and use those choices. Stack-selector output is not available in this mode.
+   - If a `spec/README.md` file is provided in the context (spec-first mode), read the Tech Stack section from it and use those choices. Stack-selector output is not available in this mode.
    - If no spec is provided (--no-implement mode or standalone), read the stack selection from the stack-selector agent output. If stack-selector output is missing or malformed, report error to user: 'Missing stack selection — cannot proceed with scaffolding' and exit.
 2. Generate project files in batches (to manage token limits):
 
@@ -129,9 +129,9 @@ testing setup, linter/formatter configuration, CLAUDE.md Automation Config gener
    - [ ] `### Build & Test` — Build command, Test command
 
    **Optional sections (include if applicable):**
-   - [ ] `### E2E Test` — if e2e framework configured; when running in scaffold v2 mode, MUST generate with framework auto-detected from tech stack (e.g., `playwright` for web apps, `supertest` for Node.js APIs, `pytest` for Python APIs)
-   - [ ] `### Retry Limits` — if non-default values needed; when running in scaffold v2 mode, generate with `Spec iterations: 5`
-   - [ ] `### Decomposition` — when running in scaffold v2 mode, generate with scaffold-optimized defaults: `Max subtasks: 5`, `Fail strategy: fail-fast`, `Commit strategy: individual`
+   - [ ] `### E2E Test` — if e2e framework configured; when running in spec-first mode, MUST generate with framework auto-detected from tech stack (e.g., `playwright` for web apps, `supertest` for Node.js APIs, `pytest` for Python APIs)
+   - [ ] `### Retry Limits` — if non-default values needed; when running in spec-first mode, generate with `Spec iterations: 5`
+   - [ ] `### Decomposition` — when running in spec-first mode, generate with scaffold-optimized defaults: `Max subtasks: 5`, `Fail strategy: fail-fast`, `Commit strategy: individual`
    - [ ] `### Feature Workflow` — Feature query, On start set
    - [ ] `### Module Docs` — Path set to `docs/` (always include — Batch 8 generates docs/ARCHITECTURE.md)
 
@@ -197,8 +197,8 @@ testing setup, linter/formatter configuration, CLAUDE.md Automation Config gener
 
 | Section | Source | Required |
 |---------|--------|----------|
-| Tech stack (from `spec/README.md` Tech Stack section in v2 mode; from skill-supplied flags in --no-implement mode) | scaffold skill prompt or spec/ folder | yes |
-| Mode hint (scaffold v2 / --no-implement) | dispatching skill | yes |
+| Tech stack (from `spec/README.md` Tech Stack section in spec-first mode; from skill-supplied flags in --no-implement mode) | scaffold skill prompt or spec/ folder | yes |
+| Mode hint (spec-first / --no-implement) | dispatching skill | yes |
 | Build & Test commands | inferred from stack OR Automation Config (post-generation) | yes |
 
 ### Outputs
@@ -238,7 +238,7 @@ Do NOT attempt to write `tool_uses`, `completed_at`, or `status="completed"` —
 - Target file count: 10-15 files for simple stacks, up to 20 for stacks with database + CI + Docker, up to 23 for web projects with design system, up to 27 for web projects with design system + E2E tests + documentation. Avoid unnecessary boilerplate — every file must serve a purpose.
 - NEVER deviate from language-specific directory conventions (Python: src/{package}/, Node: src/, Go: cmd/ + internal/, etc.)
 - On failure: report which verification step failed and why
-- When running in scaffold v2 mode (spec context provided), MUST generate E2E Test section and Decomposition section in Automation Config
+- When running in spec-first mode (spec context provided), MUST generate E2E Test section and Decomposition section in Automation Config
 - Note: scaffolder runs in the scaffold pipeline which has no issue tracker context. Failures are reported directly to the user, not as issue comments (no Block Comment Template).
 - NEVER generate generic/boilerplate architecture documentation — docs/ARCHITECTURE.md MUST reference actual project file paths, dependencies, and patterns
 - E2E smoke test MUST verify the actual application loads (check page title or main content), not just that Playwright runs

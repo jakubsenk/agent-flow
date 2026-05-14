@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-MODE-MATRIX-006, REQ-MODE-004
+# Verifies: AC-MODE-MATRIX-006
 # Description: implement-feature + --step-mode = per-step prompt after each step
 set -uo pipefail
 

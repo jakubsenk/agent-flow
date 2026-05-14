@@ -142,7 +142,7 @@ If `no_implement = true`: execute legacy flow (scaffolder (with stack flags) →
 
 Each step receives: `MODE`, `GOT_YOLO`, `GOT_STEP_MODE`, all parsed flags and in-memory variables from prior steps.
 
-> **See also:** `/agent-flow:scaffold validate` (the `validate` subcommand) for read-only validation of an existing project (tool contract: `Bash, Read, Glob, Grep` only). Note: the former standalone `scaffold-validate` skill was merged into `/scaffold` as a subcommand in v9.5.0.
+> **See also:** `/agent-flow:scaffold validate` (the `validate` subcommand) for read-only validation of an existing project (tool contract: `Bash, Read, Glob, Grep` only).
 
 ## Resume Detection
 

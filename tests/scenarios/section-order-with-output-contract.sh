@@ -1,6 +1,6 @@
 #!/bin/bash
 # PURPOSE: Validate section ordering for the 17-agent roster, tolerating the
-#          optional ## Output Contract section between ## Process and ## Constraints (REQ-H-036).
+#          optional ## Output Contract section between ## Process and ## Constraints.
 #          Verifies the core Goal -> Expertise -> Process -> Constraints order is preserved, and
 #          if ## Output Contract is present, it sits between Process and Constraints (AC-H-002).
 # AC-H-N covered: AC-H-080, AC-H-081
@@ -82,9 +82,9 @@ for agent in "${AGENTS[@]}"; do
   fi
 done
 
-# Assert stack-selector does not exist (REQ-H-080)
+# Assert stack-selector does not exist
 if [ -f "$REPO_ROOT/agents/stack-selector.md" ]; then
-  fail "agents/stack-selector.md exists — must be deleted per REQ-H-080"
+  fail "agents/stack-selector.md exists — must be deleted"
 fi
 
 [ "$FAIL" -eq 0 ] && echo "PASS: AC-H-080, AC-H-081 — all 17 agents follow Goal -> Expertise -> Process -> [Output Contract] -> Constraints section order"

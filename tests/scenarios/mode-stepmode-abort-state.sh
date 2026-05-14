@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-MODE-006, REQ-MODE-008
+# Verifies: AC-MODE-006
 # Description: --step-mode 'a' input sets state.json outcome=paused, pause_reason=step_mode_abort,
 #   last_completed_step=<current-step>, exit 0
 set -uo pipefail

@@ -71,7 +71,7 @@ ALLOWLIST_BLOCK=$(awk '/<stage_allowlist>/{f=1;next} /<\/stage_allowlist>/{exit}
 # Parser supports both line-per-stage and comma-separated forms.
 ```
 
-**Parser hardening (REQ-REL-4.2 — prose-discipline contract):** After executing the awk extraction
+**Parser hardening (prose-discipline contract):** After executing the awk extraction
 above, validate that `ALLOWLIST_BLOCK` contains at least one `required:` line. If the extracted
 block is empty, contains no `required:` line, or contains no `optional:` line (i.e., the
 `<stage_allowlist>` block was malformed or missing its closing tag), emit the following WARN line

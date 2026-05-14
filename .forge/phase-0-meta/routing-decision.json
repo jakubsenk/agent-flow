@@ -1,9 +1,0 @@
-{
-  "task_type": "migration",
-  "secondary_types": ["refactor"],
-  "action": "full_pipeline",
-  "target_skill": null,
-  "confidence": 0.97,
-  "reasoning": "Comprehensive OSS rebranding migration — rename, version reset, doc rewrite, cleanup — requires full pipeline: research (what exists), spec (acceptance criteria), planning (task decomposition), execution (mechanical changes), verification (completeness check).",
-  "skip_profile": null
-}

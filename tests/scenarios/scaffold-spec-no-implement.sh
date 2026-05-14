@@ -1,6 +1,6 @@
 #!/bin/bash
-# Test: Scaffold v2 --no-implement backwards compatibility
-# Validates: --no-implement produces v3.x behavior (no spec phase, stack-selector used)
+# Test: Scaffold --no-implement mode
+# Validates: --no-implement skips the spec phase (no spec-writer/reviewer, stack-selector used)
 set -e
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -26,7 +26,7 @@ if ! grep -q "stack-selector" "$SCAFFOLD_CMD"; then
 fi
 
 # Verify legacy flow does NOT use spec-writer in the --no-implement path
-# (spec-writer should only appear in v2 mode steps)
+# (spec-writer should only appear in spec-first mode steps)
 # Check that the legacy flow section contains stack-selector but the flow
 # explicitly exits before spec phase
 if ! grep -q "EXIT pipeline" "$SCAFFOLD_CMD"; then
@@ -54,4 +54,4 @@ if ! grep -q "L5b" "$SCAFFOLD_CMD"; then
   exit 1
 fi
 
-echo "PASS: Scaffold v2 --no-implement backwards compatibility verified"
+echo "PASS: Scaffold --no-implement mode — spec phase correctly skipped"

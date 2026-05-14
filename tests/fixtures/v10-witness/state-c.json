@@ -1,5 +1,5 @@
 {
-  "_comment": "FIXTURE: refresh when prompt template changes (REQ-B-2 v1.2). acceptance_gate has MALFORMED dispatch_witness (not 64-char lowercase hex - here a short string 'abc'). check_dispatch_witness MUST return WITNESS_MISMATCH / exit 2 for acceptance_gate.",
+  "_comment": "FIXTURE: refresh when prompt template changes. acceptance_gate has MALFORMED dispatch_witness (not 64-char lowercase hex - here a short string 'abc'). check_dispatch_witness MUST return WITNESS_MISMATCH / exit 2 for acceptance_gate.",
   "schema_version": "1.0",
   "fixture_kind": "witness_mismatch_malformed",
   "stages": {

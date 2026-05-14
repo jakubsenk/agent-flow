@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-MODE-005, REQ-MODE-007
+# Verifies: AC-MODE-005
 # Description: WHEN --step-mode user inputs 's' (Skip remaining gates),
 #   THEN subsequent steps SHALL execute with no further per-step prompts
 #   AND the log SHALL contain "[INFO] step-mode escape: switched to yolo for remaining steps".

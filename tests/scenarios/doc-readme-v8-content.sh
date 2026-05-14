@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-DOC-012, REQ-DOC-012
+# Verifies: AC-DOC-012
 # Description: README.md has "17 agents", "18 skills", and link to migration guide
 # Post-cleanup baseline: skills reduced from 22 to 18.
 set -uo pipefail

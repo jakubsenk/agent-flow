@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # ===========================================================================
 # Test:        v10-core-path-depth-consistency.sh
-# Falsifies:   REQ-B-1, REQ-B-2, REQ-C-2, REQ-C-3, REQ-C-4
 # FC mapped:   FC-B-1, FC-B-2, FC-B-3, FC-B-4, FC-B-5, FC-C-2, FC-C-3
 # Phase:       5 (TDD -- FAIL expected until Phase 7 lands)
 # What it checks:

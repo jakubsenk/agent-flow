@@ -222,15 +222,15 @@ Verdict:
        - Not found or file unreadable → [ADVISORY] "PostToolUse hook not configured — dispatch enforcement is opt-in. See docs/guides/dispatch-enforcement.md to install."
     c. All results in this block are advisory — they NEVER contribute to the FAIL count or change the final verdict.
 
-## Deprecated v6.x config detection
+## Deprecated config detection
 
-After all primary checks complete, scan for v7.0.0 deprecated config sections and emit advisories. These do NOT change the exit code — they're warnings only.
+After all primary checks complete, scan for deprecated config sections and emit advisories. These do NOT change the exit code — they're warnings only.
 
 ```bash
-# Deprecated section detector (v7.0.0)
+# Deprecated section detector
 if grep -q '^### Extra labels' "$CLAUDE_MD" 2>/dev/null; then
   echo "[WARN] Deprecated config section detected: ### Extra labels"
-  echo "       Removed in v7.0.0. Move any labels into ### PR Rules → Labels"
+  echo "       Move any labels into ### PR Rules → Labels"
   echo "       (which fully supports the use case). See CHANGELOG.md."
 fi
 ```

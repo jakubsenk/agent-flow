@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-MODE-MATRIX-002, AC-MODE-002, REQ-MODE-003
+# Verifies: AC-MODE-MATRIX-002, AC-MODE-002
 # Description: fix-bugs + default mode = Acceptance gate triggers when AC >= 3 OR complexity >= M
 set -uo pipefail
 

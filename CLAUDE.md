@@ -78,7 +78,7 @@ Pipeline mode is selected via a flag at invocation time:
 
 With `--no-implement`: `[0-INFRA] → [0-MCP] → STACK-SELECTOR (sonnet) → SCAFFOLDER (sonnet) → Validate → Git init → [push if SC ready]` (skeleton only, no implementation).
 
-In scaffold v2 mode, the specification is saved as a `spec/` folder in the project root (spec/README.md, spec/architecture.md, spec/verification.md, spec/epics/*.md). This folder is the single source of truth for all downstream agents.
+In spec-first mode, the specification is saved as a `spec/` folder in the project root (spec/README.md, spec/architecture.md, spec/verification.md, spec/epics/*.md). This folder is the single source of truth for all downstream agents.
 
 ## Agent Definition Format
 
@@ -299,7 +299,7 @@ Both use `[agent-flow]` prefix for machine-parseable detection by entry-point sk
 
 | Level | Trigger | Examples |
 |-------|---------|---------|
-| MAJOR (X.0.0) | Breaking change in Automation Config contract — new required key, renamed section — OR breaking change in agent output format contract (new/modified structured output sections that Agent Overrides or external tooling may parse) — OR introduction of a mandatory new structured contract section in agent definition files that v8.0.0 agents would fail validation against | New required key in Issue Tracker; new output section in analyst; mandatory `## Output Contract` (v9.0.0) |
+| MAJOR (X.0.0) | Breaking change in Automation Config contract — new required key, renamed section — OR breaking change in agent output format contract (new/modified structured output sections that Agent Overrides or external tooling may parse) — OR introduction of a mandatory new structured contract section in agent definition files that prior-version agents would fail validation against | New required key in Issue Tracker; new output section in analyst; mandatory `## Output Contract` section |
 | MINOR (X.Y.0) | New backward-compatible feature — new optional key, new command/agent | `/version-check`, optional Hooks section |
 | PATCH (X.Y.Z) | Behavior fix without contract change | Agent text fix, command logic fix |
 

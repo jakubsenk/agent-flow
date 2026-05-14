@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-SETUP-001, REQ-SETUP-001
+# Verifies: AC-SETUP-001
 # Description: skills/setup-agents/SKILL.md exists with correct frontmatter name: setup-agents
 # Post-cleanup baseline: skills reduced from 22 to 18.
 set -uo pipefail

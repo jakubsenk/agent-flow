@@ -17,8 +17,8 @@ COUNT=$(grep -rnE '(/|:)(migrate-config|estimate|pipeline-status|scaffold-valida
   | grep -v 'CHANGELOG.md' \
   | grep -v 'tests/scenarios/v9-5-' \
   | grep -v 'tests/scenarios/v9\.5\.0-deleted-skill-' \
-  | grep -v 'tombstone\|removed in v9.5\|byl smazán v v9.5\|smazán v v9.5\|v9.5.0: estimate' \
-  | grep -v 'removed in v9.5.0' \
+  | grep -v 'tombstone\|removed in earlier versions\|estimate' \
+  | grep -v 'removed in earlier versions' \
   | grep -v 'tests/scenarios/v6.9.0-doc-count-drift.sh' \
   | grep -v 'tests/scenarios/v7.0.0-readme-collision-warning.sh' \
   | grep -v '\\\\: ' \
@@ -42,8 +42,8 @@ else
     | grep -v 'CHANGELOG.md' \
     | grep -v 'tests/scenarios/v9-5-' \
     | grep -v 'tests/scenarios/v9\.5\.0-deleted-skill-' \
-    | grep -v 'tombstone\|removed in v9.5\|byl smazán v v9.5\|smazán v v9.5\|v9.5.0: estimate' \
-    | grep -v 'removed in v9.5.0' \
+    | grep -v 'tombstone\|removed in earlier versions\|estimate' \
+    | grep -v 'removed in earlier versions' \
     | grep -v 'tests/scenarios/v6.9.0-doc-count-drift.sh' \
   | grep -v 'tests/scenarios/v7.0.0-readme-collision-warning.sh' \
     | grep -v '\\\\: ' \

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-DOC-011, REQ-DOC-011
+# Verifies: AC-DOC-011
 # Description: examples/customization/ exists with >= 4 required example files
 set -uo pipefail
 

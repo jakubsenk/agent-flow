@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 Publish current work: PR + (conditional) issue tracker state change. Read Automation Config from CLAUDE.md.
 
-As of v7.0.0, `/publish` auto-detects the publishing **mode** from the current branch name and the Automation Config `Source Control → Branch naming` template. There are three success modes (`full-publish`, `pr-only-no-id`, `pr-only-404`) and one failure mode (`FAIL`). No flags. No new config keys. The old `/create-pr` skill was removed; its "PR-only with valid tracker reference" use case is now expressed by renaming the branch to one that does not match the configured `Branch naming` prefix (e.g., `chore/refactor-foo` instead of `fix/PROJ-123-foo`).
+`/publish` auto-detects the publishing **mode** from the current branch name and the Automation Config `Source Control → Branch naming` template. There are three success modes (`full-publish`, `pr-only-no-id`, `pr-only-404`) and one failure mode (`FAIL`). No flags. No new config keys. The "PR-only with valid tracker reference" use case is expressed by renaming the branch to one that does not match the configured `Branch naming` prefix (e.g., `chore/refactor-foo` instead of `fix/PROJ-123-foo`).
 
 > **Operator note (interactive-only):** `/publish is interactive-only` — it requires user confirmation flows in agent prose and may FAIL in environments without an MCP server configured (CI / cron). For headless / batch publishing, use `/agent-flow:autopilot`.
 
@@ -96,7 +96,7 @@ fi
 
 The first match is the `issue_id`. Any trailing characters in `residue` (e.g. `-fix-crash` after `PROJ-123`) are description text and are discarded. If the regex does not match (e.g. residue starts with non-issue-ID-shaped text), set `issue_id = null`.
 
-**Path-traversal defense (defensive — preserved from the v6.8.1 contract).** The canonical regex never matches a dot-only residue by construction, but as a defense-in-depth check, after extraction, if `issue_id` matches `^\.+$` (one-or-more dots only), set `issue_id = null`.
+**Path-traversal defense (defensive).** The canonical regex never matches a dot-only residue by construction, but as a defense-in-depth check, after extraction, if `issue_id` matches `^\.+$` (one-or-more dots only), set `issue_id = null`.
 
 **Coverage by tracker (all 6 supported types):**
 
@@ -207,7 +207,7 @@ Read `Type` from Automation Config → `Issue Tracker` (default: `youtrack`).
 
 You MUST invoke `Task(subagent_type='agent-flow:publisher', model='haiku')`. DO NOT inline-execute. The agent will commit, push, and create the PR.
 
-Context (the `mode` and `issue_id` fields are added in v7.0.0):
+Context:
 
 ```
 Type = {Type from config}. Use MCP server for {Type}.
@@ -233,11 +233,11 @@ curl --proto "=http,https" --max-time 5 --retry 0 -X POST -H "Content-Type: appl
   "{Webhook URL}"
 ```
 
-The `pr-created` event fires in **all non-FAIL modes**. The `issue_id` field is the empty string when `mode in {"pr-only-no-id", "pr-only-404"}` — this is the v6.8.0 forward-compatible payload contract; consumers MUST parse leniently. Failure → warning only, must not stop publish.
+The `pr-created` event fires in **all non-FAIL modes**. The `issue_id` field is the empty string when `mode in {"pr-only-no-id", "pr-only-404"}` — this is the forward-compatible payload contract; consumers MUST parse leniently. Failure → warning only, must not stop publish.
 
 ### Step 8 — Publish Report (publisher agent owns the `Tracker:` row)
 
-The `publisher` agent emits the Publish Report. As of v7.0.0, the agent's report MUST include a `Tracker:` row in **exactly one** of these three forms (defined and enforced in `agents/publisher.md` §82-87 — this skill prose references the contract but does not generate the report):
+The `publisher` agent emits the Publish Report. The agent's report MUST include a `Tracker:` row in **exactly one** of these three forms (defined and enforced in `agents/publisher.md` §82-87 — this skill prose references the contract but does not generate the report):
 
 - `Tracker: Updated → For Review` — emitted when `mode == "full-publish"`
 - `Tracker: Skipped — issue ID '{issue_id}' not found in {tracker_type}` — emitted when `mode == "pr-only-404"`
@@ -273,7 +273,7 @@ Recommendation:
   4. Once the tracker is reachable, re-run `/agent-flow:publish`.
 ```
 
-After emitting this block, EXIT non-zero. (For users coming from v6.x: `/agent-flow:check-setup` is the diagnostic skill; `/agent-flow:setup-mcp` is the configuration wizard — renamed from init in v7.0.0.)
+After emitting this block, EXIT non-zero. (`/agent-flow:check-setup` is the diagnostic skill; `/agent-flow:setup-mcp` is the configuration wizard.)
 
 ### 404 WARN tier (`error_type == "not_found"`)
 

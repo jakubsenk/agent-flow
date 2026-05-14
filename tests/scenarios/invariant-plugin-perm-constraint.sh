@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-INV-PERM-001, REQ-NF-003
+# Verifies: AC-INV-PERM-001
 # Description: No agent file in agents/*.md has hooks:, mcpServers:, or permissionMode:
 #   in its YAML frontmatter block
 # NOTE: REPO_ROOT assumes test file location is tests/scenarios/. Run after Phase 7 has moved files.

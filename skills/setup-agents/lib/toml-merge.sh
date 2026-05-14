@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-# TOML overlay 3-tier merge utility for agent-flow v8.0.0
-#
-# Fulfils: REQ-OVR-001..007, REQ-NF-001, REQ-NF-006
+# TOML overlay 3-tier merge utility for agent-flow
 #
 # Usage (sourcing):
 #   source skills/setup-agents/lib/toml-merge.sh
@@ -44,7 +42,7 @@ _toml_merge_warn() {
 # _require_python3: check python3 availability; emit [ERROR] and return 1 if absent.
 _require_python3() {
     if ! command -v python3 >/dev/null 2>&1; then
-        _toml_merge_error "python3 required for TOML parsing (REQ-NF-006). Install Python 3.11+ and retry."
+        _toml_merge_error "python3 required for TOML parsing. Install Python 3.11+ and retry."
         return 1
     fi
 }
@@ -53,7 +51,7 @@ _require_python3() {
 # parse_toml_overlay
 #
 # Parse a TOML overlay file and output its contents as a JSON string on stdout.
-# Uses python3 tomllib (Python 3.11+ stdlib) per REQ-NF-006 advisory guidance.
+# Uses python3 tomllib (Python 3.11+ stdlib).
 #
 # Arguments:
 #   $1  — absolute or relative path to the .toml file
@@ -119,7 +117,7 @@ PYEOF
 # ---------------------------------------------------------------------------
 # apply_3tier_merge
 #
-# Apply 3-tier merge semantics (REQ-OVR-002) to combine plugin defaults with
+# Apply 3-tier merge semantics to combine plugin defaults with
 # a TOML overlay. Both arguments are JSON objects (as produced by parse_toml_overlay
 # or a plugin-defaults JSON builder).
 #
@@ -200,8 +198,8 @@ PYEOF
 # validate_overlay_keys
 #
 # Validate that all keys in a parsed overlay JSON are in the allowed set for
-# the given agent (REQ-OVR-004). Halts with [ERROR] and returns 1 on first
-# unknown key. [meta] sub-keys are EXEMPT from validation (REQ-OVR-003).
+# the given agent. Halts with [ERROR] and returns 1 on first
+# unknown key. [meta] sub-keys are EXEMPT from validation.
 #
 # Arguments:
 #   $1  — overlay_json     (JSON string, output of parse_toml_overlay)
@@ -350,7 +348,7 @@ PYEOF
 # log_overlay_provenance
 #
 # Emit a provenance log line to .agent-flow/pipeline.log (append mode) and
-# to stderr as [INFO] for visibility (REQ-OVR-007).
+# to stderr as [INFO] for visibility.
 #
 # Format: agent={name} overlay_source={toml|md|none} overlay_path={path}
 #
@@ -395,10 +393,10 @@ log_overlay_provenance() {
 # resolve_overlay
 #
 # High-level helper: resolve overlay type for an agent and apply accordingly.
-# Handles v7 backwards compat (REQ-NF-001, REQ-OVR-005, REQ-OVR-006).
+# Handles backwards compat for legacy .md overlays.
 #
 # Returns 0 on success (overlay applied or none found).
-# Returns 1 on TOML parse/validation error (halts dispatch per REQ-OVR-004).
+# Returns 1 on TOML parse/validation error (halts dispatch).
 #
 # Arguments:
 #   $1  — agent_name        (e.g., "reviewer")
@@ -422,8 +420,8 @@ resolve_overlay() {
     if [ -f "$toml_path" ]; then
         # Primary: .toml overlay
         if [ -f "$md_path" ]; then
-            # Both present: .toml wins; warn about ignored .md (REQ-OVR-005)
-            _toml_merge_warn "Legacy .md overlay ignored; .toml takes precedence (deprecate v9.0.0)"
+            # Both present: .toml wins; warn about ignored .md
+            _toml_merge_warn "Legacy .md overlay ignored; .toml takes precedence"
         fi
 
         # Parse + validate + merge
@@ -439,7 +437,7 @@ resolve_overlay() {
         printf '%s' "$merged_json"
 
     else
-        # No overlay for this agent (REQ-OVR-007 none branch)
+        # No overlay for this agent
         log_overlay_provenance "$agent_name" "none" "(none)"
         OVERLAY_SOURCE="none"
         OVERLAY_PATH="(none)"

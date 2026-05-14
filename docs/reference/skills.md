@@ -378,7 +378,7 @@ TOML overlay syntax and the 3-tier merge contract are documented in `core/overla
 
 **What it does:** Generates a pipeline analytics report covering success rates, per-agent effectiveness, common failure patterns, and trend data. Analyzes `[agent-flow]` comments and PR history to compute metrics. Useful for identifying bottleneck agents and tuning retry limits.
 
-**Pipeline history file:** `.agent-flow/pipeline-history.md` is an append-only run log written after every pipeline completion. It contains metadata only — fields: `run_id`, `date`, `pipeline`, `outcome`, `agents_touched`, `block_agent`, `block_step`, `block_reason` (sanitized via 18-pattern credential redaction; v6.9.1 added bare-keyword variable redaction). The fixer agent reads the last 5 entries and the reviewer agent reads the last 10 entries at Step 1 to inform their decisions. Full contract: see `core/post-publish-hook.md` Section 5. For `.gitignore` guidance see [docs/guides/installation.md § Pipeline State and .gitignore](../guides/installation.md#4-pipeline-state-and-gitignore).
+**Pipeline history file:** `.agent-flow/pipeline-history.md` is an append-only run log written after every pipeline completion. It contains metadata only — fields: `run_id`, `date`, `pipeline`, `outcome`, `agents_touched`, `block_agent`, `block_step`, `block_reason` (sanitized via 18-pattern credential redaction including bare-keyword variables). The fixer agent reads the last 5 entries and the reviewer agent reads the last 10 entries at Step 1 to inform their decisions. Full contract: see `core/post-publish-hook.md` Section 5. For `.gitignore` guidance see [docs/guides/installation.md § Pipeline State and .gitignore](../guides/installation.md#4-pipeline-state-and-gitignore).
 
 **Example:**
 

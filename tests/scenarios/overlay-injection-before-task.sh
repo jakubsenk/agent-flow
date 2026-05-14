@@ -6,7 +6,7 @@
 # the canonical delegation phrase appears at a line number STRICTLY BEFORE the
 # first Task( call.
 #
-# This is the P0 PR gate per REQ-V902-020 — non-skippable, no early-return guards.
+# This is the P0 PR gate — non-skippable, no early-return guards.
 #
 # NOTE: Run from tests/scenarios/ after Phase 7 staging.
 

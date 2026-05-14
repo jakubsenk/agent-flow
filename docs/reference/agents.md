@@ -647,7 +647,7 @@ The publisher is a mechanical agent that follows a rigid procedure: push the bra
 | Style | Efficient, convention-following, minimal |
 | Type | Execution |
 | Pipeline(s) | Scaffold |
-| Inputs | Tech Stack from spec/README.md (scaffold v2 mode) or skill-supplied stack flags (--no-implement mode) |
+| Inputs | Tech Stack from spec/README.md (spec-first scaffold mode) or skill-supplied stack flags (--no-implement mode) |
 | Outputs | Scaffold report (stack, files generated, Automation Config status, verification results) |
 | Constraints | Never generates business logic. Always pins dependency versions. Must include at least 1 passing smoke test. All required Automation Config sections must be present. Generated skeleton must build, pass tests, and pass linter. |
 
@@ -694,7 +694,7 @@ The publisher is a mechanical agent that follows a rigid procedure: push the bra
 | Outputs | Spec writer report (mode, input source, files generated, tech stack, acceptance criteria count) |
 | Constraints | Never skips REQUIRED sections. Never writes vague acceptance criteria. Max 7 epics. In interactive mode: max 10 questions, one at a time. Must generate rationale for every tech stack choice. |
 
-The spec-writer creates the complete `spec/` folder that drives all downstream agents in the scaffold v2 pipeline. Its output quality is critical — errors in the specification cascade to architecture, implementation, and testing.
+The spec-writer creates the complete `spec/` folder that drives all downstream agents in the spec-first scaffold pipeline. Its output quality is critical — errors in the specification cascade to architecture, implementation, and testing.
 
 **Example output:**
 

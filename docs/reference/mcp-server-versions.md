@@ -35,7 +35,7 @@ Some vendor-official endpoints support only Cloud. For on-prem deployments, the 
 | Tracker | Cloud (official) | On-prem fallback |
 |---------|------------------|------------------|
 | github | `https://api.githubcopilot.com/mcp/` | `github/github-mcp-server` Go binary download from GitHub releases (alternative for non-Copilot PAT users) |
-| jira | `https://mcp.atlassian.com/v1/mcp` | NOT SHIPPED in v9.6.0. If Jira Server / Data Center support is needed, file an issue — `sooperset/mcp-atlassian` (5,133 stars, MIT, Python+uvx) is the candidate. |
+| jira | `https://mcp.atlassian.com/v1/mcp` | NOT SHIPPED. If Jira Server / Data Center support is needed, file an issue — `sooperset/mcp-atlassian` (5,133 stars, MIT, Python+uvx) is the candidate. |
 | youtrack | `https://{instance}.youtrack.cloud/mcp` | `npx -y @vitalyostanin/youtrack-mcp@latest` for YouTrack Server <2026.1 |
 | linear | `https://mcp.linear.app/mcp` | N/A (Linear is cloud-only SaaS; no on-prem version exists) |
 | atlassian-confluence-compass | (covered by official Atlassian endpoint) | (same as jira) |
@@ -55,7 +55,7 @@ Some vendor-official endpoints support only Cloud. For on-prem deployments, the 
 
 ### Hard deadlines
 
-- **2026-06-30 — Atlassian `/sse` EOL.** Atlassian official MCP server's `/sse` endpoint is deprecated and will be removed on this date. Plugin already uses `/mcp` (Streamable HTTP) per v9.6.0; no action needed unless any user has manually configured `/sse` in their `.mcp.json` (CHANGELOG migration note flags this).
+- **2026-06-30 — Atlassian `/sse` EOL.** Atlassian official MCP server's `/sse` endpoint is deprecated and will be removed on this date. Plugin already uses `/mcp` (Streamable HTTP); no action needed unless any user has manually configured `/sse` in their `.mcp.json` (CHANGELOG migration note flags this).
 
 ### What "audit" means
 
@@ -96,24 +96,24 @@ All 5 vendor-official endpoints (`api.githubcopilot.com/mcp/`, `mcp.atlassian.co
 
 Atlassian's MCP server originally exposed both `/sse` and `/mcp` endpoints. As of 2026-04-XX (per Atlassian docs), `/sse` is deprecated with EOL on **2026-06-30**.
 
-agent-flow v9.6.0 ships templates using `/mcp` (Streamable HTTP). Users who manually configured `.mcp.json` against `/sse` before v9.6.0 must migrate to `/mcp`. CHANGELOG v9.6.0 entry contains migration callout.
+agent-flow ships templates using `/mcp` (Streamable HTTP). Users who previously configured `.mcp.json` against `/sse` must migrate to `/mcp`. CHANGELOG entry contains migration callout.
 
 ---
 
 ## Known limitations (acknowledged for future releases)
 
-These are deliberate v9.6.0 scope exclusions, tracked here to avoid loss:
+These are deliberate scope exclusions, tracked here to avoid loss:
 
-1. **uvx hash verification** — `uvx --from mcp-redmine==2026.01.13.152335 mcp-redmine` pins to the version string but does not pin to a SHA256 hash of the package contents. PyPI is generally trusted, but a sophisticated supply-chain attack on PyPI could substitute a malicious package at the same version. Adding hash-pinning support requires choosing a hash mechanism (PEP 458, sigstore, or `pip --require-hashes`) and updating the install pattern. Tracked for v9.7.0+ research.
+1. **uvx hash verification** — `uvx --from mcp-redmine==2026.01.13.152335 mcp-redmine` pins to the version string but does not pin to a SHA256 hash of the package contents. PyPI is generally trusted, but a sophisticated supply-chain attack on PyPI could substitute a malicious package at the same version. Adding hash-pinning support requires choosing a hash mechanism (PEP 458, sigstore, or `pip --require-hashes`) and updating the install pattern. Tracked for future research.
 
-2. **Automated cadence enforcement** — The 90-day audit cadence is documented (above) but not enforced by CI. If the 2026-08-09 next-audit date passes without action, no signal fires. Possible mechanisms: (a) GitHub Action that fails the build if `mcp-server-versions.md`'s "Last verified" field is older than 90 days; (b) scheduled runner that opens an issue. Tracked for v9.7.0+ implementation.
+2. **Automated cadence enforcement** — The 90-day audit cadence is documented (above) but not enforced by CI. If the 2026-08-09 next-audit date passes without action, no signal fires. Possible mechanisms: (a) GitHub Action that fails the build if `mcp-server-versions.md`'s "Last verified" field is older than 90 days; (b) scheduled runner that opens an issue. Tracked for future implementation.
 
-3. **MCP protocol auto-detection** — Currently each tracker entry hardcodes `2025-06-18` as the supported protocol. A future enhancement could probe each endpoint's MCP `initialize` handshake to discover actual protocol version, surfacing drift. Tracked for v9.7.0+ if drift becomes operational concern.
+3. **MCP protocol auto-detection** — Currently each tracker entry hardcodes `2025-06-18` as the supported protocol. A future enhancement could probe each endpoint's MCP `initialize` handshake to discover actual protocol version, surfacing drift. Tracked for future work if drift becomes operational concern.
 
-These items are NOT shipped in v9.6.0 because each requires either new infrastructure (CI workflows) or upstream research (hash mechanism choice). They are surfaced here to ensure they are not forgotten.
+These items are not currently shipped because each requires either new infrastructure (CI workflows) or upstream research (hash mechanism choice). They are surfaced here to ensure they are not forgotten.
 
 ---
 
 ## Change log for this page
 
-- **2026-05-09 (v9.6.0):** Initial creation. 5 vendor-official endpoints documented + 1 community Redmine pin + codegraph (user-internal). Audit cadence established with per-row Next-Audit dates. Known limitations section added covering uvx hash verification, automated cadence enforcement, and MCP protocol auto-detection (all deferred to v9.7.0+).
+- **2026-05-09:** Initial creation. 5 vendor-official endpoints documented + 1 community Redmine pin + codegraph (user-internal). Audit cadence established with per-row Next-Audit dates. Known limitations section added covering uvx hash verification, automated cadence enforcement, and MCP protocol auto-detection (all deferred to future releases).

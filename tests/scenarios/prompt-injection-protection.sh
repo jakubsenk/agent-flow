@@ -67,7 +67,7 @@ done
 
 # AC-T3-7-1: no HTML-comment wrapper present
 if grep -rnE '<!-- external-input-boundary' "$REPO_ROOT/agents" "$REPO_ROOT/core" 2>/dev/null | grep -q .; then
-  fail "HTML-comment wrapper convention detected (forbidden per REQ-T3-7)"
+  fail "HTML-comment wrapper convention detected (forbidden)"
 fi
 
 # AC-T3-10-3: negative control — synthetic fixture without canonical bullet must fail

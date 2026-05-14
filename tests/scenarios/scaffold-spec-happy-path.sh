@@ -1,6 +1,6 @@
 #!/bin/bash
-# Test: Scaffold v2 full pipeline happy path
-# Validates: spec-writer/spec-reviewer agents exist, scaffold command supports v2 pipeline,
+# Test: Scaffold spec-first full pipeline happy path
+# Validates: spec-writer/spec-reviewer agents exist, scaffold command supports spec-first pipeline,
 #            all 10 steps are defined, mode selection is present
 set -e
 
@@ -149,4 +149,4 @@ if grep -q "Step 10" "$SCAFFOLD_CMD"; then
   exit 1
 fi
 
-echo "PASS: Scaffold v2 happy path — all pipeline steps and agents present"
+echo "PASS: Scaffold spec-first happy path — all pipeline steps and agents present"

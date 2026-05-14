@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-SETUP-008, REQ-SETUP-006
+# Verifies: AC-SETUP-008
 # Description: /setup-agents writes ONLY to customization/ directory; no file
 #   outside customization/ is modified. Uses sha256sum baseline of all files
 #   outside customization/ before and after simulated /setup-agents run.

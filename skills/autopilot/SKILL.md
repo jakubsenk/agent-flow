@@ -275,11 +275,11 @@ parse_pause_timeout() {
   local n unit unit_lower seconds
   # Strip surrounding whitespace.
   raw="$(printf '%s' "$raw" | sed -E 's/^[[:space:]]+|[[:space:]]+$//g')"
-  # Match `<N> hours` or `<N> days` (positive integer N); case-insensitive unit (v6.9.1).
+  # Match `<N> hours` or `<N> days` (positive integer N); case-insensitive unit.
   if [[ "$raw" =~ ^([0-9]+)[[:space:]]+([Hh][Oo][Uu][Rr][Ss]?|[Dd][Aa][Yy][Ss]?)$ ]]; then
     n="${BASH_REMATCH[1]}"
     unit="${BASH_REMATCH[2]}"
-    # Downcase the unit token for case-insensitive matching (v6.9.1 — handles "30 Days", "2 Hours", etc.)
+    # Downcase the unit token for case-insensitive matching (handles "30 Days", "2 Hours", etc.)
     unit_lower=$(printf '%s' "$unit" | tr '[:upper:]' '[:lower:]')
     case "$unit_lower" in
       hour|hours) seconds=$(( n * 3600 )) ;;
@@ -321,7 +321,7 @@ if [ -f "$state_file" ]; then
   current_status=$(jq -r '.status // empty' "$state_file" 2>/dev/null)
   if [ "$current_status" = "paused" ]; then
     asked_at=$(jq -r '.clarification.asked_at // empty' "$state_file" 2>/dev/null)
-    # Cross-platform ISO-8601 → epoch conversion (v6.9.1: added python3 fallback for BSD/macOS).
+    # Cross-platform ISO-8601 → epoch conversion (uses python3 fallback for BSD/macOS).
     # `date -d` is GNU-only; BSD/macOS `date -d` returns 0, causing premature auto-abort on first scan.
     # Strategy: try python3 first (universally available on modern systems), fall back gracefully.
     _iso_to_epoch_crossplatform() {
@@ -386,7 +386,7 @@ claude -p "Run ${TARGET_SKILL} ${ISSUE_ID}" \
 child_exit=$?
 ```
 
-Rationale: per-issue child-session isolation also provides crash containment (a crashed child cannot poison the parent autopilot session) and mirrors the cron-invocation pattern exactly. Token cost: ~2-5k per child-session startup — acceptable given the isolation benefits. Re-evaluate restoring Skill-tool dispatch if Anthropic ships a selective-invocation whitelist primitive (tracked as v6.10.0 watchlist item).
+Rationale: per-issue child-session isolation also provides crash containment (a crashed child cannot poison the parent autopilot session) and mirrors the cron-invocation pattern exactly. Token cost: ~2-5k per child-session startup — acceptable given the isolation benefits. Re-evaluate restoring Skill-tool dispatch if Anthropic ships a selective-invocation whitelist primitive.
 
 3. Capture per-issue outcome from `child_exit` and the child's `state.json`:
 
@@ -438,7 +438,7 @@ After all issues are processed (or after an `On error: stop` break):
    **Totals:** {N_bugs} bugs, {N_features} features, {N_success} success, {N_block} blocked, {N_error} errored. Wall-clock: {total_duration}s. Tokens (measured when available): {total_tokens}.
    ```
 
-   `Tokens` column is read from the per-issue `state.json.pipeline.total_tokens` after each child dispatch completes (see Real-Time Cost Visibility in the v6.8.0 roadmap). If absent (child exited without writing a completed pipeline accumulator), the column reads `—`.
+   `Tokens` column is read from the per-issue `state.json.pipeline.total_tokens` after each child dispatch completes. If absent (child exited without writing a completed pipeline accumulator), the column reads `—`.
 2. Append the run summary to `$LOG_FILE` (the `Log file` config key, default `.agent-flow/autopilot.log`). One line per Autopilot invocation in the format:
    ```
    {ISO8601}|{run_id}|{issues_processed}|{n_success}|{n_block}|{n_error}|{total_tokens}|{total_duration_ms}
@@ -475,9 +475,9 @@ Multi-host deployments against the SAME tracker are NOT coordinated by Autopilot
 
 Autopilot emits `[autopilot][INFO] Running on host {hostname}` on every successful lock acquisition (Step 3). Log aggregators can correlate per-host autopilot activity; however, the plugin does NOT automatically detect cross-host contention. See `docs/guides/autopilot.md#single-host-operation` for onboarding and troubleshooting.
 
-Tracker-level distributed lock is NOT_IN_SCOPE for v6.8.0 and is deferred to v6.9.0+.
+Tracker-level distributed lock is NOT_IN_SCOPE for the current release.
 
-**Multi-host coordination via disjoint queries is the v6.9.0-supported pattern.** Distributed lock (e.g., flock advisory lock, external coordinator like etcd/redis/consul) is deferred to v6.9.1 pending operator demand and a portability test matrix (local FS + NFS + SMB + S3FUSE tiers). Half-implemented locks are MORE dangerous than disjoint queries — they create silent duplicate-execution failure modes.
+**Multi-host coordination via disjoint queries is the supported pattern.** Distributed lock (e.g., flock advisory lock, external coordinator like etcd/redis/consul) is deferred pending operator demand and a portability test matrix (local FS + NFS + SMB + S3FUSE tiers). Half-implemented locks are MORE dangerous than disjoint queries — they create silent duplicate-execution failure modes.
 
 ## Dry-Run Example
 
@@ -507,7 +507,7 @@ Dry-run is safe to schedule in parallel with a live Autopilot run because it tou
 - **Audit `Bug query` and `Feature query`** — issue content (title, description, comments) is fed to opus-powered fixer agents that then run bash commands and write files. A poisoned issue in the tracker can influence agent behavior under `--dangerously-skip-permissions`.
 - Restrict network egress from the Autopilot host if the tracker is internal; this limits exfiltration risk from compromised issue content.
 
-SSRF defenses for the `Webhook URL` config key (e.g., blocking `file://`/`gopher://` schemes) are deferred to v6.9.0. See `docs/reference/config.md` Notifications section for current operator-trust guidance.
+SSRF defenses for the `Webhook URL` config key (e.g., blocking `file://`/`gopher://` schemes) are deferred to a future release. See `docs/reference/config.md` Notifications section for current operator-trust guidance.
 
 ## Rules
 

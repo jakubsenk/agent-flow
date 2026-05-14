@@ -1,15 +1,14 @@
 # Hooks Reference
 
-<!-- check-tags: extensib|extend|future|v6.10 -->
+<!-- check-tags: extensib|extend|future -->
 
-**Added:** v6.10.0
 **Component:** `hooks/validate-dispatch.sh`
 
 ---
 
 ## Overview
 
-agent-flow ships one PostToolUse hook in v6.10.0: `hooks/validate-dispatch.sh`.
+agent-flow ships one PostToolUse hook: `hooks/validate-dispatch.sh`.
 It performs an advisory dispatch-enforcement audit. See
 `docs/guides/dispatch-enforcement.md` for installation and operator guidance.
 
@@ -66,8 +65,8 @@ detects this and notes it in the audit log.
 | **2** | Non-blocking error. **CANNOT block** — tool already executed. Same handling as exit 1. |
 | **Other** | Non-blocking error. Same handling as exit 1. |
 
-**v6.10.0 advisory mode:** `hooks/validate-dispatch.sh` always exits 0.
-PostToolUse hooks cannot enforce blocking regardless. Future versions (v6.11.0+)
+**Advisory mode:** `hooks/validate-dispatch.sh` always exits 0.
+PostToolUse hooks cannot enforce blocking regardless. Future versions
 may graduate to exit 2 to signal advisory violations back to Claude via
 stdout decision control output, but this remains non-blocking at the tool level.
 
@@ -85,13 +84,13 @@ triage  code_analysis  fixer_reviewer  test  publisher
 
 ## `dispatched_at` field
 
-Added in v6.10.0 as an optional additive field on every stage object in
-`state.json`. See `state/schema.md` "Stage metadata (additive, v6.10.0+)"
+An optional additive field on every stage object in
+`state.json`. See `state/schema.md` "Stage metadata (additive)"
 for the full field specification.
 
 Pipeline orchestrators write `dispatched_at` immediately before Task tool
 dispatch for each stage. Its presence indicates the stage went through the
-v6.10.0+ dispatch path.
+current dispatch path.
 
 ---
 
@@ -118,7 +117,7 @@ Example:
 `MISSING` — `dispatched_at` absent (advisory; pipeline continues).
 
 Future log readers parse via: `awk '{print $1, $2, $3}'`. This three-field
-format is a stable contract — any JSON promotion in v6.11.0+ will be an
+format is a stable contract — any future JSON promotion will be an
 additive adapter, not a format replacement.
 
 ---
@@ -151,9 +150,9 @@ See `docs/guides/dispatch-enforcement.md` for full installation instructions.
 
 ## Extensibility
 
-v6.10.0 ships one hook. Future versions may extend this directory with
+agent-flow ships one hook. Future versions may extend this directory with
 additional hook scripts (e.g., `hooks/audit-tool-use.sh`, `hooks/rate-limit.sh`).
 Each hook will be independently opt-in with its own installation stanza.
 
-v6.11.0 roadmap: cross-run audit aggregation for autopilot dispatch parity
+Roadmap: cross-run audit aggregation for autopilot dispatch parity
 (see `docs/guides/dispatch-enforcement.md` "Autopilot limitation" section).

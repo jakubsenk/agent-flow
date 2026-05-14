@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 # ===========================================================================
 # Test:        v10-terminal-report-witness-surface.sh
-# Falsifies:   REQ-D-1, REQ-D-2, REQ-D-3, REQ-D-4, REQ-D-5
 # FC mapped:   FC-5 (terminal report surfaces WITNESS_MISSING + per-skill allow-list)
 # What it checks:
 #   A) skills/fix-bugs/SKILL.md contains <stage_allowlist> ... </stage_allowlist>
-#      block with the 6 REQUIRED stages (REQ-D-5).
+#      block with the 6 REQUIRED stages.
 #   A') skills/implement-feature/SKILL.md contains <stage_allowlist> with 4 REQUIRED
 #       stages AND must NOT mention triage/reproduce_browser/e2e_test/browser_verification
 #       (BLOCKER-2 alarm-fatigue suppression).
@@ -38,7 +37,7 @@ if [ ! -f "$FB_SKILL" ]; then
   fail "FC-5.A.file: $FB_SKILL missing"
 else
   if ! grep -q '<stage_allowlist>' "$FB_SKILL"; then
-    fail "FC-5.A0: $FB_SKILL missing '<stage_allowlist>' opening tag (REQ-D-5)"
+    fail "FC-5.A0: $FB_SKILL missing '<stage_allowlist>' opening tag"
   fi
   if ! grep -q '</stage_allowlist>' "$FB_SKILL"; then
     fail "FC-5.A0b: $FB_SKILL missing '</stage_allowlist>' closing tag"
@@ -59,7 +58,7 @@ if [ ! -f "$IF_SKILL" ]; then
   fail "FC-5.Aif.file: $IF_SKILL missing"
 else
   if ! grep -q '<stage_allowlist>' "$IF_SKILL"; then
-    fail "FC-5.Aif0: $IF_SKILL missing '<stage_allowlist>' opening tag (REQ-D-5)"
+    fail "FC-5.Aif0: $IF_SKILL missing '<stage_allowlist>' opening tag"
   fi
   IF_BLOCK=$(awk '/<stage_allowlist>/{f=1;next} /<\/stage_allowlist>/{exit} f' "$IF_SKILL")
   for s in code_analysis fixer_reviewer test publisher; do
@@ -70,7 +69,7 @@ else
   # NEGATIVE check (BLOCKER-2): must NOT contain these 4 stages
   for forbidden in triage reproduce_browser e2e_test browser_verification; do
     if printf '%s' "$IF_BLOCK" | grep -qE "(^|[,[:space:]:])${forbidden}([,[:space:]]|$)"; then
-      fail "FC-5.Aif2: $IF_SKILL <stage_allowlist> MUST NOT include '${forbidden}' (suppressed per REQ-D-5 BLOCKER-2 fix)"
+      fail "FC-5.Aif2: $IF_SKILL <stage_allowlist> MUST NOT include '${forbidden}' (suppressed BLOCKER-2 fix)"
     fi
   done
 fi
@@ -88,7 +87,7 @@ else
     fail "FC-5.B2: $FB_STEP does not read 'dispatch-audit.log'"
   fi
   if ! grep -q 'stage_allowlist' "$FB_STEP"; then
-    fail "FC-5.B3: $FB_STEP does not parse 'stage_allowlist' from parent SKILL.md (REQ-D-5)"
+    fail "FC-5.B3: $FB_STEP does not parse 'stage_allowlist' from parent SKILL.md"
   fi
 fi
 
@@ -105,7 +104,7 @@ else
     fail "FC-5.C2: $IF_STEP does not read 'dispatch-audit.log'"
   fi
   if ! grep -q 'stage_allowlist' "$IF_STEP"; then
-    fail "FC-5.C3: $IF_STEP does not parse 'stage_allowlist' from parent SKILL.md (REQ-D-5)"
+    fail "FC-5.C3: $IF_STEP does not parse 'stage_allowlist' from parent SKILL.md"
   fi
 fi
 

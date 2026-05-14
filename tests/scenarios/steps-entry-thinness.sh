@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-STEPS-001, REQ-STEPS-001
+# Verifies: AC-STEPS-001
 # Description: Entry SKILL.md for fix-bugs, implement-feature, scaffold ≤ 120 lines each
 set -uo pipefail
 

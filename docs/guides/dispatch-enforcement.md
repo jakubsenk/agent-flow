@@ -3,7 +3,6 @@
 <!-- check-tags: what it does:validates|audits|tracks|dispatch 3-layer|three.layer|Layer 1|Layer 2 installation|install troubleshoot|debug|diagnose advisory|exit 0|non-blocking Autopilot limitation|limitation Autopilot -->
 
 **Component:** `hooks/validate-dispatch.sh`
-**Added:** v6.10.0
 **Type:** Operator opt-in (NOT auto-installed)
 
 ---
@@ -123,8 +122,8 @@ When autopilot dispatches pipeline subprocesses via
 `claude -p "Run /agent-flow:fix-bugs ..." --dangerously-skip-permissions`,
 PostToolUse hooks DO fire inside those subprocesses. However, each subprocess
 writes to its own session's audit log, and **cross-run audit aggregation** (merging
-per-subprocess logs into a single autopilot-session report) is deferred to
-v6.10.1 as the roadmap item "Autopilot dispatch audit parity".
+per-subprocess logs into a single autopilot-session report) is on the roadmap
+as "Autopilot dispatch audit parity".
 
 The current advisory behavior is:
 - Each autopilot-spawned subprocess logs independently.

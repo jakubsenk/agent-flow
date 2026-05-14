@@ -1,5 +1,5 @@
 #!/bin/bash
-# Test: Scaffold v2 mutually exclusive flag validation
+# Test: Scaffold mutually exclusive flag validation
 # Validates: error messages for conflicting flags are defined in scaffold command
 set -e
 
@@ -35,4 +35,4 @@ for flag in "lang" "framework" "db" "ci"; do
   fi
 done
 
-echo "PASS: Scaffold v2 input conflict validation verified"
+echo "PASS: Scaffold input conflict validation verified"

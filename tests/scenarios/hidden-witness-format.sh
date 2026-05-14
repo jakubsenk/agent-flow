@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 # ===========================================================================
 # Test:        v10-hidden-witness-format.sh (HIDDEN)
-# Falsifies:   REQ-B-2 (alternate angle — format + stability)
 # What it checks:
 #   1) The compute_dispatch_witness function in core/lib/stage-invariant.sh:
 #       a) Emits a value matching ^[0-9a-f]{64}$ (sha256 hex, 64 lowercase chars).
 #       b) Is invokable as a function — sourced and called without side effects.
 #   2) Witness stability under prompt-head extraction:
 #       - The function defines a 128-byte truncation step that operates on
-#         the input prompt template BEFORE variable expansion (per REQ-B-2).
+#         the input prompt template BEFORE variable expansion.
 #       - We assert by grep that the implementation references "128" near
 #         "prompt" within ≤5 lines — a structural witness, not a runtime one,
 #         because we cannot exercise the full path without fixtures.
@@ -80,14 +79,14 @@ if ! awk '
   }
   END { exit (found ? 0 : 1) }
 ' "$LIB"; then
-  fail "hidden-witness-format.head128: $LIB does not reference '128' within 8 lines of 'prompt' (REQ-B-2 prompt_head_128)"
+  fail "hidden-witness-format.head128: $LIB does not reference '128' within 8 lines of 'prompt'"
 fi
 
 # 3) Negative grep — the witness path must NOT directly expand Tier-1 vars.
 # Forbidden literals in the witness CANONICAL path:
 for forbidden in '\${ISSUE_ID}' '\${BRANCH_NAME}' '\${TICKET_ID}'; do
   if grep -qE "$forbidden" "$LIB"; then
-    fail "hidden-witness-format.no-tier1: $LIB references ${forbidden} (witness must hash UN-EXPANDED template per REQ-B-2)"
+    fail "hidden-witness-format.no-tier1: $LIB references ${forbidden} (witness must hash UN-EXPANDED template)"
   fi
 done
 

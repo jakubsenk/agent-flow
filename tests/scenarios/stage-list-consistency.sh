@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # ===========================================================================
 # Test:        v10-stage-list-consistency.sh
-# Falsifies:   REQ-REL-1.1, REQ-REL-1.2, REQ-REL-1.3, REQ-REL-1.4,
-#              REQ-REL-1.5, REQ-REL-1.6
+# Falsifies:,
 # FC mapped:   FC-REL-1 (a/b/c/d/e)
 # What it checks:
 #   Parses canonical stage names from 3 authoritative sources and asserts parity:

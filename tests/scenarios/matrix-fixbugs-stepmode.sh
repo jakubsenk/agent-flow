@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-MODE-MATRIX-003, REQ-MODE-004
+# Verifies: AC-MODE-MATRIX-003
 # Description: fix-bugs + --step-mode = per-step prompt after each step; c/s/a behavior
 set -uo pipefail
 

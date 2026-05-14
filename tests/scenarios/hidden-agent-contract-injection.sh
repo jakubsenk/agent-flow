@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # ===========================================================================
 # Test:        v10-hidden-agent-contract-injection.sh (HIDDEN)
-# Falsifies:   REQ-C-1 (alternate angle — section quality + sizing)
 # What it checks (for a deterministic 3-agent sample, picking files that span
 # the role spectrum: fixer (execution), reviewer (read-only), publisher (haiku)):
 #   1) The '## Step Completion Invariants' section, after extraction, has
@@ -17,7 +16,7 @@
 # Falsification angle this catches that the visible test does not:
 #   - Section present but is a one-liner stub.
 #   - Section present but is bullet-only (no directive prose).
-#   - Section present but missing the agent-stage binding mentioned in REQ-C-1
+#   - Section present but missing the agent-stage binding mentioned
 #     per-agent stage-name mapping table.
 # Expected RED phase: FAIL — section does not yet exist on any agent.
 # Expected GREEN phase: PASS.
@@ -88,7 +87,7 @@ for pair in "${SAMPLES[@]}"; do
   # 3) Agent stage-name binding present.
   # Accept backticked form `stage_name` OR plain literal in the section body.
   if ! printf '%s' "$section" | grep -qE "\`${expected_stage}\`|(^| )${expected_stage}( |$|,|\.|:)"; then
-    fail "hidden-injection.stage-binding: $agent_base section missing stage-name binding '${expected_stage}' (REQ-C-1 mapping table)"
+    fail "hidden-injection.stage-binding: $agent_base section missing stage-name binding '${expected_stage}'"
   fi
 done
 

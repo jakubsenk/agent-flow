@@ -311,7 +311,7 @@ any_key        = "any value"       # arbitrary; NOT subject to unknown-key valid
 Keys in `[meta]` are **NOT consumed** by the plugin dispatch logic. They are intended solely
 for project-side annotations (tracking, cost attribution, tooling integrations).
 
-**`[meta]` is EXEMPT from unknown-key rejection** (REQ-OVR-003): while all other
+**`[meta]` is EXEMPT from unknown-key rejection**: while all other
 top-level keys and keys inside `[limits]`, `[[process_additions]]`, `[[constraints]]` are subject to
 strict-mode unknown-key validation, sub-keys inside `[meta]` are NOT subject to unknown-key
 rejection and may have any names. Meta sub-keys accept arbitrary values (strings, integers,
@@ -365,7 +365,7 @@ Example: a project accidentally writes `max_iterations_count` instead of `max_it
 
 Dispatch is aborted with exit code 1.
 
-### 6.3 `.md` + `.toml` Coexistence (REQ-OVR-005)
+### 6.3 `.md` + `.toml` Coexistence
 
 If **both** files exist for the same agent (`customization/{agent}.md` AND `customization/{agent}.toml`):
 - The `.toml` file takes **precedence** (primary format)

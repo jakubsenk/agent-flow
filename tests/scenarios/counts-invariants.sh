@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # ===========================================================================
 # Test:        v10-counts-invariants.sh
-# Falsifies:   REQ-X-COUNTS
 # FC mapped:   FC-7 (5 count invariants)
 # What it checks:
 #   1) skills/ direct-child dirs == 18
@@ -9,7 +8,7 @@
 #   3) agents/*.md == 17
 #   4) docs/reference/*.md == 11
 #   5) Automation Config H3 sub-section count == 18.
-#      Spec REQ-X-COUNTS says "sections under `## Automation Config` in CLAUDE.md
+#      Spec says "sections under `## Automation Config` in CLAUDE.md
 #      AND docs/reference/automation-config.md (must MATCH)". This release adds
 #      `## Automation Config` headings to BOTH; the assertion accepts either file
 #      so long as one of them yields exactly 18 H3 sub-sections AND the other

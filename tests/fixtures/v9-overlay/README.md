@@ -6,7 +6,7 @@ Fixture directory for the 3 replacement overlay runtime coverage scenarios added
 
 ```
 v9-overlay/
-├── README.md           — this file (REQ-V902-016)
+├── README.md           — this file
 ├── toml/
 │   └── analyst.toml   — R1: TOML overlay payload (triggers OVERLAY_SOURCE="toml")
 ├── none/
@@ -23,13 +23,10 @@ v9-overlay/
 
 Each fixture scenario drives `resolve_overlay()` in `skills/setup-agents/lib/toml-merge.sh` to produce a specific `OVERLAY_SOURCE` value. The `expected/*.log` files contain the exact provenance line emitted by `log_overlay_provenance()`.
 
-These fixtures replace the v9.1.0 overlay tests that were deleted during plugin cleanup (commit 90c2aa3).
+## Scenarios
 
-## REQ reference
-
-- REQ-V902-010: Replace 3 deleted overlay-source runtime coverage scenarios
-- REQ-V902-012: TOML fixture (R1 input)
-- REQ-V902-013: empty-dir fixture (R2 input)
-- REQ-V902-014: md-rejected fixture (R3 input)
-- REQ-V902-015: expected provenance lines
-- REQ-V902-016: this README
+- Replace 3 deleted overlay-source runtime coverage scenarios
+- TOML fixture (R1 input)
+- empty-dir fixture (R2 input)
+- md-rejected fixture (R3 input)
+- expected provenance lines

@@ -42,7 +42,7 @@ Coding standards enforcement, naming conventions, documentation requirements, re
 
 Invariant fields checked: `dispatched_at`, `dispatch_witness`, `status`, `stage_name`, `agent_name`. Tokens: `EXPECTED_AGENT_NAME`, `EXPECTED_STAGE_NAME`.
 
-MANDATORY for all custom agents per v10.0.0 plugin requirement. Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.agent-flow/{ISSUE_ID}/state.json`:
+MANDATORY for all custom agents. Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.agent-flow/{ISSUE_ID}/state.json`:
 
 1. **`dispatched_at`** — Field is present and non-empty for stage `{your_stage_name}`. Orchestrator wrote this pre-dispatch.
 

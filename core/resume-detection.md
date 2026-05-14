@@ -8,8 +8,7 @@ version: v1
 ## Purpose
 
 Shared resume-detection contract used by all pipeline entry-point skills (`fix-bugs`,
-`implement-feature`, `scaffold`). Replaces the former standalone `resume-ticket` skill
-(legacy; deleted in v9.3.0). Provides a single source of truth for path-traversal validation, state.json
+`implement-feature`, `scaffold`). Provides a single source of truth for path-traversal validation, state.json
 existence check, schema-version warning, status-branch with `--yolo` matrix, phase-scan
 loop, staleness check, decomposition-partial detection, and interactive prompt + webhook
 firing.
@@ -66,7 +65,7 @@ the match to the entire value (NOT per line), so a multi-line ANSI-C payload suc
 line through.
 
 ```bash
-# Canonical path-traversal defense — single source of truth for v9.3.0+.
+# Canonical path-traversal defense — single source of truth.
 if [[ ! "${ISSUE_ID}" =~ ^[A-Za-z0-9._-]+$ || "${ISSUE_ID}" =~ ^\.+$ ]]; then
   echo "[BLOCK] Invalid issue_id: ${ISSUE_ID}" >&2
   exit 1
@@ -215,8 +214,8 @@ fi
 RESUME_POINT="${NEXT_STAGE:-FRESH}"
 ```
 
-This loop is the single source of truth — the v9.3.0 design rejects the
-`last_committed_stage` top-level field (Phase 3 Decision 6).
+This loop is the single source of truth — the design rejects any
+`last_committed_stage` top-level field.
 
 **Decomposition-partial override:** if `.claude/decomposition/${ISSUE_ID}.yaml` exists,
 override `RESUME_POINT="decomposition"` regardless of the phase-scan result.
@@ -251,7 +250,7 @@ human-decision gate.
 
 After RESUME_POINT is finalized AND it is not FRESH/ABORTED, fire the `pipeline-resumed`
 webhook if `Webhook_URL` is configured AND `pipeline-resumed` is in `On_events`. The
-payload preserves the legacy v9.2.0 `resume-ticket` shape (historical compatibility) — `clarification.{question, answer}`
+payload has `clarification.{question, answer}`
 and `iteration` fields are present when the resume consumed a clarification answer; for
 non-paused resumes (running phase-scan, decomposition, etc.), those fields are absent.
 
@@ -300,30 +299,30 @@ from this contract. A paused resume transitions through `running` before reachin
 
 13 TDD scenarios (under `tests/scenarios/`) cover this contract:
 
-1. `v9.3.0-resume-detection-fresh.sh` — no state.json → RESUME_POINT=FRESH.
-2. `v9.3.0-resume-detection-running-phasescan.sh` — running status, last completed =
+1. `resume-detection-fresh.sh` — no state.json → RESUME_POINT=FRESH.
+2. `resume-detection-running-phasescan.sh` — running status, last completed =
    code_analysis → RESUME_POINT=fixer_reviewer.
-3. `v9.3.0-resume-detection-paused-clarification.sh` — paused with CLARIFICATION_TEXT →
+3. `resume-detection-paused-clarification.sh` — paused with CLARIFICATION_TEXT →
    answer written, status flipped, RESUME_POINT={asked_at_step}.
-4. `v9.3.0-resume-detection-paused-yolo-blocks.sh` — paused without CLARIFICATION_TEXT
+4. `resume-detection-paused-yolo-blocks.sh` — paused without CLARIFICATION_TEXT
    under `--yolo` → exit 1 with documented warning.
-5. `v9.3.0-resume-detection-completed-archives.sh` — completed status under `--yolo` →
+5. `resume-detection-completed-archives.sh` — completed status under `--yolo` →
    state.json archived, RESUME_POINT=FRESH.
-6. `v9.3.0-resume-detection-blocked-warns.sh` — blocked status; default mode prompts;
+6. `resume-detection-blocked-warns.sh` — blocked status; default mode prompts;
    `--yolo` exits 1.
-7. `v9.3.0-resume-detection-pathtrav-rejected.sh` — `ISSUE_ID="../../etc/passwd"` (and
+7. `resume-detection-pathtrav-rejected.sh` — `ISSUE_ID="../../etc/passwd"` (and
    ANSI-C multi-line bypass) → exit 1 with [BLOCK].
-8. `v9.3.0-resume-detection-corrupt-json.sh` — malformed state.json → [WARN],
+8. `resume-detection-corrupt-json.sh` — malformed state.json → [WARN],
    RESUME_POINT=FRESH.
-9. `v9.3.0-resume-detection-schemaversion-mismatch.sh` — state plugin_version=8.x.x,
-   current=9.x.x → [WARN], RESUME_POINT=phase-scan result.
-10. `v9.3.0-resume-detection-staleness-warn.sh` — state updated_at = 8 days ago →
+9. `resume-detection-schemaversion-mismatch.sh` — state plugin_version mismatch
+   → [WARN], RESUME_POINT=phase-scan result.
+10. `resume-detection-staleness-warn.sh` — state updated_at = 8 days ago →
     STALENESS_WARN populated.
-11. `v9.3.0-resume-detection-decomp-partial.sh` —
+11. `resume-detection-decomp-partial.sh` —
     `.claude/decomposition/{ISSUE_ID}.yaml` exists → RESUME_POINT=decomposition.
-12. `v9.3.0-resume-detection-webhook-fired.sh` — RESUME_POINT non-FRESH, Webhook_URL set,
+12. `resume-detection-webhook-fired.sh` — RESUME_POINT non-FRESH, Webhook_URL set,
     On_events contains `pipeline-resumed` → curl fired with correct payload.
-13. `v9.3.0-resume-detection-step-mode-pauses.sh` — `--step-mode` with non-FRESH
+13. `resume-detection-step-mode-pauses.sh` — `--step-mode` with non-FRESH
     RESUME_POINT → ALWAYS prompts even on running status.
 
 ---
@@ -331,8 +330,8 @@ from this contract. A paused resume transitions through `running` before reachin
 ## Constraints
 
 - NEVER invoke any JSON command-line parser. All state.json parsing MUST use `grep`,
-  `sed`, `awk`, and `tr` only. This preserves the v9.1.0 reduction direction (no
-  three-letter J-then-Q binary). AC-030 enforces this with a zero-match assertion.
+  `sed`, `awk`, and `tr` only. This preserves the parser-free reduction direction (no
+  three-letter J-then-Q binary). Enforced with a zero-match assertion.
 - NEVER block the pipeline on corrupt or unreadable state.json (recover by treating as
   FRESH with `[WARN]`).
 - NEVER write to state.json from this contract EXCEPT in the explicit cases:
@@ -348,6 +347,6 @@ from this contract. A paused resume transitions through `running` before reachin
 - NEVER increment `clarification.clarifications_consumed` here — the increment-side-of-truth
   lives in the orchestrator at the NEEDS_CLARIFICATION detection site, BEFORE the
   transition to paused (preserved from the legacy `skills/resume-ticket/SKILL.md` Priority 0 step 4
-  invariant; the former resume-ticket skill is historical, deleted in v9.3.0).
+  invariant).
 - NEVER duplicate the `.md`-only short-circuit logic from `core/agent-override-injector.md`
   — resume detection has nothing to do with overrides.

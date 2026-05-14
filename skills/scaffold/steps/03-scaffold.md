@@ -16,7 +16,7 @@ Check Agent Overrides for `scaffolder.md`.
 
 You MUST invoke Task(subagent_type='agent-flow:scaffolder', model='sonnet'). DO NOT inline-execute.
 Context: `spec/README.md` Tech Stack section + project description. Working directory: `$SCAFFOLD_TEMP`.
-Mode indicator: scaffold-v2 (so scaffolder generates E2E Test config + Decomposition defaults).
+Mode indicator: scaffold-spec-first (so scaffolder generates E2E Test config + Decomposition defaults).
 Scaffolder generates: all project files, CLAUDE.md (with Automation Config), docs/ARCHITECTURE.md, Module Docs config.
 
 **Post-dispatch (COST-R2, COST-R3):** Defensive-read `result.usage`. Write `scaffolder.completed_at`, `scaffolder.tokens_used`, `scaffolder.duration_ms`, `scaffolder.tool_uses` (fallback `0`). Set `scaffolder.status = "completed"`.

@@ -101,7 +101,7 @@ else
 fi
 ```
 
-Legacy flat `.agent-flow/state.json` (pre-v9.3.0) → log `[WARN]` and continue with the new per-issue path scheme.
+Legacy flat `.agent-flow/state.json` → log `[WARN]` and continue with the new per-issue path scheme.
 
 ## Step 0b — Resume detection
 
@@ -159,7 +159,7 @@ in `state.json` — never leave a stage at `"pending"` after the step's turn pas
 
 | Step | File                                       | Description                                            |
 |------|--------------------------------------------|--------------------------------------------------------|
-| 00   | (orchestrator) MCP pre-flight + state init | Follow `../../core/mcp-preflight.md`, validate issue_id, create `.agent-flow/{ISSUE-ID}/state.json`, set tracker state per `On start set`, self-assign per v9.6.1, create branch, fire `pipeline-started` webhook |
+| 00   | (orchestrator) MCP pre-flight + state init | Follow `../../core/mcp-preflight.md`, validate issue_id, create `.agent-flow/{ISSUE-ID}/state.json`, set tracker state per `On start set`, self-assign, create branch, fire `pipeline-started` webhook |
 | 01   | steps/01-triage.md                         | analyst --phase triage                                 |
 | 02   | steps/02-impact.md                         | analyst --phase impact + decomposition decision        |
 | 03   | steps/03-reproduce.md                      | browser-agent --phase reproduce (config-gated)         |

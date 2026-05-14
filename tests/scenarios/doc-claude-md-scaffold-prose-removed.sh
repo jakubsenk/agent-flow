@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verifies: AC-DOC-014b, REQ-DOC-014
+# Verifies: AC-DOC-014b
 # Description: CLAUDE.md has ZERO occurrences of v7 scaffold mode descriptor strings:
 #   "(a) Interactive", "(b) YOLO with checkpoint", "(c) Full YOLO"
 set -uo pipefail

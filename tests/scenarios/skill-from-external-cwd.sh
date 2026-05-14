@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # ===========================================================================
 # Test:        v10-skill-from-external-cwd.sh
-# Falsifies:   REQ-C-1 (Runtime external-CWD scenario)
 # FC mapped:   FC-C-1
 # Phase:       5 (TDD -- FAIL expected until Phase 7 lands)
 # What it checks:
@@ -54,7 +53,7 @@ cat > "$FIXTURE/skills/demo/SKILL.md" <<'SKILL_EOF'
 Read: skills/demo/data/guard-block.md
 SKILL_EOF
 
-# Create depth-3 guard-block.md with the PROBE as specified by REQ-A-2 / design.md A.1
+# Create depth-3 guard-block.md with the PROBE as specified / design.md A.1
 cat > "$FIXTURE/skills/demo/data/guard-block.md" <<'GUARD_EOF'
 # Mandatory Execution Guard -- /demo (synthetic fixture)
 
@@ -142,10 +141,10 @@ fi
 
 if grep -qE 'ABORT: plugin-root not resolved -- core/ sibling of skills/ not found at' \
     "$TMPDIR_FIXTURE/probe_stderr.txt" 2>/dev/null; then
-  echo "[PASS] ASSERT-2c: full canonical abort message matches spec REQ-A-3"
+  echo "[PASS] ASSERT-2c: full canonical abort message matches spec"
   PASS_COUNT=$((PASS_COUNT + 1))
 else
-  echo "[FAIL] ASSERT-2c: full canonical abort message does not match spec REQ-A-3"
+  echo "[FAIL] ASSERT-2c: full canonical abort message does not match spec"
   echo "[INFO] stderr was: $(cat "$TMPDIR_FIXTURE/probe_stderr.txt" 2>/dev/null)"
   FAIL_COUNT=$((FAIL_COUNT + 1))
 fi

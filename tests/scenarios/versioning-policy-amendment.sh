@@ -1,6 +1,6 @@
 #!/bin/bash
 # PURPOSE: Assert CLAUDE.md Versioning Policy table has been amended to include the new clause
-#          for mandatory structured contract sections in agent definition files (REQ-H-050, REQ-H-051).
+#          for mandatory structured contract sections in agent definition files.
 #          Also asserts the verbatim clarification paragraph was appended (AC-H-060, AC-H-061).
 # AC-H-N covered: AC-H-060, AC-H-061
 # INVOKED BY: tests/harness/run-tests.sh
@@ -23,19 +23,19 @@ if [ ! -f "$CLAUDE_MD" ]; then
   exit 1
 fi
 
-# AC-H-060: MAJOR row text contains new clause (REQ-H-050)
-if ! grep -qF 'mandatory new structured contract section in agent definition files that v8.0.0 agents would fail validation against' "$CLAUDE_MD"; then
+# AC-H-060: MAJOR row text contains new clause
+if ! grep -qF 'mandatory new structured contract section in agent definition files that prior-version agents would fail validation against' "$CLAUDE_MD"; then
   fail "CLAUDE.md Versioning Policy MAJOR row missing new clause 'mandatory new structured contract section...'"
   # Mutation catch: omitting the new MAJOR clause text fails here
 fi
 
-# AC-H-061 assertion 1: clarification paragraph opener (REQ-H-051)
+# AC-H-061 assertion 1: clarification paragraph opener
 if ! grep -qF 'Adding new static declaration sections to agent definition files' "$CLAUDE_MD"; then
   fail "CLAUDE.md missing Versioning Policy clarification paragraph opener ('Adding new static declaration sections...')"
   # Mutation catch: deleting the clarification paragraph fails here
 fi
 
-# AC-H-061 assertion 2: key phrase from clarification paragraph (REQ-H-051)
+# AC-H-061 assertion 2: key phrase from clarification paragraph
 if ! grep -qF 'structure-blind and is not "external tooling that parses" agent body sections' "$CLAUDE_MD"; then
   fail "CLAUDE.md missing clarification paragraph phrase 'structure-blind and is not \"external tooling that parses\" agent body sections'"
 fi

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Test: Scaffold v2 spec-writer/spec-reviewer iteration loop
+# Test: Scaffold spec-writer/spec-reviewer iteration loop
 # Validates: loop mechanics are defined, max iterations referenced, APPROVE/REVISE verdicts
 set -e
 
@@ -49,4 +49,4 @@ if ! grep -q "Spec iterations" "$REPO_ROOT/CLAUDE.md"; then
   exit 1
 fi
 
-echo "PASS: Scaffold v2 spec-writer/spec-reviewer loop mechanics verified"
+echo "PASS: Scaffold spec-writer/spec-reviewer loop mechanics verified"
