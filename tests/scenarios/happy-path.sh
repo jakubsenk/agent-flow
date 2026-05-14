@@ -5,10 +5,10 @@ set -e
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 
-# Check skill count >= 18
+# Check skill count >= 17
 cmd_count=$(find "$REPO_ROOT/skills" -name 'SKILL.md' 2>/dev/null | wc -l)
-if [ "$cmd_count" -lt 18 ]; then
-  echo "FAIL: Expected >= 18 skill files, found $cmd_count in skills/"
+if [ "$cmd_count" -lt 17 ]; then
+  echo "FAIL: Expected >= 17 skill files, found $cmd_count in skills/"
   exit 1
 fi
 

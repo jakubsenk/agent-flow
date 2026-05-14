@@ -27,12 +27,12 @@ mkdir -p "$TMPDIR_TEST/customization"
 
 # Valid header examples per design.md
 cat > "$TMPDIR_TEST/customization/reviewer.toml" << 'EOF'
-# generated: 2026-04-27T10:00:00Z by /setup-agents
+# generated: 2026-04-27T10:00:00Z by /setup-agents v1.0.0
 model = "opus"
 EOF
 
 cat > "$TMPDIR_TEST/customization/fixer.toml" << 'EOF'
-# generated: 2026-04-27T10:01:00Z by /setup-agents
+# generated: 2026-04-27T10:01:00Z by /setup-agents v1.0.0
 [[process_additions]]
 step = "after_default"
 instruction = "Run linting"

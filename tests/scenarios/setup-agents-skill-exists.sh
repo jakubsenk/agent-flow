@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Verifies: AC-SETUP-001
 # Description: skills/setup-agents/SKILL.md exists with correct frontmatter name: setup-agents
-# Post-cleanup baseline: skills reduced from 22 to 18.
+# Post-cleanup baseline: skills reduced from 22 to 17.
 set -uo pipefail
 
 # NOTE: REPO_ROOT assumes test file location is tests/scenarios/. Run after Phase 7 has moved files.
@@ -51,15 +51,15 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Assertion 4: skill count includes setup-agents (18 total)
+# Assertion 4: skill count includes setup-agents (17 total)
 # ---------------------------------------------------------------------------
-echo "--- Assertion 4: skills/ count is 18 (includes setup-agents) ---"
+echo "--- Assertion 4: skills/ count is 17 (includes setup-agents) ---"
 SKILL_COUNT=$(find "$REPO_ROOT/skills" -maxdepth 2 -name 'SKILL.md' -not -path '*/steps/*' -type f | wc -l)
-if [ "$SKILL_COUNT" -eq 18 ]; then
-  echo "OK: skills/ contains 18 SKILL.md files"
+if [ "$SKILL_COUNT" -eq 17 ]; then
+  echo "OK: skills/ contains 17 SKILL.md files"
 else
-  echo "INFO: skills/ contains $SKILL_COUNT SKILL.md files (expected 18)"
-  fail "skills/ has $SKILL_COUNT SKILL.md files — expected 18"
+  echo "INFO: skills/ contains $SKILL_COUNT SKILL.md files (expected 17)"
+  fail "skills/ has $SKILL_COUNT SKILL.md files — expected 17"
 fi
 
 # ---------------------------------------------------------------------------
@@ -76,6 +76,6 @@ fi
 # Final result
 # ---------------------------------------------------------------------------
 if [ "$FAIL" -eq 0 ]; then
-  echo "PASS: AC-SETUP-001 — skills/setup-agents/SKILL.md exists with correct frontmatter; 18 skills total"
+  echo "PASS: AC-SETUP-001 — skills/setup-agents/SKILL.md exists with correct frontmatter; 17 skills total"
 fi
 exit "$FAIL"

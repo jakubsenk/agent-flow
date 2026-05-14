@@ -18,6 +18,7 @@ COUNT=$(grep -rn 'triage-analyst\|code-analyst\|e2e-test-engineer\|reproducer\|b
   | grep -v 'docs/reference/agents.md' \
   | grep -v 'v7 alias:' \
   | grep -v 'examples/configs/' \
+  | grep -v 'examples/agent-overrides/codegraph/README.md' \
   | wc -l | tr -d ' ')
 
 if [ "$COUNT" -eq 0 ]; then
@@ -36,6 +37,7 @@ else
     | grep -v '^'"$REPO_ROOT"'/core/aliases/' \
     | grep -v 'CHANGELOG.md' \
     | grep -v 'reproducer-script' \
+    | grep -v 'docs/reference/agents.md' \
     | grep -v 'examples/configs/' \
     | grep -v 'examples/agent-overrides/codegraph/README.md' \
     || true

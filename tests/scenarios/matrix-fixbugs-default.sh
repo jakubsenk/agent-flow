@@ -35,9 +35,9 @@ fi
 # Assertion 2: Acceptance gate conditional (AC >= 3 OR complexity >= M) documented
 # ---------------------------------------------------------------------------
 echo "--- Assertion 2: acceptance gate condition AC>=3 OR complexity>=M documented ---"
-ACCEPT_STEP="$REPO_ROOT/skills/fix-bugs/steps/06-acceptance-gate.md"
+ACCEPT_STEP="$REPO_ROOT/skills/fix-bugs/steps/09-acceptance-gate.md"
 if [ ! -f "$ACCEPT_STEP" ]; then
-  echo "SKIP: fix-bugs step 06-acceptance-gate.md not found (implementation pending)" >&2
+  echo "SKIP: fix-bugs step 09-acceptance-gate.md not found (implementation pending)" >&2
   exit 77
 fi
 

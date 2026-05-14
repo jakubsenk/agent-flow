@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Test: skills/ directory structure is complete and correct after migration
-# Verifies: FC-1 (commands/ deleted), FC-2 (22 skill directories), FC-3 (each has SKILL.md)
+# Verifies: FC-1 (commands/ deleted), FC-2 (17 skill directories), FC-3 (each has SKILL.md)
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -21,11 +21,11 @@ else
 fi
 
 # -----------------------------------------------------------------------
-# FC-2: skills/ contains exactly 18 directories
+# FC-2: skills/ contains exactly 17 directories
 # -----------------------------------------------------------------------
-echo "--- FC-2: skills/ contains exactly 18 directories ---"
+echo "--- FC-2: skills/ contains exactly 17 directories ---"
 
-# The 18 expected skill directories (estimate, migrate-config, pipeline-status, scaffold-validate removed)
+# The 17 expected skill directories (estimate, migrate-config, pipeline-status, scaffold-validate, version-bump removed)
 EXPECTED_SKILLS=(
   analyze-bug
   autopilot
@@ -43,7 +43,6 @@ EXPECTED_SKILLS=(
   setup-agents
   setup-mcp
   sprint-plan
-  version-bump
   version-check
 )
 
@@ -55,7 +54,7 @@ fi
 
 # Count actual directories
 actual_count=$(find "$SKILLS_DIR" -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')
-expected_count="${#EXPECTED_SKILLS[@]}"  # 18
+expected_count="${#EXPECTED_SKILLS[@]}"  # 17
 
 if [ "$actual_count" -eq "$expected_count" ]; then
   echo "OK: skills/ contains exactly $actual_count directories"
@@ -116,6 +115,6 @@ fi
 # Final result
 # -----------------------------------------------------------------------
 if [ "$FAIL" -eq 0 ]; then
-  echo "PASS: skills directory structure — FC-1 (commands/ deleted), FC-2 (18 directories), FC-3 (each has SKILL.md)"
+  echo "PASS: skills directory structure — FC-1 (commands/ deleted), FC-2 (17 directories), FC-3 (each has SKILL.md)"
 fi
 exit "$FAIL"

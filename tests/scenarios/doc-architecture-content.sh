@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Verifies: AC-DOC-008
-# Description: docs/architecture.md has "17 agents", "18 skills", named-phase identifiers,
+# Description: docs/architecture.md has "17 agents", "17 skills", named-phase identifiers,
 #   and step-count annotations for all 3 pipelines
-# Post-cleanup baseline: skills reduced from 22 to 18.
+# Post-cleanup baseline: skills reduced from 22 -> 18 -> 17 (v1.0.0 public release).
 set -uo pipefail
 
 # NOTE: REPO_ROOT assumes test file location is tests/scenarios/. Run after Phase 7 has moved files.
@@ -24,19 +24,19 @@ if [ ! -f "$ARCH_DOC" ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Assertion 1: "17 agents" and "18 skills" present
+# Assertion 1: "17 agents" and "17 skills" present
 # ---------------------------------------------------------------------------
-echo "--- Assertion 1: '17 agents' and '18 skills' in architecture.md ---"
+echo "--- Assertion 1: '17 agents' and '17 skills' in architecture.md ---"
 if grep -qF '17 agents' "$ARCH_DOC"; then
   echo "OK: architecture.md contains '17 agents'"
 else
   fail "architecture.md missing '17 agents'"
 fi
 
-if grep -qF '18 skills' "$ARCH_DOC"; then
-  echo "OK: architecture.md contains '18 skills'"
+if grep -qF '17 skills' "$ARCH_DOC"; then
+  echo "OK: architecture.md contains '17 skills'"
 else
-  fail "architecture.md missing '18 skills'"
+  fail "architecture.md missing '17 skills'"
 fi
 
 # ---------------------------------------------------------------------------
@@ -81,6 +81,6 @@ fi
 # Final result
 # ---------------------------------------------------------------------------
 if [ "$FAIL" -eq 0 ]; then
-  echo "PASS: AC-DOC-008 — architecture.md counts (17 agents, 18 skills), phase identifiers, step annotations correct"
+  echo "PASS: AC-DOC-008 — architecture.md counts (17 agents, 17 skills), phase identifiers, step annotations correct"
 fi
 exit "$FAIL"

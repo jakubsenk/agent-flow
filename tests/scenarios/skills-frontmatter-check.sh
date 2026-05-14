@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Test: Every SKILL.md has required frontmatter, and pipeline skills have disable-model-invocation
-# Verifies: FC-4 (name + description), FC-5 (7 pipeline skills disable-model-invocation: true),
-#           FC-6 (11 non-pipeline skills do NOT have disable-model-invocation)
+# Verifies: FC-4 (name + description), FC-5 (5 pipeline skills disable-model-invocation: true),
+#           FC-6 (8 non-pipeline skills do NOT have disable-model-invocation)
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -38,9 +38,9 @@ for f in "$SKILLS_DIR"/*/SKILL.md; do
 done
 
 # -----------------------------------------------------------------------
-# FC-5: 6 pipeline skills have disable-model-invocation: true
+# FC-5: 5 pipeline skills have disable-model-invocation: true
 # -----------------------------------------------------------------------
-echo "--- FC-5: 6 pipeline skills have disable-model-invocation: true ---"
+echo "--- FC-5: 5 pipeline skills have disable-model-invocation: true ---"
 
 PIPELINE_SKILLS=(
   fix-bugs
@@ -48,7 +48,6 @@ PIPELINE_SKILLS=(
   scaffold
   publish
   changelog
-  version-bump
 )
 
 pipeline_pass_count=0
@@ -110,6 +109,6 @@ fi
 # Final result
 # -----------------------------------------------------------------------
 if [ "$FAIL" -eq 0 ]; then
-  echo "PASS: skills frontmatter check — FC-4 (name/description), FC-5 (6 pipeline skills), FC-6 (8 non-pipeline skills)"
+  echo "PASS: skills frontmatter check — FC-4 (name/description), FC-5 (5 pipeline skills), FC-6 (8 non-pipeline skills)"
 fi
 exit "$FAIL"

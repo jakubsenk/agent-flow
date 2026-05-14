@@ -25,6 +25,13 @@ with a clear "missing X, install with Y" message instead of a mid-run failure.
 | **Automated changelog** | Rich changelogs generated from pipeline execution data |
 | **Dependency vulnerability scanning** | npm audit / pip-audit / trivy as an optional pipeline stage |
 | **Performance regression testing** | Benchmark before/after a fix, surface regressions automatically |
+| **Replace https://example.invalid/agent-flow.git placeholder** | Swap the canonical placeholder URL in `.claude-plugin/plugin.json` for the final public repository URL once it is provisioned |
+
+---
+
+## Post-release housekeeping (v1.0.0)
+
+Skill / agent / contract counts after the v1.0.0 public release: **17 skills (down from 18 pre-release)**, **17 agents (unchanged)**, **17 core (unchanged)**. The skill reduction reflects removal of internal-only tooling; agent and contract surfaces are stable.
 
 ---
 

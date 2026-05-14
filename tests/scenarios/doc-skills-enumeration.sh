@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Verifies: AC-DOC-006
-# Description: docs/reference/skills.md contains exactly 29 canonical skill names
+# Description: docs/reference/skills.md contains exactly 17 canonical skill names
 #   as table rows
 set -uo pipefail
 
@@ -24,12 +24,12 @@ if [ ! -f "$SKILLS_DOC" ]; then
   exit 1
 fi
 
-# Canonical 18 skill names (estimate, migrate-config, pipeline-status, scaffold-validate removed)
+# Canonical 17 skill names (estimate, migrate-config, pipeline-status, scaffold-validate, version-bump removed)
 CANONICAL_SKILLS=(
   analyze-bug autopilot changelog check-setup create-backlog
   discuss fix-bugs implement-feature metrics
   onboard prioritize publish scaffold
-  setup-agents setup-mcp sprint-plan version-bump
+  setup-agents setup-mcp sprint-plan
   version-check
 )
 
@@ -41,9 +41,9 @@ grep -oE "^\|[[:space:]]*($SKILL_PATTERN)[[:space:]]*\|" "$SKILLS_DOC" | \
   sed 's/|//g' | tr -d '[:space:]' | sort > "$TMPDIR_TEST/actual.txt"
 
 # ---------------------------------------------------------------------------
-# Assertion 1: all 18 skills present
+# Assertion 1: all 17 skills present
 # ---------------------------------------------------------------------------
-echo "--- Assertion 1: all 18 canonical skills in skills.md ---"
+echo "--- Assertion 1: all 17 canonical skills in skills.md ---"
 for skill in "${CANONICAL_SKILLS[@]}"; do
   if grep -qF "$skill" "$SKILLS_DOC"; then
     echo "OK: '$skill' found in skills.md"
@@ -76,6 +76,6 @@ fi
 # Final result
 # ---------------------------------------------------------------------------
 if [ "$FAIL" -eq 0 ]; then
-  echo "PASS: AC-DOC-006 — docs/reference/skills.md has exactly 18 canonical skills"
+  echo "PASS: AC-DOC-006 — docs/reference/skills.md has exactly 17 canonical skills"
 fi
 exit "$FAIL"

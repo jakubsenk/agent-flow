@@ -1,8 +1,9 @@
 #!/bin/bash
-# Covers: AC-CNT-1 (CLAUDE.md states 18 skills),
-#         AC-CNT-2 (README.md states 18 skills),
+# Covers: AC-CNT-1 (CLAUDE.md states 17 skills),
+#         AC-CNT-2 (README.md states 17 skills),
 #         AC-CNT-3 (all 5 count-bearing docs reference 17 core),
 #         AC-CNT-4 (no production claim of 22 skills or 16 core)
+# Note: Skill count corrected from 18 -> 17 for v1.0.0 public release.
 set -e
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -10,18 +11,18 @@ REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 FAIL=0
 fail() { echo "FAIL: v9-5-doc-count-sync — $1"; FAIL=1; }
 
-# AC-CNT-1: CLAUDE.md states 18 skills
-if grep -qE '\b18 skills\b|skills.*\b18\b|18\b.*skills' "$REPO_ROOT/CLAUDE.md"; then
-  echo "PASS: CLAUDE.md references 18 skills"
+# AC-CNT-1: CLAUDE.md states 17 skills
+if grep -qE '\b17 skills\b|skills.*\b17\b|17\b.*skills' "$REPO_ROOT/CLAUDE.md"; then
+  echo "PASS: CLAUDE.md references 17 skills"
 else
-  fail "CLAUDE.md does not reference 18 skills"
+  fail "CLAUDE.md does not reference 17 skills"
 fi
 
-# AC-CNT-2: README.md states 18 skills
-if grep -qE '\b18 skills\b|skills.*\b18\b|18\b.*skills' "$REPO_ROOT/README.md"; then
-  echo "PASS: README.md references 18 skills"
+# AC-CNT-2: README.md states 17 skills
+if grep -qE '\b17 skills\b|skills.*\b17\b|17\b.*skills' "$REPO_ROOT/README.md"; then
+  echo "PASS: README.md references 17 skills"
 else
-  fail "README.md does not reference 18 skills"
+  fail "README.md does not reference 17 skills"
 fi
 
 # AC-CNT-3: All 5 docs reference 17 core
@@ -57,6 +58,6 @@ else
 fi
 
 if [ "$FAIL" -eq 0 ]; then
-  echo "PASS: v9-5-doc-count-sync — all 5 docs correctly reference 18 skills and 17 core"
+  echo "PASS: v9-5-doc-count-sync — all 5 docs correctly reference 17 skills and 17 core"
 fi
 exit "$FAIL"

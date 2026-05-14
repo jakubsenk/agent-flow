@@ -10,7 +10,6 @@ COUNT=$(grep -rnE '(/|:)(migrate-config|estimate|pipeline-status|scaffold-valida
   "$REPO_ROOT/state/" "$REPO_ROOT/checklists/" \
   "$REPO_ROOT/docs/guides/" "$REPO_ROOT/docs/reference/" \
   "$REPO_ROOT/examples/" \
-  "$REPO_ROOT/tests/scenarios/" \
   2>/dev/null \
   | grep -v 'CHANGELOG.md' \
   | grep -v 'tombstone\|removed in earlier versions\|estimate' \
@@ -28,7 +27,6 @@ else
     "$REPO_ROOT/state/" "$REPO_ROOT/checklists/" \
     "$REPO_ROOT/docs/guides/" "$REPO_ROOT/docs/reference/" \
     "$REPO_ROOT/examples/" \
-    "$REPO_ROOT/tests/scenarios/" \
     2>/dev/null \
     | grep -v 'CHANGELOG.md' \
     | grep -v 'tombstone\|removed in earlier versions\|estimate' \

@@ -39,26 +39,10 @@ for doc in SECURITY.md CODE_OF_CONDUCT.md CONTRIBUTING.md; do
 done
 
 # AC-INV-3: Template byte-parity
-if diff -q "$REPO_ROOT/.gitea/issue_template/bug_report.md" \
-           "$REPO_ROOT/.github/ISSUE_TEMPLATE/bug_report.md" > /dev/null 2>&1; then
-  echo "PASS: bug_report.md templates are byte-identical"
-else
-  fail ".gitea/issue_template/bug_report.md and .github/ISSUE_TEMPLATE/bug_report.md differ"
-fi
-
-if diff -q "$REPO_ROOT/.gitea/issue_template/feature_request.md" \
-           "$REPO_ROOT/.github/ISSUE_TEMPLATE/feature_request.md" > /dev/null 2>&1; then
-  echo "PASS: feature_request.md templates are byte-identical"
-else
-  fail ".gitea/issue_template/feature_request.md and .github/ISSUE_TEMPLATE/feature_request.md differ"
-fi
-
-if diff -q "$REPO_ROOT/.gitea/pull_request_template.md" \
-           "$REPO_ROOT/.github/PULL_REQUEST_TEMPLATE.md" > /dev/null 2>&1; then
-  echo "PASS: pull_request_template.md templates are byte-identical"
-else
-  fail ".gitea/pull_request_template.md and .github/PULL_REQUEST_TEMPLATE.md differ"
-fi
+# NOTE: .gitea/ was removed for public release (repo is GitHub-only).
+# Byte-parity checks between .gitea/ and .github/ are no longer applicable.
+# Only .github/ templates remain; their existence is verified by other tests.
+echo "SKIP: AC-INV-3 .gitea/ vs .github/ byte-parity — .gitea/ removed for public release"
 
 if [ "$FAIL" -eq 0 ]; then
   echo "PASS: v9-5-cross-file-invariants — all cross-file invariants hold"

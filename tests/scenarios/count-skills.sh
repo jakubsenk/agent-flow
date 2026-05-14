@@ -15,12 +15,12 @@ fi
 FAIL=0
 fail() { echo "FAIL: $1" >&2; FAIL=1; }
 
-EXPECTED_SKILL_COUNT=18
+EXPECTED_SKILL_COUNT=17
 
 # ---------------------------------------------------------------------------
 # Assertion: find skills with explicit -not -path '*/steps/*' guard
 # ---------------------------------------------------------------------------
-echo "--- Assertion: skills/ has exactly 18 SKILL.md files (excluding steps/) ---"
+echo "--- Assertion: skills/ has exactly 17 SKILL.md files (excluding steps/) ---"
 ACTUAL_COUNT=$(find "$REPO_ROOT/skills" -maxdepth 2 -name 'SKILL.md' -not -path '*/steps/*' -type f | wc -l)
 
 if [ "$ACTUAL_COUNT" -eq "$EXPECTED_SKILL_COUNT" ]; then
@@ -36,13 +36,13 @@ echo "--- Assertion: skills/setup-agents/SKILL.md present ---"
 if [ -f "$REPO_ROOT/skills/setup-agents/SKILL.md" ]; then
   echo "OK: skills/setup-agents/SKILL.md exists"
 else
-  fail "skills/setup-agents/SKILL.md missing — required for 18-skill count"
+  fail "skills/setup-agents/SKILL.md missing — required for 17-skill count"
 fi
 
 # ---------------------------------------------------------------------------
 # Final result
 # ---------------------------------------------------------------------------
 if [ "$FAIL" -eq 0 ]; then
-  echo "PASS: AC-CT-002 — skills/ has exactly 18 SKILL.md files"
+  echo "PASS: AC-CT-002 — skills/ has exactly 17 SKILL.md files"
 fi
 exit "$FAIL"

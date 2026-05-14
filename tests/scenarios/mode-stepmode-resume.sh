@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # Verifies: AC-MODE-007
-# Description: /resume-ticket BUG-1 with state.json having pause_reason="step_mode_abort"
-#   and last_completed_step="04-fixer-reviewer-loop" MUST begin from step 05-test
-#   (not 04, not 06). Happy-path visible test; adversarial off-by-one edge case
-#   is covered by v8-hidden-step-mode-abort-resume.sh.
+# Description: After pipeline pauses with pause_reason="step_mode_abort"
+#   and last_completed_step="04-fixer-reviewer-loop", resume MUST begin from
+#   the next step (05-smoke / 06-test in fix-bugs pipeline) — not re-execute 04,
+#   not skip ahead to 06. The resume contract is shared across pipeline entry-point
+#   skills via core/resume-detection.md, with --step-mode handling documented
+#   there and referenced from skills/fix-bugs/SKILL.md.
 # NOTE: REPO_ROOT assumes test file location is tests/scenarios/. Run after Phase 7 has moved files.
 # Do NOT execute from staging location .forge/phase-5-tdd/tests/.
 set -uo pipefail
@@ -22,12 +24,20 @@ FAIL=0
 fail() { echo "FAIL: $1" >&2; FAIL=1; }
 
 # ---------------------------------------------------------------------------
-# Prerequisite: skills/resume-ticket/SKILL.md must exist
+# Prerequisite: fix-bugs SKILL.md AND core/resume-detection.md must exist
+#   resume-ticket was never implemented; resume is built into the entry-point
+#   skills (fix-bugs, implement-feature, scaffold) via shared core contract.
 # ---------------------------------------------------------------------------
-RESUME_SKILL="$REPO_ROOT/skills/resume-ticket/SKILL.md"
-if [ ! -f "$RESUME_SKILL" ]; then
-  echo "SKIP: skills/resume-ticket/SKILL.md not found (implementation pending)" >&2
-  exit 77
+FIXBUGS_SKILL="$REPO_ROOT/skills/fix-bugs/SKILL.md"
+RESUME_CONTRACT="$REPO_ROOT/core/resume-detection.md"
+
+if [ ! -f "$FIXBUGS_SKILL" ]; then
+  echo "FAIL: skills/fix-bugs/SKILL.md not found" >&2
+  exit 1
+fi
+if [ ! -f "$RESUME_CONTRACT" ]; then
+  echo "FAIL: core/resume-detection.md not found" >&2
+  exit 1
 fi
 
 # ---------------------------------------------------------------------------
@@ -69,63 +79,59 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Assertion 2: resume-ticket SKILL.md documents step_mode_abort handling
+# Assertion 2: --step-mode resume logic is documented in core/resume-detection.md
 # ---------------------------------------------------------------------------
-echo "--- Assertion 2: resume-ticket SKILL.md documents step_mode_abort resume logic ---"
-if grep -qiE 'step_mode_abort|step.mode.*abort|pause_reason.*step' "$RESUME_SKILL"; then
-  echo "OK: resume-ticket SKILL.md documents step_mode_abort resume path"
+echo "--- Assertion 2: core/resume-detection.md documents --step-mode resume override ---"
+if grep -qiE '\-\-step.mode|step.mode.*override|GOT_STEP_MODE' "$RESUME_CONTRACT"; then
+  echo "OK: core/resume-detection.md documents --step-mode resume logic"
 else
-  fail "resume-ticket SKILL.md missing step_mode_abort resume logic"
+  fail "core/resume-detection.md missing --step-mode resume logic"
 fi
 
 # ---------------------------------------------------------------------------
-# Assertion 3: resume-ticket SKILL.md documents "start from next step"
+# Assertion 3: resume contract documents "next step" / phase-scan semantics
 #   (i.e., last_completed_step + 1, NOT re-executing the last step)
 # ---------------------------------------------------------------------------
-echo "--- Assertion 3: resume-ticket starts from step AFTER last_completed_step ---"
-if grep -qiE 'next.*step|step.*\+.*1|start.*after.*last|resume.*from.*next|continue.*from.*next' "$RESUME_SKILL"; then
-  echo "OK: resume-ticket SKILL.md documents starting from next step after last_completed_step"
+echo "--- Assertion 3: resume contract documents continuing from next step (not re-running last) ---"
+if grep -qiE 'next.*stage|next.*step|phase.scan|NEXT_STAGE|resume.*from' "$RESUME_CONTRACT"; then
+  echo "OK: core/resume-detection.md documents next-step resume logic"
 else
-  fail "resume-ticket SKILL.md missing next-step logic (must start from step 05, not re-run 04)"
+  fail "core/resume-detection.md missing next-step / phase-scan resume logic"
 fi
 
 # ---------------------------------------------------------------------------
-# Assertion 4: Step numbering — next step after 04-fixer-reviewer-loop is 05-test
-#   Verify via fix-bugs steps directory (once implemented)
+# Assertion 4: fix-bugs SKILL.md references the shared resume contract
 # ---------------------------------------------------------------------------
-echo "--- Assertion 4: step 05 follows step 04 in fix-bugs pipeline ---"
+echo "--- Assertion 4: fix-bugs SKILL.md references core/resume-detection.md ---"
+if grep -qE 'resume-detection(\.md)?' "$FIXBUGS_SKILL"; then
+  echo "OK: skills/fix-bugs/SKILL.md references shared resume-detection contract"
+else
+  fail "skills/fix-bugs/SKILL.md does not reference core/resume-detection.md"
+fi
+
+# ---------------------------------------------------------------------------
+# Assertion 5: Step numbering — next step after 04-fixer-reviewer-loop exists
+# ---------------------------------------------------------------------------
+echo "--- Assertion 5: step 05 follows step 04 in fix-bugs pipeline ---"
 STEPS_DIR="$REPO_ROOT/skills/fix-bugs/steps"
 if [ ! -d "$STEPS_DIR" ]; then
-  echo "SKIP: skills/fix-bugs/steps/ not found (implementation pending) — step ordering not yet verifiable" >&2
-  # This is not a hard skip — assertions 1-3 already cover the spec contract
+  fail "skills/fix-bugs/steps/ directory not found"
 else
-  # Find step 05 file
-  STEP_05=""
   TMPDIR_STEPS="$(mktemp -d)"
-  trap 'rm -rf "$TMPDIR_STEPS"' EXIT INT TERM
+  trap 'rm -rf "$TMPDIR_TEST" "$TMPDIR_STEPS"' EXIT INT TERM
   find "$STEPS_DIR" -maxdepth 1 -name '05-*.md' -type f > "$TMPDIR_STEPS/step05.txt"
   if [ -s "$TMPDIR_STEPS/step05.txt" ]; then
     STEP_05=$(head -1 "$TMPDIR_STEPS/step05.txt")
     echo "OK: step 05 exists: $(basename "$STEP_05")"
   else
-    fail "No step 05-*.md found in skills/fix-bugs/steps/ — expected e.g. 05-test.md"
+    fail "No step 05-*.md found in skills/fix-bugs/steps/ — expected e.g. 05-smoke.md"
   fi
-fi
-
-# ---------------------------------------------------------------------------
-# Assertion 5: resume-ticket reads last_completed_step from state.json
-# ---------------------------------------------------------------------------
-echo "--- Assertion 5: resume-ticket SKILL.md reads last_completed_step from state.json ---"
-if grep -qiE 'last_completed_step|last.*completed.*step' "$RESUME_SKILL"; then
-  echo "OK: resume-ticket SKILL.md references last_completed_step field"
-else
-  fail "resume-ticket SKILL.md missing last_completed_step reference"
 fi
 
 # ---------------------------------------------------------------------------
 # Final result
 # ---------------------------------------------------------------------------
 if [ "$FAIL" -eq 0 ]; then
-  echo "PASS: AC-MODE-007 — resume-ticket starts from step 05 after step_mode_abort at step 04"
+  echo "PASS: AC-MODE-007 — step-mode resume contract documented in core/resume-detection.md and referenced by fix-bugs SKILL.md"
 fi
 exit "$FAIL"
