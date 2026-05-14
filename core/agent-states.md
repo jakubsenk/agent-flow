@@ -94,19 +94,19 @@ Documented in `agents/fixer.md:36-47`. The canonical location remains `agents/fi
 
 The EXTERNAL INPUT constraint (canonical NEVER bullet in all 17 agents) provides a first layer of prompt-injection defense. Three adversarial bypass paths remain NOT CLOSED and are deferred to a future "Prompt-injection defense-in-depth" cycle:
 
-### T3-ADV-1: Nested EXTERNAL INPUT marker forgery
+### Nested EXTERNAL INPUT marker forgery
 
 An attacker can embed `--- EXTERNAL INPUT START ---` / `--- EXTERNAL INPUT END ---` markers **inside** tracker issue content. When the orchestrator wraps the full tracker payload in these markers, the injected inner markers create ambiguity for agents about where trusted context ends and adversarial content begins.
 
 **Status: NOT CLOSED.** Mitigation: the canonical NEVER bullet instructs agents to treat all content inside markers as untrusted. Structural forgery of the outer boundary is not yet defended at the producer side (orchestrator does not strip or escape inner marker occurrences before wrapping). Deferred.
 
-### T3-ADV-2: Homoglyph / zero-width character bypass
+### Homoglyph / zero-width character bypass
 
 Homoglyphs (look-alike Unicode characters) or zero-width characters inserted into constraint keywords (`NEVER`, `EXTERNAL INPUT`) can cause agents to misread the canonical bullet or the marker boundaries.
 
 **Status: NOT CLOSED.** No Unicode normalization is applied to tracker-sourced strings before they are injected into agent context. Deferred.
 
-### T3-ADV-3: Producer-side marker stripping
+### Producer-side marker stripping
 
 If the orchestrator does not sanitize tracker content before wrapping it in EXTERNAL INPUT markers, an adversary can inject text that resembles the end marker (`--- EXTERNAL INPUT END ---`) to prematurely close the trusted context window, then add instructions in the "trusted" region that follows.
 
@@ -114,4 +114,4 @@ If the orchestrator does not sanitize tracker content before wrapping it in EXTE
 
 ### Future target
 
-All three adversarial paths above will be addressed under "Prompt-injection defense-in-depth" (planned approach: T3-ADV-1 inner-marker escaping, T3-ADV-2 Unicode normalization, T3-ADV-3 end-marker stripping at wrap sites).
+All three adversarial paths above will be addressed under "Prompt-injection defense-in-depth" (planned approach: inner-marker escaping, Unicode normalization, and end-marker stripping at wrap sites).

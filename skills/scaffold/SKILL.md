@@ -337,7 +337,7 @@ Write iteration count to `state.json` via `../../core/state-manager.md`:
 NEEDS_CLARIFICATION — if spec-writer raises a question during spec phase:
 - Write `asked_at: $asked_at` to `state.json` clarification object (follow `../../core/state-manager.md`)
 - Pause pipeline and surface question to user
-- Fire `pipeline-paused` webhook if configured (REQ-050c, follow `../../core/agent-states.md`):
+- Fire `pipeline-paused` webhook if configured (follow `../../core/agent-states.md`):
   ```bash
   # Fire pipeline-paused webhook
   if [ -n "${Webhook_URL:-}" ] && printf '%s' "${On_events:-}" | grep -qF 'pipeline-paused'; then

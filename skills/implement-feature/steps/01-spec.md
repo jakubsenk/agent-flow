@@ -58,7 +58,7 @@ Advisory failure: log `[WARN] Webhook delivery failed: {error}` and continue.
 ## Step 01b: Analyst — codebase impact analysis
 
 If stage `analyst-impact` is in the profile's Skip stages → skip, record "[SKIP] analyst-impact (profile: {name})".
-Update `state.json`: set `code_analysis.status` to `"skipped"`. Skip the `step-completed` webhook (WEBHOOK-R7).
+Update `state.json`: set `code_analysis.status` to `"skipped"`. Skip the `step-completed` webhook for skipped stages.
 Follow atomic write protocol from `../../../core/state-manager.md`.
 
 Before dispatching analyst: read `model:` frontmatter from `agents/analyst.md`. Write to `state.json`:
@@ -100,4 +100,4 @@ Follow atomic write protocol from `../../../core/state-manager.md`.
 
 **Fire `step-completed` webhook:** After the atomic state.json write succeeds (status `"completed"` only), if
 `Webhook URL` is configured AND `step-completed` is in `On events`, fire with `step_name: "code_analysis"`,
-`iteration_count: 1`. Advisory failure: log `[WARN]` and continue. Skip if blocked or skipped (WEBHOOK-R7).
+`iteration_count: 1`. Advisory failure: log `[WARN]` and continue. Skip if blocked or skipped.

@@ -29,7 +29,7 @@ cost breakdown inline.
 
 ## Step 12.3: Dispatch-Audit Surfacing (WITNESS_MISSING terminal block)
 
-Read `.agent-flow/dispatch-audit.log` (top-level path per QB1 resolution, NOT under
+Read `.agent-flow/dispatch-audit.log` (top-level path, NOT under
 `{ISSUE-ID}/`). For this run's stages, classify each entry against the per-skill
 `<stage_allowlist>` parsed from this skill's parent SKILL.md (`skills/fix-bugs/SKILL.md`).
 

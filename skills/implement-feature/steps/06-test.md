@@ -16,7 +16,7 @@ git commit -m "feat: {feature-title}"
 ## 06a. Test-engineer
 
 If stage `test-engineer` is in the profile's Skip stages → skip, record "[SKIP] test-engineer (profile: {name})".
-Update `state.json`: set `test.status` to `"skipped"`. Skip the `step-completed` webhook (WEBHOOK-R7).
+Update `state.json`: set `test.status` to `"skipped"`. Skip the `step-completed` webhook for skipped stages.
 Follow atomic write protocol from `../../../core/state-manager.md`.
 
 Before dispatching test-engineer: read `model:` frontmatter from `agents/test-engineer.md`. Write to `state.json`:
@@ -63,7 +63,7 @@ After dispatch: defensive-read `result.usage`. Write to `state.json`:
 If `local_deployment_configured = false` → skip.
 If stage `test-engineer-e2e` is in the profile's Skip stages → skip.
 If the E2E Test section is absent AND `test-engineer-e2e` is NOT in the profile's `Extra stages` → skip.
-(No `step-completed` webhook for skipped stages — WEBHOOK-R7.)
+(No `step-completed` webhook for skipped stages.)
 
 Before dispatching deployment-verifier: read `model:` frontmatter from `agents/deployment-verifier.md`.
 Write to `state.json`: `deployment.started_at`, `deployment.model`, `deployment.status: "in_progress"`,
@@ -105,7 +105,7 @@ After dispatch: write `deployment.*` state fields. Follow atomic write protocol 
 > **Note:** `e2e_test` is NOT in the `<stage_allowlist>` for `/implement-feature` (see `skills/implement-feature/SKILL.md`). The terminal report in step 08 will SUPPRESS any `e2e_test WITNESS_MISSING` audit line from the implement-feature pipeline output (BLOCKER-2 alarm-fatigue fix). E2E execution is still supported via Pipeline Profile `Extra stages = test-engineer-e2e`, but it is not a surfaced anomaly when absent.
 
 If stage `test-engineer-e2e` is in the profile's Skip stages → skip, record "[SKIP] test-engineer-e2e". Skip
-the `step-completed` webhook (WEBHOOK-R7).
+the `step-completed` webhook for skipped stages.
 
 If the E2E Test section exists in Automation Config OR the profile's `Extra stages` contains `test-engineer-e2e`:
 

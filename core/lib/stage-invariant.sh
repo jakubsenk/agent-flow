@@ -100,7 +100,7 @@ check_dispatch_witness() {
 # -----------------------------------------------------------------------------
 # emit_witness_audit STAGE VERDICT AUDIT_LOG_PATH
 #   Append "<ISO-TS> <STAGE> <VERDICT>" line to the audit log (top-level
-#   .agent-flow/dispatch-audit.log per QB1 resolution). Best-effort - never
+#   .agent-flow/dispatch-audit.log). Best-effort - never
 #   fails the caller even if the path is unwritable.
 # -----------------------------------------------------------------------------
 emit_witness_audit() {

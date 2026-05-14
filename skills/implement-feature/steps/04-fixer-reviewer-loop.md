@@ -98,7 +98,7 @@ After each fixer-reviewer iteration, update `state.json`: increment `fixer_revie
 **Fire `step-completed` webhook (on APPROVE or block — once per stage, not per iteration):** After the atomic
 state.json write of the final verdict, if `Webhook URL` is configured AND `step-completed` is in `On events`,
 fire with `step_name: "fixer_reviewer"`, `iteration_count: {total iterations}`. Advisory failure: log `[WARN]`
-and continue. Fires once per top-level stage — never once per iteration (WEBHOOK-R6).
+and continue. Fires once per top-level stage — never once per iteration.
 
 ## 04e. Smoke check (build + test)
 

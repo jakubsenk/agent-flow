@@ -1,8 +1,8 @@
 # core/snippets/ — sub-namespace introduction
 
-Canonical snippet files cited by skill orchestration via `<!-- @snippet:<name> -->` markers. The `core/snippets/` sub-namespace does NOT count toward the top-level core-contracts count (verified non-recursive by `tests/scenarios/prompt-injection-protection.sh` per REQ-063 + REQ-063a).
+Canonical snippet files cited by skill orchestration via `<!-- @snippet:<name> -->` markers. The `core/snippets/` sub-namespace does NOT count toward the top-level core-contracts count (verified non-recursive by `tests/scenarios/prompt-injection-protection.sh`).
 
-## Citation format (REQ-063b)
+## Citation format
 
 Every citation site uses the exact marker form:
 ```
@@ -12,7 +12,7 @@ where `<snippet-name>` is the basename without extension (e.g., `webhook-curl`, 
 
 The marker is parseable by tooling. The cited content MAY remain inline immediately after the marker — LLM orchestrators read the snippet at execution time; the marker is the load-bearing referent.
 
-## Rollback contract (REQ-063d)
+## Rollback contract
 
 If a snippet is found broken in production (e.g., regex typo propagated to all callers), the operator MUST revert the snippet's content inline at every citation site BEFORE deleting or modifying the snippet file. Pure citation form has no fallback — the snippet IS the source of truth for the cited content.
 

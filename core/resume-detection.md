@@ -1,8 +1,3 @@
----
-name: resume-detection
-version: v1
----
-
 # Resume Detection
 
 ## Purpose
@@ -289,7 +284,7 @@ fi
 
 Webhook delivery failure is advisory — the pipeline continues unconditionally.
 
-**NEGATIVE invariant (REQ-049 / AC-049):** the `pipeline-completed` event MUST NOT fire
+**NEGATIVE invariant:** the `pipeline-completed` event MUST NOT fire
 from this contract. A paused resume transitions through `running` before reaching
 `completed`; the `completed` event fires only at the orchestrator's terminal-state commit.
 
@@ -341,7 +336,7 @@ from this contract. A paused resume transitions through `running` before reachin
     `awaiting_clarification` → `in_progress` after CLARIFICATION_TEXT is consumed.
 - NEVER follow symlinks outside `.agent-flow/`. The path is constructed from validated
   ISSUE_ID; no `realpath` resolution that could escape the directory.
-- NEVER fire the `pipeline-completed` webhook from this contract (REQ-049 / AC-049): the
+- NEVER fire the `pipeline-completed` webhook from this contract: the
   `completed` event fires ONLY at the orchestrator's terminal-state commit.
 - NEVER hardcode the `customization/` path — resume detection has no overlay logic.
 - NEVER increment `clarification.clarifications_consumed` here — the increment-side-of-truth

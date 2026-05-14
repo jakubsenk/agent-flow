@@ -319,7 +319,7 @@ Print count: `{N} files written, {M} skipped.`
 - Use `python3 os.path.realpath()` for symlink resolution (macOS portability; `readlink -f`
   is GNU-only and unavailable on macOS bash 3.2 without GNU coreutils).
 - Reference `skills/setup-agents/lib/toml-merge.sh` for TOML write utilities.
-- Skills count increases from 28 → 29 after this skill is added (AC-CT-002).
+- Skills count increases from 28 → 29 after this skill is added.
 
 ## Block Comment
 

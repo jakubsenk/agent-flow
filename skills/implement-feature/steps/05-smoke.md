@@ -9,7 +9,7 @@ After the fixer ↔ reviewer loop approves the change, verify that the codebase 
 If neither `Build command` nor `Test command` is configured in Automation Config (`Build & Test` section):
 
 - Write `state.json[stages.smoke_check].status = "skipped"`, `stage_name = "smoke_check"`, `agent_name = null`, `dispatched_at = <now>`, `dispatch_witness = null` per `../../../core/state-manager.md` atomic write protocol.
-- Skip the `step-completed` webhook (WEBHOOK-R7).
+- Skip the `step-completed` webhook for skipped stages.
 - Proceed to step 06.
 
 ## Pre-dispatch witness write
@@ -33,7 +33,7 @@ DISPATCHED_AT="$(date -u +%FT%TZ)"
 
 ## Webhook
 
-After the atomic state.json write succeeds (`status = "completed"` only — not on skip per WEBHOOK-R7), if `Webhook URL` is configured AND `step-completed` is in `On events`, fire with `step_name: "smoke_check"`, `iteration_count: 1`. Advisory failure: log `[WARN]` and continue.
+After the atomic state.json write succeeds (`status = "completed"` only — not on skip), if `Webhook URL` is configured AND `step-completed` is in `On events`, fire with `step_name: "smoke_check"`, `iteration_count: 1`. Advisory failure: log `[WARN]` and continue.
 
 ## Profile skip
 

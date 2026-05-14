@@ -287,6 +287,8 @@ Each entry in `decomposition.subtasks[]` has the following structure:
 | `maps_to` | string[] | No | `[]` | Parent AC references in format `AC-{N}: {text}`, linking subtask to parent acceptance criteria by index. |
 | `tracker_issue_id` | string or null | No | `null` | Tracker issue ID created for this subtask (e.g., `"PROJ-45"` for YouTrack/Jira, `"#123"` for GitHub/Gitea). Populated by "Create tracker subtasks" step. Used as idempotency guard on resume. |
 
+| Field | Type | Required | Default | Description |
+|-------|------|----------|---------|-------------|
 | `test` | object | Yes | — | Test-engineer phase state. |
 | `test.status` | string | Yes | `"pending"` | Phase status. See Step Status Enum. |
 | `test.attempts` | integer | Yes | `0` | Number of completed test attempts. |
@@ -332,7 +334,7 @@ Parallel to the `block` object. Present only when an agent has emitted `## NEEDS
   "asked_at": "ISO 8601 string (UTC, written at detection)",
   "context": "string (optional, max 500 chars)",
   "answer": "string or null",
-  "clarifications_consumed": "integer (run total, max 3, hard cap per REQ-045)",
+  "clarifications_consumed": "integer (run total, max 3, hard cap)",
   "last_clarification_iteration": "integer or null (most recent fixer iteration that emitted NEEDS_CLARIFICATION)"
 }
 ```

@@ -1,6 +1,6 @@
 ---
 name: browser-agent
-description: Browser automation (reproduce phase: capture bug; verify phase: confirm fix) — phase-aware via --phase flag
+description: "Browser automation (reproduce phase: capture bug; verify phase: confirm fix) — phase-aware via --phase flag"
 model: sonnet
 style: Pragmatic browser-driver
 ---

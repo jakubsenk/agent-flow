@@ -134,7 +134,7 @@ Output format depends on `--format` flag (default: `md`).
 **When `--format json`:** emit a single JSON object matching the schema below. Do NOT emit any markdown text. Write to `--output` path if specified, otherwise stdout.
 
 <!-- @snippet:metrics-json-schema -->
-**JSON schema** (REQ-029, REQ-031):
+**JSON schema**:
 
 ```json
 {
@@ -175,7 +175,7 @@ Output format depends on `--format` flag (default: `md`).
 }
 ```
 
-**HARD CONTRACT — block.detail exclusion (REQ-030):** `top_reasons[].reason` uses `block.reason` only (the sanitized 2-sentence summary from the block comment). `block.detail` is NEVER serialized into JSON output. This cross-references the comprehensive INCLUDE/EXCLUDE channel table in `state/schema.md` §"Sensitive field exclusion contract".
+**HARD CONTRACT — block.detail exclusion:** `top_reasons[].reason` uses `block.reason` only (the sanitized 2-sentence summary from the block comment). `block.detail` is NEVER serialized into JSON output. This cross-references the comprehensive INCLUDE/EXCLUDE channel table in `state/schema.md` §"Sensitive field exclusion contract".
 
 **When `--format md` (default):** emit markdown report as follows.
 

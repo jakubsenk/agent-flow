@@ -5,7 +5,7 @@ For features, the acceptance gate condition differs by mode:
 **In decomposition mode:** always run acceptance-gate for every subtask (no threshold condition).
 
 **In single-pass mode (no decomposition):** run acceptance-gate if 3 or more acceptance criteria exist.
-If fewer than 3 AC → skip to step 08 (write `state.json[stages.acceptance_gate].status = "skipped"` atomically per WEBHOOK-R7 — never leave at `pending`).
+If fewer than 3 AC → skip to step 08 (write `state.json[stages.acceptance_gate].status = "skipped"` atomically — never leave at `pending`).
 
 Before dispatching acceptance-gate: read `model:` frontmatter from `agents/acceptance-gate.md`. Write to
 `state.json`: `acceptance_gate.started_at`, `acceptance_gate.model`, `acceptance_gate.status: "in_progress"`,

@@ -163,13 +163,13 @@ Payload shape:
 }
 ```
 
-`run_id` format is `"{issue_id}_{YYYYMMDDTHHMMSSZ}"` (consistent with other Section 4 events). `iteration` refers to the fixer-reviewer iteration counter at the time the pause was triggered (REQ-050e). `clarification.question` is sanitized via `sanitize_block_reason()` (truncated to ≤280 chars).
+`run_id` format is `"{issue_id}_{YYYYMMDDTHHMMSSZ}"` (consistent with other Section 4 events). `iteration` refers to the fixer-reviewer iteration counter at the time the pause was triggered. `clarification.question` is sanitized via `sanitize_block_reason()` (truncated to ≤280 chars).
 
 Example curl invocation (uses `jq -n --arg` structural construction for safe field encoding — see Field value safety note above):
 
 ```bash
 <!-- @snippet:webhook-curl -->
-# pipeline-paused webhook firing site (REQ-050c + REQ-032 circuit-breaker scope)
+# pipeline-paused webhook firing site (circuit-breaker scope)
 # Subject to in-memory circuit breaker (counter shared with pipeline-completed et al.)
 jq -nc \
   --arg event "pipeline-paused" \
@@ -242,18 +242,18 @@ jq -nc \
 
 Fired by inline auto-resume detection (`core/resume-detection.md`) at the point where state transitions from `paused` back to `running`, after the state.json write. Gated on: `On events` config includes `pipeline-resumed`.
 
-### State-Commit Ordering (WEBHOOK-R2..R4)
+### State-Commit Ordering
 
 Fire order is STRICT:
 - For `pipeline-started`: fire AFTER `state.json` has been atomically initialized.
 - For `step-completed`: fire AFTER `state.json` has been atomically written with the stage's `tokens_used`, `duration_ms`, `tool_uses`, `completed_at`. If the state.json write fails, the webhook is suppressed — the webhook stream is a projection of committed state, not an in-flight view.
 - For `pipeline-completed`: fire AFTER the terminal `status` has been committed to `state.json`.
 
-### No Skipped-Stage Event (WEBHOOK-R7)
+### No Skipped-Stage Event
 
 The system does NOT emit any webhook for skipped stages. Skipped stages produce no webhook output. Pipeline skill files and this contract file MUST NOT contain emission logic for any skipped-stage event token.
 
-### Backward Compatibility (WEBHOOK-R8)
+### Backward Compatibility
 
 Existing events (`pr-created`, `agent-flow-block`) are unchanged. No existing payload field has been renamed. Section 3 curl invocation is unchanged. Webhook payloads are forward-compatible — additive fields may be added in future MINOR versions. Consumers should use lenient JSON parsing (ignore unknown fields).
 

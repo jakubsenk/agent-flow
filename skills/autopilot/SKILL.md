@@ -265,7 +265,7 @@ This is an INFORMATIONAL line only. It does NOT detect cross-host contention. Th
 5. Determine the tracker MCP prefix from `### Issue Tracker.Type` (default `youtrack`; supported: `youtrack`, `github`, `jira`, `linear`, `gitea`, `redmine`).
 6. Read `Pause timeout` from `### Pause Limits` (optional section; default `30 days`). Parse and validate via `parse_pause_timeout()` (defined below); store result as `PAUSE_TIMEOUT_SECONDS` for use in Step 6.
 
-#### `parse_pause_timeout()` — POSIX-portable Pause timeout parser (REQ-050f)
+#### `parse_pause_timeout()` — POSIX-portable Pause timeout parser
 
 Validates the operator-supplied `Pause timeout` config value. Minimum `1 hour` (3600 s), maximum `365 days` (31536000 s). On invalid input: graceful fallback to default — log `[WARN] Invalid Pause timeout '{value}'; using default 30 days` and return default 2592000 s. The pipeline MUST NOT abort on invalid input; the fallback-to-default behavior ensures continued operation.
 
@@ -312,10 +312,9 @@ parse_pause_timeout() {
 For each classified issue in turn, SEQUENTIALLY (one at a time):
 
 1. Record per-issue start time (for the summary table in Step 7).
-1a. **Pause-state detection (REQ-050b):** Before dispatch, check whether the issue has an existing state.json with `status == "paused"`:
+1a. **Pause-state detection:** Before dispatch, check whether the issue has an existing state.json with `status == "paused"`:
 
 ```bash
-# Round-2 paused-state detection (REQ-050b)
 state_file=".agent-flow/${ISSUE_ID}/state.json"
 if [ -f "$state_file" ]; then
   current_status=$(jq -r '.status // empty' "$state_file" 2>/dev/null)
@@ -333,7 +332,7 @@ if [ -f "$state_file" ]; then
         # Last resort: GNU date -d (Linux only; returns empty on BSD/macOS — caller handles empty).
         epoch=$(date -d "$_ts" +%s 2>/dev/null)
       fi
-      # REQ-050a: warn when conversion fails on a non-empty input (e.g., BusyBox Alpine minimal host
+      # Warn when conversion fails on a non-empty input (e.g., BusyBox Alpine minimal host
       # with neither python3 nor GNU date). Pause-timeout auto-abort is silently disabled otherwise.
       if [ -z "$epoch" ] && [ -n "$_ts" ]; then
         echo "[WARN] Pause timeout calc failed: neither python3 nor GNU date available. Pause-timeout auto-abort disabled on this host. Install python3 to enable." >&2
@@ -349,7 +348,7 @@ if [ -f "$state_file" ]; then
     fi
     pause_timeout_seconds=$(parse_pause_timeout "${PAUSE_TIMEOUT:-30 days}")  # default 30 days
     if [ "$pause_age_seconds" -gt "$pause_timeout_seconds" ]; then
-      # Timeout elapsed — promote to aborted_by_system (REQ-050a)
+      # Timeout elapsed — promote to aborted_by_system
       jq '.status = "aborted_by_system" | .abort_reason = "clarification_timeout"' "$state_file" > "$state_file.tmp" && mv "$state_file.tmp" "$state_file"
       echo "[INFO] ${ISSUE_ID}: clarification timeout exceeded — transitioned to aborted_by_system"
     else
@@ -362,7 +361,7 @@ fi
 
    - If `status == "paused"` AND elapsed time since `clarification.asked_at` > `PAUSE_TIMEOUT_SECONDS`: transition state to `aborted_by_system` with `abort_reason: "clarification_timeout"` and log the timeout line, then `continue` (skip dispatch).
    - If `status == "paused"` AND elapsed time ≤ `PAUSE_TIMEOUT_SECONDS`: log `[INFO] Skipping {ISSUE_ID}: awaiting clarification` and `continue` (skip dispatch).
-   - REQ-050d: `pipeline-completed` MUST NOT fire on pause — this skip path never invokes child skills, so no `pipeline-completed` event is emitted.
+   - `pipeline-completed` MUST NOT fire on pause — this skip path never invokes child skills, so no `pipeline-completed` event is emitted.
 
 2. Dispatch via Bash subprocess (resolves upstream Claude Code #26251 — pipeline skills have `disable-model-invocation: true` in their frontmatter, which blocks the Skill tool dispatch path; plain-text headless invocation via `claude -p` is the only reliable workaround):
 

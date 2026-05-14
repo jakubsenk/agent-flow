@@ -1,8 +1,3 @@
----
-name: agent-override-injector
-version: v9
----
-
 # Agent Override Injector
 
 ## Purpose
@@ -44,14 +39,14 @@ source skills/setup-agents/lib/toml-merge.sh
 # Read override_path from Automation Config (default: customization/)
 override_path="${agent_overrides_path:-customization/}"
 
-# Guarded call — absorbs non-zero return (AC-FAIL-014)
+# Guarded call — absorbs non-zero return
 additional_instructions=$(resolve_overlay "$agent_name" "$override_path" "$defaults_json") || additional_instructions=""
 ```
 
 The explicit `|| additional_instructions=""` guard is mandatory. Without it,
 `resolve_overlay()` running under `set -euo pipefail` (see `lib/toml-merge.sh` line 27)
 would kill the parent shell on any failure. The injector NEVER blocks the pipeline on
-overlay failure (AC-FAIL-013).
+overlay failure.
 
 ---
 
@@ -73,10 +68,9 @@ if [ ! -f "$toml_path" ] && [ -f "$md_path" ]; then
 fi
 ```
 
-This short-circuit lives EXCLUSIVELY in this injector (AC-DRIFT-027). Step
+This short-circuit lives EXCLUSIVELY in this injector. Step
 files MUST NOT replicate this logic. The `log_overlay_provenance` call emits a provenance
-line with `overlay_source=md_rejected` (AC-PROV-009 / AC-INV-025); this is
-the ONLY code path that emits `md_rejected`.
+line with `overlay_source=md_rejected`; this is the ONLY code path that emits `md_rejected`.
 
 **Coexistence case** (both `.toml` AND `.md` present): `resolve_overlay()`
 handles this internally — it emits an informational `[ERROR]` to stderr about the `.md` and
@@ -119,7 +113,7 @@ non-empty, render it to the following Markdown layout:
 **Render rules (per design.md Section 2):**
 
 1. Heading is fixed: `## Project-Specific Instructions` — exact case, no trailing punctuation.
-2. Source comment is mandatory (AC-DOC-003 / AC-MODE-028): exactly one HTML
+2. Source comment is mandatory: exactly one HTML
    comment line `<!-- Source: customization/{agent}.toml — rendered by agent-override-injector v9 -->`
    immediately under the heading, separated by one blank line. The em-dash is literal U+2014.
    The `{agent}` placeholder is substituted with the dispatched agent name.
@@ -184,8 +178,7 @@ once for the `toml`/`md`/`none` branches. The injector adds one explicit
 All 6 enumerated failure modes are handled by `resolve_overlay()` returning non-zero. The
 injector absorbs the non-zero return via the guarded assignment in Step 1 and returns empty
 `additional_instructions`. The pipeline continues with the bare agent prompt. The injector
-does NOT emit a second `[WARN]` — Layer 2's `[ERROR]` to stderr is sufficient
-(AC-FAIL-015).
+does NOT emit a second `[WARN]` — Layer 2's `[ERROR]` to stderr is sufficient.
 
 | Failure mode | Layer 2 behavior | Injector behavior |
 |-------------|-----------------|-------------------|
@@ -202,14 +195,12 @@ does NOT emit a second `[WARN]` — Layer 2's `[ERROR]` to stderr is sufficient
 
 - NEVER modify `agents/*.md` (public agent contract — PATCH classification depends on this).
 - NEVER modify `skills/setup-agents/lib/toml-merge.sh` (Layer 2 is off-limits per
-  anti-pattern #3; AC-INV-018).
-- NEVER block the pipeline on overlay failure (AC-FAIL-013). The guarded
+  anti-pattern #3).
+- NEVER block the pipeline on overlay failure. The guarded
   assignment form from Step 1 is mandatory.
-- NEVER emit a second `[WARN]` from the injector when Layer 2 has already emitted `[ERROR]`
-  (AC-FAIL-015).
-- NEVER replicate the `.md`-only short-circuit into step files (AC-DRIFT-027).
+- NEVER emit a second `[WARN]` from the injector when Layer 2 has already emitted `[ERROR]`.
+- NEVER replicate the `.md`-only short-circuit into step files.
   This short-circuit lives EXCLUSIVELY in this file.
 - NEVER hardcode `customization/` as the override path in step files. Always use the
-  `{Agent Overrides path}` placeholder resolved from Automation Config at dispatch time
-  (AC-WIRE-016).
-- NEVER create new `core/*.md` files (count must remain 17; AC-INV-018).
+  `{Agent Overrides path}` placeholder resolved from Automation Config at dispatch time.
+- NEVER create new `core/*.md` files (count must remain 17).
