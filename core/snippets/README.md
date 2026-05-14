@@ -12,20 +12,6 @@ where `<snippet-name>` is the basename without extension (e.g., `webhook-curl`, 
 
 The marker is parseable by tooling. The cited content MAY remain inline immediately after the marker — LLM orchestrators read the snippet at execution time; the marker is the load-bearing referent.
 
-## Validity test (REQ-063c)
-
-`tests/scenarios/v690-snippet-citation-counts.sh` greps `<!-- @snippet:<name> -->` markers across the repository and asserts the count matches the expected count documented in each snippet's `## Used by:` heading:
-
-| Snippet | Expected citation count |
-|---------|-------------------------|
-| webhook-curl | 31 |
-| issue-id-validation | 5 |
-| metrics-json-schema | 1 |
-| pipeline-completion | 3 |
-| architecture-freshness | 2 |
-
-Drift (over-cite or under-cite) FAILS the test.
-
 ## Rollback contract (REQ-063d)
 
 If a snippet is found broken in production (e.g., regex typo propagated to all callers), the operator MUST revert the snippet's content inline at every citation site BEFORE deleting or modifying the snippet file. Pure citation form has no fallback — the snippet IS the source of truth for the cited content.

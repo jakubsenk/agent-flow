@@ -45,5 +45,3 @@ Canonical JSON schema for `/agent-flow:metrics --format json` output. Cite this 
 
 ## Used by:
 - `skills/metrics/SKILL.md` (citation marker `<!-- @snippet:metrics-json-schema -->` near schema definition section)
-
-**Expected citation count:** 1 (verifier `tests/scenarios/v690-snippet-citation-counts.sh`).

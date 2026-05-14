@@ -37,5 +37,3 @@ jq -nc \
 - `skills/fix-bugs/steps/07-publish.md:96` (citation marker `<!-- @snippet:pipeline-completion -->`)
 - `skills/implement-feature/steps/07-publish.md:55` (citation marker `<!-- @snippet:pipeline-completion -->`)
 
-**Expected citation count:** 3 (verifier `tests/scenarios/v690-snippet-citation-counts.sh`).
-

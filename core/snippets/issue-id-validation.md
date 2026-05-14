@@ -15,5 +15,3 @@ The canonical Bash conditional for validating an `$ISSUE_ID` value before it is 
 ## Used by:
 - `skills/fix-bugs/SKILL.md:290` (citation marker `<!-- @snippet:issue-id-validation -->`)
 
-**Expected citation count:** 1 (verifier `tests/scenarios/v690-snippet-citation-counts.sh`).
-

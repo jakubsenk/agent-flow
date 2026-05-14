@@ -25,5 +25,3 @@ fi
 ## Used by:
 - `skills/fix-bugs/SKILL.md` line 338 (citation marker `<!-- @snippet:architecture-freshness -->`)
 
-**Expected citation count:** 1 (verifier `tests/scenarios/v690-snippet-citation-counts.sh`).
-
