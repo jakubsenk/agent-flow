@@ -1,6 +1,6 @@
 # v9-overlay Test Fixtures
 
-Fixture directory for the 3 replacement overlay runtime coverage scenarios added in v9.2.0.
+Fixture directory for the 3 replacement overlay runtime coverage scenarios.
 
 ## Directory Layout
 

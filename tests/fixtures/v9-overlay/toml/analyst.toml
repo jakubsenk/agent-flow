@@ -1,4 +1,4 @@
-# v9.2.0 overlay test fixture — toml source (R1 input)
+# Overlay test fixture — toml source (R1 input)
 # Drives resolve_overlay() to assign OVERLAY_SOURCE="toml"
 # Minimum schema-conforming payload that triggers the toml branch (toml-merge.sh line 436).
 # Uses the actual allowed top-level keys: model, style, process_additions, constraints, limits, meta.

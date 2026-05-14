@@ -12,15 +12,8 @@ COUNT=$(grep -rnE '(/|:)(migrate-config|estimate|pipeline-status|scaffold-valida
   "$REPO_ROOT/examples/" \
   "$REPO_ROOT/tests/scenarios/" \
   2>/dev/null \
-  | grep -v 'docs/guides/migration-v7-to-v8.md' \
-  | grep -v 'docs/guides/migration-v8-to-v9.md' \
   | grep -v 'CHANGELOG.md' \
-  | grep -v 'tests/scenarios/v9-5-' \
-  | grep -v 'tests/scenarios/v9\.5\.0-deleted-skill-' \
   | grep -v 'tombstone\|removed in earlier versions\|estimate' \
-  | grep -v 'removed in earlier versions' \
-  | grep -v 'tests/scenarios/v6.9.0-doc-count-drift.sh' \
-  | grep -v 'tests/scenarios/v7.0.0-readme-collision-warning.sh' \
   | grep -v '\\\\: ' \
   | wc -l | tr -d ' ')
 
@@ -37,15 +30,8 @@ else
     "$REPO_ROOT/examples/" \
     "$REPO_ROOT/tests/scenarios/" \
     2>/dev/null \
-    | grep -v 'docs/guides/migration-v7-to-v8.md' \
-    | grep -v 'docs/guides/migration-v8-to-v9.md' \
     | grep -v 'CHANGELOG.md' \
-    | grep -v 'tests/scenarios/v9-5-' \
-    | grep -v 'tests/scenarios/v9\.5\.0-deleted-skill-' \
     | grep -v 'tombstone\|removed in earlier versions\|estimate' \
-    | grep -v 'removed in earlier versions' \
-    | grep -v 'tests/scenarios/v6.9.0-doc-count-drift.sh' \
-  | grep -v 'tests/scenarios/v7.0.0-readme-collision-warning.sh' \
     | grep -v '\\\\: ' \
     || true
   exit 1

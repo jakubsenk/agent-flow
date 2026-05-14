@@ -95,12 +95,12 @@ fi
 
 # Simulated /setup-agents output (writes only to customization/)
 cat > "$TMPDIR_TEST/customization/analyst.toml" << 'EOF'
-# generated: 2026-04-27T00:00:00Z by /setup-agents v8.0.0
+# generated: 2026-04-27T00:00:00Z by /setup-agents
 model = "sonnet"
 EOF
 
 cat > "$TMPDIR_TEST/customization/reviewer.toml" << 'EOF'
-# generated: 2026-04-27T00:00:00Z by /setup-agents v8.0.0
+# generated: 2026-04-27T00:00:00Z by /setup-agents
 model = "opus"
 EOF
 
