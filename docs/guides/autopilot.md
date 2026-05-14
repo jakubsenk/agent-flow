@@ -1,6 +1,6 @@
 # Autopilot — Operator Guide
 
-Autopilot is the headless dispatcher skill for ceos-agents. It reads your tracker queries from `## Automation Config`, classifies open issues into bugs and features, and sequentially dispatches `fix-bugs` or `implement-feature` per issue — all without human interaction.
+Autopilot is the headless dispatcher skill for agent-flow. It reads your tracker queries from `## Automation Config`, classifies open issues into bugs and features, and sequentially dispatches `fix-bugs` or `implement-feature` per issue — all without human interaction.
 
 It is designed for unattended operation: cron jobs, CI pipelines, nightly batch runs. Autopilot never modifies code or writes PRs itself; it delegates all work to child skills and surfaces aggregate results.
 
@@ -15,7 +15,7 @@ Autopilot acts as a process-local, cron-safe dispatcher. On each invocation it:
 1. Validates your `## Automation Config` and pings the tracker MCP.
 2. Acquires an atomic `mkdir`-based lock so concurrent runs on the same host are prevented.
 3. Fetches bugs via `Bug query` and features via `Feature query` (optional).
-4. Dispatches each issue sequentially to `ceos-agents:fix-bugs` or `ceos-agents:implement-feature`.
+4. Dispatches each issue sequentially to `agent-flow:fix-bugs` or `agent-flow:implement-feature`.
 5. Emits a summary table (issue ID, type, outcome, duration, tokens) and releases the lock.
 
 Child skills own all pipeline state: `state.json`, PRs, test runs, and webhook events. Autopilot itself fires no per-issue webhooks and writes no `state.json`. It is a pure dispatcher at the observability layer.
@@ -43,7 +43,7 @@ Add a `### Autopilot` subsection inside `## Automation Config` in your project's
 |-----|-------|
 | Max issues per run | 1 |
 | Lock timeout | 120 |
-| Log file | .ceos-agents/autopilot.log |
+| Log file | .agent-flow/autopilot.log |
 | Bug limit | 0 |
 | Feature limit | 0 |
 | On error | skip |
@@ -56,7 +56,7 @@ Key reference:
 |-----|------|---------|-----------|
 | `Max issues per run` | integer ≥ 1 | `1` | Total cap on issues dispatched per invocation (bugs + features combined). Default of 1 is a safety cap for first use. |
 | `Lock timeout` | integer (minutes) | `120` | Age threshold after which an existing lock directory is considered stale and auto-recovered. |
-| `Log file` | path | `.ceos-agents/autopilot.log` | Append-only run log path. Separate from the lock directory. |
+| `Log file` | path | `.agent-flow/autopilot.log` | Append-only run log path. Separate from the lock directory. |
 | `Bug limit` | integer ≥ 0 | `0` | Per-type cap on bug dispatches. `0` = no per-type cap (only `Max issues per run` total cap applies). |
 | `Feature limit` | integer ≥ 0 | `0` | Per-type cap on feature dispatches. `0` = no per-type cap (only `Max issues per run` total cap applies). |
 | `On error` | enum | `skip` | `skip` = log [WARN] and continue with next issue; `stop` = abort the whole run on the first per-issue error. |
@@ -75,7 +75,7 @@ Follow these steps before enabling unattended cron dispatch.
 Run the setup check:
 
 ```bash
-claude -p "Run /ceos-agents:check-setup" --dangerously-skip-permissions
+claude -p "Run /agent-flow:check-setup" --dangerously-skip-permissions
 ```
 
 Fix any reported MCP or config issues before continuing.
@@ -85,7 +85,7 @@ Fix any reported MCP or config issues before continuing.
 Set `Dry run: true` in your `### Autopilot` config. Then run:
 
 ```bash
-claude -p "Run /ceos-agents:autopilot --dry-run" --dangerously-skip-permissions
+claude -p "Run /agent-flow:autopilot --dry-run" --dangerously-skip-permissions
 ```
 
 Expected output:
@@ -107,7 +107,7 @@ While still in dry-run mode, open your tracker and manually run the configured `
 Change `Dry run: false` (or remove the key entirely — the default is `false`). Run once interactively to observe the first dispatch:
 
 ```bash
-claude -p "Run /ceos-agents:autopilot" --dangerously-skip-permissions
+claude -p "Run /agent-flow:autopilot" --dangerously-skip-permissions
 ```
 
 Review the summary table at the end. Each row shows outcome (`success`, `block`, or `error`) and token usage (when available from the child skill's `state.json`).
@@ -123,7 +123,7 @@ Once you are satisfied with live dispatch, schedule the job (see next section).
 ### Recommended crontab line
 
 ```cron
-0 2 * * * cd /path/to/your/project && claude -p "Run /ceos-agents:autopilot" --dangerously-skip-permissions >> /var/log/autopilot.log 2>&1 || echo "[autopilot] exit=$?" >> /var/log/autopilot.log
+0 2 * * * cd /path/to/your/project && claude -p "Run /agent-flow:autopilot" --dangerously-skip-permissions >> /var/log/autopilot.log 2>&1 || echo "[autopilot] exit=$?" >> /var/log/autopilot.log
 ```
 
 This runs Autopilot every night at 02:00, appends stdout and stderr to a log file, and records non-zero exits in the same file.
@@ -135,7 +135,7 @@ This runs Autopilot every night at 02:00, appends stdout and stderr to a log fil
 ```cron
 PATH=/usr/local/bin:/usr/bin:/bin
 CLAUDE_API_KEY=<your-api-key>
-0 2 * * * cd /path/to/your/project && claude -p "Run /ceos-agents:autopilot" --dangerously-skip-permissions >> /var/log/autopilot.log 2>&1
+0 2 * * * cd /path/to/your/project && claude -p "Run /agent-flow:autopilot" --dangerously-skip-permissions >> /var/log/autopilot.log 2>&1
 ```
 
 ### Capturing exit codes
@@ -144,7 +144,7 @@ Autopilot uses structured exit codes (see Error Handling section below). The `||
 
 ```bash
 set -o pipefail
-claude -p "Run /ceos-agents:autopilot" --dangerously-skip-permissions
+claude -p "Run /agent-flow:autopilot" --dangerously-skip-permissions
 EXIT=$?
 if [ $EXIT -ne 0 ]; then
   echo "[autopilot] exit=$EXIT at $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> /var/log/autopilot.log
@@ -375,13 +375,13 @@ If another Autopilot process holds the lock (and the lock is not stale), Autopil
 **Manual recovery:** After confirming no live Autopilot process exists on the host:
 
 ```bash
-rm -rf .ceos-agents/autopilot.lock/
+rm -rf .agent-flow/autopilot.lock/
 ```
 
 Check `owner.json` first to identify the owning PID and host before removing:
 
 ```bash
-cat .ceos-agents/autopilot.lock/owner.json
+cat .agent-flow/autopilot.lock/owner.json
 ```
 
 ### `owner.json` corruption
@@ -393,7 +393,7 @@ If `owner.json` exists but is empty or partially written, Autopilot treats it as
 On minimal Alpine images with BusyBox < 1.30, `awk mktime` is not available. Autopilot falls back to a filesystem mtime check: if `owner.json` was last modified more than 121 minutes ago, the lock is considered stale. This check uses:
 
 ```bash
-find .ceos-agents/autopilot.lock/owner.json -mmin +121 -print
+find .agent-flow/autopilot.lock/owner.json -mmin +121 -print
 ```
 
 Required for the BusyBox fallback path: bash ≥ 4.0, standard `find` with `-mmin`. No GNU-date or Python 3 dependency.
@@ -402,7 +402,7 @@ On all other platforms (Linux with gawk, macOS, Windows Git Bash via MSYS coreut
 
 ### `[STOP] MCP unreachable`
 
-Run `/ceos-agents:check-setup` to diagnose the tracker MCP configuration. Autopilot does not retry MCP pings — the next cron invocation will re-attempt.
+Run `/agent-flow:check-setup` to diagnose the tracker MCP configuration. Autopilot does not retry MCP pings — the next cron invocation will re-attempt.
 
 ### `Feature Workflow section absent` warning
 
@@ -434,7 +434,7 @@ On each Autopilot run, a paused issue is **skipped** — it is not re-dispatched
 [INFO] Skipping PROJ-42: awaiting clarification
 ```
 
-The issue remains paused until a human answers the clarification question (by re-invoking the original entry-point skill with `--clarification "answer"`, e.g. `/ceos-agents:fix-bugs PROJ-42 --clarification "answer"`; auto-resume detection is handled inline by `core/resume-detection.md`) or until the `Pause timeout` elapses.
+The issue remains paused until a human answers the clarification question (by re-invoking the original entry-point skill with `--clarification "answer"`, e.g. `/agent-flow:fix-bugs PROJ-42 --clarification "answer"`; auto-resume detection is handled inline by `core/resume-detection.md`) or until the `Pause timeout` elapses.
 
 ### Auto-abort on timeout
 
@@ -475,6 +475,6 @@ If `pipeline-paused` is added to `On events` in your `### Notifications` config,
 
 ## Webhook Reliability
 
-Webhook delivery failures (HTTP timeout, DNS error, 4xx/5xx) emit `[WARN] Webhook delivery failed` log lines. To prevent latency runaway from a dead endpoint, ceos-agents v6.9.0+ implements an **in-memory per-run circuit breaker** that opens after 3 consecutive failures and suppresses remaining webhooks for that run only.
+Webhook delivery failures (HTTP timeout, DNS error, 4xx/5xx) emit `[WARN] Webhook delivery failed` log lines. To prevent latency runaway from a dead endpoint, agent-flow v6.9.0+ implements an **in-memory per-run circuit breaker** that opens after 3 consecutive failures and suppresses remaining webhooks for that run only.
 
 **Operator action:** monitor pipeline logs for repeated `[WARN] Circuit breaker open` lines. Repeated openings across runs indicate either (a) a misconfigured `Webhook URL` in Automation Config or (b) a covert-channel DoS via a malicious `Webhook URL` PR change. For multi-contributor environments, treat CLAUDE.md `Webhook URL` PR changes as security-relevant and review carefully.

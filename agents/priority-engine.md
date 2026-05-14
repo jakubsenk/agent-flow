@@ -20,7 +20,7 @@ Impact assessment, risk analysis, effort estimation, dependency graph constructi
 1. Receive the list of open issues (ID, title, description, state, labels, comments)
 2. For each issue, assess four dimensions:
    a. **Impact** (1-5): How many users/modules does this affect? Labels like "critical", "blocker" increase score. Issues with many duplicates increase score.
-   b. **Risk** (1-5): How critical is the affected code area? Core business logic = 5, cosmetic = 1. If historical data available (from metrics or [ceos-agents] comments), factor in: area with recurring bugs = higher risk.
+   b. **Risk** (1-5): How critical is the affected code area? Core business logic = 5, cosmetic = 1. If historical data available (from metrics or [agent-flow] comments), factor in: area with recurring bugs = higher risk.
    c. **Effort** (1-5): Estimated implementation complexity. 1 = trivial fix (typo, config), 5 = multi-file refactoring. Use issue description length, affected area size, and any prior analysis as signals.
    d. **Dependencies** (list): Does this issue block or depend on other issues? Use issue links, mentions, and shared code areas.
 3. Calculate priority score: `score = (Impact × 2 + Risk × 1.5) / (Effort × 1) + dependency_bonus`
@@ -66,7 +66,7 @@ Impact assessment, risk analysis, effort estimation, dependency graph constructi
 | Section | Source | Required |
 |---------|--------|----------|
 | Open issue list (ID, title, description, state, labels, comments) | dispatching skill (prioritize) | yes |
-| Historical metrics (optional) | `/ceos-agents:metrics` output or pipeline-history | no |
+| Historical metrics (optional) | `/agent-flow:metrics` output or pipeline-history | no |
 
 ### Outputs
 
@@ -74,11 +74,11 @@ Impact assessment, risk analysis, effort estimation, dependency graph constructi
 |------------------|------|-----------------|
 | `## Backlog Prioritization` | on ≥1 issue | Three tier sub-tables: P0 — Fix Now, P1 — Fix Next, P2 — Backlog (each with # / Issue / Impact / Risk / Effort / Score / Rationale); Dependencies; Recommendations |
 | `No open issues found — backlog is empty` literal | on 0 issues | (terminal sentinel; no Block) |
-| `[ceos-agents] 🔴 Pipeline Block` | on Block | Agent: priority-engine; Step: Backlog Prioritization; Reason; Detail; Recommendation |
+| `[agent-flow] 🔴 Pipeline Block` | on Block | Agent: priority-engine; Step: Backlog Prioritization; Reason; Detail; Recommendation |
 
 ## Step Completion Invariants
 
-Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.ceos-agents/{ISSUE_ID}/state.json` (or the orchestrator-injected state path):
+Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.agent-flow/{ISSUE_ID}/state.json` (or the orchestrator-injected state path):
 
 1. `dispatched_at` — Field is present and non-empty for stage `prioritization`. The orchestrator wrote this pre-dispatch.
 
@@ -103,7 +103,7 @@ Do NOT attempt to write `tool_uses`, `completed_at`, or `status="completed"` —
 - If backlog query returns 0 issues, report 'No open issues found — backlog is empty' and exit without producing a prioritization table.
 - On failure: report what was analyzed so far, Block using the Block Comment Template:
   ```
-  [ceos-agents] 🔴 Pipeline Block
+  [agent-flow] 🔴 Pipeline Block
   Agent: priority-engine
   Step: Backlog Prioritization
   Reason: {max 2 sentences}

@@ -1,7 +1,0 @@
-[2026-04-05T13:31:30Z] FORGE_START input="Pipeline Output Verification (v6.3.3)" config=adaptive/L1-defaults-only
-[2026-04-05T13:31:45Z] PHASE_START phase=0 name=Meta-Agent
-[2026-04-05T13:38:00Z] PHASE_END phase=0 status=completed
-[2026-04-05T13:38:01Z] AGENT_END phase=0 agent=meta-agent status=completed
-[2026-04-05T13:38:01Z] TEMPLATE_SKIPPED reason="not_configured"
-[2026-04-05T13:38:01Z] ROUTING_FALLBACK reason="routing_decision block absent in analysis.md" check="C"
-[2026-04-05T13:38:01Z] FAST_TRACK_FORCE_INELIGIBLE reason="fast_spec_not_found"

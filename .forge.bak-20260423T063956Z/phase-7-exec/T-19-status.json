@@ -1,9 +1,0 @@
-{
-  "task_id": "T-19",
-  "status": "DONE",
-  "files_modified": ["skills/fix-ticket/SKILL.md", "skills/fix-bugs/SKILL.md", "skills/implement-feature/SKILL.md", "core/post-publish-hook.md"],
-  "revision_cycle": null,
-  "concerns": [],
-  "test_results": "AC-036/037: Step Z added in 3 skills with outcome:failed; limitation footnote at post-publish-hook.md:~85 honest about process-death uncovered",
-  "completed_at": "2026-04-20T14:11:00Z"
-}

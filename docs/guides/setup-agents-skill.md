@@ -1,15 +1,15 @@
-# /ceos-agents:setup-agents — Guide
+# /agent-flow:setup-agents — Guide
 
-Tato příručka popisuje dovednost `/ceos-agents:setup-agents` — jednorázový skener projektu,
-který automaticky vygeneruje chytré výchozí hodnoty `customization/{agent}.toml` přizpůsobené
-vašemu technologickému stacku. Hodí se pro první nastavení nového projektu, po větší refaktoraci
-nebo při onboardingu nového člena týmu.
+This guide describes the `/agent-flow:setup-agents` skill — a one-shot project scanner that
+automatically generates sensible default `customization/{agent}.toml` values tailored to your
+technology stack. Useful for first-time project setup, after a major refactor, or when
+onboarding a new team member.
 
 ---
 
 ## Overview
 
-`/ceos-agents:setup-agents` is a **one-shot project scanner** that reads the project root
+`/agent-flow:setup-agents` is a **one-shot project scanner** that reads the project root
 (manifest files, framework configs, test configurations) and generates
 `customization/{agent}.toml` overlay files with sensible, project-specific defaults for each
 relevant agent.
@@ -34,7 +34,7 @@ The TOML overlay contract is at `core/overlay/toml-overlay.md`.
 
 | Scenario | Recommended action |
 |----------|--------------------|
-| First-time setup of a consuming project | Run `/ceos-agents:setup-agents` after `/ceos-agents:check-setup` |
+| First-time setup of a consuming project | Run `/agent-flow:setup-agents` after `/agent-flow:check-setup` |
 | Post-major-refactor (e.g., added TypeScript, switched to monorepo) | Re-run to regenerate heuristic overlays; user-edited files are preserved |
 | New team member onboarding | Run once in the project root to establish shared agent defaults |
 | Reviewing what overlays would be generated without writing | Run with `--dry-run` |
@@ -45,7 +45,7 @@ The TOML overlay contract is at `core/overlay/toml-overlay.md`.
 ## Synopsis
 
 ```
-/ceos-agents:setup-agents [--dry-run] [--yolo] [--force]
+/agent-flow:setup-agents [--dry-run] [--yolo] [--force]
 ```
 
 ### Flags
@@ -91,7 +91,7 @@ writes. Multiple heuristics may fire in the same run; their outputs are merged i
 
 ### All 18 Agent Names (eligible for overlay generation)
 
-The following 18 canonical agent names (post-v8.0.0) may appear as generated `{agent}.toml`
+The following canonical agent names may appear as generated `{agent}.toml`
 filenames in `customization/`:
 
 `analyst`, `fixer`, `reviewer`, `test-engineer`, `acceptance-gate`, `publisher`,
@@ -110,13 +110,13 @@ Other agents can be customized by manually creating `customization/{agent}.toml`
 Every file written by `/setup-agents` begins with a `# generated:` header on line 1:
 
 ```
-# generated: {ISO-8601-timestamp} by /setup-agents v8.0.0
+# generated: {ISO-8601-timestamp} by /setup-agents
 ```
 
 This sentinel line enables idempotent regen (see next section). Example:
 
 ```toml
-# generated: 2026-04-27T10:00:00Z by /setup-agents v8.0.0
+# generated: 2026-04-27T10:00:00Z by /setup-agents
 # Python project detected via: pyproject.toml
 
 [[constraints]]
@@ -157,7 +157,7 @@ preview:
 [setup-agents] Planned write: customization/fixer.toml
 --- existing (or /dev/null if new)
 +++ planned
- # generated: 2026-04-26T09:00:00Z by /setup-agents v8.0.0
+ # generated: 2026-04-26T09:00:00Z by /setup-agents
 -# Python project detected via: requirements.txt
 +# Python project detected via: pyproject.toml
  
@@ -229,7 +229,7 @@ my-api/
 
 **Run:**
 ```bash
-/ceos-agents:setup-agents
+/agent-flow:setup-agents
 ```
 
 **Expected preview (3 files planned):**
@@ -238,7 +238,7 @@ my-api/
 [setup-agents] Planned write: customization/analyst.toml
 --- /dev/null
 +++ planned
-+# generated: 2026-04-27T10:00:00Z by /setup-agents v8.0.0
++# generated: 2026-04-27T10:00:00Z by /setup-agents
 +# Python project detected via: pyproject.toml
 +
 +[[constraints]]
@@ -252,7 +252,7 @@ Apply / Skip this agent / Abort? [a/s/q]: a
 
 **Resulting `customization/fixer.toml`:**
 ```toml
-# generated: 2026-04-27T10:00:00Z by /setup-agents v8.0.0
+# generated: 2026-04-27T10:00:00Z by /setup-agents
 # Python project detected. Mypy detected: true
 
 [[constraints]]
@@ -264,7 +264,7 @@ rule = "Use type hints on all new public functions and methods."
 
 **Resulting `customization/test-engineer.toml`:**
 ```toml
-# generated: 2026-04-27T10:00:00Z by /setup-agents v8.0.0
+# generated: 2026-04-27T10:00:00Z by /setup-agents
 # Test framework detected: pytest
 
 [limits]
@@ -304,12 +304,12 @@ my-monorepo/
 
 **Run (silent mode):**
 ```bash
-/ceos-agents:setup-agents --yolo
+/agent-flow:setup-agents --yolo
 ```
 
 **Resulting `customization/analyst.toml`:**
 ```toml
-# generated: 2026-04-27T10:00:00Z by /setup-agents v8.0.0
+# generated: 2026-04-27T10:00:00Z by /setup-agents
 # Monorepo detected via: pnpm-workspace.yaml
 
 [[process_additions]]
@@ -323,7 +323,7 @@ instruction = "For multi-package changes, list each affected package separately 
 
 **Resulting `customization/reviewer.toml`:**
 ```toml
-# generated: 2026-04-27T10:00:00Z by /setup-agents v8.0.0
+# generated: 2026-04-27T10:00:00Z by /setup-agents
 # TypeScript project detected via: tsconfig.json
 
 [[constraints]]
@@ -335,7 +335,7 @@ rule = "Flag any use of 'any' type without explicit justification comment."
 
 **Resulting `customization/test-engineer.toml`:**
 ```toml
-# generated: 2026-04-27T10:00:00Z by /setup-agents v8.0.0
+# generated: 2026-04-27T10:00:00Z by /setup-agents
 # Test framework detected: vitest
 
 [limits]
@@ -367,7 +367,7 @@ rule = "Reject any PR that removes existing Jest snapshots without a documented 
 
 **Step 2 — Re-run `/setup-agents` (future runs):**
 ```bash
-/ceos-agents:setup-agents
+/agent-flow:setup-agents
 ```
 
 Output:
@@ -391,7 +391,7 @@ The `reviewer.toml` is safely skipped on every future run until you explicitly p
 Before committing to any writes, preview what `/setup-agents` would generate:
 
 ```bash
-/ceos-agents:setup-agents --dry-run
+/agent-flow:setup-agents --dry-run
 ```
 
 Output (no files written):
@@ -416,13 +416,13 @@ To reset all generated overlays to current heuristics after a major refactor:
 ```bash
 # Option A: delete generated files and re-run
 rm customization/analyst.toml customization/fixer.toml customization/test-engineer.toml
-/ceos-agents:setup-agents
+/agent-flow:setup-agents
 
 # Option B: keep user-edited files, only regenerate generated ones
-/ceos-agents:setup-agents        # user-edited files are auto-skipped
+/agent-flow:setup-agents        # user-edited files are auto-skipped
 
 # Option C: force overwrite everything (with backups)
-/ceos-agents:setup-agents --force --yolo
+/agent-flow:setup-agents --force --yolo
 # Creates .bak-{ISO-8601} backups for user-edited files, then regenerates all
 ```
 
@@ -473,10 +473,10 @@ If a legacy v7 `customization/{agent}.md` and a new `customization/{agent}.toml`
 the `.toml` takes precedence and a warning is emitted:
 
 ```
-[WARN] Legacy .md overlay ignored; .toml takes precedence (deprecate v9.0.0)
+[WARN] Legacy .md overlay ignored; .toml takes precedence
 ```
 
-**Fix:** Remove the `.md` file or migrate it to TOML format manually following [migration-v7-to-v8.md](migration-v7-to-v8.md). The `/migrate-config` skill was removed in v9.5.0.
+**Fix:** Remove the `.md` file or migrate it to TOML format manually following the steps in `docs/guides/toml-overlay-syntax.md`.
 
 ---
 
@@ -485,6 +485,6 @@ the `.toml` takes precedence and a warning is emitted:
 - `docs/guides/toml-overlay-syntax.md` — TOML overlay format, 3-tier merge rules, per-agent
   key reference table
 - `core/overlay/toml-overlay.md` — contract specification (authoritative)
-- `docs/guides/migration-v7-to-v8.md` — migration guide including legacy `.md` → `.toml`
-  conversion
+- `docs/guides/toml-overlay-syntax.md` — TOML overlay format including legacy `.md` → `.toml`
+  conversion guide
 - `skills/setup-agents/SKILL.md` — full skill definition with step-by-step implementation

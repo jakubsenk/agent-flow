@@ -11,7 +11,7 @@ cd "$(dirname "$0")/../.."
 
 FAIL=0
 
-# Must have 18 or 19 optional (v6.9.0 bumped 18 → 19)
+# Must have 18 or 19 optional sections
 if ! grep -nE '(18|19) optional' CLAUDE.md | grep -q .; then
   echo "FAIL: CLAUDE.md does not contain '18 optional' or '19 optional' (optional sections table not bumped)" >&2
   FAIL=1

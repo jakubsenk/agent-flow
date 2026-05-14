@@ -1,14 +1,14 @@
 {
-  "name": "ceos-agents",
+  "name": "agent-flow",
   "owner": {
     "name": "Filip Sabacky"
   },
   "plugins": [
     {
-      "name": "ceos-agents",
+      "name": "agent-flow",
       "source": "./",
-      "description": "CEOS CLAUDE Agents — development automation: bug-fix, feature pipeline, scaffold, decomposition, dashboard",
-      "version": "10.2.0",
+      "description": "agent-flow — Claude Code plugin for automated bug-fix, feature, and scaffold workflows. Issue tracker to merged PR via a pipeline of specialized AI agents.",
+      "version": "1.0.0",
       "license": "MIT"
     }
   ]

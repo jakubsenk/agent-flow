@@ -220,7 +220,7 @@ if ! grep -qE 'Done:.*State: Done' "$REPO_ROOT/examples/configs/youtrack-python.
   fail "G-31: examples/configs/youtrack-python.md missing 'Done: State: Done' mapping"
 fi
 
-# G-32: redmine-rails.md — Done: status_id:5 (v6.5.2: changed from status:Closed to status_id:5)
+# G-32: redmine-rails.md — Done: status_id:5 (changed from status:Closed to status_id:5)
 if ! grep -qE 'Done:.*status_id:5' "$REPO_ROOT/examples/configs/redmine-rails.md"; then
   fail "G-32: examples/configs/redmine-rails.md 'Done: status_id:5' missing or accidentally removed"
 fi

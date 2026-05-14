@@ -12,9 +12,9 @@ The architect binds to canonical stage `code_analysis` per design.md §4.2 (feat
 ```bash
 . core/lib/stage-invariant.sh
 PROMPT_HEAD_128="$(printf '%s' "$ARCHITECT_PROMPT_TEMPLATE" | head -c 128)"
-DISPATCH_WITNESS="$(compute_dispatch_witness code_analysis ceos-agents:architect opus "$PROMPT_HEAD_128")"
+DISPATCH_WITNESS="$(compute_dispatch_witness code_analysis agent-flow:architect opus "$PROMPT_HEAD_128")"
 DISPATCHED_AT="$(date -u +%FT%TZ)"
-EXPECTED_AGENT_NAME="ceos-agents:architect"
+EXPECTED_AGENT_NAME="agent-flow:architect"
 EXPECTED_STAGE_NAME="code_analysis"
 # Merge: state.json[stages.code_analysis] = { dispatched_at, dispatch_witness,
 #   agent_name, stage_name, status="in_progress" } atomically.
@@ -25,7 +25,7 @@ EXPECTED_STAGE_NAME="code_analysis"
 Before dispatch, check Agent Overrides: follow `../../../core/agent-override-injector.md`.
 If `{Agent Overrides path}/architect.toml` exists, append its rendered Markdown content to the agent's context as `## Project-Specific Instructions`.
 
-You MUST invoke Task(subagent_type='ceos-agents:architect', model='opus'). DO NOT inline-execute.
+You MUST invoke Task(subagent_type='agent-flow:architect', model='opus'). DO NOT inline-execute.
 - Context: specification from spec-analyst + analyst impact analysis (if available) + access to code +
   `Module Docs path = {Path from Module Docs config, or "none"}.`
 - Expected output: architectural design + task tree (YAML)

@@ -24,7 +24,7 @@ pipeline on a recoverable condition (corrupt JSON, missing optional field, webho
 
 - **ISSUE_ID** (string, required for single-mode entry-points; for batch-mode set to
   `BATCH_RUN_ID = "batch-{timestamp}"`) — the run identifier used as a directory key under
-  `.ceos-agents/`.
+  `.agent-flow/`.
 - **MODE** (enum: `single` | `batch`, required) — supplied by the calling skill.
 - **GOT_YOLO** (bool, default false) — passed from skill flag-parsing.
 - **GOT_STEP_MODE** (bool, default false) — passed from skill flag-parsing.
@@ -82,7 +82,7 @@ no webhook fired.
 ### Step 2 — State file path resolution
 
 ```bash
-STATE_DIR=".ceos-agents/${ISSUE_ID}"
+STATE_DIR=".agent-flow/${ISSUE_ID}"
 STATE_FILE="${STATE_DIR}/state.json"
 ```
 
@@ -235,13 +235,13 @@ fi
 If not in `--yolo` mode AND `RESUME_POINT != FRESH`:
 
 ```
-[ceos-agents] Found in-progress pipeline for ${ISSUE_ID} (last step: ${LAST_COMPLETED}).
+[agent-flow] Found in-progress pipeline for ${ISSUE_ID} (last step: ${LAST_COMPLETED}).
 ${STALENESS_WARN:-}
 Continue? [Y=resume / n=restart / abort]
 ```
 
 - `Y` (default, also accepts empty input) → return current `RESUME_POINT`.
-- `n` → archive `state.json` to `.ceos-agents/${ISSUE_ID}/state.json.bak-$(date -u +%s)`,
+- `n` → archive `state.json` to `.agent-flow/${ISSUE_ID}/state.json.bak-$(date -u +%s)`,
   set `RESUME_POINT="FRESH"`.
 - `abort` → set `RESUME_POINT="ABORTED_BY_OPERATOR"`; calling skill exits 1.
 - Re-prompt on any other input.
@@ -340,7 +340,7 @@ from this contract. A paused resume transitions through `running` before reachin
   - State archive on `n=restart` (move file to `state.json.bak-{timestamp}`).
   - Status flip from `paused` → `running` and `clarification.asked_at_step.status` from
     `awaiting_clarification` → `in_progress` after CLARIFICATION_TEXT is consumed.
-- NEVER follow symlinks outside `.ceos-agents/`. The path is constructed from validated
+- NEVER follow symlinks outside `.agent-flow/`. The path is constructed from validated
   ISSUE_ID; no `realpath` resolution that could escape the directory.
 - NEVER fire the `pipeline-completed` webhook from this contract (REQ-049 / AC-049): the
   `completed` event fires ONLY at the orchestrator's terminal-state commit.

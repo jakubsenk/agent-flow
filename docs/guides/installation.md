@@ -1,4 +1,4 @@
-# Installing ceos-agents
+# Installing agent-flow
 
 Step by step: from a clean slate to a working pipeline.
 
@@ -38,19 +38,19 @@ The plugin is hosted on your Git server (e.g., `<your-git-host>`). You need SSH 
 ## 2. Plugin Installation
 
 ```bash
-claude plugin marketplace add <path-to-repo>  # e.g. C:/gitea_ceos-agents
-claude plugin install ceos-agents@ceos-agents
+claude plugin marketplace add <path-to-repo>  # e.g. C:/gitea_agent-flow
+claude plugin install agent-flow@agent-flow
 ```
 
-Verify: enter `/ceos-agents:` and check that skills appear (tab-complete).
+Verify: enter `/agent-flow:` and check that skills appear (tab-complete).
 
 ### Updating the Plugin
 
 The marketplace cache does not update automatically. After a new version is released:
 
 ```bash
-cd ~/.claude/plugins/marketplaces/ceos-agents && git fetch origin && git pull origin main
-rm -rf ~/.claude/plugins/cache/ceos-agents/
+cd ~/.claude/plugins/marketplaces/agent-flow && git fetch origin && git pull origin main
+rm -rf ~/.claude/plugins/cache/agent-flow/
 ```
 
 Then restart your Claude Code session.
@@ -61,26 +61,26 @@ After installing the plugin, you need to configure your specific project:
 
 1. Create `.mcp.json` in the project root — see [mcp-configuration.md](mcp-configuration.md)
 2. Add `## Automation Config` to the project's CLAUDE.md — see the example in the plugin README
-3. Verify: `/ceos-agents:check-setup`
+3. Verify: `/agent-flow:check-setup`
 
 ## 4. Pipeline State and .gitignore
 
-The plugin writes runtime state files to `.ceos-agents/` in your project root. These files are local to each pipeline run and should generally not be committed.
+The plugin writes runtime state files to `.agent-flow/` in your project root. These files are local to each pipeline run and should generally not be committed.
 
 **Recommended `.gitignore` entries:**
 
 ```
-.ceos-agents/autopilot.lock/
-.ceos-agents/state.json
-.ceos-agents/pipeline.log
-.ceos-agents/autopilot.log
+.agent-flow/autopilot.lock/
+.agent-flow/state.json
+.agent-flow/pipeline.log
+.agent-flow/autopilot.log
 ```
 
 **`pipeline-history.md` — operator choice:**
 
-`.ceos-agents/pipeline-history.md` is an append-only run log that accumulates cross-run block patterns and outcomes. Operators have two options:
+`.agent-flow/pipeline-history.md` is an append-only run log that accumulates cross-run block patterns and outcomes. Operators have two options:
 
-- **Gitignore it (default):** Add `.ceos-agents/pipeline-history.md` to `.gitignore` to keep it local. Suitable for single-developer or ephemeral CI environments.
+- **Gitignore it (default):** Add `.agent-flow/pipeline-history.md` to `.gitignore` to keep it local. Suitable for single-developer or ephemeral CI environments.
 - **Commit it (shared learning):** Omit it from `.gitignore` to commit and share cross-pipeline learning across team members. If you commit this file, note that `block_reason` values are redacted via `sanitize_block_reason()` (18-pattern credential scrubbing including bare-keyword variables added in v6.9.1), but you should still review the file for any sensitive operational details before committing.
 
 ## Platform Notes
@@ -89,7 +89,7 @@ The plugin writes runtime state files to `.ceos-agents/` in your project root. T
 
 The procedure described above is for Windows. Paths use `~/` notation (Git Bash / WSL).
 
-**gitea-mcp note:** The `/ceos-agents:setup-mcp` skill automatically downloads and installs `gitea-mcp` from [gitea.com/gitea/gitea-mcp](https://gitea.com/gitea/gitea-mcp/releases). If the download fails, it falls back to `go install gitea.com/gitea/gitea-mcp@latest`. Ensure Go is installed (`go version`) as a fallback option. Install Go from [go.dev/dl](https://go.dev/dl/) if needed.
+**gitea-mcp note:** The `/agent-flow:setup-mcp` skill automatically downloads and installs `gitea-mcp` from [gitea.com/gitea/gitea-mcp](https://gitea.com/gitea/gitea-mcp/releases). If the download fails, it falls back to `go install gitea.com/gitea/gitea-mcp@latest`. Ensure Go is installed (`go version`) as a fallback option. Install Go from [go.dev/dl](https://go.dev/dl/) if needed.
 
 ### Linux
 
@@ -108,6 +108,6 @@ Not explicitly supported, but likely functional (analogous to Linux).
 
 The short form `/init` collides with Claude Code's built-in slash command. Use the namespaced form instead:
 
-- `/ceos-agents:setup-mcp` (renamed from `/ceos-agents:init` in v7.0.0)
+- `/agent-flow:setup-mcp` (renamed from `/agent-flow:init` in v7.0.0)
 
-The namespaced form `/ceos-agents:*` is unambiguous. See CHANGELOG.md for full migration notes.
+The namespaced form `/agent-flow:*` is unambiguous. See CHANGELOG.md for full migration notes.

@@ -16,9 +16,9 @@ Source `core/lib/stage-invariant.sh` and write the dispatch witness atomically t
 ```bash
 . core/lib/stage-invariant.sh
 PROMPT_HEAD_128="$(printf '%s' "$SPEC_ANALYST_PROMPT_TEMPLATE" | head -c 128)"
-DISPATCH_WITNESS="$(compute_dispatch_witness spec_analysis ceos-agents:spec-analyst sonnet "$PROMPT_HEAD_128")"
+DISPATCH_WITNESS="$(compute_dispatch_witness spec_analysis agent-flow:spec-analyst sonnet "$PROMPT_HEAD_128")"
 DISPATCHED_AT="$(date -u +%FT%TZ)"
-EXPECTED_AGENT_NAME="ceos-agents:spec-analyst"
+EXPECTED_AGENT_NAME="agent-flow:spec-analyst"
 EXPECTED_STAGE_NAME="spec_analysis"
 # Merge into state.json[stages.spec_analysis]: { dispatched_at, dispatch_witness,
 # agent_name, stage_name, status="in_progress" } via ../../../core/state-manager.md atomic write.
@@ -29,7 +29,7 @@ EXPECTED_STAGE_NAME="spec_analysis"
 Before dispatch, check Agent Overrides: follow `../../../core/agent-override-injector.md`.
 If `{Agent Overrides path}/spec-analyst.toml` exists, append its rendered Markdown content to the agent's context as `## Project-Specific Instructions`.
 
-You MUST invoke Task(subagent_type='ceos-agents:spec-analyst', model='sonnet'). DO NOT inline-execute.
+You MUST invoke Task(subagent_type='agent-flow:spec-analyst', model='sonnet'). DO NOT inline-execute.
 - Context: issue details from the issue tracker (wrapped in EXTERNAL INPUT markers per `../../../core/external-input-sanitizer.md`)
 - Expected output: structured specification with acceptance criteria
 
@@ -71,9 +71,9 @@ write protocol from `../../../core/state-manager.md`.
 ```bash
 . core/lib/stage-invariant.sh
 PROMPT_HEAD_128="$(printf '%s' "$ANALYST_IMPACT_PROMPT_TEMPLATE" | head -c 128)"
-DISPATCH_WITNESS="$(compute_dispatch_witness code_analysis ceos-agents:analyst sonnet "$PROMPT_HEAD_128")"
+DISPATCH_WITNESS="$(compute_dispatch_witness code_analysis agent-flow:analyst sonnet "$PROMPT_HEAD_128")"
 DISPATCHED_AT="$(date -u +%FT%TZ)"
-EXPECTED_AGENT_NAME="ceos-agents:analyst"
+EXPECTED_AGENT_NAME="agent-flow:analyst"
 EXPECTED_STAGE_NAME="code_analysis"
 # Merge: state.json[stages.code_analysis] = { dispatched_at, dispatch_witness,
 #   agent_name, stage_name, status="in_progress" } atomically per ../../../core/state-manager.md.
@@ -84,7 +84,7 @@ EXPECTED_STAGE_NAME="code_analysis"
 Before dispatch, check Agent Overrides: follow `../../../core/agent-override-injector.md`.
 If `{Agent Overrides path}/analyst.toml` exists, append its rendered Markdown content to the agent's context as `## Project-Specific Instructions`.
 
-You MUST invoke Task(subagent_type='ceos-agents:analyst', prompt='--phase impact', model='sonnet'). DO NOT inline-execute.
+You MUST invoke Task(subagent_type='agent-flow:analyst', prompt='--phase impact', model='sonnet'). DO NOT inline-execute.
 Context: `Mode: feature. Pipeline: implement-feature. Spec: {spec-analyst output}. Root cause iterations =
 {Root cause iterations from config}. Module Docs path = {Path from Module Docs config, or "none"}.`
 

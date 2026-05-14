@@ -1,9 +1,0 @@
-{
-  "task_type": "bugfix",
-  "secondary_types": ["security", "documentation"],
-  "action": "full_pipeline",
-  "target_skill": null,
-  "confidence": 0.93,
-  "reasoning": "Seven-item bugfix/hardening task with fully specified acceptance criteria across 10+ files. Requires research (understanding current state of each target file), spec (formal acceptance criteria per item), TDD (structural validation tests), plan (dependency-ordered tasks — items editing the same file must be sequenced), execute (10+ file edits across core/, agents/, skills/, state/), and verify (test suite + security audit for marker nesting fix). No skill shortcut applicable — multi-file, multi-concern corrective change set requiring full pipeline discipline.",
-  "skip_profile": null
-}

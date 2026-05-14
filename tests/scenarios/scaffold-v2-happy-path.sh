@@ -44,7 +44,7 @@ if ! grep -q "spec-reviewer" "$SCAFFOLD_CMD"; then
 fi
 
 # Step 5: Architecture
-if ! grep -qE "ceos-agents:architect|architect agent" "$SCAFFOLD_CMD"; then
+if ! grep -qE "agent-flow:architect|architect agent" "$SCAFFOLD_CMD"; then
   echo "FAIL: scaffold.md missing Step 5: Architecture"
   exit 1
 fi

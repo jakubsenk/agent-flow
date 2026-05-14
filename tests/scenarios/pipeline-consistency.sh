@@ -46,9 +46,9 @@ EMOJI_BYTES=$'\xf0\x9f\x94\xb4'
 for f in $PIPELINE_FILES; do
   name=$(basename "$f")
   body=$(aggregate_skill "$f")
-  if printf '%s' "$body" | grep -q '\[ceos-agents\].*Pipeline Block'; then
+  if printf '%s' "$body" | grep -q '\[agent-flow\].*Pipeline Block'; then
     # Every occurrence must have the emoji (compare at byte level)
-    bad=$(printf '%s' "$body" | LC_ALL=C grep '\[ceos-agents\].*Pipeline Block' | LC_ALL=C grep -v "$EMOJI_BYTES" || true)
+    bad=$(printf '%s' "$body" | LC_ALL=C grep '\[agent-flow\].*Pipeline Block' | LC_ALL=C grep -v "$EMOJI_BYTES" || true)
     if [ -n "$bad" ]; then
       fail "$name has block comment without emoji: $bad"
     fi

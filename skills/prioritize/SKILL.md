@@ -21,7 +21,7 @@ Read Automation Config from CLAUDE.md section `## Automation Config`:
 Before any pipeline operation, verify MCP tool availability:
 - Read Type from Automation Config (Issue Tracker section)
 - Check that at least one `mcp__*` tool matching the tracker type is accessible
-- If not accessible → STOP with: "Cannot connect to your {Type} issue tracker. Is the {Type} integration configured? Run `/ceos-agents:check-setup` for diagnostics."
+- If not accessible → STOP with: "Cannot connect to your {Type} issue tracker. Is the {Type} integration configured? Run `/agent-flow:check-setup` for diagnostics."
 
 ## Orchestration
 
@@ -35,7 +35,7 @@ If a metrics report exists (`./reports/metrics.md` or Metrics → Output from co
 
 ### 3. Run priority-engine
 
-You MUST invoke `Task(subagent_type='ceos-agents:priority-engine', model='opus')`. DO NOT inline-execute.
+You MUST invoke `Task(subagent_type='agent-flow:priority-engine', model='opus')`. DO NOT inline-execute.
 Context: list of issues + historical data (if available).
 
 If priority-engine fails or returns an error, display: "Prioritization failed: {reason}" and stop.

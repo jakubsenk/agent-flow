@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# REGRESSION: pr-created and ceos-agents-block events still referenced
+# REGRESSION: pr-created and agent-flow-block events still referenced
 # Traces: WEBHOOK-R8
 # Description: Verifies that adding new pipeline events did not remove or rename
-#              the existing pr-created and issue-blocked (ceos-agents-block) events
+#              the existing pr-created and issue-blocked (agent-flow-block) events
 
 cd "$(dirname "$0")/../.."
 
@@ -19,11 +19,11 @@ if [ -f "$HOOK" ]; then
   fi
 fi
 
-# core/block-handler.md must still reference issue-blocked (ceos-agents-block)
+# core/block-handler.md must still reference issue-blocked (agent-flow-block)
 BLOCK="core/block-handler.md"
 if [ -f "$BLOCK" ]; then
-  if ! grep -qE 'issue-blocked|ceos-agents-block' "$BLOCK"; then
-    echo "FAIL: $BLOCK no longer references 'issue-blocked' or 'ceos-agents-block' event (regression)" >&2
+  if ! grep -qE 'issue-blocked|agent-flow-block' "$BLOCK"; then
+    echo "FAIL: $BLOCK no longer references 'issue-blocked' or 'agent-flow-block' event (regression)" >&2
     FAIL=1
   fi
 fi
@@ -32,7 +32,7 @@ fi
 # (CLAUDE.md may list only new events; canonical event list is in core/ and docs/reference/)
 CONFIG_REF="docs/reference/config.md"
 if [ -f "$CONFIG_REF" ]; then
-  if ! grep -qiE 'pr-created|issue-blocked|ceos-agents-block' "$CONFIG_REF"; then
+  if ! grep -qiE 'pr-created|issue-blocked|agent-flow-block' "$CONFIG_REF"; then
     echo "FAIL: $CONFIG_REF no longer references 'pr-created' or 'issue-blocked' events (regression)" >&2
     FAIL=1
   fi

@@ -7,7 +7,7 @@ set -euo pipefail
 #              and issue-blocked payload has {event, issue_id, agent, reason, timestamp}
 
 # NOTE: This is a regression guard (§8.8 known limitation — indicative, not byte-diff contract).
-# Passes green now (pre-Phase 7) since these events already exist in v6.7.2.
+# Passes green since these events already exist in the codebase.
 # Must remain green after Phase 7.
 
 cd "$(dirname "$0")/../.."

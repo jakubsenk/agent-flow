@@ -111,11 +111,11 @@ Tracker row values by mode:
 | `Tracker: Updated → For Review` literal | mode `full-publish` | (sentinel inside ## Publish Report) |
 | `Tracker: Skipped — issue ID '{id}' not found in {tracker_type}` literal | mode `pr-only-404` | (sentinel inside ## Publish Report) |
 | `Tracker: Skipped — no issue ID in branch name` literal | mode `pr-only-no-id` | (sentinel inside ## Publish Report) |
-| `[ceos-agents] 🔴 Pipeline Block` | on Block | Agent: publisher; Step: Publish; Reason; Detail; Recommendation |
+| `[agent-flow] 🔴 Pipeline Block` | on Block | Agent: publisher; Step: Publish; Reason; Detail; Recommendation |
 
 ## Step Completion Invariants
 
-Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.ceos-agents/{ISSUE_ID}/state.json` (or the orchestrator-injected state path):
+Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.agent-flow/{ISSUE_ID}/state.json` (or the orchestrator-injected state path):
 
 1. `dispatched_at` — Field is present and non-empty for stage `publisher`. The orchestrator wrote this pre-dispatch.
 
@@ -133,7 +133,7 @@ The `EXPECTED_AGENT_NAME` and `EXPECTED_STAGE_NAME` template variables are injec
 
 Do NOT attempt to write `tool_uses`, `completed_at`, or `status="completed"` — those are orchestrator post-dispatch writes.
 
-This invariant check is the agent-side half of the v10.0.0 3-layer defense; pairs with `hooks/validate-dispatch.sh` (host-side witness audit) and `core/lib/stage-invariant.sh` (witness compute helper).
+This invariant check is the agent-side half of the 3-layer defense; pairs with `hooks/validate-dispatch.sh` (host-side witness audit) and `core/lib/stage-invariant.sh` (witness compute helper).
 
 ## Constraints
 
@@ -145,7 +145,7 @@ This invariant check is the agent-side half of the v10.0.0 3-layer defense; pair
 - PR description always in English
 - On failure: Block using the Block Comment Template:
   ```
-  [ceos-agents] 🔴 Pipeline Block
+  [agent-flow] 🔴 Pipeline Block
   Agent: publisher
   Step: Publish
   Reason: {reason}

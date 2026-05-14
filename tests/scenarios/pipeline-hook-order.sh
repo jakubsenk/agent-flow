@@ -22,12 +22,12 @@ check_order() {
 
   [ -f "$file" ] || { fail "skills/$cmd/SKILL.md not found"; return; }
 
-  # "fixer" dispatch: ceos-agents:fixer OR "Run the fixer agent"
+  # "fixer" dispatch: agent-flow:fixer OR "Run the fixer agent"
   # Use tail -1 to find the main-path fixer dispatch (not the decomposition sub-path
   # which appears earlier in the file inside the "Subtask execution" section).
-  FIXER_LINE=$(grep -in "ceos-agents:fixer\|Run the fixer agent" "$file" | tail -1 | cut -d: -f1 || echo 0)
-  # "publisher" dispatch: ceos-agents:publisher OR "Run the publisher agent"
-  PUBLISHER_LINE=$(grep -in "ceos-agents:publisher\|Run the publisher agent" "$file" | head -1 | cut -d: -f1 || echo 0)
+  FIXER_LINE=$(grep -in "agent-flow:fixer\|Run the fixer agent" "$file" | tail -1 | cut -d: -f1 || echo 0)
+  # "publisher" dispatch: agent-flow:publisher OR "Run the publisher agent"
+  PUBLISHER_LINE=$(grep -in "agent-flow:publisher\|Run the publisher agent" "$file" | head -1 | cut -d: -f1 || echo 0)
 
   # ---- pre-fix must appear before fixer dispatch ----
   PRE_FIX_LINE=$(hook_step_line "$file" "pre-fix")

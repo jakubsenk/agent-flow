@@ -1,9 +1,0 @@
-{
-  "task_id": "T-17e",
-  "status": "DONE",
-  "files_modified": ["skills/fix-ticket/SKILL.md", "skills/fix-bugs/SKILL.md", "skills/implement-feature/SKILL.md", "skills/scaffold/SKILL.md", "skills/analyze-bug/SKILL.md"],
-  "revision_cycle": null,
-  "concerns": [],
-  "test_results": "AC-045/046/046a/050: NEEDS_CLARIFICATION dispatch detection at all 5 sites; DoS caps enforced; analyze-bug interactive-only special case respected",
-  "completed_at": "2026-04-20T13:56:00Z"
-}

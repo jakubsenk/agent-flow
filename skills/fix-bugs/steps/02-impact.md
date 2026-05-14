@@ -10,14 +10,14 @@ If stage `analyst-impact` is in the profile's Skip stages → skip for each bug,
 ## Pre-dispatch state write (REQ-B-2 v1.2)
 
 Before dispatching, atomically write per-stage pre-dispatch fields to
-`.ceos-agents/{ISSUE-ID}/state.json`:
+`.agent-flow/{ISSUE-ID}/state.json`:
 - `code_analysis.started_at`      = current ISO-8601 UTC timestamp
 - `code_analysis.model`           = `"sonnet"` (from `agents/analyst.md` frontmatter)
 - `code_analysis.status`          = `"in_progress"`
-- `code_analysis.agent_name`      = `"ceos-agents:analyst"`
+- `code_analysis.agent_name`      = `"agent-flow:analyst"`
 - `code_analysis.stage_name`      = `"code_analysis"`
 - `code_analysis.dispatched_at`   = current ISO-8601 UTC timestamp
-- `code_analysis.dispatch_witness` = sha256("ceos-agents:analyst|sonnet|<prompt_head_128>")
+- `code_analysis.dispatch_witness` = sha256("agent-flow:analyst|sonnet|<prompt_head_128>")
   (compute via `core/lib/stage-invariant.sh::compute_dispatch_witness`)
 - `code_analysis.tokens_used` = 0, `code_analysis.duration_ms` = 0, `code_analysis.tool_uses` = 0
 
@@ -30,10 +30,10 @@ If `{Agent Overrides path}/analyst.toml` exists, append its rendered Markdown co
 
 ## Dispatch
 
-You MUST invoke `Task(subagent_type='ceos-agents:analyst', model='sonnet')`.
+You MUST invoke `Task(subagent_type='agent-flow:analyst', model='sonnet')`.
 DO NOT inline-execute. Inline execution is a CONTRACT VIOLATION detected by the PostToolUse validator.
 
-Inject Tier-1 variables: `EXPECTED_AGENT_NAME = "ceos-agents:analyst"`,
+Inject Tier-1 variables: `EXPECTED_AGENT_NAME = "agent-flow:analyst"`,
 `EXPECTED_STAGE_NAME = "code_analysis"`.
 
 Context for the agent:
@@ -41,13 +41,13 @@ Context for the agent:
 --phase impact. Root cause iterations = {Root cause iterations from config}.
 Module Docs path = {Path from Module Docs config, or "none"}.
 Triage output: {full triage output for this bug}.
-EXPECTED_AGENT_NAME = ceos-agents:analyst
+EXPECTED_AGENT_NAME = agent-flow:analyst
 EXPECTED_STAGE_NAME = code_analysis
 ```
 
 ## Post-dispatch state write
 
-After dispatch, write per-stage post-dispatch fields to `.ceos-agents/{ISSUE-ID}/state.json`:
+After dispatch, write per-stage post-dispatch fields to `.agent-flow/{ISSUE-ID}/state.json`:
 - `code_analysis.completed_at` = current ISO-8601 UTC timestamp
 - `code_analysis.tokens_used` = `result.usage.total_tokens` (or 0 if absent)
 - `code_analysis.duration_ms` = `code_analysis.completed_at` epoch ms − `code_analysis.started_at` epoch ms
@@ -106,7 +106,7 @@ If DECOMPOSE:
 Before dispatch, check Agent Overrides: follow `../../../core/agent-override-injector.md`.
 If `{Agent Overrides path}/architect.toml` exists, append its rendered Markdown content to the agent's context as `## Project-Specific Instructions`.
 
-- You MUST invoke `Task(subagent_type='ceos-agents:architect', model='opus')`. DO NOT inline-execute.
+- You MUST invoke `Task(subagent_type='agent-flow:architect', model='opus')`. DO NOT inline-execute.
   Context: analyst impact report + issue details + `Module Docs path = {Path or "none"}`.
   Instructions: "Decompose this bug into subtasks. Max {max_subtasks} subtasks."
   Output: task tree (YAML).
@@ -120,6 +120,6 @@ If `{Agent Overrides path}/architect.toml` exists, append its rendered Markdown 
 
 ## State update (end of step)
 
-Update `.ceos-agents/{ISSUE-ID}/state.json`: set `code_analysis.status` to `"completed"`,
+Update `.agent-flow/{ISSUE-ID}/state.json`: set `code_analysis.status` to `"completed"`,
 write `code_analysis.risk`, `code_analysis.affected_files`,
 `code_analysis.estimated_diff_lines`. Follow atomic write protocol from `../../../core/state-manager.md`.

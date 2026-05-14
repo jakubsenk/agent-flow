@@ -1,1 +1,0 @@
-v6.7.2 — Pipeline Consistency & Dedup. Implement from roadmap: (1) Extract Tracker Subtask logic to new core/tracker-subtask-creator.md contract, refactor 3 skills to delegate. (2) Align webhook format across all call-sites. (3) Remove inline block handler duplicate from implement-feature. (4) LOW doc fixes across 5 files. PATCH version, no Automation Config contract changes.

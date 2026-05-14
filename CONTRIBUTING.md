@@ -1,10 +1,10 @@
-# Contributing to ceos-agents
+# Contributing to agent-flow
 
-Thank you for your interest in contributing to ceos-agents! This guide will help you get started.
+Thank you for your interest in contributing to agent-flow! This guide will help you get started.
 
 ## How to Contribute
 
-1. **Fork** the repository
+1. **Fork** the repository at https://github.com/asysta-act/agent-flow
 2. **Create a branch** from `main` (`git checkout -b feature/your-feature`)
 3. **Make your changes** following the conventions below
 4. **Test** your changes (see Testing section)

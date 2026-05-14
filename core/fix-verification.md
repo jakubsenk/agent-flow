@@ -18,12 +18,12 @@ Run the verify command after PR merge to confirm the changes work on the target 
 4. Run the Verify command from Automation Config.
 5. If command succeeds → post success comment to the issue:
    ```
-   [ceos-agents] ✅ Verified. Verify command: `{command}`. Output: {first 500 chars}.
+   [agent-flow] ✅ Verified. Verify command: `{command}`. Output: {first 500 chars}.
    ```
    Return `PASSED`.
 6. If command fails → post failure comment to the issue:
    ```
-   [ceos-agents] ❌ Verification failed.
+   [agent-flow] ❌ Verification failed.
    Command: `{command}`
    Output: {first 500 chars}
    ```

@@ -7,7 +7,7 @@ argument-hint: "[--skip-build]"
 
 # Check Setup
 
-Check the project configuration for the ceos-agents pipeline. Report: what works, what is missing, what failed.
+Check the project configuration for the agent-flow pipeline. Report: what works, what is missing, what failed.
 
 If $ARGUMENTS contains `--skip-build`, skip running build/test commands.
 
@@ -34,7 +34,7 @@ If $ARGUMENTS contains `--skip-build`, skip running build/test commands.
 
 Locate `trackers.md`: Glob with pattern `.claude/plugins/**/docs/reference/trackers.md` first.
 If no results, Glob with `**/docs/reference/trackers.md`. If still none, try `docs/reference/trackers.md` relative to CWD.
-If multiple results, prefer the path containing `.claude/plugins/` or `ceos-agents/`; if ambiguous → [WARN] "Multiple trackers.md found — using {path}."
+If multiple results, prefer the path containing `.claude/plugins/` or `agent-flow/`; if ambiguous → [WARN] "Multiple trackers.md found — using {path}."
 If the file cannot be found → [WARN] "trackers.md not found — per-tracker validation skipped. Verify plugin installation." and skip the rest of Step 3a.
 Find the row matching the configured Type in the Validation Rules table.
 
@@ -60,7 +60,7 @@ Find the row matching the configured Type in the Validation Rules table.
    - Found → [OK]
    - NOT found in CWD → search parent directories (up to git root or 3 levels):
      - Found at {path} → [WARN] ".mcp.json found at {path}, but Claude Code loads from CWD ({cwd}). Copy or symlink it here."
-     - Not found anywhere → [FAIL] "No .mcp.json found. Run /ceos-agents:setup-mcp to create one."
+     - Not found anywhere → [FAIL] "No .mcp.json found. Run /agent-flow:setup-mcp to create one."
 
 7. Compare MCP servers with Automation Config:
    - Issue tracker MCP: reuse the trackers.md path resolved in Step 3a (do not Glob again).
@@ -68,13 +68,13 @@ Find the row matching the configured Type in the Validation Rules table.
      Search .mcp.json server names/URLs for the listed keywords.
      If trackers.md was unavailable in Step 3a → [WARN] "trackers.md not found — MCP server keyword match skipped."
    - If match → [OK] "Issue tracker MCP: {server_name} ({type})"
-   - If no match → [FAIL] "No MCP server configured for tracker type '{type}'. Run /ceos-agents:setup-mcp to set it up."
+   - If no match → [FAIL] "No MCP server configured for tracker type '{type}'. Run /agent-flow:setup-mcp to set it up."
    - Source control MCP: match server names/URLs with Remote from config
    - If match → [OK]
    - If no match → [FAIL] "No MCP server configured for source control '{remote}'"
 
 8. Verify that tokens in `.mcp.json` are not empty or placeholders → [OK] or [FAIL]
-   - If tracker Type is `gitea` AND `.mcp.json` contains a `command` field referencing `forgejo-mcp`: emit `[WARN] forgejo-mcp detected in .mcp.json for Type: gitea — re-run /ceos-agents:setup-mcp to install gitea-mcp.`
+   - If tracker Type is `gitea` AND `.mcp.json` contains a `command` field referencing `forgejo-mcp`: emit `[WARN] forgejo-mcp detected in .mcp.json for Type: gitea — re-run /agent-flow:setup-mcp to install gitea-mcp.`
 
 ### Block 3: Connectivity
 
@@ -205,8 +205,8 @@ Verdict:
 13. Check installed plugins:
     - Look for plugin registry: `.claude/plugins.json`, `.claude-plugins`, or another file with plugin metadata (exact location depends on the Claude Code version — if none of these files exist → [SKIP] "Plugin registry not found — conflict detection skipped")
     - If found: read the list of installed plugins
-    - For each plugin: check if it registers commands with the same base name as ceos-agents commands (without namespace prefix)
-    - If conflict → [WARN] "Plugin '{name}' registers command '{cmd}' which may conflict with ceos-agents:{cmd}"
+    - For each plugin: check if it registers commands with the same base name as agent-flow commands (without namespace prefix)
+    - If conflict → [WARN] "Plugin '{name}' registers command '{cmd}' which may conflict with agent-flow:{cmd}"
     - If no conflicts → [OK] "No plugin conflicts detected"
 
 ### Block 6: Dispatch Enforcement Hook (advisory)

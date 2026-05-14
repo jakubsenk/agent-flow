@@ -11,8 +11,8 @@ Manual checklist for verifying the pipeline on different platforms.
 
 ## Windows
 
-- [ ] `/ceos-agents:check-setup` — all checks OK
-- [ ] `/ceos-agents:analyze-bug <TEST-ISSUE>` — triage + analysis completes
+- [ ] `/agent-flow:check-setup` — all checks OK
+- [ ] `/agent-flow:analyze-bug <TEST-ISSUE>` — triage + analysis completes
 - [ ] Gitea MCP server (`gitea-mcp.exe`) responds
 - [ ] YouTrack MCP server (npx) responds
 - [ ] Worktree paths work (relative path in Automation Config)
@@ -21,8 +21,8 @@ Manual checklist for verifying the pipeline on different platforms.
 
 - [ ] Gitea MCP binary: `chmod +x` set
 - [ ] Path to binary in `.mcp.json` follows Linux convention
-- [ ] `/ceos-agents:check-setup` — all checks OK
-- [ ] `/ceos-agents:analyze-bug <TEST-ISSUE>` — triage + analysis completes
+- [ ] `/agent-flow:check-setup` — all checks OK
+- [ ] `/agent-flow:analyze-bug <TEST-ISSUE>` — triage + analysis completes
 - [ ] Worktree paths: relative format (not `C:\...`)
 
 ## macOS

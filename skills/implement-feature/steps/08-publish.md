@@ -28,9 +28,9 @@ publisher binds to canonical stage `publisher` per design.md §4.2.
 ```bash
 . core/lib/stage-invariant.sh
 PROMPT_HEAD_128="$(printf '%s' "$PUBLISHER_PROMPT_TEMPLATE" | head -c 128)"
-DISPATCH_WITNESS="$(compute_dispatch_witness publisher ceos-agents:publisher haiku "$PROMPT_HEAD_128")"
+DISPATCH_WITNESS="$(compute_dispatch_witness publisher agent-flow:publisher haiku "$PROMPT_HEAD_128")"
 DISPATCHED_AT="$(date -u +%FT%TZ)"
-EXPECTED_AGENT_NAME="ceos-agents:publisher"
+EXPECTED_AGENT_NAME="agent-flow:publisher"
 EXPECTED_STAGE_NAME="publisher"
 # Merge: state.json[stages.publisher] = { dispatched_at, dispatch_witness, agent_name,
 #   stage_name, status="in_progress" } atomically.
@@ -41,7 +41,7 @@ EXPECTED_STAGE_NAME="publisher"
 Before dispatch, check Agent Overrides: follow `../../../core/agent-override-injector.md`.
 If `{Agent Overrides path}/publisher.toml` exists, append its rendered Markdown content to the agent's context as `## Project-Specific Instructions`.
 
-You MUST invoke Task(subagent_type='ceos-agents:publisher', model='haiku'). DO NOT inline-execute.
+You MUST invoke Task(subagent_type='agent-flow:publisher', model='haiku'). DO NOT inline-execute.
 - Context: `Mode: feature. Pipeline: implement-feature.` + PR Description Template, Labels, Remote,
   Base branch, changed files
 
@@ -56,7 +56,7 @@ failure: log `[WARN]` and continue.
 
 ## Step 8.3: Dispatch Audit Surfacing (post-publish, before final summary)
 
-Read `.ceos-agents/dispatch-audit.log` (or absent → silent). Parse each line and classify per the
+Read `.agent-flow/dispatch-audit.log` (or absent → silent). Parse each line and classify per the
 `<stage_allowlist>` block declared at the top of `skills/implement-feature/SKILL.md`:
 
 - **ANOMALY** — stage is in REQUIRED list AND no `WITNESS_OK` audit line for this run.
@@ -90,14 +90,14 @@ where `<SKILL_PATH>` is the resolved path to the SKILL.md file (e.g., `skills/im
 
 If ANOMALY count > 0, render:
 ```
-[ceos-agents] Dispatch audit anomalies detected (v10.0.0):
+[agent-flow] Dispatch audit anomalies detected (v10.0.0):
   Stage: {stage_name}  Status: WITNESS_MISSING  Severity: REQUIRED
   ...
-For investigation: cat .ceos-agents/dispatch-audit.log
+For investigation: cat .agent-flow/dispatch-audit.log
 ```
 
 If only EXPECTED_OPTIONAL_NOT_RUN entries (and OK entries), render NO block (clean run).
-If `.ceos-agents/dispatch-audit.log` does not exist: silent (NEVER fail the terminal report).
+If `.agent-flow/dispatch-audit.log` does not exist: silent (NEVER fail the terminal report).
 
 ## Pipeline completion
 

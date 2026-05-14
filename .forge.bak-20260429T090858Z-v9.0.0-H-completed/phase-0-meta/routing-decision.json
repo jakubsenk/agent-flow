@@ -1,9 +1,0 @@
-{
-  "task_type": "feature",
-  "secondary_types": ["design", "test", "migration"],
-  "action": "full_pipeline",
-  "target_skill": null,
-  "confidence": 0.92,
-  "reasoning": "Net-new capability (formalized agent I/O contracts) introduced into the plugin's contract surface. Cross-cutting scope (18 agents + dispatching skills + tests + docs + invariants), substantive design ambiguity (schema language, contract location, validation strategy), and a hard backward-compatibility constraint demand the full design-implement-verify cycle. Secondary types (design/test/migration) are absorbed into the feature pipeline rather than redirected.",
-  "skip_profile": null
-}

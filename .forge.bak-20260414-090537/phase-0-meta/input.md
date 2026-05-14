@@ -1,1 +1,0 @@
-Implement functional sprint planning capability for ceos-agents. Currently designed as autonomous, but needs to support semi-autonomous mode. Must research tracker ticket creation, design the sprint planning workflow (autonomous vs semi-autonomous), and implement the full solution including creating cards/tickets in the issue tracker.

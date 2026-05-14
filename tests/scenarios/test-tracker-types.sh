@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Test: FC-5, FC-6 — All 6 tracker types covered with correct parent parameters in all 3 skills
-# Since v6.7.2, tracker subtask creation logic lives in core/tracker-subtask-creator.md.
+# Tracker subtask creation logic lives in core/tracker-subtask-creator.md.
 # Each skill delegates via "Follow core/tracker-subtask-creator.md". This test searches
 # both the skill file and the core contract file so delegation is accepted.
 set -uo pipefail

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Test: FC-8, FC-11, FC-17, FC-18 — Idempotence guard clause and dual-store write order in all 3 skills
-# Since v6.7.2, tracker subtask creation logic lives in core/tracker-subtask-creator.md.
+# Tracker subtask creation logic lives in core/tracker-subtask-creator.md.
 # Each skill delegates via "Follow core/tracker-subtask-creator.md". This test searches
 # both the skill file and the core contract file so delegation is accepted.
 set -uo pipefail

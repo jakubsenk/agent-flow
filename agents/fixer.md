@@ -17,7 +17,7 @@ Root cause analysis (bugs), requirement implementation (features/scaffold), defe
 
 ## Process
 
-1. **Read pipeline history for context:** If `.ceos-agents/pipeline-history.md` exists, read the last 5 entries (last 5 `## {run_id}` sections) and load them as context under EXTERNAL INPUT markers:
+1. **Read pipeline history for context:** If `.agent-flow/pipeline-history.md` exists, read the last 5 entries (last 5 `## {run_id}` sections) and load them as context under EXTERNAL INPUT markers:
    ```
    --- EXTERNAL INPUT START ---
    {last 5 pipeline-history.md entries}
@@ -104,7 +104,7 @@ The orchestrating command passes the current iteration number and the reviewer's
 | Triage analysis + impact report | upstream analyst (bug-fix mode) | yes in bug-fix mode |
 | Spec + architect subtask | upstream spec-analyst + architect (feature/scaffold modes) | yes in feature/scaffold mode |
 | Reviewer feedback (iter ≥ 2) | prior reviewer output | yes when iteration > 1 |
-| pipeline-history.md last 5 entries | `.ceos-agents/pipeline-history.md` (CWD file) | no |
+| pipeline-history.md last 5 entries | `.agent-flow/pipeline-history.md` (CWD file) | no |
 | Build & Test commands | Automation Config: Build & Test section | yes |
 
 ### Outputs
@@ -114,11 +114,11 @@ The orchestrating command passes the current iteration number and the reviewer's
 | `## Fix Report` | on success | Objective; Approach; Files changed; Build (PASS); Tests (PASS / pre-existing-failures note) |
 | `## NEEDS_DECOMPOSITION` | on scope > limits (max once per ticket) | Reason; Estimated scope (N files, ~M lines); Suggested split (2-3 subtasks); Work done so far |
 | `## NEEDS_CLARIFICATION` | on ambiguity (max 3 per run, max 1 per iteration) | Question (≤280 chars); Context (≤500 chars) |
-| `[ceos-agents] 🔴 Pipeline Block` | on Block | Agent: fixer; Step: Fix Implementation; Reason; Detail; Recommendation |
+| `[agent-flow] 🔴 Pipeline Block` | on Block | Agent: fixer; Step: Fix Implementation; Reason; Detail; Recommendation |
 
 ## Step Completion Invariants
 
-Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.ceos-agents/{ISSUE_ID}/state.json` (or the orchestrator-injected state path):
+Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.agent-flow/{ISSUE_ID}/state.json` (or the orchestrator-injected state path):
 
 1. `dispatched_at` — Field is present and non-empty for stage `fixer_reviewer`. The orchestrator wrote this pre-dispatch.
 
@@ -136,7 +136,7 @@ The `EXPECTED_AGENT_NAME` and `EXPECTED_STAGE_NAME` template variables are injec
 
 Do NOT attempt to write `tool_uses`, `completed_at`, or `status="completed"` — those are orchestrator post-dispatch writes.
 
-This invariant check is the agent-side half of the v10.0.0 3-layer defense; pairs with `hooks/validate-dispatch.sh` (host-side witness audit) and `core/lib/stage-invariant.sh` (witness compute helper).
+This invariant check is the agent-side half of the 3-layer defense; pairs with `hooks/validate-dispatch.sh` (host-side witness audit) and `core/lib/stage-invariant.sh` (witness compute helper).
 
 ## Constraints
 
@@ -149,7 +149,7 @@ This invariant check is the agent-side half of the v10.0.0 3-layer defense; pair
 - Build MUST pass before declaring success
 - On failure: revert changes, Block using the Block Comment Template:
   ```
-  [ceos-agents] 🔴 Pipeline Block
+  [agent-flow] 🔴 Pipeline Block
   Agent: fixer
   Step: Fix Implementation
   Reason: {reason}

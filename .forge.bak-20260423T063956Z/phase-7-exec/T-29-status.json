@@ -1,9 +1,0 @@
-{
-  "task_id": "T-29",
-  "status": "DONE",
-  "files_created": ["core/snippets/metrics-json-schema.md"],
-  "revision_cycle": null,
-  "concerns": [],
-  "test_results": "AC-061/062/063b: file exists, schema + block.detail exclusion + ## Used by: present",
-  "completed_at": "2026-04-19T00:00:00Z"
-}

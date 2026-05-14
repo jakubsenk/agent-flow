@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Test: state/schema.md contains spec_iterations and root_cause_iterations retry limit fields
-# AC-10 through AC-15 (v6.7.1 — Item 3)
+# AC-10 through AC-15
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"

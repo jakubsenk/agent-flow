@@ -10,7 +10,7 @@
 > Agent names have also changed: `triage-analyst`/`code-analyst` → `analyst`;
 > `e2e-test-engineer` → `test-engineer --e2e`; `reproducer`/`browser-verifier` →
 > `browser-agent`. Update any Pipeline Profiles `Skip stages` values accordingly.
-> For migration guidance, see `docs/guides/migration-v7-to-v8.md` (the `/migrate-config` skill that previously automated this was removed in v9.5.0).
+> Upgrading? See the [CHANGELOG](../../CHANGELOG.md) for breaking changes and update your `## Automation Config` to match the current format.
 
 ### Issue Tracker
 | Key | Value |
@@ -63,7 +63,7 @@ Refs #{issue_id}
 |-----|-------|
 | Max issues per run | 1 |
 | Lock timeout | 120 |
-| Log file | .ceos-agents/autopilot.log |
+| Log file | .agent-flow/autopilot.log |
 | Bug limit | 0 |
 | Feature limit | 0 |
 | On error | skip |

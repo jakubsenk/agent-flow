@@ -17,7 +17,7 @@ Root cause vs symptom detection, security vulnerabilities, over-engineering dete
 
 ## Process
 
-1. **Read pipeline history for context:** If `.ceos-agents/pipeline-history.md` exists, read the last 10 entries (last 10 `## {run_id}` sections) and load them as context under EXTERNAL INPUT markers:
+1. **Read pipeline history for context:** If `.agent-flow/pipeline-history.md` exists, read the last 10 entries (last 10 `## {run_id}` sections) and load them as context under EXTERNAL INPUT markers:
    ```
    --- EXTERNAL INPUT START ---
    {last 10 pipeline-history.md entries}
@@ -120,7 +120,7 @@ This agent runs in an iterative loop with the fixer (max iterations from Automat
 | Spec + architect task tree | upstream (feature/scaffold) | yes in those modes |
 | Fixer's output + changed files | upstream fixer | yes |
 | Acceptance criteria | upstream (analyst --phase triage / spec-analyst / architect) | no (skip AC Fulfillment if absent) |
-| pipeline-history.md last 10 entries | `.ceos-agents/pipeline-history.md` (CWD file) | no |
+| pipeline-history.md last 10 entries | `.agent-flow/pipeline-history.md` (CWD file) | no |
 | Iteration number + previous reviewer feedback | dispatching skill (when iter ≥ 2) | conditional |
 
 ### Outputs
@@ -128,11 +128,11 @@ This agent runs in an iterative loop with the fixer (max iterations from Automat
 | Section produced | When | Required fields |
 |------------------|------|-----------------|
 | `## Code Review` | always | Verdict (APPROVE / REQUEST_CHANGES / BLOCK); Issues found (count); Issues (numbered, severity-tagged with HIGH/MEDIUM/LOW); AC Fulfillment (per-AC verdict FULFILLED/PARTIALLY/NOT ADDRESSED + evidence) |
-| `[ceos-agents] 🔴 Pipeline Block` | on BLOCK verdict | Agent: reviewer; Step: Code Review; Reason; Detail; Recommendation |
+| `[agent-flow] 🔴 Pipeline Block` | on BLOCK verdict | Agent: reviewer; Step: Code Review; Reason; Detail; Recommendation |
 
 ## Step Completion Invariants
 
-Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.ceos-agents/{ISSUE_ID}/state.json` (or the orchestrator-injected state path):
+Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.agent-flow/{ISSUE_ID}/state.json` (or the orchestrator-injected state path):
 
 1. `dispatched_at` — Field is present and non-empty for stage `fixer_reviewer`. The orchestrator wrote this pre-dispatch.
 
@@ -150,7 +150,7 @@ The `EXPECTED_AGENT_NAME` and `EXPECTED_STAGE_NAME` template variables are injec
 
 Do NOT attempt to write `tool_uses`, `completed_at`, or `status="completed"` — those are orchestrator post-dispatch writes.
 
-This invariant check is the agent-side half of the v10.0.0 3-layer defense; pairs with `hooks/validate-dispatch.sh` (host-side witness audit) and `core/lib/stage-invariant.sh` (witness compute helper).
+This invariant check is the agent-side half of the 3-layer defense; pairs with `hooks/validate-dispatch.sh` (host-side witness audit) and `core/lib/stage-invariant.sh` (witness compute helper).
 
 ## Constraints
 
@@ -165,7 +165,7 @@ This invariant check is the agent-side half of the v10.0.0 3-layer defense; pair
 - If acceptance criteria were provided in context, MUST include AC Fulfillment section in output. If no AC provided, skip the section.
 - On BLOCK: Block using the Block Comment Template:
   ```
-  [ceos-agents] 🔴 Pipeline Block
+  [agent-flow] 🔴 Pipeline Block
   Agent: reviewer
   Step: Code Review
   Reason: {reason}

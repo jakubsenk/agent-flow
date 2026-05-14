@@ -1,9 +1,0 @@
-{
-  "task_type": "feature",
-  "secondary_types": [],
-  "action": "full_pipeline",
-  "target_skill": null,
-  "confidence": 0.95,
-  "reasoning": "Two new capabilities (prompt injection protection + plugin version tracking) requiring full design-implement-verify cycle across 15+ files in agents/, skills/, core/, state/, tests/.",
-  "skip_profile": null
-}

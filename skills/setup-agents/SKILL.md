@@ -6,7 +6,7 @@ argument-hint: "[--dry-run] [--yolo] [--force]"
 disable-model-invocation: true
 ---
 
-# /ceos-agents:setup-agents
+# /agent-flow:setup-agents
 
 ## Purpose
 
@@ -21,7 +21,7 @@ TOML schema: `core/overlay/toml-overlay.md` (3-tier merge contract).
 ## Synopsis
 
 ```
-/ceos-agents:setup-agents [--dry-run] [--yolo] [--force]
+/agent-flow:setup-agents [--dry-run] [--yolo] [--force]
 ```
 
 Flags:
@@ -200,8 +200,8 @@ All writes are restricted to `${CUSTOMIZATION_DIR}/`.
 When scanning `customization/`, `/setup-agents` may encounter legacy v7 `.md` overlay files
 (REMOVED in v9.0.0 — hard error per REQ-H-100):
 
-- **Only legacy v7 `.md` exists**: emit `[ERROR] Legacy .md overlay format removed in v9.0.0 for {agent}; manual conversion required — see docs/guides/migration-v7-to-v8.md (the /migrate-config skill that previously automated this was removed in v9.5.0).` and refuse to proceed.
-- **Both legacy v7 `.md` and v8 `.toml` exist**: emit `[ERROR] Legacy .md overlay format removed in v9.0.0 alongside {agent}.toml; remove the .md file (TOML takes precedence). Manual conversion: see docs/guides/migration-v7-to-v8.md (the /migrate-config skill that previously automated this was removed in v9.5.0).` and refuse to proceed.
+- **Only legacy `.md` exists**: emit `[ERROR] Legacy .md overlay format is not supported for {agent}; manual conversion required — see docs/guides/toml-overlay-syntax.md for TOML overlay format examples.` and refuse to proceed.
+- **Both legacy `.md` and `.toml` exist**: emit `[ERROR] Legacy .md overlay found alongside {agent}.toml; remove the .md file (TOML takes precedence). See docs/guides/toml-overlay-syntax.md.` and refuse to proceed.
 - **Only `.toml` exists**: normal v8/v9 path, no warning.
 
 ## Step 5 — TOML output content
@@ -326,7 +326,7 @@ Print count: `{N} files written, {M} skipped.`
 If `/setup-agents` fails to complete:
 
 ```
-[ceos-agents] 🔴 Pipeline Block
+[agent-flow] 🔴 Pipeline Block
 Agent: setup-agents
 Step: {step where failure occurred}
 Reason: {max 2 sentences}

@@ -1,4 +1,11 @@
 .vs/
 nul
-.claude/settings.local.json
+.claude/
 .env
+.forge/
+.forge.bak-*/
+.forge.v*/
+.agent-flow/
+*.stackdump
+REVIEW-REPORT-*.md
+docs/plans/

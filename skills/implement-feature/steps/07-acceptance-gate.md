@@ -19,9 +19,9 @@ acceptance-gate binds to canonical stage `acceptance_gate` per design.md §4.2.
 ```bash
 . core/lib/stage-invariant.sh
 PROMPT_HEAD_128="$(printf '%s' "$ACCEPTANCE_GATE_PROMPT_TEMPLATE" | head -c 128)"
-DISPATCH_WITNESS="$(compute_dispatch_witness acceptance_gate ceos-agents:acceptance-gate sonnet "$PROMPT_HEAD_128")"
+DISPATCH_WITNESS="$(compute_dispatch_witness acceptance_gate agent-flow:acceptance-gate sonnet "$PROMPT_HEAD_128")"
 DISPATCHED_AT="$(date -u +%FT%TZ)"
-EXPECTED_AGENT_NAME="ceos-agents:acceptance-gate"
+EXPECTED_AGENT_NAME="agent-flow:acceptance-gate"
 EXPECTED_STAGE_NAME="acceptance_gate"
 # Merge: state.json[stages.acceptance_gate] = { dispatched_at, dispatch_witness,
 #   agent_name, stage_name, status="in_progress" } atomically.
@@ -32,7 +32,7 @@ EXPECTED_STAGE_NAME="acceptance_gate"
 Before dispatch, check Agent Overrides: follow `../../../core/agent-override-injector.md`.
 If `{Agent Overrides path}/acceptance-gate.toml` exists, append its rendered Markdown content to the agent's context as `## Project-Specific Instructions`.
 
-You MUST invoke Task(subagent_type='ceos-agents:acceptance-gate', model='sonnet'). DO NOT inline-execute.
+You MUST invoke Task(subagent_type='agent-flow:acceptance-gate', model='sonnet'). DO NOT inline-execute.
 Context: `Acceptance criteria: {AC from spec-analyst — full feature AC, not just per-subtask AC}.
 Changed files: {list of files modified by fixer}.`
 

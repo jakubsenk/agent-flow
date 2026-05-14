@@ -17,7 +17,7 @@ Automation Config → skip this entire step, continue to step 11.
 
 If `Hooks → Pre-publish` is set in Automation Config:
 - Run the configured command via Bash, in the project root.
-- Stream stdout/stderr to `.ceos-agents/{ISSUE-ID}/pre-publish-hook.log`.
+- Stream stdout/stderr to `.agent-flow/{ISSUE-ID}/pre-publish-hook.log`.
 - Failure (non-zero exit) → proceed to Block handler (step X).
   Block context: agent = `pre-publish-hook`, step = `pre-publish hook`, detail = last 1000 chars of log.
 
@@ -29,7 +29,7 @@ Before dispatch, check Agent Overrides: follow `../../../core/agent-override-inj
 
 1. Read the agent definition from the path in config (e.g., `customization/agents/security-review.md`).
 2. Read the agent's frontmatter to determine the model.
-3. Atomically write per-stage pre-dispatch fields to `.ceos-agents/{ISSUE-ID}/state.json` under the
+3. Atomically write per-stage pre-dispatch fields to `.agent-flow/{ISSUE-ID}/state.json` under the
    custom stage key (default: `pre_publish_custom`):
    - `pre_publish_custom.started_at`      = current ISO-8601 UTC timestamp
    - `pre_publish_custom.model`           = `<agent's frontmatter model>`
@@ -49,5 +49,5 @@ Outcome handling:
 
 ## State update
 
-Update `.ceos-agents/{ISSUE-ID}/state.json`: set the appropriate sub-statuses to `"completed"` (or
+Update `.agent-flow/{ISSUE-ID}/state.json`: set the appropriate sub-statuses to `"completed"` (or
 `"skipped"` if a sub-step was skipped). Follow atomic write protocol from `../../../core/state-manager.md`.

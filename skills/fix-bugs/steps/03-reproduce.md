@@ -25,14 +25,14 @@ If Hooks → Pre-fix exists in Automation Config:
 ## Pre-dispatch state write (REQ-B-2 v1.2)
 
 Before dispatching, atomically write per-stage pre-dispatch fields to
-`.ceos-agents/{ISSUE-ID}/state.json`:
+`.agent-flow/{ISSUE-ID}/state.json`:
 - `reproduction.started_at`      = current ISO-8601 UTC timestamp
 - `reproduction.model`           = `"sonnet"` (from `agents/browser-agent.md` frontmatter)
 - `reproduction.status`          = `"in_progress"`
-- `reproduction.agent_name`      = `"ceos-agents:browser-agent"`
+- `reproduction.agent_name`      = `"agent-flow:browser-agent"`
 - `reproduction.stage_name`      = `"reproduce_browser"`
 - `reproduction.dispatched_at`   = current ISO-8601 UTC timestamp
-- `reproduction.dispatch_witness` = sha256("ceos-agents:browser-agent|sonnet|<prompt_head_128>")
+- `reproduction.dispatch_witness` = sha256("agent-flow:browser-agent|sonnet|<prompt_head_128>")
   (compute via `core/lib/stage-invariant.sh::compute_dispatch_witness`)
 - `reproduction.tokens_used` = 0, `reproduction.duration_ms` = 0, `reproduction.tool_uses` = 0
 
@@ -45,16 +45,16 @@ If `{Agent Overrides path}/browser-agent.toml` exists, append its rendered Markd
 
 ## Dispatch
 
-You MUST invoke `Task(subagent_type='ceos-agents:browser-agent', model='sonnet')`.
+You MUST invoke `Task(subagent_type='agent-flow:browser-agent', model='sonnet')`.
 DO NOT inline-execute. Inline execution is a CONTRACT VIOLATION detected by the PostToolUse validator.
 
-Inject Tier-1 variables: `EXPECTED_AGENT_NAME = "ceos-agents:browser-agent"`,
+Inject Tier-1 variables: `EXPECTED_AGENT_NAME = "agent-flow:browser-agent"`,
 `EXPECTED_STAGE_NAME = "reproduce_browser"`.
 
 Context for the agent:
 ```
 --phase reproduce.
-EXPECTED_AGENT_NAME = ceos-agents:browser-agent
+EXPECTED_AGENT_NAME = agent-flow:browser-agent
 EXPECTED_STAGE_NAME = reproduce_browser
 Issue: {issue ID and title}.
 Bug description: {issue description}.
@@ -66,7 +66,7 @@ Browser Verification config: Base URL = {Base URL}, Start command = {Start comma
 
 ## Post-dispatch state write
 
-After dispatch, write per-stage post-dispatch fields to `.ceos-agents/{ISSUE-ID}/state.json`:
+After dispatch, write per-stage post-dispatch fields to `.agent-flow/{ISSUE-ID}/state.json`:
 - `reproduction.completed_at` = current ISO-8601 UTC timestamp
 - `reproduction.tokens_used` = `result.usage.total_tokens` (or 0 if absent)
 - `reproduction.duration_ms` = `reproduction.completed_at` epoch ms − `reproduction.started_at` epoch ms
@@ -89,12 +89,12 @@ Webhook failure → log `[WARN] Webhook delivery failed: {error}`, continue.
 - `status: skipped` → log `[SKIP] browser reproduction ({reason})`, continue pipeline.
 - `status: not_reproduced` → log `[INFO] browser reproduction: could not reproduce bug`, continue pipeline.
 - `status: reproduced` → log `[INFO] browser reproduction: bug reproduced. Evidence attached for fixer.`
-  Store full `.ceos-agents/{ISSUE-ID}/reproduction-result.json` content for fixer context in step 04.
+  Store full `.agent-flow/{ISSUE-ID}/reproduction-result.json` content for fixer context in step 04.
 
 NEVER block on any browser-agent reproduce outcome.
 
 ## State update (end of step)
 
-Update `.ceos-agents/{ISSUE-ID}/state.json`: set `reproduction.status` to `"completed"` (or `"skipped"`
+Update `.agent-flow/{ISSUE-ID}/state.json`: set `reproduction.status` to `"completed"` (or `"skipped"`
 if skipped), write `reproduction.verdict`, `reproduction.result_path`. Follow atomic write protocol
 from `../../../core/state-manager.md`.

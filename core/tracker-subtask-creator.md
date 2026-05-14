@@ -16,7 +16,7 @@ Create tracker sub-issues from a decomposition plan, with idempotency, per-track
 | create_tracker_subtasks_config | string | Value of Decomposition → Create tracker subtasks (default: `"enabled"`) |
 | subtask_list | object[] | Subtask objects from decomposition (in topological order) |
 | yaml_path | string | Path to `.claude/decomposition/{ISSUE-ID}.yaml` |
-| state_json_path | string | Path to `.ceos-agents/{ISSUE-ID}/state.json` |
+| state_json_path | string | Path to `.agent-flow/{ISSUE-ID}/state.json` |
 
 ## Process
 
@@ -135,7 +135,7 @@ END FOR
 IF (tracker_type == "github" OR tracker_type == "gitea") AND success_count > 0:
     TRY:
         SET parent_body = MCP get_issue({issue_id}).body
-        SET sentinel = "<!-- ceos-agents:decomposition-checklist:{issue_id} -->"
+        SET sentinel = "<!-- agent-flow:decomposition-checklist:{issue_id} -->"
         IF parent_body CONTAINS sentinel:
             LOG "[SKIP] Decomposition checklist already exists in parent issue body."
         ELSE:

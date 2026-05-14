@@ -1,1 +1,0 @@
-Bug in implement-feature skill: does not run autonomously, asks user for confirmations at wrong points. Then decomposes into subtasks but does not create/write them anywhere (not persisted to files or issue tracker). At the end it closes properly. Fix the subtask persistence and review the confirmation flow.

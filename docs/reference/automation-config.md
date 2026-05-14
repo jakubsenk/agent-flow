@@ -1,12 +1,12 @@
 # Automation Config Reference
 
-The Automation Config is the configuration block that connects ceos-agents to your project. It lives in the `## Automation Config` section of your project's CLAUDE.md file.
+The Automation Config is the configuration block that connects agent-flow to your project. It lives in the `## Automation Config` section of your project's CLAUDE.md file.
 
 The **canonical specification** for all sections, keys, and defaults is in [CLAUDE.md](../../CLAUDE.md) (Config Contract section). This document provides extended examples, per-tracker guidance, validation rules, and a complete configuration example.
 
 ## Overview
 
-Automation Config uses a table format (`| Key | Value |`) for all sections. There are 5 required sections and 18 optional sections (referenced by 17 core contracts and consumed by 18 skills). Required sections must be present for the pipeline to run. Optional sections enable additional capabilities with sensible defaults.
+Automation Config uses a table format (`| Key | Value |`) for all sections. There are 5 required sections and 18 optional sections (referenced by 17 core contracts and consumed by 17 skills). Required sections must be present for the pipeline to run. Optional sections enable additional capabilities with sensible defaults.
 
 All skills read Automation Config at the start of execution. Skills contain zero project-specific logic — everything is driven by what you configure here.
 
@@ -231,7 +231,7 @@ Webhook configuration for pipeline events.
 
 ### Worktrees
 
-Enables parallel bug processing via git worktrees (used by `/ceos-agents:fix-bugs`).
+Enables parallel bug processing via git worktrees (used by `/agent-flow:fix-bugs`).
 
 | Key | Default | Description |
 |-----|---------|-------------|
@@ -294,7 +294,7 @@ Optional. Enables browser-based bug reproduction (before fixer) and verification
 
 ### Local Deployment
 
-Optional. Configures local deployment health checks. The `deployment-verifier` agent is dispatched directly by pipeline skills (`/fix-bugs`, `/implement-feature`, `/scaffold`) when this section is present. (Note: the standalone `/ceos-agents:check-deploy` skill was removed in v9.2.0.)
+Optional. Configures local deployment health checks. The `deployment-verifier` agent is dispatched directly by pipeline skills (`/fix-bugs`, `/implement-feature`, `/scaffold`) when this section is present. (Note: the standalone `/agent-flow:check-deploy` skill was removed in v9.2.0.)
 
 | Key | Description | Default |
 |-----|-------------|---------|
@@ -330,7 +330,7 @@ Controls behavior when an agent blocks an issue.
 
 ### Feature Workflow
 
-Configuration for the feature pipeline (`/ceos-agents:implement-feature`).
+Configuration for the feature pipeline (`/agent-flow:implement-feature`).
 
 | Key | Default | Description |
 |-----|---------|-------------|
@@ -360,7 +360,7 @@ Named configurations that skip or add stages. See [Pipeline Profiles](#pipeline-
 
 ### Metrics
 
-Controls metrics output for `/ceos-agents:metrics`.
+Controls metrics output for `/agent-flow:metrics`.
 
 | Key | Default | Description |
 |-----|---------|-------------|
@@ -369,7 +369,7 @@ Controls metrics output for `/ceos-agents:metrics`.
 
 ### Sprint Planning
 
-Configuration for the `/ceos-agents:sprint-plan` and `/ceos-agents:create-backlog` skills.
+Configuration for the `/agent-flow:sprint-plan` and `/agent-flow:create-backlog` skills.
 
 | Key | Default | Description |
 |-----|---------|-------------|
@@ -415,7 +415,7 @@ Optional directory with per-agent customization files. For each agent, create a 
 
 Create `customization/reviewer.toml` to add project-specific reviewer instructions, `customization/fixer.toml` for fixer instructions, and so on. See [Custom Agents Guide](../guides/custom-agents.md) for details.
 
-**v8.0.0 — TOML overlay format (preferred):** In v8.0.0 the preferred override format is a TOML file at `{path}/{agent-name}.toml` instead of `{agent-name}.md`. The `.md` format is a deprecated alias — it still works but emits `[WARN] Deprecated override format: {file}. Migrate to .toml.` Use `/ceos-agents:setup-agents` to auto-generate TOML stubs with smart defaults. See [TOML overlay syntax guide](../guides/toml-overlay-syntax.md) for the full schema, 3-tier merge rules, and worked examples.
+**v8.0.0 — TOML overlay format (preferred):** In v8.0.0 the preferred override format is a TOML file at `{path}/{agent-name}.toml` instead of `{agent-name}.md`. The `.md` format is a deprecated alias — it still works but emits `[WARN] Deprecated override format: {file}. Migrate to .toml.` Use `/agent-flow:setup-agents` to auto-generate TOML stubs with smart defaults. See [TOML overlay syntax guide](../guides/toml-overlay-syntax.md) for the full schema, 3-tier merge rules, and worked examples.
 
 **TOML merge tiers (summary):** Tier 1 — scalar overrides (`model`, `style`): overlay value replaces plugin default from agent frontmatter. Tier 2 — array of tables (`[[process_additions]]`, `[[constraints]]`): overlay entries appended after plugin defaults (order preserved). Tier 3 — deep merge (`[limits]`): overlay keys override corresponding plugin-default keys; absent keys are inherited unchanged. The `[meta]` free-form table accepts arbitrary annotation keys without schema validation and is not consumed by dispatch logic.
 
@@ -442,7 +442,7 @@ added = "2026-04-27"
 
 ## Plugin Permission Architecture
 
-ceos-agents plugin agents do **NOT** support `hooks:`, `mcpServers:`, or `permissionMode:` keys in YAML frontmatter — the Claude Code platform ignores these fields for security reasons when set at agent level. **Hooks are skill-orchestrated, not agent-frontmatter** (hooks are skill-orchestrated, not agent-frontmatter) — pipeline hooks are configured at **PROJECT level** via the `### Hooks` section in your project's CLAUDE.md, NOT in any agent's YAML frontmatter.
+agent-flow plugin agents do **NOT** support `hooks:`, `mcpServers:`, or `permissionMode:` keys in YAML frontmatter — the Claude Code platform ignores these fields for security reasons when set at agent level. **Hooks are skill-orchestrated, not agent-frontmatter** (hooks are skill-orchestrated, not agent-frontmatter) — pipeline hooks are configured at **PROJECT level** via the `### Hooks` section in your project's CLAUDE.md, NOT in any agent's YAML frontmatter.
 
 <!-- COUNTER-EXAMPLE: Do NOT add these keys to agent frontmatter — they are silently ignored by the platform.
 ---
@@ -473,7 +473,7 @@ Existing project-level `### Hooks` config sections continue to work unchanged �
 
 ## Mode Flags
 
-Pipeline-level mode flags are passed to `/ceos-agents:fix-bugs`, `/ceos-agents:implement-feature`, and `/ceos-agents:scaffold` at invocation time — they are **not config keys** and do not belong in `## Automation Config`. Three modes are available:
+Pipeline-level mode flags are passed to `/agent-flow:fix-bugs`, `/agent-flow:implement-feature`, and `/agent-flow:scaffold` at invocation time — they are **not config keys** and do not belong in `## Automation Config`. Three modes are available:
 
 | Flag | Description |
 |------|-------------|
@@ -485,7 +485,7 @@ Mode flags interact with `### Pipeline Profiles`: a profile's `Skip stages` list
 
 ### Autopilot
 
-Enables unattended continuous processing via `/ceos-agents:autopilot`. All 7 keys have defaults — the section may be omitted entirely.
+Enables unattended continuous processing via `/agent-flow:autopilot`. All 7 keys have defaults — the section may be omitted entirely.
 
 **NOTE on query keys:** `Bug query` and `Feature query` are NOT Autopilot-section keys. They are read from `### Issue Tracker` and `### Feature Workflow` respectively. Autopilot only references them.
 
@@ -493,7 +493,7 @@ Enables unattended continuous processing via `/ceos-agents:autopilot`. All 7 key
 |-----|---------|-------------|
 | Max issues per run | `1` | Total cap on issues dispatched per invocation (bugs + features combined) |
 | Lock timeout | `120` | Age threshold in minutes after which an existing lock is considered stale and auto-recovered |
-| Log file | `.ceos-agents/autopilot.log` | Path to the append-only run log |
+| Log file | `.agent-flow/autopilot.log` | Path to the append-only run log |
 | Bug limit | `0` | Per-type cap on bug dispatches; `0` = no per-type cap |
 | Feature limit | `0` | Per-type cap on feature dispatches; `0` = no per-type cap |
 | On error | `skip` | `skip` = log [WARN] and continue; `stop` = abort the whole run on the first per-issue error |
@@ -507,7 +507,7 @@ Enables unattended continuous processing via `/ceos-agents:autopilot`. All 7 key
 |-----|-------|
 | Max issues per run | 1 |
 | Lock timeout | 120 |
-| Log file | .ceos-agents/autopilot.log |
+| Log file | .agent-flow/autopilot.log |
 | Bug limit | 0 |
 | Feature limit | 0 |
 | On error | skip |
@@ -518,7 +518,7 @@ See [Autopilot Guide](../guides/autopilot.md) for behavior details, scheduling, 
 
 ### Pause Limits
 
-Controls how long a pipeline waits in the `paused` state before being aborted. A pipeline enters the paused state when an agent emits a `NEEDS_CLARIFICATION` signal and is waiting for a human response via re-invocation of the original entry-point skill with `--clarification "answer"` (e.g. `/ceos-agents:fix-bugs PROJ-42 --clarification "answer"`; auto-resume is detected inline by `core/resume-detection.md`).
+Controls how long a pipeline waits in the `paused` state before being aborted. A pipeline enters the paused state when an agent emits a `NEEDS_CLARIFICATION` signal and is waiting for a human response via re-invocation of the original entry-point skill with `--clarification "answer"` (e.g. `/agent-flow:fix-bugs PROJ-42 --clarification "answer"`; auto-resume is detected inline by `core/resume-detection.md`).
 
 | Key | Default | Description |
 |-----|---------|-------------|
@@ -537,7 +537,7 @@ See [Agent States](../../core/agent-states.md) for the full NEEDS_CLARIFICATION 
 
 ## Validation Rules
 
-The `/ceos-agents:check-setup` skill validates your Automation Config. Here is what it checks:
+The `/agent-flow:check-setup` skill validates your Automation Config. Here is what it checks:
 
 1. **Required sections present:** All 5 required sections (Issue Tracker, Source Control, PR Rules, PR Description Template, Build & Test) must exist
 2. **Required keys present:** Each required section must contain all its required keys
@@ -574,11 +574,11 @@ Profiles allow you to customize which stages run. They are defined as rows in a 
 
 **Non-skippable stages (mandatory):** fixer, reviewer, publisher
 
-Profiles apply to `/ceos-agents:fix-bugs` and `/ceos-agents:implement-feature` via the `--profile <name>` flag.
+Profiles apply to `/agent-flow:fix-bugs` and `/agent-flow:implement-feature` via the `--profile <name>` flag.
 
 ## Migration
 
-If your project uses an older Automation Config format (v1.x or v2.x), refer to the [migration guide](../guides/migration-v7-to-v8.md) for manual upgrade steps. The `/migrate-config` skill was removed in v9.5.0. For version history and what changed between major versions, see the [CHANGELOG](../../CHANGELOG.md).
+If your project uses an older Automation Config format, update it manually to match the current section structure documented in this file. For version history and what changed between major versions, see the [CHANGELOG](../../CHANGELOG.md).
 
 ## Automation Config
 
@@ -650,7 +650,7 @@ Keys + defaults: Sprint duration (2 weeks), Capacity unit (story-points), Team c
 
 ### Autopilot
 
-Exactly 7 keys: Max issues per run (1), Lock timeout (120), Log file (.ceos-agents/autopilot.log), Bug limit (0), Feature limit (0), On error (skip), Dry run (false). `Bug query` is read from `### Issue Tracker`; `Feature query` from `### Feature Workflow`.
+Exactly 7 keys: Max issues per run (1), Lock timeout (120), Log file (.agent-flow/autopilot.log), Bug limit (0), Feature limit (0), On error (skip), Dry run (false). `Bug query` is read from `### Issue Tracker`; `Feature query` from `### Feature Workflow`.
 
 ### Pause Limits
 
@@ -756,7 +756,7 @@ Closes #{issue_id}
 |-----|-------|
 | Max issues per run | 1 |
 | Lock timeout | 120 |
-| Log file | .ceos-agents/autopilot.log |
+| Log file | .agent-flow/autopilot.log |
 | Bug limit | 0 |
 | Feature limit | 0 |
 | On error | skip |

@@ -91,7 +91,7 @@ fi
 echo "INFO: negative control confirmed — synthetic agent without canonical bullet would fail enumeration"
 
 # AC-063a (AC-076): core contract count — verify find -maxdepth 1 returns exactly 17
-# (v9.3.0: resume-detection.md added; ensures core/snippets/ sub-directory is not counted)
+# (ensures core/snippets/ sub-directory is not counted)
 core_count=$(find "$REPO_ROOT/core" -maxdepth 1 -name '*.md' -type f 2>/dev/null | wc -l | tr -d ' ')
 if [ "$core_count" -eq 17 ]; then
   echo "INFO: find core -maxdepth 1 -name '*.md' returns exactly 17 core contracts"

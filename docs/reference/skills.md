@@ -1,10 +1,10 @@
 # Skills Reference
 
-This reference covers all 18 skills in the ceos-agents plugin. All 18 ceos-agents skills are listed with syntax, descriptions, flags, and usage examples. Skills are the orchestration layer of the plugin — they define WHAT to do, while agents define HOW to do it (17 agents reference 17 core contracts).
+This reference covers all 17 skills in the agent-flow plugin. All 17 agent-flow skills are listed with syntax, descriptions, flags, and usage examples. Skills are the orchestration layer of the plugin — they define WHAT to do, while agents define HOW to do it (17 agents reference 17 core contracts).
 
 ## Conventions
 
-- All skills are namespaced: `/ceos-agents:<skill>`
+- All skills are namespaced: `/agent-flow:<skill>`
 - Skills read Automation Config from the consuming project's CLAUDE.md
 - Skills dispatch agents via Claude Code's Task tool
 - Skills contain zero project-specific logic — all configuration comes from Automation Config
@@ -29,7 +29,6 @@ This reference covers all 18 skills in the ceos-agents plugin. All 18 ceos-agent
 | Planning | [/prioritize](#prioritize) | AI-powered backlog prioritization |
 | Planning | [/create-backlog](#create-backlog) | Creates backlog epics in issue tracker from a specification document |
 | Planning | [/sprint-plan](#sprint-plan) | Plans a sprint from backlog issues using capacity constraints and priority ranking |
-| Versioning | [/version-bump](#version-bump) | Bumps plugin version |
 | Versioning | [/version-check](#version-check) | Compares installed vs latest version |
 | Versioning | [/changelog](#changelog) | Generates changelog from merged PRs |
 | Discussion | [/discuss](#discuss) | Multi-agent discussion on a topic or issue |
@@ -45,7 +44,7 @@ This reference covers all 18 skills in the ceos-agents plugin. All 18 ceos-agent
 **Syntax:**
 
 ```
-/ceos-agents:analyze-bug <ISSUE-ID>
+/agent-flow:analyze-bug <ISSUE-ID>
 ```
 
 **Arguments:**
@@ -56,7 +55,7 @@ This reference covers all 18 skills in the ceos-agents plugin. All 18 ceos-agent
 **Example:**
 
 ```
-/ceos-agents:analyze-bug PROJ-42
+/agent-flow:analyze-bug PROJ-42
 ```
 
 **Related skills:** [/fix-bugs](#fix-bugs)
@@ -70,16 +69,16 @@ This reference covers all 18 skills in the ceos-agents plugin. All 18 ceos-agent
 **Syntax:**
 
 ```
-/ceos-agents:autopilot [--dry-run]
+/agent-flow:autopilot [--dry-run]
 ```
 
 **Flags:**
 - `--dry-run` — Full short-circuit: print what would be processed, no lock, no dispatch, no state writes
 
-**What it does:** Reads `### Issue Tracker`, `### Feature Workflow` (optional), and `### Autopilot` (optional) from `## Automation Config`, fetches issues via the tracker MCP, classifies them as bugs or features, and dispatches `fix-bugs` or `implement-feature` per issue sequentially via the Skill tool. Acquires a portable `mkdir`-based lock (`.ceos-agents/autopilot.lock/`) to prevent concurrent runs on the same host. Produces a summary table with outcome, duration, and token usage per issue. Typically invoked headlessly:
+**What it does:** Reads `### Issue Tracker`, `### Feature Workflow` (optional), and `### Autopilot` (optional) from `## Automation Config`, fetches issues via the tracker MCP, classifies them as bugs or features, and dispatches `fix-bugs` or `implement-feature` per issue sequentially via the Skill tool. Acquires a portable `mkdir`-based lock (`.agent-flow/autopilot.lock/`) to prevent concurrent runs on the same host. Produces a summary table with outcome, duration, and token usage per issue. Typically invoked headlessly:
 
 ```bash
-claude -p "Run /ceos-agents:autopilot" --dangerously-skip-permissions
+claude -p "Run /agent-flow:autopilot" --dangerously-skip-permissions
 ```
 
 **Exit codes:** `0` = all dispatched, `1` = preflight/config failure, `2` = lock held, `3` = MCP unreachable.
@@ -87,7 +86,7 @@ claude -p "Run /ceos-agents:autopilot" --dangerously-skip-permissions
 **Example:**
 
 ```
-/ceos-agents:autopilot --dry-run
+/agent-flow:autopilot --dry-run
 ```
 
 **Related skills:** [/fix-bugs](#fix-bugs), [/implement-feature](#implement-feature), [/check-setup](#check-setup)
@@ -101,8 +100,8 @@ claude -p "Run /ceos-agents:autopilot" --dangerously-skip-permissions
 **Syntax:**
 
 ```
-/ceos-agents:fix-bugs <ISSUE-ID> [--dry-run] [--decompose | --no-decompose] [--profile <name>] [--yolo | --step-mode] [--clarification "<answer>"]
-/ceos-agents:fix-bugs --batch <N> [--dry-run] [--decompose | --no-decompose] [--profile <name>] [--yolo | --step-mode]
+/agent-flow:fix-bugs <ISSUE-ID> [--dry-run] [--decompose | --no-decompose] [--profile <name>] [--yolo | --step-mode] [--clarification "<answer>"]
+/agent-flow:fix-bugs --batch <N> [--dry-run] [--decompose | --no-decompose] [--profile <name>] [--yolo | --step-mode]
 ```
 
 **Arguments:**
@@ -120,14 +119,14 @@ claude -p "Run /ceos-agents:autopilot" --dangerously-skip-permissions
 - `--step-mode` — Pause after every pipeline step for manual review before continuing (mutually exclusive with `--yolo`)
 - `--clarification "<answer>"` — Provide the human answer to a paused-pipeline NEEDS_CLARIFICATION question and resume from the paused point. Single-ticket mode only.
 
-**What it does:** Runs the full bug-fix pipeline. In single-ticket mode, processes one issue end-to-end (triage → code analysis → fix → review → test → publish). In batch mode (`--batch <N>`), queries the issue tracker using the Bug query from Automation Config and processes up to N bugs through the full pipeline; supports parallel processing via worktrees when the Worktrees section is configured. On every invocation, automatically detects in-progress pipelines for the target ISSUE-ID via `.ceos-agents/{ISSUE-ID}/state.json` and prompts to resume.
+**What it does:** Runs the full bug-fix pipeline. In single-ticket mode, processes one issue end-to-end (triage → code analysis → fix → review → test → publish). In batch mode (`--batch <N>`), queries the issue tracker using the Bug query from Automation Config and processes up to N bugs through the full pipeline; supports parallel processing via worktrees when the Worktrees section is configured. On every invocation, automatically detects in-progress pipelines for the target ISSUE-ID via `.agent-flow/{ISSUE-ID}/state.json` and prompts to resume.
 
 **Examples:**
 
 ```
-/ceos-agents:fix-bugs PROJ-42 --dry-run
-/ceos-agents:fix-bugs --batch 5 --profile fast
-/ceos-agents:fix-bugs PROJ-42 --clarification "Use option B"
+/agent-flow:fix-bugs PROJ-42 --dry-run
+/agent-flow:fix-bugs --batch 5 --profile fast
+/agent-flow:fix-bugs PROJ-42 --clarification "Use option B"
 ```
 
 **Related skills:** [/analyze-bug](#analyze-bug), [/prioritize](#prioritize)
@@ -143,7 +142,7 @@ claude -p "Run /ceos-agents:autopilot" --dangerously-skip-permissions
 **Syntax:**
 
 ```
-/ceos-agents:implement-feature <ISSUE-ID> [--dry-run] [--decompose | --no-decompose] [--profile <name>] [--yolo | --step-mode]
+/agent-flow:implement-feature <ISSUE-ID> [--dry-run] [--decompose | --no-decompose] [--profile <name>] [--yolo | --step-mode]
 ```
 
 **Arguments:**
@@ -162,7 +161,7 @@ claude -p "Run /ceos-agents:autopilot" --dangerously-skip-permissions
 **Example:**
 
 ```
-/ceos-agents:implement-feature PROJ-50 --decompose
+/agent-flow:implement-feature PROJ-50 --decompose
 ```
 
 **Related skills:** [/fix-bugs](#fix-bugs), [/scaffold](#scaffold)
@@ -178,7 +177,7 @@ claude -p "Run /ceos-agents:autopilot" --dangerously-skip-permissions
 **Syntax:**
 
 ```
-/ceos-agents:scaffold <description> [--template <path>] [--spec <path>] [--issue <ID>] [--no-implement] [--yolo | --step-mode] [--lang <language>] [--framework <framework>] [--db <database>] [--ci <provider>]
+/agent-flow:scaffold <description> [--template <path>] [--spec <path>] [--issue <ID>] [--no-implement] [--yolo | --step-mode] [--lang <language>] [--framework <framework>] [--db <database>] [--ci <provider>]
 ```
 
 **Arguments:**
@@ -203,12 +202,12 @@ claude -p "Run /ceos-agents:autopilot" --dangerously-skip-permissions
 **Example:**
 
 ```
-/ceos-agents:scaffold "REST API for user management with auth and roles" --lang python
+/agent-flow:scaffold "REST API for user management with auth and roles" --lang python
 ```
 
 **Note:** Use `--no-implement` for v3.x skeleton-only behavior without specification or feature implementation.
 
-**Adding components to an existing project:** Use `/ceos-agents:scaffold add <component>` (subcommand of `/scaffold`) where `<component>` is one of `claude-md`, `ci`, `docker`, `tests`. For example, `/ceos-agents:scaffold add ci` adds a CI workflow file to the current project. Unknown components produce `[ERROR] Unknown component: {NAME}` and exit 1.
+**Adding components to an existing project:** Use `/agent-flow:scaffold add <component>` (subcommand of `/scaffold`) where `<component>` is one of `claude-md`, `ci`, `docker`, `tests`. For example, `/agent-flow:scaffold add ci` adds a CI workflow file to the current project. Unknown components produce `[ERROR] Unknown component: {NAME}` and exit 1.
 
 **Related skills:** [/check-setup](#check-setup), [/implement-feature](#implement-feature)
 
@@ -223,7 +222,7 @@ claude -p "Run /ceos-agents:autopilot" --dangerously-skip-permissions
 **Syntax:**
 
 ```
-/ceos-agents:publish
+/agent-flow:publish
 ```
 
 **What it does:** Dispatches the publisher agent to create a PR with the full template, apply labels, and update the issue tracker state according to State transitions in Automation Config. This is the same publishing step that runs at the end of fix-bugs and implement-feature, but available as a standalone skill.
@@ -231,7 +230,7 @@ claude -p "Run /ceos-agents:autopilot" --dangerously-skip-permissions
 **Example:**
 
 ```
-/ceos-agents:publish
+/agent-flow:publish
 ```
 
 **Related skills:** [/fix-bugs](#fix-bugs)
@@ -247,7 +246,7 @@ claude -p "Run /ceos-agents:autopilot" --dangerously-skip-permissions
 **Syntax:**
 
 ```
-/ceos-agents:onboard
+/agent-flow:onboard
 ```
 
 **What it does:** Launches an interactive wizard that asks about your project setup: issue tracker type, instance URL, project key, source control remote, build/test commands, and more. Generates a complete Automation Config block that can be added to your project's CLAUDE.md. Supports all 6 tracker types (YouTrack, GitHub, Jira, Linear, Gitea, Redmine).
@@ -255,7 +254,7 @@ claude -p "Run /ceos-agents:autopilot" --dangerously-skip-permissions
 **Example:**
 
 ```
-/ceos-agents:onboard
+/agent-flow:onboard
 ```
 
 **Related skills:** [/setup-mcp](#setup-mcp), [/check-setup](#check-setup)
@@ -269,13 +268,13 @@ claude -p "Run /ceos-agents:autopilot" --dangerously-skip-permissions
 **Syntax:**
 
 ```
-/ceos-agents:setup-mcp
-/ceos-agents:setup-mcp --update
-/ceos-agents:setup-mcp --tracker-type <type> [--tracker-instance <url>] [--sc-remote <owner/repo>]
+/agent-flow:setup-mcp
+/agent-flow:setup-mcp --update
+/agent-flow:setup-mcp --tracker-type <type> [--tracker-instance <url>] [--sc-remote <owner/repo>]
 ```
 
 **Flags:**
-- `--update` — Update existing configuration, preserving non-ceos-agents servers
+- `--update` — Update existing configuration, preserving non-agent-flow servers
 - `--tracker-type <type>` — Override tracker type. Bypasses CLAUDE.md read.
 - `--tracker-instance <url>` — Override tracker instance URL. Defaults to type-specific default.
 - `--sc-remote <owner/repo>` — Override SC remote. Omit for tracker-only setup.
@@ -287,18 +286,18 @@ claude -p "Run /ceos-agents:autopilot" --dangerously-skip-permissions
 | Destructive | Yes (writes files) |
 | MCP required | Yes (for connectivity validation) |
 
-**What it does:** Sets up the developer environment for ceos-agents. Reads your Automation Config to determine which MCP servers and tokens are needed, guides you through token collection, generates `.mcp.json` with proper server configuration, and optionally sets up tool permissions in `.claude/settings.json`. Creates `.mcp.json.example` for team sharing (without secrets).
+**What it does:** Sets up the developer environment for agent-flow. Reads your Automation Config to determine which MCP servers and tokens are needed, guides you through token collection, generates `.mcp.json` with proper server configuration, and optionally sets up tool permissions in `.claude/settings.json`. Creates `.mcp.json.example` for team sharing (without secrets).
 
 When CLI override flags are provided (`--tracker-type`, `--tracker-instance`, `--sc-remote`), setup-mcp bypasses the Automation Config read entirely. This enables setup-mcp to run before CLAUDE.md exists — for example, during scaffold when the project has no configuration yet.
 
 **Examples:**
 
 ```
-/ceos-agents:setup-mcp
+/agent-flow:setup-mcp
 ```
 
 ```
-/ceos-agents:setup-mcp --tracker-type gitea --tracker-instance https://git.example.com --sc-remote myorg/myproject
+/agent-flow:setup-mcp --tracker-type gitea --tracker-instance https://git.example.com --sc-remote myorg/myproject
 ```
 
 **Related skills:** [/onboard](#onboard), [/check-setup](#check-setup)
@@ -312,18 +311,18 @@ When CLI override flags are provided (`--tracker-type`, `--tracker-instance`, `-
 **Syntax:**
 
 ```
-/ceos-agents:check-setup [--skip-build]
+/agent-flow:check-setup [--skip-build]
 ```
 
 **Flags:**
 - `--skip-build` — Skip the build and test command validation
 
-**What it does:** Performs a comprehensive validation of your ceos-agents setup. Checks that all required Automation Config sections and keys are present, values are not placeholders, table format is correct, MCP servers matching the tracker type are available, and build/test commands execute successfully. Reports pass/fail for each validation block with actionable fix suggestions.
+**What it does:** Performs a comprehensive validation of your agent-flow setup. Checks that all required Automation Config sections and keys are present, values are not placeholders, table format is correct, MCP servers matching the tracker type are available, and build/test commands execute successfully. Reports pass/fail for each validation block with actionable fix suggestions.
 
 **Example:**
 
 ```
-/ceos-agents:check-setup --skip-build
+/agent-flow:check-setup --skip-build
 ```
 
 **Related skills:** [/onboard](#onboard)
@@ -337,7 +336,7 @@ When CLI override flags are provided (`--tracker-type`, `--tracker-instance`, `-
 **Syntax:**
 
 ```
-/ceos-agents:setup-agents [--dry-run] [--yolo] [--force]
+/agent-flow:setup-agents [--dry-run] [--yolo] [--force]
 ```
 
 **Flags:**
@@ -345,15 +344,15 @@ When CLI override flags are provided (`--tracker-type`, `--tracker-instance`, `-
 - `--yolo` — Write files without asking for confirmation
 - `--force` — Overwrite existing `.toml` files (default: skip files that don't have `# generated:` header, preserving manual edits)
 
-**What it does:** Scans the consuming project to detect project type (Python, TypeScript, monorepo, Java, Rust, .NET, test framework) and generates smart `customization/{agent}.toml` default overlays for each applicable agent. Generated files include a `# generated: ceos-agents setup-agents` header that marks them as safe to overwrite on subsequent runs. Files without this header (manually edited or created) are never overwritten unless `--force` is used. After scan, displays a preview diff of all files to be created or updated, then asks for confirmation (unless `--yolo`).
+**What it does:** Scans the consuming project to detect project type (Python, TypeScript, monorepo, Java, Rust, .NET, test framework) and generates smart `customization/{agent}.toml` default overlays for each applicable agent. Generated files include a `# generated: agent-flow setup-agents` header that marks them as safe to overwrite on subsequent runs. Files without this header (manually edited or created) are never overwritten unless `--force` is used. After scan, displays a preview diff of all files to be created or updated, then asks for confirmation (unless `--yolo`).
 
 TOML overlay syntax and the 3-tier merge contract are documented in `core/overlay/toml-overlay.md`. Full heuristic enumeration and worked examples: `docs/guides/setup-agents-skill.md`.
 
 **Example:**
 
 ```
-/ceos-agents:setup-agents --dry-run
-/ceos-agents:setup-agents --yolo
+/agent-flow:setup-agents --dry-run
+/agent-flow:setup-agents --yolo
 ```
 
 **Related skills:** [/onboard](#onboard), [/check-setup](#check-setup)
@@ -369,7 +368,7 @@ TOML overlay syntax and the 3-tier merge contract are documented in `core/overla
 **Syntax:**
 
 ```
-/ceos-agents:metrics [--period <N>] [--output <path>] [--format <md|json>]
+/agent-flow:metrics [--period <N>] [--output <path>] [--format <md|json>]
 ```
 
 **Flags:**
@@ -377,14 +376,14 @@ TOML overlay syntax and the 3-tier merge contract are documented in `core/overla
 - `--output <path>` — Output file path (default: stdout)
 - `--format <md|json>` — Output format: markdown or JSON (default: md)
 
-**What it does:** Generates a pipeline analytics report covering success rates, per-agent effectiveness, common failure patterns, and trend data. Analyzes `[ceos-agents]` comments and PR history to compute metrics. Useful for identifying bottleneck agents and tuning retry limits.
+**What it does:** Generates a pipeline analytics report covering success rates, per-agent effectiveness, common failure patterns, and trend data. Analyzes `[agent-flow]` comments and PR history to compute metrics. Useful for identifying bottleneck agents and tuning retry limits.
 
-**Pipeline history file:** `.ceos-agents/pipeline-history.md` is an append-only run log written after every pipeline completion. It contains metadata only — fields: `run_id`, `date`, `pipeline`, `outcome`, `agents_touched`, `block_agent`, `block_step`, `block_reason` (sanitized via 18-pattern credential redaction; v6.9.1 added bare-keyword variable redaction). The fixer agent reads the last 5 entries and the reviewer agent reads the last 10 entries at Step 1 to inform their decisions. Full contract: see `core/post-publish-hook.md` Section 5. For `.gitignore` guidance see [docs/guides/installation.md § Pipeline State and .gitignore](../guides/installation.md#4-pipeline-state-and-gitignore).
+**Pipeline history file:** `.agent-flow/pipeline-history.md` is an append-only run log written after every pipeline completion. It contains metadata only — fields: `run_id`, `date`, `pipeline`, `outcome`, `agents_touched`, `block_agent`, `block_step`, `block_reason` (sanitized via 18-pattern credential redaction; v6.9.1 added bare-keyword variable redaction). The fixer agent reads the last 5 entries and the reviewer agent reads the last 10 entries at Step 1 to inform their decisions. Full contract: see `core/post-publish-hook.md` Section 5. For `.gitignore` guidance see [docs/guides/installation.md § Pipeline State and .gitignore](../guides/installation.md#4-pipeline-state-and-gitignore).
 
 **Example:**
 
 ```
-/ceos-agents:metrics --period 14 --format json --output metrics.json
+/agent-flow:metrics --period 14 --format json --output metrics.json
 ```
 
 **Related skills:** [/fix-bugs](#fix-bugs)
@@ -400,7 +399,7 @@ TOML overlay syntax and the 3-tier merge contract are documented in `core/overla
 **Syntax:**
 
 ```
-/ceos-agents:prioritize [--limit <N>] [--output <path>]
+/agent-flow:prioritize [--limit <N>] [--output <path>]
 ```
 
 **Flags:**
@@ -412,7 +411,7 @@ TOML overlay syntax and the 3-tier merge contract are documented in `core/overla
 **Example:**
 
 ```
-/ceos-agents:prioritize --limit 20 --output priority-report.md
+/agent-flow:prioritize --limit 20 --output priority-report.md
 ```
 
 **Related skills:** [/fix-bugs](#fix-bugs), [/metrics](#metrics)
@@ -423,7 +422,7 @@ TOML overlay syntax and the 3-tier merge contract are documented in `core/overla
 
 > Creates backlog epics in issue tracker from a specification document
 
-**Syntax:** `/ceos-agents:create-backlog <spec-path> [flags]`
+**Syntax:** `/agent-flow:create-backlog <spec-path> [flags]`
 
 **Arguments:**
 - `<spec-path>` — Path to spec file, spec/ folder, or multiple files
@@ -443,9 +442,9 @@ TOML overlay syntax and the 3-tier merge contract are documented in `core/overla
 **Example:**
 
 ```
-/ceos-agents:create-backlog spec/
-/ceos-agents:create-backlog spec/epics/auth.md --update
-/ceos-agents:create-backlog spec/ --decompose --yolo
+/agent-flow:create-backlog spec/
+/agent-flow:create-backlog spec/epics/auth.md --update
+/agent-flow:create-backlog spec/ --decompose --yolo
 ```
 
 **Related skills:** [/sprint-plan](#sprint-plan), [/implement-feature](#implement-feature), [/prioritize](#prioritize)
@@ -456,7 +455,7 @@ TOML overlay syntax and the 3-tier merge contract are documented in `core/overla
 
 > Plans a sprint from backlog issues using capacity constraints and priority ranking
 
-**Syntax:** `/ceos-agents:sprint-plan [flags]`
+**Syntax:** `/agent-flow:sprint-plan [flags]`
 
 **Flags:**
 - `--all` — Plan all sprints (release plan), not just the next one
@@ -476,10 +475,10 @@ TOML overlay syntax and the 3-tier merge contract are documented in `core/overla
 **Example:**
 
 ```
-/ceos-agents:sprint-plan
-/ceos-agents:sprint-plan --all
-/ceos-agents:sprint-plan --apply --yolo
-/ceos-agents:sprint-plan --dry-run --limit 10
+/agent-flow:sprint-plan
+/agent-flow:sprint-plan --all
+/agent-flow:sprint-plan --apply --yolo
+/agent-flow:sprint-plan --dry-run --limit 10
 ```
 
 **Related skills:** [/create-backlog](#create-backlog), [/prioritize](#prioritize), [/implement-feature](#implement-feature)
@@ -488,31 +487,6 @@ TOML overlay syntax and the 3-tier merge contract are documented in `core/overla
 
 ## Versioning Skills
 
-### /version-bump
-
-> Bumps version in plugin.json and marketplace.json (patch/minor/major).
-
-**Syntax:**
-
-```
-/ceos-agents:version-bump [patch|minor|major]
-```
-
-**Arguments:**
-- `[patch|minor|major]` — Version bump type (default: `patch`)
-
-**What it does:** Increments the version number in plugin.json and marketplace.json according to the specified bump type. Creates a git commit with the version change and tags it. Follows the versioning policy: MAJOR for breaking Automation Config changes, MINOR for new backward-compatible features, PATCH for behavior fixes.
-
-**Example:**
-
-```
-/ceos-agents:version-bump minor
-```
-
-**Related skills:** [/version-check](#version-check), [/changelog](#changelog)
-
----
-
 ### /version-check
 
 > Compares installed plugin version with latest available.
@@ -520,7 +494,7 @@ TOML overlay syntax and the 3-tier merge contract are documented in `core/overla
 **Syntax:**
 
 ```
-/ceos-agents:version-check
+/agent-flow:version-check
 ```
 
 **What it does:** Works from any directory. Reads the installed plugin version from `~/.claude/plugins/installed_plugins.json` and compares it with the latest version tag on the remote repository. Reports whether an update is available. When run from the plugin's own repo directory, also compares the repo version with the installed version. Provides clear reinstall instructions when versions are stale.
@@ -528,10 +502,10 @@ TOML overlay syntax and the 3-tier merge contract are documented in `core/overla
 **Example:**
 
 ```
-/ceos-agents:version-check
+/agent-flow:version-check
 ```
 
-**Related skills:** [/version-bump](#version-bump)
+**Related skills:** [/changelog](#changelog)
 
 ---
 
@@ -542,7 +516,7 @@ TOML overlay syntax and the 3-tier merge contract are documented in `core/overla
 **Syntax:**
 
 ```
-/ceos-agents:changelog
+/agent-flow:changelog
 ```
 
 **What it does:** Scans merged pull requests since the last git tag, categorizes changes (Fixed, Improved, Added, Changed), and generates a CHANGELOG.md entry for the current version. Uses PR titles and descriptions to produce meaningful changelog entries.
@@ -550,10 +524,10 @@ TOML overlay syntax and the 3-tier merge contract are documented in `core/overla
 **Example:**
 
 ```
-/ceos-agents:changelog
+/agent-flow:changelog
 ```
 
-**Related skills:** [/version-bump](#version-bump), [/version-check](#version-check)
+**Related skills:** [/version-check](#version-check)
 
 ---
 
@@ -566,7 +540,7 @@ TOML overlay syntax and the 3-tier merge contract are documented in `core/overla
 **Syntax:**
 
 ```
-/ceos-agents:discuss <topic>
+/agent-flow:discuss <topic>
 ```
 
 **Arguments:**
@@ -577,7 +551,7 @@ TOML overlay syntax and the 3-tier merge contract are documented in `core/overla
 **Example:**
 
 ```
-/ceos-agents:discuss "Should we migrate the auth module to JWT?"
+/agent-flow:discuss "Should we migrate the auth module to JWT?"
 ```
 
 **Related skills:** [/analyze-bug](#analyze-bug)

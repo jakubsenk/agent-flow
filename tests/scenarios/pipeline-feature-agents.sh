@@ -32,8 +32,8 @@ REQUIRED_AGENTS=(
 for agent in "${REQUIRED_AGENTS[@]}"; do
   # Search aggregate (SKILL.md + steps/*.md) for the agent name near "Task tool"
   if ! printf '%s' "$IF_AGGREGATE" | grep -qiE "$agent.*(Task tool|subagent_type)|(Task tool|subagent_type).*$agent"; then
-    # Also allow the pattern "Run the {agent} agent (Task tool..." or ceos-agents:{agent}
-    if ! printf '%s' "$IF_AGGREGATE" | grep -qiE "(ceos-agents:$agent|the $agent agent|Run $agent)"; then
+    # Also allow the pattern "Run the {agent} agent (Task tool..." or agent-flow:{agent}
+    if ! printf '%s' "$IF_AGGREGATE" | grep -qiE "(agent-flow:$agent|the $agent agent|Run $agent)"; then
       fail "implement-feature.md does not dispatch agent: $agent"
     fi
   fi

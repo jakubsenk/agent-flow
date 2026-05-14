@@ -5,15 +5,15 @@ Dispatch `publisher` to create the PR and update the issue tracker.
 ## Pre-dispatch state write (REQ-B-2 v1.2)
 
 Before dispatching, atomically write per-stage pre-dispatch fields to
-`.ceos-agents/{ISSUE-ID}/state.json`:
+`.agent-flow/{ISSUE-ID}/state.json`:
 
 - `publisher.started_at`      = current ISO-8601 UTC timestamp
 - `publisher.model`           = `"haiku"` (from `agents/publisher.md` frontmatter)
 - `publisher.status`          = `"in_progress"`
-- `publisher.agent_name`      = `"ceos-agents:publisher"`
+- `publisher.agent_name`      = `"agent-flow:publisher"`
 - `publisher.stage_name`      = `"publisher"`
 - `publisher.dispatched_at`   = current ISO-8601 UTC timestamp
-- `publisher.dispatch_witness` = sha256("ceos-agents:publisher|haiku|<prompt_head_128>")
+- `publisher.dispatch_witness` = sha256("agent-flow:publisher|haiku|<prompt_head_128>")
   (compute via `core/lib/stage-invariant.sh::compute_dispatch_witness`)
 - `publisher.tokens_used` = 0, `publisher.duration_ms` = 0, `publisher.tool_uses` = 0
 
@@ -27,22 +27,22 @@ If `{Agent Overrides path}/publisher.toml` exists, append its rendered Markdown 
 
 ## Dispatch
 
-You MUST invoke `Task(subagent_type='ceos-agents:publisher', model='haiku')`.
+You MUST invoke `Task(subagent_type='agent-flow:publisher', model='haiku')`.
 DO NOT inline-execute. Inline execution is a CONTRACT VIOLATION detected by the PostToolUse validator.
 
-Inject Tier-1 variables: `EXPECTED_AGENT_NAME = "ceos-agents:publisher"`,
+Inject Tier-1 variables: `EXPECTED_AGENT_NAME = "agent-flow:publisher"`,
 `EXPECTED_STAGE_NAME = "publisher"`.
 
 Context for the agent:
 ```
-EXPECTED_AGENT_NAME = ceos-agents:publisher
+EXPECTED_AGENT_NAME = agent-flow:publisher
 EXPECTED_STAGE_NAME = publisher
 Type = {Type from config}. Use the MCP server for {Type}.
 ```
 
 ## Post-dispatch state write
 
-After dispatch, write per-stage post-dispatch fields to `.ceos-agents/{ISSUE-ID}/state.json`:
+After dispatch, write per-stage post-dispatch fields to `.agent-flow/{ISSUE-ID}/state.json`:
 - `publisher.completed_at` = current ISO-8601 UTC timestamp
 - `publisher.tokens_used` = `result.usage.total_tokens` (or 0 if absent)
 - `publisher.duration_ms` = `publisher.completed_at` epoch ms − `publisher.started_at` epoch ms
@@ -77,7 +77,7 @@ If Build & Test → Verify exists in Automation Config:
 1. Wait for PR merge (max 5 attempts, 30s interval). Not merged → warn, skip.
 2. Checkout base branch and pull.
 3. Run the Verify command.
-4. OK → add comment: `[ceos-agents] ✅ Fix verified. Verify command: {command}. Output: {first 500 chars}.`
+4. OK → add comment: `[agent-flow] ✅ Fix verified. Verify command: {command}. Output: {first 500 chars}.`
 5. FAIL → add comment, re-open issue.
 
 After all post-publish work completes, continue to step 12 (terminal result + dispatch-audit

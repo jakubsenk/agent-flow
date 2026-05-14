@@ -1,5 +1,5 @@
 #!/bin/bash
-# Run all test scenarios for ceos-agents
+# Run all test scenarios for agent-flow
 # Usage: ./tests/harness/run-tests.sh [scenario-name]
 
 set -uo pipefail
@@ -11,7 +11,7 @@ FAIL=0
 SKIP=0
 RESULTS=()
 
-echo "=== ceos-agents Test Harness ==="
+echo "=== agent-flow Test Harness ==="
 echo ""
 
 # If specific scenario provided, run only that

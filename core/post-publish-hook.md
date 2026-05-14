@@ -114,7 +114,7 @@ ensures `issue_id` and `run_id` contain only `[A-Za-z0-9#_-]` characters and are
 interpolate directly. The `pr_url` field in `pipeline-completed` payloads SHOULD be percent-encoded
 by the SCM tool before being written to state.json; implementers MUST NOT construct `pr_url` from
 raw user-controlled input. For agent-generated free-form prose fields (e.g., `reason` in
-`ceos-agents-block` events), use `jq -n --arg` structural payload construction (see
+`agent-flow-block` events), use `jq -n --arg` structural payload construction (see
 `core/block-handler.md` Step 5 for the canonical pattern) rather than interpolating variables into
 a quoted JSON literal.
 
@@ -255,7 +255,7 @@ The system does NOT emit any webhook for skipped stages. Skipped stages produce 
 
 ### Backward Compatibility (WEBHOOK-R8)
 
-Existing events (`pr-created`, `ceos-agents-block`) are unchanged. No existing payload field has been renamed. Section 3 curl invocation is unchanged. Webhook payloads are forward-compatible — additive fields may be added in future MINOR versions. Consumers should use lenient JSON parsing (ignore unknown fields).
+Existing events (`pr-created`, `agent-flow-block`) are unchanged. No existing payload field has been renamed. Section 3 curl invocation is unchanged. Webhook payloads are forward-compatible — additive fields may be added in future MINOR versions. Consumers should use lenient JSON parsing (ignore unknown fields).
 
 ### 4.2 Circuit breaker semantics (v6.9.0+)
 
@@ -276,7 +276,7 @@ Operators monitoring a pipeline log should treat repeated `Circuit breaker open`
 Fires AFTER Section 4 `pipeline-completed` webhook. Advisory failure semantics — never blocks the pipeline.
 
 ### Append target
-`.ceos-agents/pipeline-history.md` (NOT `.claude/`; consistent with all other plugin state under `.ceos-agents/`).
+`.agent-flow/pipeline-history.md` (NOT `.claude/`; consistent with all other plugin state under `.agent-flow/`).
 
 ### Per-run entry format
 ```markdown
@@ -339,7 +339,7 @@ sanitize_block_reason() {
 After every append, count H2 anchors (`## ` at line start). If `count > 50`, trim oldest H2 sections until `count == 50`. Implementation (Bash) — section-count-aware (the previous v6.9.0-cycle-0 line-counter approximation `awk '/^## /{i++} i>=NR-50'` was incorrect: it counted by file line number, not section count, and so silently truncated arbitrary numbers of sections depending on per-section line length):
 
 ```bash
-file=".ceos-agents/pipeline-history.md"
+file=".agent-flow/pipeline-history.md"
 total_sections=$(grep -c '^## ' "$file" 2>/dev/null || echo 0)
 if [ "$total_sections" -gt 50 ]; then
   cutoff=$((total_sections - 50))

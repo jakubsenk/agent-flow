@@ -1,9 +1,0 @@
-{
-  "task_id": "T-33",
-  "status": "DONE",
-  "files_modified": ["skills/fix-bugs/SKILL.md"],
-  "revision_cycle": null,
-  "concerns": [],
-  "test_results": "AC-062/063b: 15 markers in fix-bugs (13 webhook-curl + 1 issue-id-validation + 1 pipeline-completion)",
-  "completed_at": "2026-04-20T14:51:00Z"
-}

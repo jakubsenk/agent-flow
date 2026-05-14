@@ -18,7 +18,7 @@ optional: [reproduce_browser, e2e_test, browser_verification, acceptance_gate]
 </stage_allowlist>
 
 You are a THIN CONTROLLER. You:
-- Read state from disk (`.ceos-agents/{ISSUE-ID}/state.json`)
+- Read state from disk (`.agent-flow/{ISSUE-ID}/state.json`)
 - Follow deterministic decision logic (this document + step files)
 - Dispatch fresh subagents via the Task tool (one per step)
 - Write atomic state.json updates (including `dispatched_at` + `dispatch_witness` BEFORE each Task)
@@ -75,7 +75,7 @@ if $GOT_BATCH; then
   [[ "$BATCH_N" =~ ^[1-9][0-9]*$ ]] || { echo "[ERROR] --batch requires a positive integer count, got: ${BATCH_N}" >&2; exit 1; }
   MODE="batch"; N="$BATCH_N"
 elif [ -z "$POSITIONAL" ]; then
-  echo "[ERROR] Usage: /ceos-agents:fix-bugs <ISSUE-ID> | --batch <N>" >&2; exit 1
+  echo "[ERROR] Usage: /agent-flow:fix-bugs <ISSUE-ID> | --batch <N>" >&2; exit 1
 else
   TRACKER_TYPE="$(grep -oE '^\| Type \| [A-Za-z][A-Za-z0-9_-]+' CLAUDE.md | head -1 | awk -F'| ' '{print $3}' | tr -d ' ' | tr '[:upper:]' '[:lower:]')"
   if [ -z "$TRACKER_TYPE" ]; then
@@ -101,7 +101,7 @@ else
 fi
 ```
 
-Legacy flat `.ceos-agents/state.json` (pre-v9.3.0) → log `[WARN]` and continue with the new per-issue path scheme.
+Legacy flat `.agent-flow/state.json` (pre-v9.3.0) → log `[WARN]` and continue with the new per-issue path scheme.
 
 ## Step 0b — Resume detection
 
@@ -144,9 +144,9 @@ If `MODE = batch`:
 - If `Worktrees` config exists → parallel (batch_size, base_path, cleanup).
 - Else → sequential CWD.
 - Outer loop: query the tracker for N bugs via `Bug query` from Automation Config.
-- For each ticket: write per-issue `.ceos-agents/{ISSUE-ID}/state.json`, then execute the
+- For each ticket: write per-issue `.agent-flow/{ISSUE-ID}/state.json`, then execute the
   dispatch table below per-issue.
-- Maintain a batch-level summary at `.ceos-agents/batch-{timestamp}/state.json` with
+- Maintain a batch-level summary at `.agent-flow/batch-{timestamp}/state.json` with
   `pipeline_type: "bug_fix_batch"`, `processed[]`, `succeeded[]`, `blocked[]`.
 - On block: increment `block_count`. If `Max blocked per run` reached → skip remaining bugs.
 
@@ -159,7 +159,7 @@ in `state.json` — never leave a stage at `"pending"` after the step's turn pas
 
 | Step | File                                       | Description                                            |
 |------|--------------------------------------------|--------------------------------------------------------|
-| 00   | (orchestrator) MCP pre-flight + state init | Follow `../../core/mcp-preflight.md`, validate issue_id, create `.ceos-agents/{ISSUE-ID}/state.json`, set tracker state per `On start set`, self-assign per v9.6.1, create branch, fire `pipeline-started` webhook |
+| 00   | (orchestrator) MCP pre-flight + state init | Follow `../../core/mcp-preflight.md`, validate issue_id, create `.agent-flow/{ISSUE-ID}/state.json`, set tracker state per `On start set`, self-assign per v9.6.1, create branch, fire `pipeline-started` webhook |
 | 01   | steps/01-triage.md                         | analyst --phase triage                                 |
 | 02   | steps/02-impact.md                         | analyst --phase impact + decomposition decision        |
 | 03   | steps/03-reproduce.md                      | browser-agent --phase reproduce (config-gated)         |

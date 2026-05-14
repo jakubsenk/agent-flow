@@ -46,20 +46,20 @@ test-engineer, or spec-reviewer --verify based on intuition.
 DO NOT inline-execute step logic -- every step is a Task() dispatch.
 
 You are a THIN CONTROLLER. Your ONLY job is to:
-1. Initialize `.ceos-agents/{PROJECT_ID}/` and `state.json`
+1. Initialize `.agent-flow/{PROJECT_ID}/` and `state.json`
 2. Read `steps/NN-*.md` files via the Read tool -- they contain the dispatch logic
 3. Dispatch each step's Task() call exactly as the step file specifies
 4. Write atomic `state.json` updates (`dispatched_at` + `dispatch_witness` BEFORE each Task)
 5. Surface dispatch-audit log anomalies in the final terminal report
 
 <orchestration_contract>
-YOU -- the top-level Claude executing /ceos-agents:scaffold -- ARE the orchestrator.
+YOU -- the top-level Claude executing /agent-flow:scaffold -- ARE the orchestrator.
 You run the pipeline directly: read state, dispatch step subagents, write
 checkpoints. You never "hand the pipeline off" to another agent.
 
 For each step you SHALL invoke the Task tool with the `subagent_type` listed in
 the corresponding `steps/NN-*.md` file. Before invoking Task, you SHALL write
-atomically to `.ceos-agents/{PROJECT_ID}/state.json`:
+atomically to `.agent-flow/{PROJECT_ID}/state.json`:
 
   - `stages.<stage>.dispatched_at`   = <ISO-8601 UTC now>
   - `stages.<stage>.dispatch_witness` = sha256("<subagent_type>|<model>|<prompt_head_128>")
@@ -76,7 +76,7 @@ You SHALL also inject `EXPECTED_AGENT_NAME=<value>` and
 subagent can self-verify its dispatch invariants (REQ-B-2 v1.2).
 
 The PostToolUse hook reads these fields and emits WITNESS_OK | WITNESS_MISSING
-| WITNESS_MISMATCH audit lines to `.ceos-agents/dispatch-audit.log`. If a stage
+| WITNESS_MISMATCH audit lines to `.agent-flow/dispatch-audit.log`. If a stage
 record lacks `dispatch_witness`, the orchestrator silently skipped the step --
 that is a CONTRACT VIOLATION that the final step will surface in the terminal report.
 </orchestration_contract>

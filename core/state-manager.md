@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Read, write, and resume contract for `.ceos-agents/{RUN-ID}/state.json`. Provides atomic state persistence for all pipeline commands, enabling deterministic resume and metrics collection.
+Read, write, and resume contract for `.agent-flow/{RUN-ID}/state.json`. Provides atomic state persistence for all pipeline commands, enabling deterministic resume and metrics collection.
 
 ## Input Contract
 
@@ -20,18 +20,18 @@ Read, write, and resume contract for `.ceos-agents/{RUN-ID}/state.json`. Provide
 ## Process
 
 ### Write Process
-1. Read current state from `.ceos-agents/{RUN-ID}/state.json`
+1. Read current state from `.agent-flow/{RUN-ID}/state.json`
 2. If file does not exist, initialize from schema template (see `state/schema.md`)
 2a. On initialization (first write only): read the `version` field from `.claude-plugin/plugin.json` and write it to the `plugin_version` field in state.json. If the file is unreadable, contains malformed JSON, or lacks a `version` field: set `plugin_version` to `null` — no error, no warning.
 3. Set the value at the specified field_path (supports all top-level sections from `state/schema.md` including the optional `infrastructure` object — typically only written by the scaffold pipeline at Step 0-INFRA)
 4. Update `updated_at` to current ISO-8601 timestamp
-5. Append event to `.ceos-agents/{RUN-ID}/pipeline.log` (JSONL format)
-6. Write to `.ceos-agents/{RUN-ID}/state.json.tmp`
+5. Append event to `.agent-flow/{RUN-ID}/pipeline.log` (JSONL format)
+6. Write to `.agent-flow/{RUN-ID}/state.json.tmp`
 7. Rename `.tmp` to `.json` (atomic on POSIX; best-effort on Windows)
 8. If write fails: retry once. If second attempt fails: log warning, continue pipeline (state loss is acceptable; pipeline must not block on state write failure)
 
 ### Read Process
-1. If `.ceos-agents/{RUN-ID}/state.json` exists: read and return parsed JSON
+1. If `.agent-flow/{RUN-ID}/state.json` exists: read and return parsed JSON
 2. If not: return null (caller must handle missing state)
 
 ### Resume Process
@@ -153,6 +153,6 @@ No per-iteration breakdown array is persisted. The final `fixer_reviewer.tokens_
 
 - **Atomic write failure:** Retry once with 1-second delay. If retry fails: log `STATE_WRITE_FAILED` event to stderr, continue pipeline execution. State persistence is advisory — pipeline MUST NOT block on state write failures.
 - **Corrupted state file:** If JSON parse fails on read: rename corrupted file to `state.json.corrupt.{timestamp}`, log warning, return null (triggers heuristic fallback on resume).
-- **Missing directory:** Create `.ceos-agents/{RUN-ID}/` on first write. If directory creation fails: log warning, skip state writes for this run.
-- **Concurrent access (fix-bugs parallel mode):** Each issue has its own directory (`.ceos-agents/{ISSUE-ID}/`). No file-level locking needed — parallel tickets never share state files. If two sessions process the same ticket: last-write-wins (acceptable — human should not run the same ticket twice).
+- **Missing directory:** Create `.agent-flow/{RUN-ID}/` on first write. If directory creation fails: log warning, skip state writes for this run.
+- **Concurrent access (fix-bugs parallel mode):** Each issue has its own directory (`.agent-flow/{ISSUE-ID}/`). No file-level locking needed — parallel tickets never share state files. If two sessions process the same ticket: last-write-wins (acceptable — human should not run the same ticket twice).
 

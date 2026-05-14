@@ -1,9 +1,0 @@
-{
-  "task_type": "bugfix",
-  "secondary_types": ["enhancement"],
-  "action": "full_pipeline",
-  "target_skill": null,
-  "confidence": 0.94,
-  "reasoning": "Three well-defined bugs in a single skill file (check-setup/SKILL.md). Low complexity, no architectural changes, clear requirements. Full pipeline is appropriate because all three issues need spec, plan, execution, and verification. Fast-track eligible due to low complexity and zero security surface.",
-  "skip_profile": null
-}

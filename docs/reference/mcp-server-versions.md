@@ -1,6 +1,6 @@
 # MCP Server Versions
 
-Reference page tracking the recommended MCP server source for each tracker type supported by ceos-agents, plus version pins, audit cadence, and known deprecation deadlines.
+Reference page tracking the recommended MCP server source for each tracker type supported by agent-flow, plus version pins, audit cadence, and known deprecation deadlines.
 
 **Last verified:** 2026-05-09
 **Next scheduled audit:** 2026-08-09 (90-day quarterly cadence)
@@ -96,7 +96,7 @@ All 5 vendor-official endpoints (`api.githubcopilot.com/mcp/`, `mcp.atlassian.co
 
 Atlassian's MCP server originally exposed both `/sse` and `/mcp` endpoints. As of 2026-04-XX (per Atlassian docs), `/sse` is deprecated with EOL on **2026-06-30**.
 
-ceos-agents v9.6.0 ships templates using `/mcp` (Streamable HTTP). Users who manually configured `.mcp.json` against `/sse` before v9.6.0 must migrate to `/mcp`. CHANGELOG v9.6.0 entry contains migration callout.
+agent-flow v9.6.0 ships templates using `/mcp` (Streamable HTTP). Users who manually configured `.mcp.json` against `/sse` before v9.6.0 must migrate to `/mcp`. CHANGELOG v9.6.0 entry contains migration callout.
 
 ---
 

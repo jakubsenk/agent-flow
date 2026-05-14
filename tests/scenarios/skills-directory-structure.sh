@@ -25,7 +25,7 @@ fi
 # -----------------------------------------------------------------------
 echo "--- FC-2: skills/ contains exactly 18 directories ---"
 
-# The 18 expected skill directories (v9.5.0: estimate, migrate-config, pipeline-status, scaffold-validate removed)
+# The 18 expected skill directories (estimate, migrate-config, pipeline-status, scaffold-validate removed)
 EXPECTED_SKILLS=(
   analyze-bug
   autopilot

@@ -1,6 +1,6 @@
 # Snippet — /metrics --format json output schema
 
-Canonical JSON schema for `/ceos-agents:metrics --format json` output. Cite this file from `skills/metrics/SKILL.md` rather than duplicating the schema inline.
+Canonical JSON schema for `/agent-flow:metrics --format json` output. Cite this file from `skills/metrics/SKILL.md` rather than duplicating the schema inline.
 
 ```json
 {

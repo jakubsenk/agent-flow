@@ -30,9 +30,9 @@ test-engineer binds to canonical stage `test` per design.md §4.2 (default; `e2e
 ```bash
 . core/lib/stage-invariant.sh
 PROMPT_HEAD_128="$(printf '%s' "$TEST_ENGINEER_PROMPT_TEMPLATE" | head -c 128)"
-DISPATCH_WITNESS="$(compute_dispatch_witness test ceos-agents:test-engineer sonnet "$PROMPT_HEAD_128")"
+DISPATCH_WITNESS="$(compute_dispatch_witness test agent-flow:test-engineer sonnet "$PROMPT_HEAD_128")"
 DISPATCHED_AT="$(date -u +%FT%TZ)"
-EXPECTED_AGENT_NAME="ceos-agents:test-engineer"
+EXPECTED_AGENT_NAME="agent-flow:test-engineer"
 EXPECTED_STAGE_NAME="test"
 # Merge: state.json[stages.test] = { dispatched_at, dispatch_witness, agent_name,
 #   stage_name, status="in_progress" } atomically.
@@ -43,7 +43,7 @@ EXPECTED_STAGE_NAME="test"
 Before dispatch, check Agent Overrides: follow `../../../core/agent-override-injector.md`.
 If `{Agent Overrides path}/test-engineer.toml` exists, append its rendered Markdown content to the agent's context as `## Project-Specific Instructions`.
 
-You MUST invoke Task(subagent_type='ceos-agents:test-engineer', model='sonnet'). DO NOT inline-execute.
+You MUST invoke Task(subagent_type='agent-flow:test-engineer', model='sonnet'). DO NOT inline-execute.
 - Context: `Mode: feature. Pipeline: implement-feature.` + changed files, acceptance criteria
 - After completion: run Test command
 
@@ -77,9 +77,9 @@ deployment-verifier binds to canonical stage `deployment` per design.md §4.2.
 ```bash
 . core/lib/stage-invariant.sh
 PROMPT_HEAD_128="$(printf '%s' "$DEPLOYMENT_VERIFIER_PROMPT_TEMPLATE" | head -c 128)"
-DISPATCH_WITNESS="$(compute_dispatch_witness deployment ceos-agents:deployment-verifier sonnet "$PROMPT_HEAD_128")"
+DISPATCH_WITNESS="$(compute_dispatch_witness deployment agent-flow:deployment-verifier sonnet "$PROMPT_HEAD_128")"
 DISPATCHED_AT="$(date -u +%FT%TZ)"
-EXPECTED_AGENT_NAME="ceos-agents:deployment-verifier"
+EXPECTED_AGENT_NAME="agent-flow:deployment-verifier"
 EXPECTED_STAGE_NAME="deployment"
 # Merge atomically into state.json[stages.deployment].
 ```
@@ -89,10 +89,10 @@ EXPECTED_STAGE_NAME="deployment"
 Before dispatch, check Agent Overrides: follow `../../../core/agent-override-injector.md`.
 If `{Agent Overrides path}/deployment-verifier.toml` exists, append its rendered Markdown content to the agent's context as `## Project-Specific Instructions`.
 
-You MUST invoke Task(subagent_type='ceos-agents:deployment-verifier', model='sonnet'). DO NOT inline-execute.
+You MUST invoke Task(subagent_type='agent-flow:deployment-verifier', model='sonnet'). DO NOT inline-execute.
 Context: `Action: start. Local Deployment config: Type = {Type}, Start command = {Start command},
 Stop command = {Stop command}, Health check URL = {Health check URL}, Health check timeout = {Health check timeout},
-Ports = {Ports}. Run directory: .ceos-agents/{ISSUE-ID}/`
+Ports = {Ports}. Run directory: .agent-flow/{ISSUE-ID}/`
 
 Verdict handling:
 - `HEALTHY` or `SKIPPED` → continue to step 06c (E2E test)
@@ -118,14 +118,14 @@ Before dispatching test-engineer with --e2e flag: write `e2e_test.started_at`, `
 ```bash
 . core/lib/stage-invariant.sh
 PROMPT_HEAD_128="$(printf '%s' "$TEST_ENGINEER_E2E_PROMPT_TEMPLATE" | head -c 128)"
-DISPATCH_WITNESS="$(compute_dispatch_witness e2e_test ceos-agents:test-engineer sonnet "$PROMPT_HEAD_128")"
+DISPATCH_WITNESS="$(compute_dispatch_witness e2e_test agent-flow:test-engineer sonnet "$PROMPT_HEAD_128")"
 DISPATCHED_AT="$(date -u +%FT%TZ)"
-EXPECTED_AGENT_NAME="ceos-agents:test-engineer"
+EXPECTED_AGENT_NAME="agent-flow:test-engineer"
 EXPECTED_STAGE_NAME="e2e_test"
 # Merge atomically into state.json[stages.e2e_test].
 ```
 
-You MUST invoke Task(subagent_type='ceos-agents:test-engineer', prompt='--e2e', model='sonnet'). DO NOT inline-execute.
+You MUST invoke Task(subagent_type='agent-flow:test-engineer', prompt='--e2e', model='sonnet'). DO NOT inline-execute.
 - Context: `Mode: feature. Pipeline: implement-feature.`
 
 After dispatch: defensive-read `result.usage`. Write to `state.json`: `e2e_test.completed_at`,

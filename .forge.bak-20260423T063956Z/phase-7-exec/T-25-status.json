@@ -1,9 +1,0 @@
-{
-  "task_id": "T-25",
-  "status": "DONE",
-  "files_modified": ["tests/scenarios/prompt-injection-protection.sh"],
-  "revision_cycle": null,
-  "concerns": [],
-  "test_results": "AC-063a/064/076: 8 hardcoded 15->16 references updated; shopt guards added; ls core/*.md -> find -maxdepth 1; bash -n passes",
-  "completed_at": "2026-04-20T14:36:00Z"
-}

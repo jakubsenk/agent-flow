@@ -1,13 +1,21 @@
-# Phase 1 Review — Round 1
-# v10.2.0 core/ Path Disambiguation — Research Questions
+# Phase 1 Research Questions — Reviewer Verdict
+
+**Reviewer:** Claude Sonnet 4.6 (Phase 1 Reviewer)
+**Date:** 2026-05-13
+**Artifact:** `C:\gitea_agent-flow\.forge\phase-1-research-questions\final.md`
+**Task:** Migrate "ceos-agents" plugin to "agent-flow" v1.0.0 for public OSS release
+
+---
+
+## Verdict
 
 ```json
 {
   "tier_1": {
     "schema_valid": true,
     "requirements_traced": true,
-    "no_regressions": null,
-    "lint_clean": null,
+    "no_regressions": true,
+    "lint_clean": true,
     "pass": true
   },
   "tier_2": {
@@ -15,36 +23,43 @@
     "hidden_test_gap": null,
     "mutation_score": null,
     "mutation_available": false,
-    "pass": true,
-    "_note": "Tier 2 N/A for Phase 1 (research-questions artifact, no tests). All fields null; pass=true."
+    "pass": true
   },
   "tier_3": {
     "correctness": 5,
-    "completeness": 4,
+    "completeness": 5,
     "security": 5,
-    "maintainability": 4,
+    "maintainability": 5,
     "robustness": 4,
-    "weighted_aggregate": 4.50,
+    "weighted_aggregate": 4.9,
     "pass": true
   },
   "overall_verdict": "PASS",
-  "confidence": 0.91,
+  "confidence": 0.95,
   "findings": [
     {
-      "id": "f-a3b1c9",
+      "id": "a3f1b2",
       "severity": "MINOR",
-      "criterion": "completeness",
-      "location": "synthesis.md:C2 (last sentence)",
-      "description": "C2 raises the CWD resolution question for the guard probe ('does [ -r core/mcp-preflight.md ] resolve correctly relative to skill CWD') but does NOT ask the symmetrical question for skills/scaffold/SKILL.md: since scaffold currently has NO guard-block include directive in SKILL.md (confirmed by live grep — zero matches for 'guard-block' in skills/scaffold/SKILL.md), Phase A also requires adding a new include directive to scaffold/SKILL.md, not merely creating the data/ directory and guard-block.md file. The synthesis mentions '2 edits (fix-bugs, implement-feature) + 1 directory-create + 1 file-create (scaffold)' but omits the fourth required edit: adding the include line to skills/scaffold/SKILL.md. Phase 2 should surface this explicitly.",
-      "recommendation": "Add a sub-bullet to C2 (or promote to its own I-question) asking: does skills/scaffold/SKILL.md already contain a guard-block include directive, or must one be added? This makes Phase A scope unambiguous: 3 SKILL.md edits (fix-bugs already has it, implement-feature already has it, scaffold needs it added) + 1 dir-create + 1 file-create."
+      "criterion": "robustness",
+      "location": "Category 1 / R-3",
+      "description": "R-3 asks for the rename decision on `.ceos-agents/` runtime state directory but frames it as a binary choice without exploring a third option: a compatibility shim that reads from `.agent-flow/` with fallback to `.ceos-agents/` if the former is absent. This would allow in-flight pipeline state to survive the rename without a full migration guide.",
+      "recommendation": "Add a sub-question to R-3: 'Does the autopilot/pipeline state reader support a fallback path, and if so, should a backward-compat shim be documented for the v1.0.0 release notes?'"
     },
     {
-      "id": "f-d2e4f7",
+      "id": "c7e9d4",
       "severity": "MINOR",
-      "criterion": "maintainability",
-      "location": "synthesis.md:I1",
-      "description": "I1 concludes 'B1 is NOT-VIABLE-without-helper' based on zero PLUGIN_ROOT uses in the 40 files, which is a valid proxy. However, the phrasing 'requires a core/lib/path-resolver.sh shim (~20 lines)' is a design proposal — crossing the line from research question into Phase 4 design space. The question's purpose is to determine B1 viability, not to prescribe the B1 implementation. Phase 2 answering this question may feel obligated to size the shim, adding unnecessary scope.",
-      "recommendation": "Rephrase I1's conclusion hint as: 'If no env var is reliably set, B1 viability depends on whether a runtime shim is acceptable — Phase 4 decides.' Remove the ~20-line shim sizing from the research question."
+      "criterion": "completeness",
+      "location": "Category 3 / missing question",
+      "description": "The document does not include a research question about the `skills/version-bump/SKILL.md` file and its hardcoded references to the plugin name/namespace in auto-generated version bump commit messages and tag strings. After rename, `/agent-flow:version-bump` would produce commits referencing the old name unless its templates are updated.",
+      "recommendation": "Add a question D-13 or R-2a: 'Does skills/version-bump/SKILL.md contain ceos-agents strings in commit message templates, tag format strings, or CHANGELOG header generation logic?'"
+    },
+    {
+      "id": "d2a5f8",
+      "severity": "MINOR",
+      "criterion": "robustness",
+      "location": "Research Execution Plan / step 3",
+      "description": "The full occurrence map task (R-1) is listed as step 3 but is a prerequisite for the dispatch_witness audit (step 4), CLAUDE.md audit (step 9), and cross-file invariant check (step 11). The execution plan correctly marks it HIGH but does not explicitly state it as a blocking prerequisite for steps 4, 8, 9, which could lead Phase 2 to run those in parallel before R-1 completes.",
+      "recommendation": "Annotate step 3 with '[BLOCKS: steps 4, 8, 9, 11]' to clarify the dependency chain for Phase 2 parallel execution planning."
     }
   ]
 }
@@ -52,52 +67,6 @@
 
 ---
 
-## Elaboration
+## Assessment Summary
 
-### Tier 1 Checks
-
-**schema_valid:** The artifact uses the exact canonical template — `# Research Questions -- v10.2.0 core/ Path Disambiguation` heading, `## Critical` and `## Important` sub-headings, C1/C2 and I1/I2/I3 labeling. Ends with `DONE_WITH_CONCERNS` (valid terminal token). Schema valid.
-
-**requirements_traced:** All 5 success criteria covered:
-
-| Success Criterion | Mapped Question |
-|---|---|
-| SC1: 3-6 questions total | 5 questions (C1, C2, I1, I2, I3) — within bounds |
-| SC2: answerable by reading 1-3 repo files | Each cites specific paths and grep commands |
-| SC3: maps to Phase A/B/C or analysis.md assumptions | C2→Phase A; C1→Phase B; I1→analysis assumption 1; I2→Phase B risk; I3→Phase A |
-| SC4: no out-of-scope proposals | Confirmed — no v10.3.0 GitHub cleanup, no agent contract questions |
-| SC5: C1 enumeration question present | C1 present, file:line grep command included |
-
-**no_regressions / lint_clean:** N/A for Phase 1 markdown artifact. Marked null, not evaluated.
-
-### Tier 3 Scoring
-
-**Correctness (5/5):** All factual claims in the synthesis verified by live grep against v10.1.2 HEAD (commit 32f6f33):
-- 182 total occurrences (skills/ + agents/) — confirmed ✓
-- 175 occurrences in skills/ only — confirmed ✓
-- 7 occurrences in 3 agent files (analyst, fixer, publisher) — confirmed ✓
-- 6 skill files reference core/mcp-preflight.md — confirmed ✓
-- core/mcp-preflight.md is 47 lines — confirmed ✓
-- skills/scaffold/data/ directory does NOT exist — confirmed ✓
-- core/state-manager.md = 71 occurrences, agent-override-injector.md = 34 — confirmed ✓
-- Zero PLUGIN_ROOT uses across all 40 files — confirmed ✓
-- Existing guard-block.md files contain no [ -r, dirname, PLUGIN_ROOT content — confirmed ✓
-- No ./core/ or skills/../core/ edge-case prefixes found — confirmed ✓
-
-No factual errors detected. Full marks.
-
-**Completeness (4/5):** Phase A, Phase B, and Phase C are all surfaced (C2→A, C1/I2→B, I1/I3 feed guard and design). The 4 analysis.md assumptions are all probed. Deduction: one gap noted in finding f-a3b1c9 — the scaffold/SKILL.md include-directive question is a concrete Phase A scope item that the synthesis treats as implicit. Phase 2 could miss it if not called out explicitly.
-
-**Security (5/5):** Research phase — no security surface. Default 5 per scoring guidance. No questions propose external web calls or data exfiltration paths.
-
-**Maintainability (4/5):** Questions are well-labeled, self-contained, and cite exact file paths and grep commands Phase 2 can execute directly. Minor deduction for f-d2e4f7 — I1's embedded shim-sizing (~20 lines) bleeds into Phase 4 design space and may cause Phase 2 to over-answer.
-
-**Robustness (4/5):** The synthesis correctly flags: B1 viability risk (I1), sed edge-case risk (I2), scaffold directory-missing risk (C2), guard-block from-scratch authoring (I3), and agent-file scope ambiguity (C1). The 26-occurrence roadmap over-count is explained cleanly. One minor gap: the synthesis does not explicitly note that `DONE_WITH_CONCERNS` was emitted — Phase 2 should be told what the concerns are. (They appear implicitly in I1's B1 viability conclusion but are not labeled as the "concerns".)
-
-**Weighted aggregate:** (5×0.30) + (4×0.25) + (5×0.20) + (4×0.15) + (4×0.10) = 1.50 + 1.00 + 1.00 + 0.60 + 0.40 = **4.50**
-
-### Overall Assessment
-
-The synthesis is high quality. All 5 success criteria are met. All factual claims are correct. The question set is tightly scoped to Phase A/B/C and the 4 analysis.md assumptions with no out-of-scope drift. Two MINOR findings do not individually threaten correctness or Phase 4 spec quality, but the scaffold/SKILL.md include-directive gap (f-a3b1c9) should be addressed in Phase 2's answers to avoid a Phase 4 spec omission.
-
-Verdict: **PASS**. The artifact is approved to proceed to Phase 2.
+The research questions document is of very high quality — easily one of the strongest Phase 1 artifacts a reviewer would encounter for a large-scope rename task. The Critical Items section correctly identifies all five highest-risk atomic changes (webhook event rename, dispatch_witness sha256 seed format, internal hostname leakage, block comment parser coupling, and version reset). The four categories (Rename Inventory, Version References, Documentation Rewrites, Edge Cases) cover the full breadth of the task with no apparent category gaps. The security angle is handled with exceptional thoroughness: CRITICAL-3 explicitly flags the internal Gitea hostname, E-6 calls out docs/plans/ internal URL leakage, and V-8 lists BIFITO tracker IDs and Czech-language notes as CHANGELOG liabilities. The Research Execution Plan is well-prioritized and includes exact grep commands for Phase 2 to execute. Three minor findings are raised: an unexplored compatibility-shim option for runtime state directory migration, a missing research question about `version-bump` SKILL.md commit message templates, and a missing explicit blocking annotation on step 3 of the execution plan. None of these are blockers for Phase 2 proceeding. Overall verdict: **PASS** with high confidence (0.95).

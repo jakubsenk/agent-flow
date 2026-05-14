@@ -1,9 +1,0 @@
-{
-  "phase": 4,
-  "phase_name": "Specification",
-  "gate_fired_at": "2026-04-23T19:11:00Z",
-  "user_decision": "approved",
-  "user_feedback": "Approved after detailed walk-through. Specification is final. Phase 5 may begin; first action is 2 external-research tasks blocking Layer 2 implementation.",
-  "iterations_used_at_gate": 1,
-  "resolved_at": "2026-04-24T00:00:00Z"
-}

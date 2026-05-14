@@ -25,7 +25,7 @@ assert_contains() {
   fi
 }
 
-# --- fix-bugs/SKILL.md (absorbs fix-ticket in v9.3.0) ---
+# --- fix-bugs/SKILL.md (absorbs fix-ticket) ---
 FT="$REPO_ROOT/skills/fix-bugs/SKILL.md"
 if [ ! -f "$FT" ]; then
   fail "skills/fix-bugs/SKILL.md does not exist"

@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# REGRESSION: skills/ has exactly 18 subdirectories (v9.5.0: estimate, migrate-config, pipeline-status, scaffold-validate removed)
+# REGRESSION: skills/ has exactly 18 subdirectories (estimate, migrate-config, pipeline-status, scaffold-validate removed)
 # Traces: AUTOPILOT-R1, AC-23
-# Description: Verifies filesystem skill count is exactly 18 after v9.5.0
-
-# Depends on v9.1.0 + v9.2.0 + v9.3.0 + v9.5.0 deletions
+# Description: Verifies filesystem skill count is exactly 18
 
 cd "$(dirname "$0")/../.."
 

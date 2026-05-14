@@ -1,12 +1,12 @@
 # Pause-State Contract
 
-This contract defines the pause-state protocol shared across ceos-agents pause-emitting agents. As of v6.9.0, two pause states exist:
+This contract defines the pause-state protocol shared across agent-flow pause-emitting agents. As of v6.9.0, two pause states exist:
 1. **NEEDS_CLARIFICATION** (NEW in v6.9.0) — full spec in Section 2 below.
 2. **NEEDS_DECOMPOSITION** (existing since v5.0.0+) — canonical spec at `agents/fixer.md:36-47` (cross-link in Section 3).
 
 ## Pause-State Contract Overview
 
-Agents may emit a fenced markdown pause-state block to signal that human input is required before the pipeline can continue. The orchestrating skill detects the block, persists state to `.ceos-agents/{RUN-ID}/state.json`, and exits with a non-terminal pipeline status (`paused`) or — on cap exhaustion — with terminal `blocked`.
+Agents may emit a fenced markdown pause-state block to signal that human input is required before the pipeline can continue. The orchestrating skill detects the block, persists state to `.agent-flow/{RUN-ID}/state.json`, and exits with a non-terminal pipeline status (`paused`) or — on cap exhaustion — with terminal `blocked`.
 
 Pause-state blocks MUST use exact string detection (no variations). Skills detect via grep-equivalent regex matching on the fenced header.
 
@@ -44,7 +44,7 @@ context: <optional, max 500 chars, may span multiple lines>
 
 ### Resume protocol
 
-1. Re-invoking the original entry-point skill with `--clarification "answer text"` (e.g. `/ceos-agents:fix-bugs <ID> --clarification "answer text"`) writes `clarification.answer`. (The legacy standalone `resume-ticket` skill was deleted in v9.3.0; inline auto-resume detection in `core/resume-detection.md` handles this contract.)
+1. Re-invoking the original entry-point skill with `--clarification "answer text"` (e.g. `/agent-flow:fix-bugs <ID> --clarification "answer text"`) writes `clarification.answer`. (The legacy standalone `resume-ticket` skill was deleted in v9.3.0; inline auto-resume detection in `core/resume-detection.md` handles this contract.)
 2. Resume sets `clarification.asked_at_step`'s status back to `in_progress`, top-level `status` back to `running`.
 3. Re-dispatches the original agent at `asked_at_step` with the `answer` injected into context wrapped in `--- EXTERNAL INPUT START ---` / `--- EXTERNAL INPUT END ---` markers.
 4. Receiver agents (fixer, analyst) MUST recognize the markers and apply untrusted-data handling.
@@ -114,4 +114,4 @@ If the orchestrator does not sanitize tracker content before wrapping it in EXTE
 
 ### v6.11.0 target
 
-All three adversarial paths above will be addressed in v6.11.0 under "Prompt-injection defense-in-depth". See `docs/plans/roadmap.md` § v6.11.0 for the planned approach (T3-ADV-1 inner-marker escaping, T3-ADV-2 Unicode normalization, T3-ADV-3 end-marker stripping at wrap sites).
+All three adversarial paths above will be addressed in v6.11.0 under "Prompt-injection defense-in-depth". See `docs/roadmap.md` § v6.11.0 for the planned approach (T3-ADV-1 inner-marker escaping, T3-ADV-2 Unicode normalization, T3-ADV-3 end-marker stripping at wrap sites).

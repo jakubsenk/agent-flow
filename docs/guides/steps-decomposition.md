@@ -1,11 +1,11 @@
 # Steps Decomposition Guide
 
-> **Tento průvodce popisuje, jak jsou v8.0.0 tři pipeline skilly (`fix-bugs`, `implement-feature`, `scaffold`)
-> rozloženy z monolitického `SKILL.md` (~600 řádků) na vstupní `SKILL.md` (~100 řádků) a sadu
-> step souborů (`steps/*.md`, 5–8 na skill). Jde o architekturu inspirovanou BMAD frameworkem,
-> kde toto rozkládání prokázalo ~80% snížení spotřeby tokenů na krok a zlepšení spolehlivosti
-> LLM díky menšímu kontextovému oknu. Zbývajících 25 non-pipeline skillů zůstává v monolitické
-> podobě — decomposition je explicitně omezena na tři výše jmenované skilly.**
+> This guide describes how the three pipeline skills (`fix-bugs`, `implement-feature`, `scaffold`)
+> are decomposed from a monolithic `SKILL.md` (~600 lines) into an entry `SKILL.md` (~100 lines)
+> and a set of step files (`steps/*.md`, 5–8 per skill). The architecture is inspired by the BMAD
+> framework, where this decomposition demonstrated ~80% token reduction per step and improved LLM
+> reliability due to a smaller context window. The remaining non-pipeline skills stay monolithic —
+> decomposition is explicitly limited to these three pipeline skills.
 
 ---
 
@@ -13,7 +13,7 @@
 
 ### Why decomposition?
 
-In v7.0.0, each of the three pipeline skills (`fix-bugs`, `implement-feature`, `scaffold`) consisted
+Originally, each of the three pipeline skills (`fix-bugs`, `implement-feature`, `scaffold`) consisted
 of a single monolithic `SKILL.md` file of approximately 600 lines. This design caused two problems:
 
 1. **Token cost**: Every pipeline step dispatched the same ~600-line context window to the LLM, even
@@ -23,25 +23,18 @@ of a single monolithic `SKILL.md` file of approximately 600 lines. This design c
 
 The BMAD framework (industry reference for modular agent orchestration) documented a ~80% token
 reduction per step when moving from monolithic to decomposed step files, with measurably improved
-per-step instruction compliance. v8.0.0 adopts this pattern for the three pipeline skills.
+per-step instruction compliance. The agent-flow plugin adopts this pattern for the three pipeline skills.
 
-### What changed in v8.0.0
+### Decomposition scope
 
 - **3 pipeline skills decomposed**: `fix-bugs`, `implement-feature`, `scaffold`
-- **22 non-pipeline skills unchanged (v8.0.0 baseline; historical list)**: `analyze-bug`, `autopilot`, `changelog`,
-  `check-setup`, `create-backlog`, `discuss`, `estimate`, `fix-ticket` (legacy), `metrics`,
-  `migrate-config`, `onboard`, `pipeline-status`, `prioritize`, `publish`, `resume-ticket` (legacy),
-  `scaffold-add` (legacy), `scaffold-validate`, `setup-agents`, `setup-mcp`, `sprint-plan`,
-  `version-bump`, `version-check` — these retained their monolithic `SKILL.md`
-  structure at v8.0.0. Decomposing them was explicitly out-of-scope.
-  (Note: `check-deploy`, `dashboard`, `template` were removed in v9.2.0; the legacy
-  `fix-ticket` was merged into `fix-bugs`, the legacy `scaffold-add` became
-  `/scaffold add <component>`, and the legacy `resume-ticket` was replaced by inline
-  auto-resume detection in `core/resume-detection.md` in v9.3.0; `estimate`,
-  `migrate-config`, `pipeline-status`, `scaffold-validate` were removed in v9.5.0.)
-- **Step override mechanism added**: consuming projects may replace any individual step file
+- **Non-pipeline skills** (`analyze-bug`, `autopilot`, `changelog`, `check-setup`, `create-backlog`,
+  `discuss`, `metrics`, `onboard`, `prioritize`, `publish`, `setup-agents`, `setup-mcp`, `sprint-plan`,
+  `version-bump`, `version-check`) retain their monolithic `SKILL.md` structure —
+  decomposition is explicitly limited to the three pipeline skills above.
+- **Step override mechanism**: consuming projects may replace any individual step file
   via `customization/steps/{skill}/{step-name}.md` (see Section 4).
-- **Pipeline Profiles named-phase syntax**: `Skip stages` now accepts named-phase identifiers
+- **Pipeline Profiles named-phase syntax**: `Skip stages` accepts named-phase identifiers
   matching step file base names (see Section 6).
 
 ---
@@ -67,7 +60,7 @@ The entry `SKILL.md` does **not** contain per-step agent instructions. Those liv
 
 Each step file contains the **instructions for a single pipeline step**, including:
 
-- Which agent to dispatch (e.g., `Task(subagent_type='ceos-agents:analyst', model='sonnet')`)
+- Which agent to dispatch (e.g., `Task(subagent_type='agent-flow:analyst', model='sonnet')`)
 - Skip condition (Pipeline Profile stage skip check)
 - Pre-dispatch and post-dispatch `state.json` writes
 - NEEDS_CLARIFICATION handling (where applicable)
@@ -159,8 +152,7 @@ Resolution rules:
 
 An override file **fully replaces** the corresponding plugin-default step. There is no merge,
 no partial patching, no instruction insertion before or after the default body. The override
-file takes the place of the entire default step. Insertion before/after and reordering are
-deferred to post-v8.0.0.
+file takes the place of the entire default step.
 
 The override file must follow the same step-file conventions (markdown format, no YAML frontmatter
 required). It should dispatch the same agent role to preserve pipeline integrity, though consuming
@@ -174,7 +166,7 @@ When an override file is active, the skill emits:
 [INFO] Step override active: {skill}/{step-name} from project customization
 ```
 
-This log line appears in `.ceos-agents/pipeline.log` and can be grepped for debugging
+This log line appears in `.agent-flow/pipeline.log` and can be grepped for debugging
 (see Section 7).
 
 ---
@@ -214,7 +206,7 @@ customization/steps/fix-bugs/04-fixer-reviewer-loop.md
 
 ### v8 named-phase identifiers
 
-In v8.0.0, the `Skip stages` value in the `### Pipeline Profiles` Automation Config section
+The `Skip stages` value in the `### Pipeline Profiles` Automation Config section
 accepts named-phase identifiers that correspond to step file base names or agent-phase forms.
 
 ```markdown
@@ -226,10 +218,10 @@ accepts named-phase identifiers that correspond to step file base names or agent
 | Skip stages | [analyst-impact, browser-agent-reproduce] |
 ```
 
-The `analyst-impact` and `browser-agent-reproduce` identifiers correspond to the merged agents'
-internal phase flags introduced in v8.0.0.
+The `analyst-impact` and `browser-agent-reproduce` identifiers correspond to the consolidated agents'
+internal phase flags.
 
-The `/ceos-agents:check-setup` tool validates your config format and will surface any remaining legacy mappings.
+The `/agent-flow:check-setup` tool validates your config format and will surface any unrecognized stage names.
 
 ---
 
@@ -238,7 +230,7 @@ The `/ceos-agents:check-setup` tool validates your config format and will surfac
 ### Trace step override activity
 
 ```bash
-grep "Step override active" .ceos-agents/pipeline.log
+grep "Step override active" .agent-flow/pipeline.log
 ```
 
 This shows which steps were sourced from `customization/steps/` rather than the plugin default.
@@ -246,7 +238,7 @@ This shows which steps were sourced from `customization/steps/` rather than the 
 ### Check near-miss warnings
 
 ```bash
-grep "Possible misnamed step override" .ceos-agents/pipeline.log
+grep "Possible misnamed step override" .agent-flow/pipeline.log
 ```
 
 ### Verify step file resolution
@@ -266,13 +258,13 @@ Compare filenames exactly — `{NN}-{name}.md` must match precisely (case, zero-
 ### Check which steps were skipped by Profile
 
 ```bash
-grep '\[SKIP\]' .ceos-agents/pipeline.log
+grep '\[SKIP\]' .agent-flow/pipeline.log
 ```
 
 ### Check v7 stage-name deprecation warnings
 
 ```bash
-grep '\[WARN\]' .ceos-agents/pipeline.log | grep -i "skip stages"
+grep '\[WARN\]' .agent-flow/pipeline.log | grep -i "skip stages"
 ```
 
 ---
@@ -366,7 +358,7 @@ NEVER skip — this gate runs for ALL issues regardless of AC count or complexit
 
 ## Dispatch
 
-You MUST invoke Task(subagent_type='ceos-agents:acceptance-gate', model='sonnet').
+You MUST invoke Task(subagent_type='agent-flow:acceptance-gate', model='sonnet').
 Context: all acceptance criteria from step 01-spec, plus current codebase state.
 ```
 
@@ -432,7 +424,7 @@ skills/fix-bugs/
 
 ## Related Documentation
 
-- `docs/guides/migration-v7-to-v8.md` — full migration guide including Pipeline Profiles syntax changes
+- `docs/guides/toml-overlay-syntax.md` — TOML overlay system for per-agent customization, including Pipeline Profiles syntax
 - `docs/guides/toml-overlay-syntax.md` — TOML overlay system for per-agent customization
 - `docs/reference/pipeline.md` — reference: entry SKILL.md responsibilities, step file contract
 - `docs/reference/automation-config.md` — Pipeline Profiles configuration reference (named-phase syntax)

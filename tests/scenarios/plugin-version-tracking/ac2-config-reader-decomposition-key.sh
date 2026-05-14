@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Test: config-reader.md Decomposition entry contains create_tracker_subtasks key
-# AC-1 through AC-3 (v6.7.1 — Item 1)
+# AC-1 through AC-3
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"

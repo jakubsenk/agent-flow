@@ -1,9 +1,0 @@
-{
-  "phase": 4,
-  "phase_name": "spec",
-  "gate_fired_at": "2026-04-25T21:02:31Z",
-  "user_decision": "approved",
-  "user_feedback": null,
-  "iterations_used_at_gate": 3,
-  "resolved_at": "2026-04-25T21:10:00Z"
-}

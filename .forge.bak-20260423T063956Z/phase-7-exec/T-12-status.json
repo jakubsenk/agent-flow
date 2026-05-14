@@ -1,9 +1,0 @@
-{
-  "task_id": "T-12",
-  "status": "DONE",
-  "files_modified": ["core/block-handler.md", ".forge/phase-5-tdd/tests-hidden/h-block-handler-heredoc.sh"],
-  "revision_cycle": null,
-  "concerns": [],
-  "test_results": "AC-027a/b: counter-example wrapped in HTML comment; hidden test filter tightened to skip <!-- COUNTER-EXAMPLE: — all 6 assertions PASS (h-block-handler-heredoc.sh)",
-  "completed_at": "2026-04-19T00:00:00Z"
-}

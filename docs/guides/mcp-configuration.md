@@ -2,7 +2,7 @@
 
 `.mcp.json` is the configuration file for MCP servers. Claude Code loads it automatically when starting in a directory where the file exists.
 
-> **Automated setup:** Run `/ceos-agents:setup-mcp` to generate `.mcp.json` automatically from your Automation Config. The manual instructions below are for reference or custom setups.
+> **Automated setup:** Run `/agent-flow:setup-mcp` to generate `.mcp.json` automatically from your Automation Config. The manual instructions below are for reference or custom setups.
 
 ## Location
 
@@ -45,7 +45,7 @@
 ## Gitea MCP server
 
 - **Source:** [gitea.com/gitea/gitea-mcp/releases](https://gitea.com/gitea/gitea-mcp/releases) (pinned to v1.1.0)
-- **Windows install:** Download `gitea-mcp_1.1.0_Windows_x86_64.zip`, extract `gitea-mcp.exe` to `~/.claude/bin/`. Alternatively, run `/ceos-agents:setup-mcp` which handles this automatically.
+- **Windows install:** Download `gitea-mcp_1.1.0_Windows_x86_64.zip`, extract `gitea-mcp.exe` to `~/.claude/bin/`. Alternatively, run `/agent-flow:setup-mcp` which handles this automatically.
 - **Linux install:** Download `gitea-mcp_1.1.0_Linux_x86_64.tar.gz`, extract with `tar xf`, save binary as `~/.claude/bin/gitea-mcp`, set `chmod +x`
 - **Env variables:** `GITEA_HOST`, `GITEA_ACCESS_TOKEN`
 - **Verification:** In Claude Code, ask a query about repositories. If you see a list of repositories, the MCP server is working.
@@ -134,7 +134,7 @@ No local clone or installation path needed — uvx downloads and runs the packag
 After configuring the MCP servers, run:
 
 ```
-/ceos-agents:check-setup
+/agent-flow:check-setup
 ```
 
 The command verifies configuration, connectivity, and displays a report. See [skills/check-setup/SKILL.md](../../skills/check-setup/SKILL.md).

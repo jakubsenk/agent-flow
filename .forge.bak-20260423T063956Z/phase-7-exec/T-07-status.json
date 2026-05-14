@@ -1,9 +1,0 @@
-{
-  "task_id": "T-07",
-  "status": "DONE",
-  "files_modified": ["docs/plans/roadmap.md"],
-  "revision_cycle": null,
-  "concerns": [],
-  "test_results": "AC-009/014/039: 4 v6.9.1 deferral entries (SECURITY secondary, canonical URL, circuit breaker persistence, multi-host lock) present",
-  "completed_at": "2026-04-19T13:00:30Z"
-}

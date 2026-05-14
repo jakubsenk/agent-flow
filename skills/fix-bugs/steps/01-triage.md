@@ -32,14 +32,14 @@ If stage `triage` is in the profile's Skip stages → skip for each bug, record 
 ## Pre-dispatch state write (REQ-B-2 v1.2)
 
 Before dispatching, atomically write per-stage pre-dispatch fields to
-`.ceos-agents/{ISSUE-ID}/state.json`:
+`.agent-flow/{ISSUE-ID}/state.json`:
 - `triage.started_at`      = current ISO-8601 UTC timestamp
 - `triage.model`           = `"sonnet"` (from `agents/analyst.md` frontmatter)
 - `triage.status`          = `"in_progress"`
-- `triage.agent_name`      = `"ceos-agents:analyst"`
+- `triage.agent_name`      = `"agent-flow:analyst"`
 - `triage.stage_name`      = `"triage"`
 - `triage.dispatched_at`   = current ISO-8601 UTC timestamp
-- `triage.dispatch_witness` = sha256("ceos-agents:analyst|sonnet|<prompt_head_128>")
+- `triage.dispatch_witness` = sha256("agent-flow:analyst|sonnet|<prompt_head_128>")
   (compute via `core/lib/stage-invariant.sh::compute_dispatch_witness`; prompt_head_128 is the
    first 128 UTF-8-safe bytes of the un-expanded prompt template — BEFORE Tier-1 variable injection)
 - `triage.tokens_used` = 0, `triage.duration_ms` = 0, `triage.tool_uses` = 0 (safe defaults)
@@ -53,16 +53,16 @@ If `{Agent Overrides path}/analyst.toml` exists, append its rendered Markdown co
 
 ## Dispatch
 
-You MUST invoke `Task(subagent_type='ceos-agents:analyst', model='sonnet')`.
+You MUST invoke `Task(subagent_type='agent-flow:analyst', model='sonnet')`.
 DO NOT inline-execute. Inline execution is a CONTRACT VIOLATION detected by the PostToolUse validator.
 
-Inject Tier-1 variables: `EXPECTED_AGENT_NAME = "ceos-agents:analyst"`,
+Inject Tier-1 variables: `EXPECTED_AGENT_NAME = "agent-flow:analyst"`,
 `EXPECTED_STAGE_NAME = "triage"`.
 
 Context for the agent:
 ```
 --phase triage. Type = {Type from config}. Use the MCP server for {Type}.
-EXPECTED_AGENT_NAME = ceos-agents:analyst
+EXPECTED_AGENT_NAME = agent-flow:analyst
 EXPECTED_STAGE_NAME = triage
 ```
 
@@ -72,7 +72,7 @@ When passing issue tracker content (title, description, comments) to the agent, 
 
 ## Post-dispatch state write
 
-After dispatch, write per-stage post-dispatch fields to `.ceos-agents/{ISSUE-ID}/state.json`:
+After dispatch, write per-stage post-dispatch fields to `.agent-flow/{ISSUE-ID}/state.json`:
 - `triage.completed_at` = current ISO-8601 UTC timestamp
 - `triage.tokens_used` = `result.usage.total_tokens` (or 0 if absent — defensive fallback)
 - `triage.duration_ms` = `triage.completed_at` epoch ms − `triage.started_at` epoch ms
@@ -95,7 +95,7 @@ Webhook failure → log `[WARN] Webhook delivery failed: {error}`, continue.
 - Duplicates → close, record as DUPLICATE, continue with next bug.
 - `Quality gate: UNCLEAR` → Block using Block Comment Template, then continue with next bug:
   ```
-  [ceos-agents] 🔴 Pipeline Block
+  [agent-flow] 🔴 Pipeline Block
   Agent: analyst
   Step: triage
   Reason: Issue is unclear — analyst returned Quality gate: UNCLEAR.
@@ -113,7 +113,7 @@ These are passed to all downstream agents as context.
 If triage output contains `## NEEDS_CLARIFICATION`:
 
 ```bash
-STATE=".ceos-agents/${ISSUE_ID}/state.json"
+STATE=".agent-flow/${ISSUE_ID}/state.json"
 # Case-insensitive grep matches both "Question:" and "question:" (legacy)
 RAW_QUESTION=$(grep -iE -A1 "^question:" "$TRIAGE_OUTPUT" | head -1 | sed -E 's/^[Qq]uestion: //')
 RAW_CONTEXT=$(grep -iE -A1 "^context:" "$TRIAGE_OUTPUT" | head -1 | sed -E 's/^[Cc]ontext: //' || echo "")
@@ -162,12 +162,12 @@ if [ -n "${Webhook_URL:-}" ] && printf '%s' "${On_events:-}" | grep -qF 'pipelin
       > /dev/null 2>&1 || echo "[WARN] Webhook delivery failed"
 fi
 
-echo "[INFO] Pipeline paused for ${ISSUE_ID} — re-invoke /ceos-agents:fix-bugs ${ISSUE_ID} --clarification \"<answer>\" to resume."
+echo "[INFO] Pipeline paused for ${ISSUE_ID} — re-invoke /agent-flow:fix-bugs ${ISSUE_ID} --clarification \"<answer>\" to resume."
 continue
 ```
 
 ## State update (end of step)
 
-Update `.ceos-agents/{ISSUE-ID}/state.json`: set `triage.status` to `"completed"` (or `"blocked"` for
+Update `.agent-flow/{ISSUE-ID}/state.json`: set `triage.status` to `"completed"` (or `"blocked"` for
 duplicate/unclear), write `triage.acceptance_criteria`, `triage.complexity`, `triage.severity`,
 `triage.area`. Follow atomic write protocol from `../../../core/state-manager.md`.

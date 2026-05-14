@@ -219,14 +219,14 @@ any unknown-key violation.
 WHEN both `customization/{agent}.md` AND `customization/{agent}.toml` exist (v9.0.0 — hard error
 per REQ-H-100; pre-announced removal of legacy `.md` overlay):
 - Refuse the dispatch path.
-- Emit: `[ERROR] Legacy .md overlay format removed in v9.0.0; remove customization/{agent}.md (TOML takes precedence). See docs/guides/migration-v7-to-v8.md for manual conversion steps.` (to
+- Emit: `[ERROR] Legacy .md overlay format is not supported; remove customization/{agent}.md (TOML takes precedence). See docs/guides/toml-overlay-syntax.md for manual conversion steps.` (to
   `pipeline.log` and stderr) and exit non-zero.
 
 ### Legacy `.md`-only fallback (REQ-OVR-006) — REMOVED in v9.0.0
 
 WHEN only `customization/{agent}.md` exists (no `.toml`) in v9.0.0:
 - Refuse the dispatch path (the `.md` legacy fallback is hard-removed per REQ-H-100).
-- Emit: `[ERROR] Legacy .md overlay format removed in v9.0.0; convert .md to .toml manually before upgrade (see docs/guides/migration-v7-to-v8.md).` and exit non-zero.
+- Emit: `[ERROR] Legacy .md overlay format is not supported; convert .md to .toml manually (see docs/guides/toml-overlay-syntax.md).` and exit non-zero.
 
 v8.0.0 preserved v7 backward compatibility via `[WARN]` here. v9.0.0 ships the pre-announced
 breaking change.
@@ -235,7 +235,7 @@ breaking change.
 
 ## Provenance Log
 
-**Format** (one line per agent dispatch, written to `.ceos-agents/pipeline.log`):
+**Format** (one line per agent dispatch, written to `.agent-flow/pipeline.log`):
 
 ```
 agent={name} overlay_source={toml|md|none} overlay_path={path}
@@ -272,7 +272,7 @@ explicitly on that branch. The `md_rejected` value MUST NOT be emitted in any ot
 The provenance log entry is written **exactly once per dispatch** (once per agent invocation,
 not once per pipeline run or per overlay key).
 
-**Log destination**: `.ceos-agents/pipeline.log` (append mode; same file as other pipeline log
+**Log destination**: `.agent-flow/pipeline.log` (append mode; same file as other pipeline log
 entries; see `core/state-manager.md` for log rotation policy).
 
 ### Layer architecture note (Layer 2 vs. Layer 3)
@@ -310,12 +310,11 @@ of `.md` overlays first:
 - Each legacy usage MUST emit a `[WARN]` log naming the deprecation removal version (v9.0.0).
 - The pipeline MUST NOT abort on a legacy `.md` overlay — deprecation warnings are advisory.
 
-### v9.0.0 hard removal
+### Legacy `.md` overlay removal
 
-- `customization/{agent}.md` legacy overlay support is **hard-removed in v9.0.0**.
-- Manual `.md` → `.toml` conversion is documented in `docs/guides/migration-v7-to-v8.md` (the `/migrate-config` skill that previously automated this was removed in v9.5.0).
-- Any consuming project still using `.md` overlays after v9.0.0 will encounter a validation
-  error at dispatch time.
+- `customization/{agent}.md` legacy overlay support has been **removed**.
+- Manual `.md` → `.toml` conversion is documented in `docs/guides/toml-overlay-syntax.md`.
+- Any consuming project still using `.md` overlays will encounter a validation error at dispatch time.
 
 ---
 

@@ -1,1 +1,0 @@
-E2E Pipeline Validation — generic end-to-end test harness for all three pipelines (bug-fix, feature, scaffold). Project-independent, must work against any project with valid Automation Config. Identify gaps between markdown definitions and actual runtime behavior. Ensure any change to ceos-agents doesn't break existing pipeline behavior.

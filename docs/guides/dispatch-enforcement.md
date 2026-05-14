@@ -10,7 +10,7 @@
 
 ## What it does
 
-The dispatch enforcement hook validates that each ceos-agents pipeline stage
+The dispatch enforcement hook validates that each agent-flow pipeline stage
 populated a `dispatched_at` timestamp in `state.json` before handing off to
 its subagent via the Task tool. It audits whether the 3-layer dispatch enforcement
 architecture (Layer 1: imperative, Layer 2: hook, Layer 4: scenario gate) is
@@ -19,11 +19,11 @@ working end-to-end.
 Concretely, the hook:
 
 1. Fires on every PostToolUse event (after any tool completes).
-2. Locates the current pipeline's `state.json` under `.ceos-agents/`.
+2. Locates the current pipeline's `state.json` under `.agent-flow/`.
 3. Checks each stage in the hardcoded `STAGES` whitelist
    (`triage`, `code_analysis`, `fixer_reviewer`, `test`, `publisher`)
    for presence of `dispatched_at`.
-4. Appends one audit-log line per stage to `.ceos-agents/dispatch-audit.log`.
+4. Appends one audit-log line per stage to `.agent-flow/dispatch-audit.log`.
 5. Always exits 0 — **advisory-only, never blocking**.
 
 The hook is intentionally non-blocking. PostToolUse hooks cannot undo a tool
@@ -50,7 +50,7 @@ to `~/.claude/settings.json`.
         "hooks": [
           {
             "type": "command",
-            "command": "/path/to/ceos-agents/hooks/validate-dispatch.sh"
+            "command": "/path/to/agent-flow/hooks/validate-dispatch.sh"
           }
         ]
       }
@@ -59,9 +59,9 @@ to `~/.claude/settings.json`.
 }
 ```
 
-Replace `/path/to/ceos-agents/` with the absolute path to your plugin
+Replace `/path/to/agent-flow/` with the absolute path to your plugin
 installation directory. On most systems this is something like:
-`~/.claude/plugins/ceos-agents/hooks/validate-dispatch.sh`.
+`~/.claude/plugins/agent-flow/hooks/validate-dispatch.sh`.
 
 ### Recommended scope
 
@@ -85,7 +85,7 @@ A passing audit run produces lines like:
 ```
 
 A `MISSING` line means the stage completed without writing `dispatched_at` to
-`state.json` — typically indicating a skill was run with an older ceos-agents
+`state.json` — typically indicating a skill was run with an older agent-flow
 version, or the dispatching step was skipped.
 
 ```
@@ -102,16 +102,16 @@ version, or the dispatching step was skipped.
 - Verify the entry is in `~/.claude/settings.json` (not a project-level file
   that is overriding user-global config).
 - Check `disableAllHooks` is not `true` in any settings file.
-- Run `/ceos-agents:check-setup` — it reports whether the hook file and
+- Run `/agent-flow:check-setup` — it reports whether the hook file and
   settings.json entry are detected.
 
 **`state.json` not found:**
-- The hook exits silently if no `.ceos-agents/*/state.json` is present.
+- The hook exits silently if no `.agent-flow/*/state.json` is present.
   This is normal for non-pipeline sessions. Check that you are running from
   the project root (the same directory used during pipeline execution).
 
 **Log file not created:**
-- The hook creates `.ceos-agents/dispatch-audit.log` automatically on first
+- The hook creates `.agent-flow/dispatch-audit.log` automatically on first
   write. If the directory doesn't exist, the hook exits 0 without logging
   (advisory failure semantics).
 
@@ -120,7 +120,7 @@ version, or the dispatching step was skipped.
 ## Known limitation: Autopilot subprocess dispatch audit gap
 
 When autopilot dispatches pipeline subprocesses via
-`claude -p "Run /ceos-agents:fix-bugs ..." --dangerously-skip-permissions`,
+`claude -p "Run /agent-flow:fix-bugs ..." --dangerously-skip-permissions`,
 PostToolUse hooks DO fire inside those subprocesses. However, each subprocess
 writes to its own session's audit log, and **cross-run audit aggregation** (merging
 per-subprocess logs into a single autopilot-session report) is deferred to

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test: FC-9 (CLAUDE.md), FC-10 (automation-config.md) — CHANGELOG entry and roadmap status for v6.4.0
+# Test: FC-9 (CLAUDE.md), FC-10 (automation-config.md) — CHANGELOG entry and roadmap status
 # Also validates that docs/reference/pipelines.md or skills.md mentions the new step
 # TDD red phase: expects FAIL on pre-implementation codebase
 set -uo pipefail
@@ -10,7 +10,7 @@ FAIL=0
 fail() { echo "FAIL: $1"; FAIL=1; }
 
 CHANGELOG="$REPO_ROOT/CHANGELOG.md"
-ROADMAP="$REPO_ROOT/docs/plans/roadmap.md"
+ROADMAP="$REPO_ROOT/docs/roadmap.md"
 PIPELINES_REF="$REPO_ROOT/docs/reference/pipelines.md"
 SKILLS_REF="$REPO_ROOT/docs/reference/skills.md"
 AUTOCONFIG="$REPO_ROOT/docs/reference/automation-config.md"
@@ -37,18 +37,18 @@ fi
 # REQ-5.4: this is a MINOR version (6.4.0) feature
 # -----------------------------------------------------------------------
 if [ ! -f "$ROADMAP" ]; then
-  fail "docs/plans/roadmap.md not found"
+  fail "docs/roadmap.md not found"
 else
   # The item should be under a DONE heading (roadmap uses "## DONE — vX.Y.Z" not "## IMPLEMENTED")
   DONE_640_LINE=$(grep -n '## DONE.*6\.4\.0\|## DONE.*v6\.4\.0' "$ROADMAP" | head -1 | cut -d: -f1 || true)
   PLANNED_640_LINE=$(grep -n 'PLANNED.*6\.4\.0\|6\.4\.0.*PLANNED' "$ROADMAP" | head -1 | cut -d: -f1 || true)
 
   if [ -z "$DONE_640_LINE" ]; then
-    fail "docs/plans/roadmap.md does not have a '## DONE — v6.4.0' section (still in PLANNED or missing entirely)"
+    fail "docs/roadmap.md does not have a '## DONE — v6.4.0' section (still in PLANNED or missing entirely)"
   fi
 
   if [ -n "$PLANNED_640_LINE" ]; then
-    fail "docs/plans/roadmap.md: v6.4.0 entry still appears in PLANNED section (line $PLANNED_640_LINE) — should be DONE"
+    fail "docs/roadmap.md: v6.4.0 entry still appears in PLANNED section (line $PLANNED_640_LINE) — should be DONE"
   fi
 fi
 

@@ -1,9 +1,0 @@
-{
-  "task_id": "T-17d",
-  "status": "DONE",
-  "files_modified": ["skills/resume-ticket/SKILL.md"],
-  "revision_cycle": null,
-  "concerns": [],
-  "test_results": "AC-047/049/049a: --clarification flag added; Priority 0 paused detection; EXTERNAL INPUT wrap; negative pipeline-completed invariant",
-  "completed_at": "2026-04-20T13:56:00Z"
-}

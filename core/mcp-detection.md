@@ -43,8 +43,8 @@ Referenced by: `skills/scaffold/SKILL.md` (Step 0-MCP), `skills/init/SKILL.md` (
    - If connectivity fails: set `mcp_available = false`, capture error
 
 4. **If `check_write` is true AND read check passed (tracker only):**
-   - First, check if a stale canary exists: search for open issues with title starting with `[ceos-agents] canary`. If found, delete it before creating a new one (prevents canary spam from prior failed cleanups).
-   - Create a canary item: issue/card with title `[ceos-agents] canary — safe to delete`
+   - First, check if a stale canary exists: search for open issues with title starting with `[agent-flow] canary`. If found, delete it before creating a new one (prevents canary spam from prior failed cleanups).
+   - Create a canary item: issue/card with title `[agent-flow] canary — safe to delete`
    - If create succeeds: delete the canary item immediately. Set `write_available = true`, `write_cleanup_failed = false`.
    - If create fails: set `write_available = false`, `write_cleanup_failed = false`. Do NOT block — write failure is advisory.
    - If delete fails after successful create: set `write_available = true` (write demonstrably works), `write_cleanup_failed = true`. Log warning.

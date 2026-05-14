@@ -1,5 +1,5 @@
 #!/bin/bash
-# Mock MCP server for ceos-agents test harness
+# Mock MCP server for agent-flow test harness
 # Reads JSON-RPC requests from stdin, returns fixture responses
 # Usage: Used by test scenarios to simulate MCP server responses
 

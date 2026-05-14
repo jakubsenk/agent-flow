@@ -17,11 +17,11 @@ Iterative fixer↔reviewer loop with configurable limits and acceptance criteria
 ## Process
 
 1. Check if `{agent_override_path}/fixer.md` exists. If yes, append its content to fixer context as `## Project-Specific Instructions\n{content}`.
-2. You MUST invoke Task(subagent_type='ceos-agents:fixer', model='opus'). DO NOT inline-execute. Inline execution is a CONTRACT VIOLATION detected by the PostToolUse validator. Pass context + any previous reviewer feedback.
+2. You MUST invoke Task(subagent_type='agent-flow:fixer', model='opus'). DO NOT inline-execute. Inline execution is a CONTRACT VIOLATION detected by the PostToolUse validator. Pass context + any previous reviewer feedback.
 3. If fixer output contains `## NEEDS_DECOMPOSITION` → return `NEEDS_DECOMPOSITION` immediately. Only allowed once per ticket; caller enforces the limit.
 4. Run Build command (max Build retries attempts). Failure → return `BLOCKED` with build error as detail.
 5. Check if `{agent_override_path}/reviewer.md` exists. If yes, append its content to reviewer context.
-6. You MUST invoke Task(subagent_type='ceos-agents:reviewer', model='opus'). DO NOT inline-execute. Inline execution is a CONTRACT VIOLATION detected by the PostToolUse validator. Pass fixer's changes + AC list.
+6. You MUST invoke Task(subagent_type='agent-flow:reviewer', model='opus'). DO NOT inline-execute. Inline execution is a CONTRACT VIOLATION detected by the PostToolUse validator. Pass fixer's changes + AC list.
 7. If reviewer outputs `APPROVE` (with AC Fulfillment section) → update state.json, return `APPROVED` with AC fulfillment report.
 8. If iteration count >= max_iterations → update state.json, return `BLOCKED` with last reviewer critique as detail.
 9. Pass reviewer critique back to fixer as additional context, increment iteration counter, go to step 1.

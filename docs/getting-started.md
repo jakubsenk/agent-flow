@@ -1,6 +1,6 @@
-# Getting Started with ceos-agents
+# Getting Started with agent-flow
 
-ceos-agents is a Claude Code plugin that automates bug-fix workflows, feature implementation, and project scaffolding. It takes an issue from your tracker, analyzes it, fixes it, reviews the fix, writes tests, and creates a pull request — all orchestrated by slash commands.
+agent-flow is a Claude Code plugin that automates bug-fix workflows, feature implementation, and project scaffolding. It takes an issue from your tracker, analyzes it, fixes it, reviews the fix, writes tests, and creates a pull request — all orchestrated by slash commands.
 
 In this tutorial, you will install the plugin, configure it for your project, validate the setup, and run your first automated bug fix. By the end, you will have a working pipeline that can process issues from your tracker.
 
@@ -18,18 +18,18 @@ Before you begin, make sure you have:
   - Linear
   - Gitea
   - Redmine
-- **MCP servers** configured for your issue tracker and source control. ceos-agents communicates with external systems exclusively through MCP (Model Context Protocol) servers. See [MCP Configuration Guide](guides/mcp-configuration.md) for setup instructions.
+- **MCP servers** configured for your issue tracker and source control. agent-flow communicates with external systems exclusively through MCP (Model Context Protocol) servers. See [MCP Configuration Guide](guides/mcp-configuration.md) for setup instructions.
 
 ## Step 1: Install the Plugin
 
-Install ceos-agents via the CLI:
+Install agent-flow via the CLI:
 
 ```bash
-claude plugin marketplace add <path-to-repo>  # e.g. C:/gitea_ceos-agents
-claude plugin install ceos-agents@ceos-agents
+claude plugin marketplace add <path-to-repo>  # e.g. C:/gitea_agent-flow
+claude plugin install agent-flow@agent-flow
 ```
 
-To verify the installation succeeded, type `/ceos-agents:` and press Tab. You should see a list of available commands starting with the `ceos-agents:` prefix.
+To verify the installation succeeded, type `/agent-flow:` and press Tab. You should see a list of available commands starting with the `agent-flow:` prefix.
 
 If the commands do not appear after installation, restart your Claude Code session (close and reopen the terminal). For platform-specific installation notes, see [Installation Guide](guides/installation.md).
 
@@ -38,7 +38,7 @@ If the commands do not appear after installation, restart your Claude Code sessi
 Navigate to your project directory and run the onboarding wizard:
 
 ```
-/ceos-agents:onboard
+/agent-flow:onboard
 ```
 
 The wizard will ask you about your project setup:
@@ -112,7 +112,7 @@ For the complete list of configuration options (including optional sections like
 After setting up Automation Config, configure MCP servers and tool permissions:
 
 ```
-/ceos-agents:setup-mcp
+/agent-flow:setup-mcp
 ```
 
 The setup-mcp wizard will:
@@ -122,14 +122,14 @@ The setup-mcp wizard will:
 3. **Generate `.mcp.json`** — MCP server configuration for your tracker and source control
 4. **Configure permissions** — tool auto-approval in `.claude/settings.json` to avoid repeated prompts
 
-You can re-run `/ceos-agents:setup-mcp --update` anytime to update your setup. For manual MCP configuration, see [MCP Configuration Guide](guides/mcp-configuration.md).
+You can re-run `/agent-flow:setup-mcp --update` anytime to update your setup. For manual MCP configuration, see [MCP Configuration Guide](guides/mcp-configuration.md).
 
 ## Step 3: Validate the Setup
 
 Run the setup validator to confirm everything is configured correctly:
 
 ```
-/ceos-agents:check-setup
+/agent-flow:check-setup
 ```
 
 The validator checks five categories:
@@ -151,13 +151,13 @@ A successful report looks like this:
 [PASS] Build & Test — Build: OK, Test: OK (14/14 pass)
 [PASS] Plugin Composability — No command name conflicts detected
 
-Result: All checks passed. Ready to use ceos-agents.
+Result: All checks passed. Ready to use agent-flow.
 ```
 
 If any check fails, the report includes specific guidance on what to fix. Use `--skip-build` if your build requires a specific environment that is not available in your current session:
 
 ```
-/ceos-agents:check-setup --skip-build
+/agent-flow:check-setup --skip-build
 ```
 
 See [Troubleshooting Guide](guides/troubleshooting.md) for solutions to common check-setup failures.
@@ -167,7 +167,7 @@ See [Troubleshooting Guide](guides/troubleshooting.md) for solutions to common c
 Choose an open bug from your tracker and run the fix-bugs command:
 
 ```
-/ceos-agents:fix-bugs PROJ-42
+/agent-flow:fix-bugs PROJ-42
 ```
 
 Replace `PROJ-42` with your actual issue ID. The pipeline progresses through these stages:
@@ -187,17 +187,17 @@ Replace `PROJ-42` with your actual issue ID. The pipeline progresses through the
 For a safe preview without any side effects, use the `--dry-run` flag:
 
 ```
-/ceos-agents:fix-bugs PROJ-42 --dry-run
+/agent-flow:fix-bugs PROJ-42 --dry-run
 ```
 
 Dry-run mode runs only the triage and code analysis stages, then produces a report with severity, affected files, risk level, and estimated complexity. No git changes, no issue tracker updates.
 
 ## Step 5: Implement Your First Feature
 
-ceos-agents also supports feature implementation. Choose an open feature request and run:
+agent-flow also supports feature implementation. Choose an open feature request and run:
 
 ```
-/ceos-agents:implement-feature PROJ-50
+/agent-flow:implement-feature PROJ-50
 ```
 
 The feature pipeline differs from bug-fix in two key ways:
@@ -212,14 +212,14 @@ For more details on the feature pipeline, including decomposition settings and s
 
 ## Next Steps
 
-You now have a working ceos-agents setup. Here are the recommended next steps:
+You now have a working agent-flow setup. Here are the recommended next steps:
 
 - **[Architecture](architecture.md)** — Understand the design philosophy, model selection rationale, and how skills and agents interact.
 
 - **[Skills Reference](reference/skills.md)** — Explore all 28 skills with syntax, flags, and usage examples. Key skills to try next:
-  - `/ceos-agents:fix-bugs 3` — Fix multiple bugs in batch
-  - `/ceos-agents:prioritize` — AI-powered backlog prioritization
-  - `/ceos-agents:dashboard` — Visual overview of pipeline activity
+  - `/agent-flow:fix-bugs 3` — Fix multiple bugs in batch
+  - `/agent-flow:prioritize` — AI-powered backlog prioritization
+  - `/agent-flow:dashboard` — Visual overview of pipeline activity
 
 - **[Custom Agents](guides/custom-agents.md)** — Extend the pipeline with your own agents for security scanning, compliance checks, or documentation generation.
 

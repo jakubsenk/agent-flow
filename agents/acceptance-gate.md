@@ -66,7 +66,7 @@ AC-to-code mapping, test coverage assessment.
 
 ## Step Completion Invariants
 
-Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.ceos-agents/{ISSUE_ID}/state.json` (or the orchestrator-injected state path):
+Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.agent-flow/{ISSUE_ID}/state.json` (or the orchestrator-injected state path):
 
 1. `dispatched_at` — Field is present and non-empty for stage `acceptance_gate` (EXPECTED_STAGE_NAME=`acceptance_gate`). The orchestrator wrote this pre-dispatch.
 

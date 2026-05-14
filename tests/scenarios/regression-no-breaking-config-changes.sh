@@ -28,7 +28,7 @@ if ! grep -qiE 'Autopilot.*Max issues|Max issues.*Autopilot' "$CLAUDE"; then
 fi
 
 # Verify Autopilot keys all have defaults documented
-# (all 7 keys have defaults: 1, 120, .ceos-agents/autopilot.log, 0, 0, skip, false)
+# (all 7 keys have defaults: 1, 120, .agent-flow/autopilot.log, 0, 0, skip, false)
 for pair in "Max issues per run.*1" "Lock timeout.*120" "On error.*skip" "Dry run.*false"; do
   if ! grep -qiE "$pair" "$CLAUDE"; then
     echo "FAIL: CLAUDE.md Autopilot key '$pair' missing default value documentation" >&2

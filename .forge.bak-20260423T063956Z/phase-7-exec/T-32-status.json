@@ -1,9 +1,0 @@
-{
-  "task_id": "T-32",
-  "status": "DONE",
-  "files_modified": ["skills/fix-ticket/SKILL.md", "skills/metrics/SKILL.md"],
-  "revision_cycle": null,
-  "concerns": [],
-  "test_results": "AC-062/063b: 5 markers in fix-ticket (2 webhook-curl, 1 issue-id-validation, 1 pipeline-completion, 1 architecture-freshness) + 1 marker in metrics (metrics-json-schema)",
-  "completed_at": "2026-04-19T00:00:00Z"
-}

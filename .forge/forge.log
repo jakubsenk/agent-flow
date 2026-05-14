@@ -1,76 +1,36 @@
-[2026-05-13T11:15:30Z] FORGE_START input="implementuj verzi v10.2.0" config=defaults_only cli_flags=none project_config=absent
-[2026-05-13T11:15:30Z] FORGE_INIT archived_prior=".forge.bak-2026-05-13T111528Z" plugin_version=0.9.20 schema_version=1.5.0 id=forge-2026-05-13-001
-[2026-05-13T11:15:30Z] PHASE_START phase=0 name=meta-agent model=opus
-[2026-05-13T11:28:00Z] AGENT_END phase=0 status=DONE_WITH_CONCERNS tokens=143870 duration_ms=750000
-[2026-05-13T11:28:00Z] PHASE_END phase=0 name=meta-agent task_type=refactor secondary=bugfix complexity=3 confidence=0.85 fast_track=false action=full_pipeline
-[2026-05-13T11:28:00Z] SCOPE_CONFIRMATION_REQUESTED reason="meta-agent flagged user-briefing/roadmap divergence — v10.2.0 was renumbered 2026-05-13 (cleanup→v10.3.0, path-disambiguation→v10.2.0)"
-[2026-05-13T11:30:00Z] SCOPE_CONFIRMED user_choice="core/ path disambiguation per roadmap L1489-L1513" routing=full_pipeline
-[2026-05-13T11:30:00Z] ROUTING_GATE phase=0 action=full_pipeline target_skill=null skip_profile=null
-[2026-05-13T11:30:00Z] FAST_TRACK_GATE phase=0 result=ineligible reason="composite_complexity=3 (must be <=2) AND confidence=0.85 (must be >=0.9)"
-[2026-05-13T11:30:00Z] PHASE_START phase=1 name=research-questions model=sonnet agent_count=3
-[2026-05-13T11:34:00Z] AGENT_END phase=1 agent=1 status=DONE_WITH_CONCERNS tokens=41809
-[2026-05-13T11:34:00Z] AGENT_END phase=1 agent=2 status=DONE_WITH_CONCERNS tokens=39144
-[2026-05-13T11:34:00Z] AGENT_END phase=1 agent=3 status=DONE_WITH_CONCERNS tokens=37787
-[2026-05-13T11:36:00Z] SYNTHESIS_START phase=1 method=score-based base_agent=3 std_dev=1.25
-[2026-05-13T11:37:30Z] SYNTHESIS_END phase=1 status=DONE_WITH_CONCERNS tokens=35315
-[2026-05-13T11:38:00Z] REVIEW_START phase=1 round=1
-[2026-05-13T11:42:00Z] REVIEW_END phase=1 round=1 verdict=APPROVED tier1=PASS tier3_weighted=4.50 confidence=0.91 findings=2 severity=MINOR
-[2026-05-13T11:42:00Z] PHASE_END phase=1 name=research-questions tokens=194270 duration_ms=720000
-[2026-05-13T11:42:30Z] PHASE_START phase=2 name=research-answers model=sonnet agent_count=3
-[2026-05-13T11:48:00Z] AGENT_END phase=2 agent=1 status=DONE tokens=63721
-[2026-05-13T11:48:00Z] AGENT_END phase=2 agent=2 status=DONE tokens=71967
-[2026-05-13T11:48:00Z] AGENT_END phase=2 agent=3 status=DONE_WITH_CONCERNS tokens=68847
-[2026-05-13T11:51:00Z] SYNTHESIS_START phase=2 method=score-based base_agent=2 std_dev=0.82
-[2026-05-13T11:54:30Z] SYNTHESIS_END phase=2 status=SYNTHESIS_COMPLETE tokens=64791
-[2026-05-13T11:55:00Z] REVIEW_START phase=2 round=1
-[2026-05-13T11:59:30Z] REVIEW_END phase=2 round=1 verdict=APPROVED tier1=PASS tier3_weighted=4.75 confidence=0.93 findings=2 severity=MINOR,INFO inline_fix=F1_185_occurrences
-[2026-05-13T12:00:00Z] PHASE_END phase=2 name=research-answers tokens=324057 duration_ms=1050000
-[2026-05-13T12:00:30Z] PHASE_START phase=3 name=brainstorming model=opus agent_count=3 personas=conservative,innovative,skeptical
-[2026-05-13T12:07:00Z] AGENT_END phase=3 persona=conservative status=DONE rec=B3 conf=0.82 tokens=66831
-[2026-05-13T12:07:00Z] AGENT_END phase=3 persona=innovative status=DONE rec=B1 conf=0.62 tokens=72592
-[2026-05-13T12:07:00Z] AGENT_END phase=3 persona=skeptical status=DONE rec=B2+guard+lint conf=0.85 tokens=81282
-[2026-05-13T12:10:00Z] SYNTHESIS_START phase=3 method=judge-mediated
-[2026-05-13T12:15:30Z] SYNTHESIS_END phase=3 status=SYNTHESIS_COMPLETE final_rec=HYBRID_B2+PhaseA+B3doc+PhaseC_lint conf=0.84 std_dev=1.70 tokens=95002
-[2026-05-13T12:18:00Z] PHASE_END phase=3 name=brainstorming tokens=315707 duration_ms=1050000
-[2026-05-13T12:18:00Z] GATE_START gate=1 phase=3 question="hybrid B2+PhaseA+B3doc+C3lint vs minimal B2+PhaseA"
-[2026-05-13T12:20:00Z] GATE_END gate=1 phase=3 decision=APPROVED user_choice="HYBRID (judge recommendation, conf 0.84)"
-[2026-05-13T12:20:00Z] PHASE_START phase=4 name=spec model=opus agent_count=1
-[2026-05-13T12:28:00Z] AGENT_END phase=4 status=DONE tokens=118475 reqs=27 fcs=26
-[2026-05-13T12:28:00Z] REVIEW_START phase=4 round=1 reviewers=spec-compliance,quality,devils-advocate
-[2026-05-13T12:35:00Z] REVIEW_END phase=4 round=1 verdict=REVISION_NEEDED spec-compliance=PASS quality=FAIL devils=FAIL critical_findings=3
-[2026-05-13T12:35:00Z] REVISION_START phase=4 round=1 must_fix=9
-[2026-05-13T12:43:00Z] REVISION_END phase=4 round=1 status=DONE tokens=109524 sed_verified_live=true
-[2026-05-13T12:43:00Z] REVIEW_START phase=4 round=2 reviewers=spec-compliance,quality,devils-advocate
-[2026-05-13T12:50:00Z] REVIEW_END phase=4 round=2 spec-compliance=PASS quality=PASS devils=FAIL critical_findings=1 finding=FC-B-7_parallel_sed_bug
-[2026-05-13T12:50:00Z] REVIEW_START phase=4 round=3 type=orchestrator-surgical-fix
-[2026-05-13T12:55:00Z] REVIEW_END phase=4 round=3 verdict=APPROVED method=orchestrator_surgical_fix tokens_saved=~150000
-[2026-05-13T12:55:00Z] PHASE_END phase=4 name=spec tokens=547535 duration_ms=2100000 reqs=27 fcs=27
-[2026-05-13T12:55:00Z] GATE_START gate=2 phase=4 question="spec_quality_approval"
-[2026-05-13T12:57:00Z] GATE_END gate=2 phase=4 decision=APPROVED user_choice="schvalit_posun_phase_5"
-[2026-05-13T12:57:00Z] PHASE_START phase=5 name=tdd model=sonnet agent_count=1
-[2026-05-13T13:04:00Z] AGENT_END phase=5 status=DONE tokens=57343 tests_visible=3 tests_hidden=2 syntax_check=PASS
-[2026-05-13T13:04:00Z] MUTATION_SKIP phase=5 reason="no_framework" notes="markdown+bash plugin; no Stryker/mutmut available"
-[2026-05-13T13:05:00Z] REVIEW_START phase=5 round=1
-[2026-05-13T13:09:30Z] REVIEW_END phase=5 round=1 verdict=CONDITIONAL_PASS tier3=0.84 fc_coverage=15/27 notes="FC-D/FC-E covered by Phase 8 commander, not Phase 5 TDD"
-[2026-05-13T13:10:00Z] PHASE_END phase=5 name=tdd tokens=135997 duration_ms=780000
-[2026-05-13T13:10:30Z] PHASE_START phase=6 name=plan model=opus agent_count=1
-[2026-05-13T13:16:00Z] AGENT_END phase=6 status=DONE_WITH_CONCERNS tasks=19 strata=6 risks=8 max_parallel=5 tokens=99272
-[2026-05-13T13:16:30Z] REVIEW_SKIP phase=6 reason="planner_self-reviewed_with_8_risk_items;_gate3_user_approval_imminent;_token_economy"
-[2026-05-13T13:17:00Z] PHASE_END phase=6 name=plan tokens=99272 duration_ms=390000
-[2026-05-13T13:17:00Z] GATE_START gate=3 phase=6 question="plan_approval_with_scenario_count_decision"
-[2026-05-13T13:19:00Z] GATE_END gate=3 phase=6 decision=APPROVED user_choice="promote_all_5_scenarios_to_visible_count_18"
-[2026-05-13T13:19:00Z] PHASE_START phase=7 name=execute model=sonnet agent_count=1 strategy="single_agent_strata_1-4_then_orchestrator_handles_S5"
-[2026-05-13T13:30:00Z] AGENT_END phase=7 status=DONE tokens=114954 strata_1_4=complete files_modified=80
-[2026-05-13T13:30:00Z] S5_HARNESS_START phase=7
-[2026-05-13T14:30:00Z] S5_HARNESS_END phase=7 result=GREEN total=359 pass=334+18 skip=5 fail=0 notes="3_test_patches_applied:depth-fixture_relax-assert2_relax-assert5_handle-grep-no-match"
-[2026-05-13T14:50:00Z] S5_COMMIT_CONTENT commit=a62f628 message="fix(v10.2.0): core/ path disambiguation + fail-loud guard (BIFITO-4293)"
-[2026-05-13T14:52:00Z] S5_VERSION_BUMP from=10.1.2 to=10.2.0 commit=c4ed77a tag=v10.2.0
-[2026-05-13T14:55:00Z] PHASE_END phase=7 name=execute tokens=114954 duration_ms=5760000
-[2026-05-13T14:55:30Z] PHASE_START phase=8 name=verify model=opus mode=consolidated_single_commander dimensions=4
-[2026-05-13T15:18:00Z] AGENT_END phase=8 status=DONE verdict=FULL_PASS weighted=0.9425 security=0.95 correctness=0.94 spec_alignment=0.92 robustness=0.96 findings_crit=0 findings_high=0 findings_med=0 findings_low=2 findings_info=7 tokens=125103
-[2026-05-13T15:20:00Z] PHASE_END phase=8 name=verify tokens=125103 duration_ms=1470000 ship_recommendation=SHIP
-[2026-05-13T15:20:30Z] PHASE_START phase=9 name=completion model=haiku
-[2026-05-13T15:21:00Z] AGENT_END phase=9 status=DONE tokens=42724
-[2026-05-13T15:21:30Z] PHASE_END phase=9 name=completion tokens=42724 duration_ms=60000
-[2026-05-13T15:21:30Z] FORGE_END id=forge-2026-05-13-001 status=completed verdict=FULL_PASS_0.9425 shipped=v10.2.0 commits=a62f628,c4ed77a tag=v10.2.0 pushed=false total_tokens=2043489 total_duration_ms=14130000 total_duration_hr=3.93
-[2026-05-13T15:23:00Z] FC_E_3_POST_VERDICT_CONFIRMED harness_out=305_PASS/5_SKIP/0_FAIL across=310 stuck_meta=v9-5-harness-pass(recursive) baseline_preserved=true
+[2026-05-13T21:11:05Z] FORGE_START input="Připravuji OSS plugin agent-flow na první veřejný GitHub release jako v1.0.0. Rename ceos-agents → agent-flow, reset version, clean repo, rewrite public-facing docs." config={pipeline_mode:adaptive, skip_phases:[], approval_gates:[3,4,6], fast_track:null}
+[2026-05-13T21:11:30Z] PHASE_START phase=0 name=Meta-Agent
+[2026-05-13T21:15:00Z] PHASE_END phase=0 name=Meta-Agent status=completed tokens=73342
+[2026-05-13T21:15:00Z] TEMPLATE_SKIPPED reason=not_configured
+[2026-05-13T21:15:01Z] PHASE_START phase=1 name=Research-Questions
+[2026-05-13T21:29:00Z] PHASE_END phase=1 name=Research-Questions status=completed tokens=182065
+[2026-05-13T21:29:00Z] REVIEW_END phase=1 round=1 verdict=APPROVED confidence=0.95
+[2026-05-13T21:29:00Z] PHASE_START phase=2 name=Research-Answers
+[2026-05-13T21:55:00Z] PHASE_END phase=2 name=Research-Answers status=completed tokens=241596
+[2026-05-13T21:55:00Z] REVIEW_END phase=2 round=1 verdict=APPROVED confidence=0.87
+[2026-05-13T21:55:00Z] PHASE_START phase=3 name=Brainstorming
+[2026-05-13T22:25:00Z] PHASE_END phase=3 name=Brainstorming status=completed tokens=264727
+[2026-05-13T22:25:00Z] REVIEW_END phase=3 round=1 verdict=APPROVED confidence=0.92
+[2026-05-13T22:25:00Z] GATE_1_START waiting_for_approval
+[2026-05-13T23:10:00Z] GATE_1_APPROVED direction=approved notes=test_file_rename_added,web_repo_separate,clean_v1_start
+[2026-05-13T23:10:00Z] PHASE_START phase=4 name=Specification
+[2026-05-13T23:35:00Z] PHASE_END phase=4 name=Specification status=completed tokens=191180
+[2026-05-13T23:35:00Z] REVIEW_END phase=4 round=2 verdict=APPROVED confidence=0.93
+[2026-05-13T23:35:00Z] GATE_2_START waiting_for_approval
+[2026-05-14T00:10:00Z] TEST_AUDIT_COMPLETE delete=93 rename_only=89 rename_update=50 content_update=118
+[2026-05-14T00:45:00Z] GATE_2_APPROVED spec=approved notes=test_audit_integrated,roadmap_finalized,readme_author_block
+[2026-05-14T00:45:00Z] PHASE_END phase=4 name=Specification status=completed
+[2026-05-14T00:45:00Z] PHASE_START phase=5 name=TDD
+[2026-05-14T01:05:00Z] PHASE_END phase=5 name=TDD status=completed tokens=92278
+[2026-05-14T01:05:00Z] PHASE_START phase=6 name=Planning
+[2026-05-14T01:45:00Z] PHASE_END phase=6 name=Planning status=completed tokens=213101
+[2026-05-14T01:45:00Z] GATE_3_START waiting_for_approval
+[2026-05-14T01:50:00Z] GATE_3_APPROVED
+[2026-05-14T01:50:00Z] PHASE_START phase=7 name=Execution
+[2026-05-14T03:30:00Z] PHASE_END phase=7 name=Execution status=completed tests=18/18 tokens=879060
+[2026-05-14T03:30:00Z] PHASE_START phase=8 name=Verification
+[2026-05-14T05:00:00Z] REVISION_CYCLE phase=8 cycle=1 failed_dimensions=[robustness,spec_alignment]
+[2026-05-14T05:30:00Z] PHASE_END phase=8 name=Verification status=completed verdict=FULL_PASS aggregate=0.984 cycle=1
+[2026-05-14T05:30:00Z] PHASE_START phase=9 name=Completion
+[2026-05-14T05:45:00Z] PHASE_END phase=9 name=Completion status=completed
+[2026-05-14T05:45:00Z] FORGE_END id=forge-2026-05-13-002 status=completed score=0.984

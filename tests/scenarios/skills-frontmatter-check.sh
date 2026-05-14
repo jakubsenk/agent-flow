@@ -72,7 +72,7 @@ fi
 
 # -----------------------------------------------------------------------
 # FC-6: 7 non-pipeline skills do NOT have disable-model-invocation
-# (estimate, pipeline-status, scaffold-validate deleted in v9.5.0)
+# (estimate, pipeline-status, scaffold-validate deleted)
 # -----------------------------------------------------------------------
 echo "--- FC-6: 7 non-pipeline skills do NOT have disable-model-invocation ---"
 

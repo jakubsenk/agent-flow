@@ -1,4 +1,4 @@
-# Testing ceos-agents
+# Testing agent-flow
 
 Test suite for verifying pipeline logic. Contains a mock MCP server, test runner, and 13 automated scenarios.
 

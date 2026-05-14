@@ -1,5 +1,5 @@
 #!/bin/bash
-# Test: Scaffold MCP chicken-and-egg fix (v6.1.0)
+# Test: Scaffold MCP chicken-and-egg fix
 # Validates: init CLI flags, scaffold Step 0-MCP interactive menu, resume auto-recheck
 set -e
 
@@ -101,5 +101,5 @@ if [ -n "$resume_line" ]; then
   fi
 fi
 
-[ "$FAIL" -eq 0 ] && echo "PASS: Scaffold MCP chicken-and-egg fix verified (v6.1.0)"
+[ "$FAIL" -eq 0 ] && echo "PASS: Scaffold MCP chicken-and-egg fix verified"
 exit "$FAIL"

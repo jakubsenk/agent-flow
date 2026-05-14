@@ -48,17 +48,17 @@ Echo `pipeline.summary_table` to stdout (COST-R10).
 {if tracker_effective_status == "ready"}
   Tracker: Connected ({tracker_type} @ {tracker_instance} — {tracker_project}, {N} epics created)
 {else if tracker_effective_status == "downgraded"}
-  Tracker: Downgraded — MCP unavailable during scaffold. Configure via /ceos-agents:setup-mcp
+  Tracker: Downgraded — MCP unavailable during scaffold. Configure via /agent-flow:setup-mcp
 {else}
-  Tracker: Not configured — run /ceos-agents:setup-mcp + /ceos-agents:onboard --update
+  Tracker: Not configured — run /agent-flow:setup-mcp + /agent-flow:onboard --update
 {/if}
 
 {if sc_effective_status == "ready"}
   SC: Pushed ({sc_remote} — {sc_base_branch})
 {else if sc_effective_status == "downgraded"}
-  SC: Downgraded — MCP unavailable. Push manually and run /ceos-agents:setup-mcp
+  SC: Downgraded — MCP unavailable. Push manually and run /agent-flow:setup-mcp
 {else}
-  SC: Not configured — set up remote and run /ceos-agents:setup-mcp
+  SC: Not configured — set up remote and run /agent-flow:setup-mcp
 {/if}
 
 {if .mcp.json.example generated}
@@ -79,12 +79,12 @@ Echo `pipeline.summary_table` to stdout (COST-R10).
 ### Next steps:
 {if tracker or SC not ready}
 1. Fill tokens in .mcp.json (copy from .mcp.json.example)
-2. Run `/ceos-agents:setup-mcp` to configure MCP servers
-3. Run `/ceos-agents:onboard --update` to complete Automation Config
-4. Run `/ceos-agents:check-setup` to validate configuration
+2. Run `/agent-flow:setup-mcp` to configure MCP servers
+3. Run `/agent-flow:onboard --update` to complete Automation Config
+4. Run `/agent-flow:check-setup` to validate configuration
 {else}
-1. Your project is ready. Try `/ceos-agents:implement-feature` with a tracker issue.
-2. Run `/ceos-agents:check-setup` to validate configuration
-3. Run `/ceos-agents:scaffold validate` to verify project state
+1. Your project is ready. Try `/agent-flow:implement-feature` with a tracker issue.
+2. Run `/agent-flow:check-setup` to validate configuration
+3. Run `/agent-flow:scaffold validate` to verify project state
 {/if}
 ```

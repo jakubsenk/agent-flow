@@ -1,7 +1,7 @@
 [project]
 name = "mock-project"
 version = "0.1.0"
-description = "Mock project for ceos-agents pipeline testing"
+description = "Mock project for agent-flow pipeline testing"
 requires-python = ">=3.10"
 
 [project.dependencies]

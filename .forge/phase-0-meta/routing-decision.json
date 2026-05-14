@@ -1,9 +1,9 @@
 {
-  "task_type": "refactor",
-  "secondary_types": ["bugfix"],
+  "task_type": "migration",
+  "secondary_types": ["refactor"],
   "action": "full_pipeline",
   "target_skill": null,
-  "confidence": 0.92,
-  "reasoning": "v10.2.0 is core/ path disambiguation per docs/plans/roadmap.md L1489-L1513: a mechanical rewrite of ~175-201 path references across 37 skill files + new fail-loud preflight guard + new external-CWD regression scenario. Implementation task (refactor); full pipeline appropriate. Secondary bugfix signal (BIFITO-4293 silent degradation) does not alter routing since refactor is also implementation and the scope is decisively rewrite + guard-add, not a localized bug patch.",
+  "confidence": 0.97,
+  "reasoning": "Comprehensive OSS rebranding migration — rename, version reset, doc rewrite, cleanup — requires full pipeline: research (what exists), spec (acceptance criteria), planning (task decomposition), execution (mechanical changes), verification (completeness check).",
   "skip_profile": null
 }

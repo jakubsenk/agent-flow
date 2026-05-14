@@ -1,9 +1,0 @@
-{
-  "task_id": "T-37",
-  "status": "DONE",
-  "files_modified": ["CHANGELOG.md", "docs/plans/roadmap.md"],
-  "revision_cycle": null,
-  "concerns": [],
-  "test_results": "AC-067/080a/080b/080c/080d: v6.9.0 entry with all sections (Added/Changed/Migration notes/Known Issues/Internal); roadmap PLANNED→SHIPPED",
-  "completed_at": "2026-04-20T15:25:00Z"
-}

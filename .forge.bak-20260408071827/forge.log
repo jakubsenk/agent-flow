@@ -1,7 +1,0 @@
-[2026-04-07T10:00:00Z] FORGE_START input="Bug: /ceos-agents:init — forgejo-mcp download silently fails on Windows" config={"pipeline_mode":"adaptive","fast_track.enabled":null,"routing.enabled":null}
-[2026-04-07T10:00:01Z] PHASE_START phase=0 name="Meta-Agent"
-[2026-04-07T10:04:01Z] AGENT_END phase=0 agent="meta-agent" status="completed"
-[2026-04-07T10:04:01Z] PHASE_END phase=0 status="completed"
-[2026-04-07T10:04:02Z] TEMPLATE_SKIPPED reason="not_configured"
-[2026-04-07T10:04:02Z] ROUTING_FALLBACK reason="routing_decision field contract violation: missing task_type, secondary_types, action, target_skill, reasoning, skip_profile" check="D_fields"
-[2026-04-07T10:04:03Z] PHASE_START phase=1 name="Research Questions"

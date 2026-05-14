@@ -1,6 +1,6 @@
 # Mock Project
 
-Test project for smoke testing the ceos-agents pipeline.
+Test project for smoke testing the agent-flow pipeline.
 
 ## Automation Config
 

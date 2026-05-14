@@ -1,9 +1,0 @@
-{
-  "phase": 3,
-  "phase_name": "brainstorm",
-  "gate_fired_at": "2026-04-25T20:23:01Z",
-  "user_decision": "approved",
-  "user_feedback": null,
-  "iterations_used_at_gate": 0,
-  "resolved_at": "2026-04-25T20:30:00Z"
-}

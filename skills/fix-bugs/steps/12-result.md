@@ -8,7 +8,7 @@ This step is NOT a Task() dispatch — it is the orchestrator's terminal infrast
 ## Step 12.1: Pipeline accumulator
 
 Before writing terminal `status = "completed"` (or `"blocked"`/`"failed"`), compute and write to
-`.ceos-agents/{ISSUE-ID}/state.json` atomically per `../../../core/state-manager.md` "Pipeline Accumulator Write":
+`.agent-flow/{ISSUE-ID}/state.json` atomically per `../../../core/state-manager.md` "Pipeline Accumulator Write":
 
 - `pipeline.total_tokens`     = sum of `{stage}.tokens_used` for all completed stages
 - `pipeline.total_duration_ms` = sum of `{stage}.duration_ms` for all completed stages
@@ -29,7 +29,7 @@ cost breakdown inline.
 
 ## Step 12.3: Dispatch-Audit Surfacing (WITNESS_MISSING terminal block — REQ-D-1..D-5)
 
-Read `.ceos-agents/dispatch-audit.log` (top-level path per QB1 resolution, NOT under
+Read `.agent-flow/dispatch-audit.log` (top-level path per QB1 resolution, NOT under
 `{ISSUE-ID}/`). For this run's stages, classify each entry against the per-skill
 `<stage_allowlist>` parsed from this skill's parent SKILL.md (`skills/fix-bugs/SKILL.md`).
 
@@ -63,7 +63,7 @@ where `<SKILL_PATH>` is the resolved path to the SKILL.md file (e.g., `skills/fi
 > dispatching this step, not a runtime-enforced shell-level contract. The awk command is preserved;
 > the validation and fallback behaviour are performed immediately after the awk result is available.
 
-For each WITNESS_MISSING entry in `.ceos-agents/dispatch-audit.log` for this run:
+For each WITNESS_MISSING entry in `.agent-flow/dispatch-audit.log` for this run:
 
 | Stage in allow-list | Classification | Terminal-block treatment |
 |---------------------|----------------|--------------------------|
@@ -77,7 +77,7 @@ state.json corruption or orchestrator bug).
 
 For WITNESS_OK entries: never render (no action needed).
 
-If `.ceos-agents/dispatch-audit.log` does not exist: render a small info note "(no dispatch-audit
+If `.agent-flow/dispatch-audit.log` does not exist: render a small info note "(no dispatch-audit
 records — first invocation, or hook is disabled)" and continue. NEVER fail the terminal report on
 missing audit log.
 
@@ -94,8 +94,8 @@ missing audit log.
 | {stage_name_1}     | WITNESS_MISSING  | required (ANOMALY) |
 | {stage_name_2}     | WITNESS_MISMATCH | optional (ANOMALY) |
 +------------------------------------------------------------+
-| For investigation: cat .ceos-agents/dispatch-audit.log     |
-| Recommended: re-run /ceos-agents:fix-bugs {issue_id}       |
+| For investigation: cat .agent-flow/dispatch-audit.log     |
+| Recommended: re-run /agent-flow:fix-bugs {issue_id}       |
 |              with --step-mode to verify each dispatch.     |
 +============================================================+
 ```

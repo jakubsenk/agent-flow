@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# TOML overlay 3-tier merge utility for ceos-agents v8.0.0
+# TOML overlay 3-tier merge utility for agent-flow v8.0.0
 #
 # Fulfils: REQ-OVR-001..007, REQ-NF-001, REQ-NF-006
 #
@@ -22,7 +22,7 @@
 #   - python3 (3.11+) must be available on PATH for TOML parsing (tomllib stdlib).
 #   - POSIX bash; no GNU-only extensions used (compatible with bash 3.2, Git Bash, BusyBox).
 #
-# Provenance log destination: .ceos-agents/pipeline.log (append mode).
+# Provenance log destination: .agent-flow/pipeline.log (append mode).
 
 set -euo pipefail
 
@@ -349,7 +349,7 @@ PYEOF
 # ---------------------------------------------------------------------------
 # log_overlay_provenance
 #
-# Emit a provenance log line to .ceos-agents/pipeline.log (append mode) and
+# Emit a provenance log line to .agent-flow/pipeline.log (append mode) and
 # to stderr as [INFO] for visibility (REQ-OVR-007).
 #
 # Format: agent={name} overlay_source={toml|md|none} overlay_path={path}
@@ -362,7 +362,7 @@ PYEOF
 #   $2  — source_type   (one of: toml | md | none)
 #   $3  — source_path   (file path, or "(none)" when source_type=none)
 #
-# Log destination: .ceos-agents/pipeline.log (relative to project root / CWD).
+# Log destination: .agent-flow/pipeline.log (relative to project root / CWD).
 # ---------------------------------------------------------------------------
 log_overlay_provenance() {
     local agent_name="$1"
@@ -370,7 +370,7 @@ log_overlay_provenance() {
     local source_path="$3"
 
     local log_line="agent=${agent_name} overlay_source=${source_type} overlay_path=${source_path}"
-    local log_dir=".ceos-agents"
+    local log_dir=".agent-flow"
     local log_file="${log_dir}/pipeline.log"
 
     # Ensure log directory exists (non-fatal; warn if creation fails)

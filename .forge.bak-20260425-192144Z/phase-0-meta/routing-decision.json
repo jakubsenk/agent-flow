@@ -1,9 +1,0 @@
-{
-  "task_type": "refactor",
-  "secondary_types": ["feature", "test"],
-  "action": "full_pipeline",
-  "target_skill": null,
-  "confidence": 0.90,
-  "reasoning": "v6.10.0 is a release-scale task bundling three tracks (test discipline overhaul, agent dispatch enforcement layers 1+2+4, prompt-injection constraint for 8 agents). Primary classification is refactor (tracks 1 and 3 are behavior-preserving restructures; track 2 is mixed refactor + feature). Implementation task type per VALID_TARGETS -> full_pipeline is the default. No phase subset or skill redirect applies because the release requires the full research->spec->tdd->plan->execute->verify->complete arc for a public-release-blocker change.",
-  "skip_profile": null
-}

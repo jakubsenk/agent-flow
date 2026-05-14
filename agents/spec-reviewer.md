@@ -151,7 +151,7 @@ instead of specification review mode. The input is both the spec/ folder AND the
 
 Invariant fields checked: `dispatched_at`, `dispatch_witness`, `status`, `stage_name`, `agent_name`. Tokens: `EXPECTED_AGENT_NAME`, `EXPECTED_STAGE_NAME`.
 
-Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.ceos-agents/{ISSUE_ID}/state.json`:
+Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.agent-flow/{ISSUE_ID}/state.json`:
 
 1. **`dispatched_at`** — Field is present and non-empty for stage `{EXPECTED_STAGE_NAME}` (here: `spec_review`). Orchestrator wrote this pre-dispatch as a timestamp; absence proves the dispatch flow was bypassed.
 

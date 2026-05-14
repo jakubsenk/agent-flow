@@ -1,6 +1,6 @@
 # Snippet — Webhook curl invocation
 
-The canonical curl pattern for ceos-agents webhook delivery. Cite this file from any new webhook call site.
+The canonical curl pattern for agent-flow webhook delivery. Cite this file from any new webhook call site.
 
 ```bash
 curl --proto "=http,https" --max-time 5 --retry 0 \

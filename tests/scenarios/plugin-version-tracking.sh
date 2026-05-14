@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Test: Plugin version tracking — state schema field, state-manager write, resume-ticket comparison
-# AC-6 through AC-9 (v6.7.0)
+# AC-6 through AC-9
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"

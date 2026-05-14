@@ -1,6 +1,6 @@
 # Pipeline Reference
 
-ceos-agents orchestrates three distinct pipelines, each designed for a specific workflow: fixing bugs, implementing features, and scaffolding new projects. This document provides complete pipeline diagrams, stage tables, profile support, and error handling details.
+agent-flow orchestrates three distinct pipelines, each designed for a specific workflow: fixing bugs, implementing features, and scaffolding new projects. This document provides complete pipeline diagrams, stage tables, profile support, and error handling details.
 
 All pipelines share common patterns:
 
@@ -11,7 +11,7 @@ All pipelines share common patterns:
 
 ## Bug-Fix Pipeline
 
-The bug-fix pipeline takes a bug from triage through fix, review, test, and publish. It is invoked by `/ceos-agents:fix-bugs` (single bug or batch; optional worktrees).
+The bug-fix pipeline takes a bug from triage through fix, review, test, and publish. It is invoked by `/agent-flow:fix-bugs` (single bug or batch; optional worktrees).
 
 ```mermaid
 flowchart TD
@@ -99,7 +99,7 @@ flowchart TD
 
 ### Worktree Mode
 
-When the Worktrees section is configured in Automation Config, `/ceos-agents:fix-bugs` processes bugs in parallel using git worktrees:
+When the Worktrees section is configured in Automation Config, `/agent-flow:fix-bugs` processes bugs in parallel using git worktrees:
 
 - **Batch size** controls how many bugs run concurrently (default: 3)
 - **Base path** sets the worktree directory (default: `.worktrees/`)
@@ -123,7 +123,7 @@ Use `--decompose` to force decomposition or `--no-decompose` to disable it.
 
 ## Feature Pipeline
 
-The feature pipeline adds spec analysis and architecture design stages before the fix/review/test cycle. It is invoked by `/ceos-agents:implement-feature`.
+The feature pipeline adds spec analysis and architecture design stages before the fix/review/test cycle. It is invoked by `/agent-flow:implement-feature`.
 
 ```mermaid
 flowchart TD
@@ -205,7 +205,7 @@ The architect produces a task tree in YAML format:
 
 ## Scaffold Pipeline
 
-The scaffold pipeline creates a new project from scratch. In v2 mode (default), it generates a specification, builds the skeleton, and implements all features. It is invoked by `/ceos-agents:scaffold`.
+The scaffold pipeline creates a new project from scratch. In v2 mode (default), it generates a specification, builds the skeleton, and implements all features. It is invoked by `/agent-flow:scaffold`.
 
 ### Scaffold v2 Pipeline (default)
 
@@ -309,10 +309,10 @@ With `--no-implement`, the scaffold pipeline falls back to v3.x behavior: stack-
 
 ## Autopilot Pipeline
 
-The Autopilot pipeline is a headless dispatcher for unattended cron / batch / CI invocation. It reads issue queries from Automation Config, classifies issues, and dispatches the existing `/ceos-agents:fix-bugs` (bugs) and `/ceos-agents:implement-feature` (features) skills sequentially. It is invoked by `/ceos-agents:autopilot`.
+The Autopilot pipeline is a headless dispatcher for unattended cron / batch / CI invocation. It reads issue queries from Automation Config, classifies issues, and dispatches the existing `/agent-flow:fix-bugs` (bugs) and `/agent-flow:implement-feature` (features) skills sequentially. It is invoked by `/agent-flow:autopilot`.
 
 ```
-Preflight ──► Dry-run check ──► Lock (.ceos-agents/autopilot.lock/) ──► Read queries
+Preflight ──► Dry-run check ──► Lock (.agent-flow/autopilot.lock/) ──► Read queries
     │                                                                          │
     ▼                                                                          ▼
 [exit on config/MCP error]                                            Classify issues
@@ -331,7 +331,7 @@ Preflight ──► Dry-run check ──► Lock (.ceos-agents/autopilot.lock/) 
 | Property | Detail |
 |----------|--------|
 | Dispatch order | Bugs first (in tracker order), then features; if an issue matches both queries, it is classified as bug |
-| Lock mechanism | Directory-based: `mkdir .ceos-agents/autopilot.lock/` (atomic on POSIX and NTFS); stale threshold 120 minutes |
+| Lock mechanism | Directory-based: `mkdir .agent-flow/autopilot.lock/` (atomic on POSIX and NTFS); stale threshold 120 minutes |
 | Observability | Child skills (`fix-bugs`, `implement-feature`) fire events per issue: `pipeline-started`, `step-completed`, `pipeline-completed`. Block events fire as `issue-blocked`. When configured, also fires `pipeline-paused` per paused transition. Autopilot itself fires no per-issue webhooks. |
 | Dry-run | Full short-circuit — no lock, no state, no webhook, no dispatch; safe for concurrent cron |
 | Concurrency | Sequential dispatch only; one issue at a time |
@@ -349,7 +349,7 @@ Preflight ──► Dry-run check ──► Lock (.ceos-agents/autopilot.lock/) 
 
 ## Pipeline Profiles
 
-Pipeline profiles allow you to customize which stages run for different use cases. Profiles are defined in the `Pipeline Profiles` section of Automation Config and apply to `/ceos-agents:fix-bugs` and `/ceos-agents:implement-feature`.
+Pipeline profiles allow you to customize which stages run for different use cases. Profiles are defined in the `Pipeline Profiles` section of Automation Config and apply to `/agent-flow:fix-bugs` and `/agent-flow:implement-feature`.
 
 ### Skippable Stages
 
@@ -372,7 +372,7 @@ Pipeline profiles allow you to customize which stages run for different use case
 | strict | (none) | test-engineer-e2e | Maximum quality gate with E2E tests |
 | minimal | triage, analyst-impact, test-engineer, test-engineer-e2e | (none) | Hotfix with minimum overhead |
 
-Usage: `/ceos-agents:fix-bugs PROJ-42 --profile fast`
+Usage: `/agent-flow:fix-bugs PROJ-42 --profile fast`
 
 ## Error Handling
 
@@ -387,7 +387,7 @@ When any agent encounters an unrecoverable error, it triggers a **block**:
 Block comments follow this format:
 
 ```
-[ceos-agents] Pipeline Block
+[agent-flow] Pipeline Block
 Agent: {agent name}
 Step: {pipeline step where failure occurred}
 Reason: {max 2 sentences}
@@ -395,7 +395,7 @@ Detail: {technical output — error message, diff, test output}
 Recommendation: {what the human should do}
 ```
 
-The `[ceos-agents]` prefix enables machine-parseable detection by the inline auto-resume contract (`core/resume-detection.md`) used by all pipeline entry-point skills (`fix-bugs`, `implement-feature`, `scaffold`).
+The `[agent-flow]` prefix enables machine-parseable detection by the inline auto-resume contract (`core/resume-detection.md`) used by all pipeline entry-point skills (`fix-bugs`, `implement-feature`, `scaffold`).
 
 ### Rollback Behavior by Agent
 
@@ -434,10 +434,10 @@ For bug-fix pipelines, dry-run executes triage and code analysis, then produces 
 **Risk:** MEDIUM
 **Est. complexity:** S
 
-No changes made. To run the fix, use `/ceos-agents:fix-bugs PROJ-42` (without --dry-run).
+No changes made. To run the fix, use `/agent-flow:fix-bugs PROJ-42` (without --dry-run).
 ```
 
-For batch processing with `/ceos-agents:fix-bugs`, the report includes a summary table with complexity estimates and resource projections.
+For batch processing with `/agent-flow:fix-bugs`, the report includes a summary table with complexity estimates and resource projections.
 
 ## Fix Verification
 

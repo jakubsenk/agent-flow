@@ -1,8 +1,8 @@
 # Architecture
 
-ceos-agents is a Claude Code plugin built as a 2-layer system: skills orchestrate WHAT to do, agents specialize in HOW to do it. The plugin is pure markdown with zero runtime dependencies. All project-specific configuration lives outside the plugin in the consuming project's CLAUDE.md.
+agent-flow is a Claude Code plugin built as a 2-layer system: skills orchestrate WHAT to do, agents specialize in HOW to do it. The plugin is pure markdown with zero runtime dependencies. All project-specific configuration lives outside the plugin in the consuming project's CLAUDE.md.
 
-**v9.5.0 counts:** 17 agents · 18 skills (down from 22; `/migrate-config`, `/estimate`, `/pipeline-status`, `/scaffold-validate` deleted in v9.5.0) · 18 optional config sections · 17 core contracts.
+**v10.2.0 counts:** 17 agents · 17 skills (down from 22; `/migrate-config`, `/estimate`, `/pipeline-status`, `/scaffold-validate`, `/version-bump` deleted) · 18 optional config sections · 17 core contracts.
 
 This document explains the design decisions behind the architecture, the data flow through pipelines, and the error handling patterns that make the system resilient.
 
@@ -24,9 +24,9 @@ Four core principles drive the architecture:
 graph TD
     User([User])
 
-    subgraph "ceos-agents Plugin"
-        subgraph "Skills Layer (Orchestration) — 18 Skills"
-            SKL[18 Skills]
+    subgraph "agent-flow Plugin"
+        subgraph "Skills Layer (Orchestration) — 17 Skills"
+            SKL[17 Skills]
             SETUP_AGT["/setup-agents<br/>(generates customization/*.toml)"]
         end
         subgraph "Agents Layer (Specialists) — 17 Agents"
@@ -47,7 +47,7 @@ graph TD
             STEP_OVL["customization/steps/{skill}/*.md<br/>(per-step pipeline overrides)"]
         end
         PAUSE["NEEDS_CLARIFICATION<br/>(pause state)"]
-        HIST[".ceos-agents/pipeline-history.md"]
+        HIST[".agent-flow/pipeline-history.md"]
     end
 
     CONFIG["Automation Config<br/>(project CLAUDE.md)"]
@@ -80,7 +80,7 @@ graph TD
 
 The diagram shows the complete information flow:
 
-- The **user** invokes a skill (e.g., `/ceos-agents:fix-bugs PROJ-42`)
+- The **user** invokes a skill (e.g., `/agent-flow:fix-bugs PROJ-42`)
 - The **skill** reads Automation Config from the project's CLAUDE.md
 - The skill dispatches **agents** via Claude Code's Task tool; before each dispatch the skill reads the project's `customization/{agent-name}.toml` overlay (if present) and merges it with the agent's default prompt via 3-tier TOML merge (scalar override, array-of-tables append, table deep merge)
 - **Read-only agents** query external systems (issue tracker, source control) through MCP servers but never modify code; read-only inventory (9 agents): `analyst` (dispatched as `analyst --phase triage` / `analyst --phase impact`), `reviewer`, `spec-analyst`, `architect`, `priority-engine`, `spec-reviewer`, `acceptance-gate`, `backlog-creator`, `sprint-planner`
@@ -88,8 +88,8 @@ The diagram shows the complete information flow:
 - **17 core contracts** in `core/` define shared pipeline patterns reused across skills; a `core/snippets/` sub-namespace (6 files) holds canonical reusable Bash blocks cited via `<!-- @snippet:<name> -->` markers; a `core/overlay/` sub-namespace holds the TOML overlay contract (`toml-overlay.md`) — neither sub-namespace counts toward the top-level contract total
 - **`/setup-agents`** (v8.0.0 new skill) is a one-shot scanner that reads the project root (CLAUDE.md, source layout, framework detection) and generates smart `customization/*.toml` defaults. It produces a preview diff before writing. Files with `# generated:` header are safe to regen; files without that header (user-edited) are never overwritten.
 - **Step override** (v8.0.0): `customization/steps/{skill}/{step-name}.md` replaces a specific pipeline step for the project without forking the plugin. The skill resolves overrides before dispatching each step.
-- **NEEDS_CLARIFICATION** is a pause state (v6.9.0+) emitted by fixer or analyst when ambiguity blocks progress; the pipeline transitions to `paused` and waits for the user to re-invoke the original entry-point skill with `--clarification "answer"` (e.g., `/ceos-agents:fix-bugs PROJ-42 --clarification "answer"`)
-- After pipeline completion, a run summary is appended to **`.ceos-agents/pipeline-history.md`**; fixer and reviewer read this file to learn from past run outcomes on the same issue
+- **NEEDS_CLARIFICATION** is a pause state (v6.9.0+) emitted by fixer or analyst when ambiguity blocks progress; the pipeline transitions to `paused` and waits for the user to re-invoke the original entry-point skill with `--clarification "answer"` (e.g., `/agent-flow:fix-bugs PROJ-42 --clarification "answer"`)
+- After pipeline completion, a run summary is appended to **`.agent-flow/pipeline-history.md`**; fixer and reviewer read this file to learn from past run outcomes on the same issue
 - Webhook dispatch is **circuit-breaker guarded**: after 3 consecutive delivery failures, all remaining webhook calls in the current run are suppressed to prevent latency accumulation from a dead endpoint
 
 ## Model Selection Rationale
@@ -106,7 +106,7 @@ This tiering minimizes cost without sacrificing quality where it matters. The fi
 
 ## Pipeline Architecture
 
-ceos-agents has three pipelines, each designed for a different workflow. All three share common patterns: retry loops, block/rollback error handling, and hook integration points.
+agent-flow has three pipelines, each designed for a different workflow. All three share common patterns: retry loops, block/rollback error handling, and hook integration points.
 
 For complete pipeline diagrams with all decision points and stage details, see [Pipeline Reference](reference/pipelines.md).
 
@@ -223,7 +223,7 @@ The Automation Config contract lives in the project's CLAUDE.md for a specific r
 
 ### Table Format
 
-All config sections use the `| Key | Value |` table format. This is enforced by `/ceos-agents:check-setup` validation. Bullet-point lists are not accepted because they are ambiguous to parse (is a nested bullet a continuation of the previous value or a new key?).
+All config sections use the `| Key | Value |` table format. This is enforced by `/agent-flow:check-setup` validation. Bullet-point lists are not accepted because they are ambiguous to parse (is a nested bullet a continuation of the previous value or a new key?).
 
 ### Required vs Optional
 
@@ -280,13 +280,13 @@ Any agent can **block** an issue when it encounters an unrecoverable error. When
 3. A **Block comment** is posted with structured fields (Agent, Step, Reason, Detail, Recommendation)
 4. If webhooks are configured, an `issue-blocked` event is sent
 
-The Block comment uses the `[ceos-agents]` prefix, which enables machine-parseable detection by entry-point skills (`/ceos-agents:fix-bugs`, `/ceos-agents:implement-feature`, `/ceos-agents:scaffold`) for inline auto-resume and by `/ceos-agents:metrics` for analytics.
+The Block comment uses the `[agent-flow]` prefix, which enables machine-parseable detection by entry-point skills (`/agent-flow:fix-bugs`, `/agent-flow:implement-feature`, `/agent-flow:scaffold`) for inline auto-resume and by `/agent-flow:metrics` for analytics.
 
 ### NEEDS_CLARIFICATION Pause State (v6.9.0+)
 
 A second pause state supplements the existing NEEDS_DECOMPOSITION signal. When fixer or analyst (triage phase) encounters ambiguity that blocks progress — an underspecified requirement, a missing environment variable, or contradictory acceptance criteria — it emits a `## NEEDS_CLARIFICATION` block containing a `question:` and optional `context:` field.
 
-The skill orchestrator detects the block, writes clarification metadata to `state.json`, transitions pipeline status to `paused`, and (if configured) fires a `pipeline-paused` webhook. The human resumes by re-invoking the original entry-point skill with `--clarification "answer"` (e.g., `/ceos-agents:fix-bugs PROJ-42 --clarification "answer"`), which re-dispatches the paused agent with the answer injected into context. Resume detection is handled by `core/resume-detection.md` and is automatic on every entry-point invocation.
+The skill orchestrator detects the block, writes clarification metadata to `state.json`, transitions pipeline status to `paused`, and (if configured) fires a `pipeline-paused` webhook. The human resumes by re-invoking the original entry-point skill with `--clarification "answer"` (e.g., `/agent-flow:fix-bugs PROJ-42 --clarification "answer"`), which re-dispatches the paused agent with the answer injected into context. Resume detection is handled by `core/resume-detection.md` and is automatic on every entry-point invocation.
 
 Two DoS caps prevent infinite pausing:
 - **Per-run cap:** 3 clarifications maximum. A 4th detection blocks the issue.
@@ -319,14 +319,14 @@ When a retry limit is exhausted, the pipeline blocks the issue and triggers roll
 
 ### CWD vs Worktree Mode
 
-- **CWD mode** (default): All changes happen in the current working directory. One bug at a time. Used by `/ceos-agents:fix-bugs <ISSUE-ID>` (single-ticket mode).
-- **Worktree mode** (optional): Each bug gets its own git worktree. Multiple bugs processed in parallel batches. Used by `/ceos-agents:fix-bugs` when Worktrees config is present.
+- **CWD mode** (default): All changes happen in the current working directory. One bug at a time. Used by `/agent-flow:fix-bugs <ISSUE-ID>` (single-ticket mode).
+- **Worktree mode** (optional): Each bug gets its own git worktree. Multiple bugs processed in parallel batches. Used by `/agent-flow:fix-bugs` when Worktrees config is present.
 
 In both modes, the rollback-agent operates within the correct context (CWD or worktree path).
 
 ## Pipeline History and Feedback Loop (v6.9.0+)
 
-After each pipeline run completes, the skill appends a structured entry to `.ceos-agents/pipeline-history.md`. This file serves as a lightweight persistent log of past outcomes for the same project.
+After each pipeline run completes, the skill appends a structured entry to `.agent-flow/pipeline-history.md`. This file serves as a lightweight persistent log of past outcomes for the same project.
 
 The **pipeline-history feedback arrow** in the architecture diagram above reflects a key design decision: fixer and reviewer agents receive a summary of recent pipeline-history entries as part of their context. This enables them to avoid repeating approaches that previously blocked, reference tests that were added in prior runs, or detect patterns of recurring failures on the same issue.
 
@@ -336,7 +336,7 @@ Key properties:
 - File size cap — entries beyond the configured retention limit are trimmed from the top
 - Advisory failure semantics — if the append fails, `[WARN] pipeline-history.md append failed: <reason>` is logged and the pipeline continues
 
-The file lives under `.ceos-agents/` (not `.claude/`), consistent with all other plugin runtime state.
+The file lives under `.agent-flow/` (not `.claude/`), consistent with all other plugin runtime state.
 
 ## State Management (v8.0.0)
 

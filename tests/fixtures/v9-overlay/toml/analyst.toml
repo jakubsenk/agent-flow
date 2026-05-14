@@ -4,7 +4,7 @@
 # Uses the actual allowed top-level keys: model, style, process_additions, constraints, limits, meta.
 
 [meta]
-generated = "ceos-agents v9.2.0 test fixture"
+generated = "agent-flow test fixture"
 purpose = "trigger OVERLAY_SOURCE=toml in resolve_overlay()"
 
 [[process_additions]]

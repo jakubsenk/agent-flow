@@ -1,13 +1,13 @@
 # State Schema Reference
 
-This document defines the structure of `.ceos-agents/{RUN-ID}/state.json`, the pipeline run state file written and updated by ceos-agents commands.
+This document defines the structure of `.agent-flow/{RUN-ID}/state.json`, the pipeline run state file written and updated by agent-flow commands.
 
 > **Note (v6.8.0 additive update):** The six per-stage usage fields (`tokens_used`, `duration_ms`, `tool_uses`, `model`, `started_at`, `completed_at`) and the top-level `pipeline` accumulator are additive additions. `schema_version` remains `"1.0"`. Readers from v6.7.x that do not recognize these fields will ignore them — no schema version bump is needed. See "Reading v6.7.x state.json under v6.8.0" below.
 
 ## Directory Layout
 
 ```
-.ceos-agents/
+.agent-flow/
   {RUN-ID}/
     state.json
     pipeline.log
@@ -360,12 +360,12 @@ DoS caps enforced by skill orchestrators (see `core/agent-states.md` Section 2):
 | Channel | Status | Rationale |
 |---------|--------|-----------|
 | `/metrics --format json` output | EXCLUDE | `top_reasons[].reason` uses `block.reason` only (sanitized 2-sentence summary). `block.detail` never serialized. |
-| `.ceos-agents/pipeline-history.md` | EXCLUDE | `block_reason` row uses `block.reason` only, additionally filtered through `sanitize_block_reason()` (18-pattern POSIX-portable redaction; see `core/post-publish-hook.md` Section 5). |
+| `.agent-flow/pipeline-history.md` | EXCLUDE | `block_reason` row uses `block.reason` only, additionally filtered through `sanitize_block_reason()` (18-pattern POSIX-portable redaction; see `core/post-publish-hook.md` Section 5). |
 | `pipeline-completed` webhook payload | EXCLUDE | Payload `block` object includes `reason` only. `detail` never included. |
-| `issue-blocked` (`ceos-agents-block`) webhook payload | EXCLUDE | Payload `block` object includes `reason` only. `detail` never included. |
+| `issue-blocked` (`agent-flow-block`) webhook payload | EXCLUDE | Payload `block` object includes `reason` only. `detail` never included. |
 | `pipeline-paused` webhook payload (NEW v6.9.0) | EXCLUDE | Payload includes `clarification.question` (sanitized) only. `block.detail` never relevant for pause; full exclusion. |
 | Issue tracker block COMMENT (`core/block-handler.md`) | INCLUDE — first 100 chars only, redacted | Human-readable debugging requires SOME detail. Posts `Detail: {first 100 chars of block.detail filtered through sanitize_block_reason()}`. Full unredacted detail available only via local `state.json` read. |
-| `state.json` on disk (`.ceos-agents/{run-id}/state.json`) | INCLUDE — full text, operator-controlled location | Operator-controlled local file; not transmitted. Operators in multi-user environments SHOULD treat `.ceos-agents/` as sensitive (advisory). |
+| `state.json` on disk (`.agent-flow/{run-id}/state.json`) | INCLUDE — full text, operator-controlled location | Operator-controlled local file; not transmitted. Operators in multi-user environments SHOULD treat `.agent-flow/` as sensitive (advisory). |
 | Future analytics/export skills | EXCLUDE — default | Any new consumer added in v6.10.x+ MUST update this table when introduced. Default posture is EXCLUDE unless explicitly justified. |
 
 Violations are caught by hidden test scenarios:
@@ -404,7 +404,7 @@ Applies to all stages in the hardcoded `STAGES` whitelist (v10.0.0 expanded to 1
 - **Absence:** field MAY be absent for stages completed before v10.0.0 or for stages legitimately skipped (legitimate skips write `status: "skipped"` separately). The PostToolUse hook treats absence as `WITNESS_MISSING` (audit-log line), NEVER as a pipeline failure unless `CEOS_STRICT_DISPATCH=1` is set (in which case `WITNESS_MISMATCH` - not MISSING - causes exit 2).
 - **Added by:** orchestrator, immediately before Task tool dispatch, in the same atomic state.json write as `dispatched_at`, `agent_name`, `stage_name`, and `status = "in_progress"`.
 - **Canonicalization:** `sha256("<subagent_type>|<model>|<prompt_head_128>")` where:
-  - `subagent_type` = the Task tool's `subagent_type` argument (e.g., `ceos-agents:test-engineer`).
+  - `subagent_type` = the Task tool's `subagent_type` argument (e.g., `agent-flow:test-engineer`).
   - `model` = the agent's `model:` frontmatter field (e.g., `sonnet`, `opus`, `haiku`).
   - `prompt_head_128` = the first 128 UTF-8-safe bytes of the prompt template string BEFORE Tier-1 variable substitution (i.e., with `${VAR}` placeholders un-expanded). UTF-8 safety means the truncation boundary aligns with the last whole codepoint within the 128-byte budget.
 - **Stability guarantee:** the witness is stable across resume cycles (the same template renders to the same witness regardless of how many times the stage is resumed).
@@ -413,7 +413,7 @@ Applies to all stages in the hardcoded `STAGES` whitelist (v10.0.0 expanded to 1
 
 #### `stages.{stage}.agent_name`
 
-- **Type:** string (Task subagent_type, e.g., `"ceos-agents:fixer"`, `"ceos-agents:test-engineer"`)
+- **Type:** string (Task subagent_type, e.g., `"agent-flow:fixer"`, `"agent-flow:test-engineer"`)
 - **Added in:** v10.0.0
 - **Purpose:** Cross-check anchor for L3 agent self-verification (REQ-C-1 v1.2). The agent reads this field at runtime and compares it against the prompt-injected `EXPECTED_AGENT_NAME` variable to verify dispatch integrity.
 - **Absence:** field MAY be absent in state.json blocks for stages completed before v10.0.0. Agent self-check treats absence as a Block condition (Reason: `completion_invariant_violated:agent_name_absent`).
@@ -634,7 +634,7 @@ All `status` fields within phase objects use the following values:
 
 ## Atomic Write Protocol
 
-State file writes follow this protocol to prevent corruption: (1) Serialize to JSON. (2) Write to `.ceos-agents/{RUN-ID}/state.json.tmp`. (3) Rename atomically to `state.json`. (4) On rename failure: retry once after 100 ms. (5) On second failure: log to `pipeline.log` and continue (state loss is non-fatal). The temp file is always in the same directory to ensure an atomic same-filesystem rename.
+State file writes follow this protocol to prevent corruption: (1) Serialize to JSON. (2) Write to `.agent-flow/{RUN-ID}/state.json.tmp`. (3) Rename atomically to `state.json`. (4) On rename failure: retry once after 100 ms. (5) On second failure: log to `pipeline.log` and continue (state loss is non-fatal). The temp file is always in the same directory to ensure an atomic same-filesystem rename.
 
 ## Event Log Format (pipeline.log)
 

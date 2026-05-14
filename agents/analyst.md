@@ -109,7 +109,7 @@ Orchestrator skill passes `--phase triage` or `--phase impact`. Execute ONLY the
 
 11. Post checkpoint comment to issue tracker:
    ```
-   [ceos-agents] Triage completed. Severity: {severity}. Area: {area}. Complexity: {complexity}. AC: {count}.
+   [agent-flow] Triage completed. Severity: {severity}. Area: {area}. Complexity: {complexity}. AC: {count}.
    ```
    This comment enables resume-detection (`../core/resume-detection.md`) to detect completed triage on the next entry-point invocation.
 
@@ -117,7 +117,7 @@ Orchestrator skill passes `--phase triage` or `--phase impact`. Execute ONLY the
 
 When blocking an issue, use the Block Comment Template:
 ```
-[ceos-agents] 🔴 Pipeline Block
+[agent-flow] 🔴 Pipeline Block
 Agent: analyst
 Step: Triage
 Reason: {max 2 sentences — what is wrong}
@@ -180,7 +180,7 @@ Recommendation: {what the issue author should do}
 
 10. Analyze relevant history:
     a. Read last 10 commits in each affected file: `git log --oneline -10 -- {file}` via Bash
-    b. Search for `[ceos-agents]` comments on issues related to the same module/area (if MCP available): look for block comments mentioning the same files or similar patterns
+    b. Search for `[agent-flow]` comments on issues related to the same module/area (if MCP available): look for block comments mentioning the same files or similar patterns
     c. Identify patterns: recurring bugs in the same area, off-by-one errors, null pointer issues, race conditions, recent refactoring
     d. If pattern found: note it explicitly — "this file had {N} bugs in last {period}, pattern: {description}"
 
@@ -196,7 +196,7 @@ Recommendation: {what the issue author should do}
    - **Historical context:**
      - Past fixes: {list of relevant commits in affected files with one-line descriptions}
      - Known patterns: {recurring bug patterns in this area, if any}
-     - Pipeline history: {previous [ceos-agents] blocks in this area, if found}
+     - Pipeline history: {previous [agent-flow] blocks in this area, if found}
      - Risk modifier: {if history shows recurring issues, increase risk level and explain why}
    - **Reproduction trace (MANDATORY):**
      - Step 1: {repro step} → system state: {concrete data} → code: {method called} → input: {actual args} → output: {result}
@@ -214,7 +214,7 @@ Recommendation: {what the issue author should do}
 
 When blocking an issue, use the Block Comment Template:
 ```
-[ceos-agents] 🔴 Pipeline Block
+[agent-flow] 🔴 Pipeline Block
 Agent: analyst
 Step: Impact Analysis
 Reason: {reason}
@@ -245,8 +245,8 @@ Recommendation: {what the human should investigate}
 | `## NEEDS_CLARIFICATION` | on ambiguous repro | Question (≤280 chars); Context (≤500 chars) |
 | `Quality gate: PASS` literal | on complete issue | (sentinel inside ## Triage Analysis) |
 | `Quality gate: UNCLEAR` literal | on incomplete issue | (sentinel + per-question feedback) |
-| `[ceos-agents] Triage completed.` checkpoint comment | on PASS — posted as tracker comment | severity; area; complexity; AC count |
-| `[ceos-agents] 🔴 Pipeline Block` | on Block | Agent: analyst; Step: Triage; Reason; Detail; Recommendation |
+| `[agent-flow] Triage completed.` checkpoint comment | on PASS — posted as tracker comment | severity; area; complexity; AC count |
+| `[agent-flow] 🔴 Pipeline Block` | on Block | Agent: analyst; Step: Triage; Reason; Detail; Recommendation |
 
 ### Output Contract — Phase: impact
 
@@ -266,11 +266,11 @@ Recommendation: {what the human should investigate}
 |------------------|------|-----------------|
 | `## Impact Report` | always | Root cause location; Affected files (max 5); Callers at risk; Test coverage; Risk level (LOW/MEDIUM/HIGH); Historical context; Reproduction trace; Sanity check; Suggested approach |
 | `Partial analysis` sub-block inside `## Impact Report` | on root cause unconfirmed | Completed steps; Traced up to; Boundary hit; Candidates not confirmed; Secondary defects found; Next steps for human |
-| `[ceos-agents] 🔴 Pipeline Block` | on Block | Agent: analyst; Step: Impact Analysis; Reason; Detail; Recommendation |
+| `[agent-flow] 🔴 Pipeline Block` | on Block | Agent: analyst; Step: Impact Analysis; Reason; Detail; Recommendation |
 
 ## Step Completion Invariants
 
-Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.ceos-agents/{ISSUE_ID}/state.json` (or the orchestrator-injected state path):
+Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.agent-flow/{ISSUE_ID}/state.json` (or the orchestrator-injected state path):
 
 1. `dispatched_at` — Field is present and non-empty for the active stage. The active stage is `triage` if invoked with --phase triage, or `code_analysis` if invoked with --phase impact (EXPECTED_STAGE_NAME is injected by the orchestrator per-phase). The orchestrator wrote this pre-dispatch.
 

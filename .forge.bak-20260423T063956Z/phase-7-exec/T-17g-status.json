@@ -1,9 +1,0 @@
-{
-  "task_id": "T-17g",
-  "status": "DONE",
-  "files_created": ["core/agent-states.md"],
-  "revision_cycle": null,
-  "concerns": [],
-  "test_results": "AC-040: 3 sections, ~82 lines; pipeline-paused webhook cites @snippet:webhook-curl marker (21st site); REQ-050c satisfied",
-  "completed_at": "2026-04-19T00:00:00Z"
-}

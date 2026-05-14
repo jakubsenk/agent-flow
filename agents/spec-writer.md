@@ -103,13 +103,13 @@ definition, tech stack evaluation, scope management, YAGNI enforcement.
 | `spec/architecture.md` file | always | High-Level Overview; Data Flow; NFR |
 | `spec/verification.md` file | always | Test Strategy; Definition of Done; Risks & Assumptions |
 | `spec/epics/NN-name.md` files | always | Description; User Stories with AC (GWT or rule-oriented); Dependencies; Priority |
-| `[ceos-agents] 🔴 Pipeline Block` | on Block | Agent: spec-writer; Step: Specification Generation; Reason; Detail; Recommendation |
+| `[agent-flow] 🔴 Pipeline Block` | on Block | Agent: spec-writer; Step: Specification Generation; Reason; Detail; Recommendation |
 
 ## Step Completion Invariants
 
 Invariant fields checked: `dispatched_at`, `dispatch_witness`, `status`, `stage_name`, `agent_name`. Tokens: `EXPECTED_AGENT_NAME`, `EXPECTED_STAGE_NAME`.
 
-Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.ceos-agents/{ISSUE_ID}/state.json`:
+Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.agent-flow/{ISSUE_ID}/state.json`:
 
 1. **`dispatched_at`** — Field is present and non-empty for stage `{EXPECTED_STAGE_NAME}` (here: `spec`). Orchestrator wrote this pre-dispatch as a timestamp; absence proves the dispatch flow was bypassed.
 
@@ -133,7 +133,7 @@ If ANY invariant fails: Block with `Reason: Step completion invariant violated: 
 - Every epic must have a Dependencies field and Priority field (must | should | could)
 - On failure: Block using the Block Comment Template:
   ```
-  [ceos-agents] 🔴 Pipeline Block
+  [agent-flow] 🔴 Pipeline Block
   Agent: spec-writer
   Step: Specification Generation
   Reason: {reason}

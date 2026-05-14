@@ -1,9 +1,0 @@
-{
-  "task_type": "feature",
-  "secondary_types": ["refactor"],
-  "action": "full_pipeline",
-  "target_skill": null,
-  "confidence": 0.95,
-  "reasoning": "Three-item feature implementation with well-specified acceptance criteria. Requires research (understanding existing patterns), spec (formal criteria), TDD (test updates), plan (dependency-ordered tasks), execute (12+ file edits), and verify (test suite + structural validation). No skill shortcut applicable — this is a multi-file, multi-concern change set requiring full pipeline discipline.",
-  "skip_profile": null
-}

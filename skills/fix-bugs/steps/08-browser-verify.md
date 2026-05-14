@@ -16,15 +16,15 @@ When skipping: log `[SKIP] browser verification ({reason})`, set
 ## Pre-dispatch state write (REQ-B-2 v1.2)
 
 Before dispatching, atomically write per-stage pre-dispatch fields to
-`.ceos-agents/{ISSUE-ID}/state.json`:
+`.agent-flow/{ISSUE-ID}/state.json`:
 
 - `browser_verification.started_at`      = current ISO-8601 UTC timestamp
 - `browser_verification.model`           = `"sonnet"` (from `agents/browser-agent.md` frontmatter)
 - `browser_verification.status`          = `"in_progress"`
-- `browser_verification.agent_name`      = `"ceos-agents:browser-agent"`
+- `browser_verification.agent_name`      = `"agent-flow:browser-agent"`
 - `browser_verification.stage_name`      = `"browser_verification"`
 - `browser_verification.dispatched_at`   = current ISO-8601 UTC timestamp
-- `browser_verification.dispatch_witness` = sha256("ceos-agents:browser-agent|sonnet|<prompt_head_128>")
+- `browser_verification.dispatch_witness` = sha256("agent-flow:browser-agent|sonnet|<prompt_head_128>")
 - `browser_verification.tokens_used` = 0, `browser_verification.duration_ms` = 0, `browser_verification.tool_uses` = 0
 
 Follow atomic write protocol from `../../../core/state-manager.md`.
@@ -37,19 +37,19 @@ agent's context as `## Project-Specific Instructions`.
 
 ## Dispatch
 
-You MUST invoke `Task(subagent_type='ceos-agents:browser-agent', model='sonnet')`.
+You MUST invoke `Task(subagent_type='agent-flow:browser-agent', model='sonnet')`.
 DO NOT inline-execute. Inline execution is a CONTRACT VIOLATION detected by the PostToolUse validator.
 
-Inject Tier-1 variables: `EXPECTED_AGENT_NAME = "ceos-agents:browser-agent"`,
+Inject Tier-1 variables: `EXPECTED_AGENT_NAME = "agent-flow:browser-agent"`,
 `EXPECTED_STAGE_NAME = "browser_verification"`.
 
 Context for the agent:
 ```
 --phase verify.
-EXPECTED_AGENT_NAME = ceos-agents:browser-agent
+EXPECTED_AGENT_NAME = agent-flow:browser-agent
 EXPECTED_STAGE_NAME = browser_verification
 Browser Verification config: {full config section}.
-Reproduction result: {contents of .ceos-agents/{ISSUE-ID}/reproduction-result.json or
+Reproduction result: {contents of .agent-flow/{ISSUE-ID}/reproduction-result.json or
                        "browser-agent reproduce was skipped"}.
 Fixer diff: {git diff HEAD~1}.
 Acceptance criteria: {AC from triage}.

@@ -7,7 +7,7 @@
 # timestamp, and appends one audit-log line per stage to dispatch-audit.log.
 #
 # EXIT: always 0 (advisory-only; PostToolUse cannot block tool execution).
-# LOG:  .ceos-agents/dispatch-audit.log (append-only, plain text).
+# LOG:  .agent-flow/dispatch-audit.log (append-only, plain text).
 #
 # Security contracts (REQ-T2-4):
 #   - STAGES are hardcoded; never derived from state.json field names
@@ -44,12 +44,12 @@ rm -f "$_TS_TMP" 2>/dev/null || true
 # ---------------------------------------------------------------------------
 # Resolve audit log and state.json paths.
 # ---------------------------------------------------------------------------
-AUDIT_LOG="${CEOS_AUDIT_LOG:-.ceos-agents/dispatch-audit.log}"
+AUDIT_LOG="${CEOS_AUDIT_LOG:-.agent-flow/dispatch-audit.log}"
 STATE_JSON="${CEOS_STATE_JSON:-}"
 
 if [ -z "$STATE_JSON" ]; then
   latest=""
-  for candidate in .ceos-agents/*/state.json; do
+  for candidate in .agent-flow/*/state.json; do
     [ -f "$candidate" ] || continue
     latest="$candidate"
   done

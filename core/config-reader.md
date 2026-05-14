@@ -26,7 +26,7 @@ Parse `## Automation Config` from the project's CLAUDE.md. Extract all required 
    - `### Custom Agents` → `custom_agents.post_fix_agent`, `custom_agents.pre_publish_agent` (default: none)
    - `### Worktrees` → `worktrees.batch_size`, `worktrees.base_path`, `worktrees.cleanup` (default: none)
    - `### E2E Test` → `e2e.framework`, `e2e.command` (default: none)
-   - `### Browser Verification` → `browser.base_url`, `browser.start_command`, `browser.on_events`, `browser.timeout` (default: 60), `browser.max_pages` (default: 5), `browser.screenshot_storage` (default: `.ceos-agents/{ISSUE-ID}/screenshots`), `browser.exploration` (default: disabled), `browser.exploration_max_clicks` (default: 20)
+   - `### Browser Verification` → `browser.base_url`, `browser.start_command`, `browser.on_events`, `browser.timeout` (default: 60), `browser.max_pages` (default: 5), `browser.screenshot_storage` (default: `.agent-flow/{ISSUE-ID}/screenshots`), `browser.exploration` (default: disabled), `browser.exploration_max_clicks` (default: 20)
    - `### Error Handling` → `error_handling.on_block` (default: `comment`), `error_handling.max_blocked_per_run` (default: unlimited)
    - `### Feature Workflow` → `feature.query`, `feature.on_start_set` (default: none)
    - `### Decomposition` → `decomposition.max_subtasks` (default: 7), `decomposition.fail_strategy` (default: `fail-fast`), `decomposition.commit_strategy` (default: `squash`), `decomposition.create_tracker_subtasks` (default: `enabled`)
@@ -36,7 +36,7 @@ Parse `## Automation Config` from the project's CLAUDE.md. Extract all required 
    - `### Notifications` → `notifications.webhook_url`, `notifications.on_events` (default: none; valid events: `pr-created`, `issue-blocked`, `pipeline-started`, `step-completed`, `pipeline-completed`)
    - `### Local Deployment` → keys: `Type` (mapped to `local_deployment.type`, default: `docker`), `Start command` (mapped to `local_deployment.start_command`, default: `docker compose up -d`), `Stop command` (mapped to `local_deployment.stop_command`, default: `docker compose down`), `Health check URL` (mapped to `local_deployment.health_check_url`, default: `http://localhost:3000/health`), `Health check timeout` (mapped to `local_deployment.health_check_timeout`, default: 60), `Ports` (mapped to `local_deployment.ports`, default: none)
    - `### Sprint Planning` → `sprint_planning.sprint_duration` (default: `2 weeks`, valid: `1 week`, `2 weeks`, `3 weeks`, `4 weeks`), `sprint_planning.capacity_unit` (default: `story-points`, valid: `story-points`, `hours`), `sprint_planning.team_capacity` (default: none), `sprint_planning.velocity_target` (default: none), `sprint_planning.sprint_field` (default: tracker-dependent), `sprint_planning.mode` (default: `suggest`, valid: `suggest` — read-only plan, `apply` — writes to tracker + dispatch), `sprint_planning.max_issues` (default: 20, valid: 1–50), `sprint_planning.epic_template` (default: none)
-   - `### Autopilot` → `autopilot.max_issues_per_run` (default: 1), `autopilot.lock_timeout` (default: 120 minutes — stale lock threshold), `autopilot.log_file` (default: `.ceos-agents/autopilot.log` — append-only run log), `autopilot.bug_limit` (default: 0 — 0 means no per-type cap; use `autopilot.max_issues_per_run` as the only cap), `autopilot.feature_limit` (default: 0 — 0 means no per-type cap for features), `autopilot.on_error` (default: `skip`, enum: `skip` | `stop` — `skip` = log [WARN] and continue; `stop` = abort run on first per-issue error), `autopilot.dry_run` (default: `false` — full short-circuit: no lock, no state, no webhook, no dispatch). NOTE: `Bug query` is read from `### Issue Tracker` (required existing key); `Feature query` is read from `### Feature Workflow` (optional section — absent triggers [WARN] and bug-only mode). Neither lives in `### Autopilot`. Consumed by `skills/autopilot/SKILL.md`.
+   - `### Autopilot` → `autopilot.max_issues_per_run` (default: 1), `autopilot.lock_timeout` (default: 120 minutes — stale lock threshold), `autopilot.log_file` (default: `.agent-flow/autopilot.log` — append-only run log), `autopilot.bug_limit` (default: 0 — 0 means no per-type cap; use `autopilot.max_issues_per_run` as the only cap), `autopilot.feature_limit` (default: 0 — 0 means no per-type cap for features), `autopilot.on_error` (default: `skip`, enum: `skip` | `stop` — `skip` = log [WARN] and continue; `stop` = abort run on first per-issue error), `autopilot.dry_run` (default: `false` — full short-circuit: no lock, no state, no webhook, no dispatch). NOTE: `Bug query` is read from `### Issue Tracker` (required existing key); `Feature query` is read from `### Feature Workflow` (optional section — absent triggers [WARN] and bug-only mode). Neither lives in `### Autopilot`. Consumed by `skills/autopilot/SKILL.md`.
 
 4. Validate required sections: confirm that `### Issue Tracker`, `### Source Control`, `### PR Rules`, `### PR Description Template`, and `### Build & Test` are present and non-empty.
 
@@ -48,12 +48,12 @@ A config object with all parsed values and defaults applied. Commands reference 
 
 - **`## Automation Config` heading not found:** BLOCK pipeline immediately with:
   ```
-  [ceos-agents] 🔴 Pipeline Block
+  [agent-flow] 🔴 Pipeline Block
   Agent: config-reader
   Step: config parsing
   Reason: No "## Automation Config" section found in CLAUDE.md.
   Detail: The project's CLAUDE.md must contain "## Automation Config" with all required sections.
-  Recommendation: Add the Automation Config section. See docs/reference/config-reference.md or run /ceos-agents:setup-mcp.
+  Recommendation: Add the Automation Config section. See docs/reference/config-reference.md or run /agent-flow:setup-mcp.
   ```
 - **One or more required sections missing:** BLOCK pipeline with the same template, listing the missing section names in Detail.
 - **Optional section present but malformed** (e.g., table has wrong columns): log a warning with the section name and use the default value. Never block on an optional section.

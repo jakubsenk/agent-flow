@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# AC-20: /resume-ticket tolerates v6.7.x state.json (backward compat)
+# AC-20: /resume-ticket tolerates legacy state.json (backward compat)
 # Traces: COST-R9
 # Description: Verifies skills/resume-ticket/SKILL.md does NOT block on absence
 #              of the six new per-stage usage fields
@@ -27,15 +27,15 @@ fi
 
 # Must document tolerating missing/absent usage fields or corrupt/recoverable state
 if ! grep -qiE 'tolerat|backward.?compat|absent.*field|missing.*field|v6\.7|legacy|corrupt|recoverable' "$FILE"; then
-  echo "FAIL: $FILE does not document backward compat with v6.7.x state.json" >&2
+  echo "FAIL: $FILE does not document backward compat with legacy state.json" >&2
   FAIL=1
 fi
 
 # Must NOT block on missing tokens_used
 if grep -qiE 'tokens_used.*required|require.*tokens_used' "$FILE"; then
-  echo "FAIL: $FILE treats tokens_used as required — breaks v6.7.x compat" >&2
+  echo "FAIL: $FILE treats tokens_used as required — breaks legacy compat" >&2
   FAIL=1
 fi
 
-[ "$FAIL" -eq 0 ] && echo "PASS: AC-20 — core/resume-detection.md tolerates v6.7.x state.json"
+[ "$FAIL" -eq 0 ] && echo "PASS: AC-20 — core/resume-detection.md tolerates legacy state.json"
 exit "$FAIL"

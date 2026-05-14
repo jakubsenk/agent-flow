@@ -1,18 +1,18 @@
 # Troubleshooting
 
-Common issues and their solutions when working with ceos-agents, organized by category. For each issue, you will find the likely cause, the solution, and references to relevant documentation.
+Common issues and their solutions when working with agent-flow, organized by category. For each issue, you will find the likely cause, the solution, and references to relevant documentation.
 
 ## Installation Issues
 
 ### Plugin Not Found After Install
 
-**Symptom:** After adding the marketplace and running `/plugin install ceos-agents@ceos-agents`, the skills do not appear in tab-completion.
+**Symptom:** After adding the marketplace and running `/plugin install agent-flow@agent-flow`, the skills do not appear in tab-completion.
 
 **Cause:** Claude Code may cache the plugin list and not pick up the new installation immediately.
 
 **Solution:**
 1. Restart your Claude Code session (close and reopen the terminal)
-2. Verify the plugin is listed by checking tab-completion for `/ceos-agents:`
+2. Verify the plugin is listed by checking tab-completion for `/agent-flow:`
 3. If still not found, re-run the install command
 
 For platform-specific installation notes and cache paths, see [Installation Guide](installation.md).
@@ -24,9 +24,9 @@ For platform-specific installation notes and cache paths, see [Installation Guid
 **Cause:** The locally installed plugin version differs from the version you expect.
 
 **Solution:**
-1. Run `/ceos-agents:version-check` to compare your installed version with the latest remote version
-2. If an update is available, re-install the plugin: `/plugin install ceos-agents@ceos-agents`
-3. After updating, run `/ceos-agents:check-setup` to verify compatibility
+1. Run `/agent-flow:version-check` to compare your installed version with the latest remote version
+2. If an update is available, re-install the plugin: `/plugin install agent-flow@agent-flow`
+3. After updating, run `/agent-flow:check-setup` to verify compatibility
 
 ### Permission Errors on Linux/macOS
 
@@ -48,15 +48,15 @@ For platform-specific installation notes and cache paths, see [Installation Guid
 **Cause:** The project's CLAUDE.md is missing or does not contain the `## Automation Config` heading.
 
 **Solution:**
-1. Run `/ceos-agents:onboard` to generate a complete Automation Config block interactively
-2. Alternatively, run `/ceos-agents:onboard` — Step 1 offers a template picker with all available pre-built config templates
+1. Run `/agent-flow:onboard` to generate a complete Automation Config block interactively
+2. Alternatively, run `/agent-flow:onboard` — Step 1 offers a template picker with all available pre-built config templates
 3. The Automation Config must be a `##`-level heading in your project's CLAUDE.md
 
 See [Automation Config Reference](../reference/automation-config.md) for the complete specification.
 
 ### check-setup Reports FAIL
 
-**Symptom:** `/ceos-agents:check-setup` shows one or more FAIL blocks.
+**Symptom:** `/agent-flow:check-setup` shows one or more FAIL blocks.
 
 **Cause and solution by FAIL type:**
 
@@ -91,8 +91,8 @@ See [Automation Config Reference](../reference/automation-config.md) for the com
 **Cause:** Your Automation Config uses an older format (v1.x or v2.x).
 
 **Solution:**
-1. Follow the manual steps in [migration-v7-to-v8.md](migration-v7-to-v8.md) to upgrade your config format. The `/migrate-config` skill was removed in v9.5.0.
-2. Run `/ceos-agents:check-setup` to verify the migrated config
+1. Update your `## Automation Config` to match the current format documented in `docs/reference/automation-config.md`.
+2. Run `/agent-flow:check-setup` to verify the migrated config
 
 ## Pipeline Issues
 
@@ -110,13 +110,13 @@ See [Automation Config Reference](../reference/automation-config.md) for the com
    - **Detail:** Technical output (error message, diff, test output)
    - **Recommendation:** Suggested action for the human
 2. Fix the underlying issue manually based on the Recommendation
-3. Re-invoke the original entry-point skill (`/ceos-agents:fix-bugs <ISSUE-ID>`, `/ceos-agents:implement-feature <ISSUE-ID>`, or `/ceos-agents:scaffold <ISSUE-ID>`) — inline auto-resume detection (`core/resume-detection.md`) picks up the pipeline from the failure point
+3. Re-invoke the original entry-point skill (`/agent-flow:fix-bugs <ISSUE-ID>`, `/agent-flow:implement-feature <ISSUE-ID>`, or `/agent-flow:scaffold <ISSUE-ID>`) — inline auto-resume detection (`core/resume-detection.md`) picks up the pipeline from the failure point
 
 The rollback-agent automatically reverts git state when a block occurs from fixer, reviewer, or test-engineer. Blocks from analyst do not trigger rollback (no git changes to revert).
 
 ### Pipeline Paused — Awaiting Clarification
 
-**Symptom:** The pipeline exits with `[INFO] Pipeline paused — awaiting clarification` and a `[ceos-agents]` comment appears on the issue containing a question. There is no red block emoji — the issue is NOT in Blocked state; it is in the `paused` state. `state.json` shows `status: "paused"` and a `clarification` object with a `question` field.
+**Symptom:** The pipeline exits with `[INFO] Pipeline paused — awaiting clarification` and a `[agent-flow]` comment appears on the issue containing a question. There is no red block emoji — the issue is NOT in Blocked state; it is in the `paused` state. `state.json` shows `status: "paused"` and a `clarification` object with a `question` field.
 
 **Cause:** The fixer or analyst encountered genuine ambiguity that cannot be resolved from the codebase or issue description alone (for example: an underspecified requirement, a missing environment variable, or contradictory acceptance criteria). The agent emitted a `NEEDS_CLARIFICATION` signal.
 
@@ -124,9 +124,9 @@ The rollback-agent automatically reverts git state when a block occurs from fixe
 1. Read the clarification question in the issue comment
 2. Answer it by re-invoking the original entry-point skill with `--clarification`:
    ```
-   /ceos-agents:fix-bugs ISSUE-ID --clarification "your answer"
+   /agent-flow:fix-bugs ISSUE-ID --clarification "your answer"
    ```
-   (Use `/ceos-agents:implement-feature` or `/ceos-agents:scaffold` for those pipelines.) Inline auto-resume detection (`core/resume-detection.md`) picks up the paused state.
+   (Use `/agent-flow:implement-feature` or `/agent-flow:scaffold` for those pipelines.) Inline auto-resume detection (`core/resume-detection.md`) picks up the paused state.
 3. The pipeline resumes from where it paused — no re-analysis is performed from the beginning
 
 **Auto-abort timeout:** If the Pause timeout elapses without a `--clarification` re-invocation (default: 30 days), autopilot transitions the issue to `aborted_by_system`. The issue is NOT closed — it remains in the tracker with an updated state comment.
@@ -161,7 +161,7 @@ See also: [Architecture — Webhook Reliability](../architecture.md#webhook-reli
 **Solution:**
 1. Use the `--decompose` flag to force the pipeline to break the work into subtasks:
    ```
-   /ceos-agents:fix-bugs PROJ-42 --decompose
+   /agent-flow:fix-bugs PROJ-42 --decompose
    ```
 2. Alternatively, let the auto-decomposition heuristic handle it. The pipeline automatically decomposes when:
    - Risk is HIGH
@@ -179,7 +179,7 @@ See also: [Architecture — Webhook Reliability](../architecture.md#webhook-reli
 **Solution:**
 1. Read the block comment to understand what the reviewer objected to
 2. Manually fix the specific issue the reviewer flagged
-3. Re-invoke `/ceos-agents:fix-bugs <ISSUE-ID>` to continue from the review stage (inline auto-resume detection picks up the paused state)
+3. Re-invoke `/agent-flow:fix-bugs <ISSUE-ID>` to continue from the review stage (inline auto-resume detection picks up the paused state)
 4. If this happens frequently, consider increasing the Fixer iterations limit in Retry Limits config
 
 ### Build or Tests Fail Repeatedly
@@ -207,7 +207,7 @@ See also: [Architecture — Webhook Reliability](../architecture.md#webhook-reli
 **Solution:**
 1. Check MCP server configuration and verify it is running
 2. Verify tokens are valid and not expired (see [Token Configuration Guide](tokens.md))
-3. Run `/ceos-agents:check-setup` to test connectivity
+3. Run `/agent-flow:check-setup` to test connectivity
 4. If the issue tracker has many issues, consider narrowing the Bug query to reduce response size
 5. For large codebases, the analyst-impact step may take longer — this is expected behavior
 
@@ -217,11 +217,11 @@ See also: [Architecture — Webhook Reliability](../architecture.md#webhook-reli
 
 **Symptom:** After resuming a session with `claude -c`, Claude Code prompts for tool permissions again for every tool call.
 
-**Cause:** Claude Code session permissions may not persist across `claude -c` resume. This is platform behavior, not a ceos-agents issue.
+**Cause:** Claude Code session permissions may not persist across `claude -c` resume. This is platform behavior, not a agent-flow issue.
 
 **Solution:** Configure permanent permissions in `.claude/settings.json`:
 
-1. Run `/ceos-agents:setup-mcp` — it generates `.claude/settings.json` with appropriate permissions
+1. Run `/agent-flow:setup-mcp` — it generates `.claude/settings.json` with appropriate permissions
 2. Or manually create `.claude/settings.json` in your project root:
 
 ```json
@@ -302,12 +302,12 @@ See [Cross-Platform Guide](cross-platform.md) for additional Windows-specific gu
 If you encounter an issue not covered here:
 
 1. **Gather diagnostic information:**
-   - Run `/ceos-agents:version-check` and note the installed version
-   - Run `/ceos-agents:check-setup` and save the full output
+   - Run `/agent-flow:version-check` and note the installed version
+   - Run `/agent-flow:check-setup` and save the full output
    - Note the exact command you ran and any flags used
    - Copy the block comment from the issue tracker (if applicable)
 
-2. **Check the pipeline stage:** Inspect `.ceos-agents/{ISSUE-ID}/state.json` (`cat .ceos-agents/*/state.json`) to see the current pipeline state and identify where the pipeline stopped.
+2. **Check the pipeline stage:** Inspect `.agent-flow/{ISSUE-ID}/state.json` (`cat .agent-flow/*/state.json`) to see the current pipeline state and identify where the pipeline stopped.
 
 3. **Review the reference docs:**
    - [Skills Reference](../reference/skills.md) for skill syntax and flags
@@ -315,4 +315,4 @@ If you encounter an issue not covered here:
    - [Automation Config Reference](../reference/automation-config.md) for configuration options
    - [Agent Reference](../reference/agents.md) for agent behavior and constraints
 
-4. **Report the issue:** Open an issue in the ceos-agents repository with the diagnostic information gathered above.
+4. **Report the issue:** Open an issue in the agent-flow repository with the diagnostic information gathered above.

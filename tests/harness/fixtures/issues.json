@@ -27,7 +27,7 @@
     "comments": [
       {
         "author": "claude-agents",
-        "text": "[ceos-agents] Triage completed. Severity: HIGH. Area: API.",
+        "text": "[agent-flow] Triage completed. Severity: HIGH. Area: API.",
         "created": "2026-02-28T12:05:00Z"
       }
     ]

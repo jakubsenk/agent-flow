@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tests/lib/fixtures.sh — DSL-lite helpers for ceos-agents test scenarios
+# tests/lib/fixtures.sh — DSL-lite helpers for agent-flow test scenarios
 #
 # Usage: . "$REPO_ROOT/tests/lib/fixtures.sh"
 #

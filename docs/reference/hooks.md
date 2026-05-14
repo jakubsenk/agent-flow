@@ -9,7 +9,7 @@
 
 ## Overview
 
-ceos-agents ships one PostToolUse hook in v6.10.0: `hooks/validate-dispatch.sh`.
+agent-flow ships one PostToolUse hook in v6.10.0: `hooks/validate-dispatch.sh`.
 It performs an advisory dispatch-enforcement audit. See
 `docs/guides/dispatch-enforcement.md` for installation and operator guidance.
 
@@ -97,7 +97,7 @@ v6.10.0+ dispatch path.
 
 ## Audit log format
 
-File: `.ceos-agents/dispatch-audit.log` (append-only, plain text)
+File: `.agent-flow/dispatch-audit.log` (append-only, plain text)
 
 Each line has exactly three space-separated fields:
 
@@ -136,7 +136,7 @@ Add to `~/.claude/settings.json`:
         "hooks": [
           {
             "type": "command",
-            "command": "/path/to/ceos-agents/hooks/validate-dispatch.sh"
+            "command": "/path/to/agent-flow/hooks/validate-dispatch.sh"
           }
         ]
       }

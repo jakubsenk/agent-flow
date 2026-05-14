@@ -1,9 +1,0 @@
-{
-  "task_id": "T-17b",
-  "status": "DONE",
-  "files_modified": ["agents/fixer.md"],
-  "revision_cycle": null,
-  "concerns": [],
-  "test_results": "AC-041/048: NEEDS_CLARIFICATION fenced-block contract + receiver-side EXTERNAL INPUT Constraint present",
-  "completed_at": "2026-04-20T13:43:00Z"
-}

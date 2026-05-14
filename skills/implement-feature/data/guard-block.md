@@ -43,7 +43,7 @@ DO NOT bypass spec-analyst, architect, test-engineer, or acceptance-gate based
 on intuition that they "seem optional given the project config".
 
 You are a THIN CONTROLLER. Your ONLY job is to:
-1. Initialize `.ceos-agents/{ISSUE_ID}/` and `state.json`
+1. Initialize `.agent-flow/{ISSUE_ID}/` and `state.json`
 2. Read `steps/*.md` files via the Read tool — they contain the dispatch logic
 3. Dispatch each step's Task() call exactly as the step file specifies
 4. Write atomic state.json updates (dispatched_at + dispatch_witness BEFORE each Task)
@@ -59,7 +59,7 @@ the corresponding `steps/{NN}-*.md` file. Before invoking Task, you SHALL write
 atomically to `state.json`:
   - `stages.<stage>.dispatched_at`     = `<ISO-8601 UTC now>`
   - `stages.<stage>.dispatch_witness`  = sha256("<subagent_type>|<model>|<prompt_head_128>")
-  - `stages.<stage>.agent_name`        = `ceos-agents:<agent>`
+  - `stages.<stage>.agent_name`        = `agent-flow:<agent>`
   - `stages.<stage>.stage_name`        = `<stage>` (canonical, matches map key)
   - `stages.<stage>.status`            = `"in_progress"`
 
@@ -72,7 +72,7 @@ cross-verify the state.json record.
 
 The PostToolUse hook reads these fields and emits `WITNESS_OK` /
 `WITNESS_MISSING` / `WITNESS_MISMATCH` audit lines to
-`.ceos-agents/dispatch-audit.log`. If a stage record lacks `dispatch_witness`,
+`.agent-flow/dispatch-audit.log`. If a stage record lacks `dispatch_witness`,
 the orchestrator silently skipped the step — that is a CONTRACT VIOLATION.
 </orchestration_contract>
 

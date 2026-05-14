@@ -17,8 +17,8 @@ if [ ! -f "$SKILL" ]; then
 fi
 
 # Must mention mkdir for the lock directory
-if ! grep -nE 'mkdir .*\.ceos-agents/autopilot\.lock' "$SKILL" | grep -q .; then
-  echo "FAIL: $SKILL has no 'mkdir ... .ceos-agents/autopilot.lock' pattern — lock must use mkdir" >&2
+if ! grep -nE 'mkdir .*\.agent-flow/autopilot\.lock' "$SKILL" | grep -q .; then
+  echo "FAIL: $SKILL has no 'mkdir ... .agent-flow/autopilot.lock' pattern — lock must use mkdir" >&2
   exit 1
 fi
 

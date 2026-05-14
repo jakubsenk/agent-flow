@@ -6,16 +6,16 @@ protocol.
 ## Pre-loop state initialization (REQ-B-2 v1.2)
 
 Before the first fixer dispatch, atomically write per-stage pre-dispatch fields to
-`.ceos-agents/{ISSUE-ID}/state.json`:
+`.agent-flow/{ISSUE-ID}/state.json`:
 - `fixer_reviewer.started_at`      = current ISO-8601 UTC timestamp
 - `fixer_reviewer.model`           = `"opus"` (both fixer and reviewer use opus — recorded as single value)
 - `fixer_reviewer.status`          = `"in_progress"`
-- `fixer_reviewer.agent_name`      = `"ceos-agents:fixer"` (first-invocation; reviewer iterations
-                                       overwrite to `"ceos-agents:reviewer"` then back to fixer)
+- `fixer_reviewer.agent_name`      = `"agent-flow:fixer"` (first-invocation; reviewer iterations
+                                       overwrite to `"agent-flow:reviewer"` then back to fixer)
 - `fixer_reviewer.stage_name`      = `"fixer_reviewer"`
 - `fixer_reviewer.dispatched_at`   = current ISO-8601 UTC timestamp (updated per iteration —
                                        represents most-recent Task() dispatch within the loop)
-- `fixer_reviewer.dispatch_witness` = sha256("ceos-agents:fixer|opus|<prompt_head_128>")
+- `fixer_reviewer.dispatch_witness` = sha256("agent-flow:fixer|opus|<prompt_head_128>")
   (compute via `core/lib/stage-invariant.sh::compute_dispatch_witness`; updated per iteration to
    match the most-recent Task() dispatch — reviewer iterations recompute with reviewer's prompt
    head)
@@ -26,7 +26,7 @@ Follow atomic write protocol from `../../../core/state-manager.md`. All fields w
 
 **Per-iteration witness update:** before each Task() call inside the loop, re-write `dispatched_at`
 and `dispatch_witness` to reflect that iteration's actual dispatch tuple. `agent_name` flips between
-`"ceos-agents:fixer"` and `"ceos-agents:reviewer"` accordingly. The cumulative counters (tokens,
+`"agent-flow:fixer"` and `"agent-flow:reviewer"` accordingly. The cumulative counters (tokens,
 duration_ms, tool_uses) keep accumulating — do NOT reset.
 
 ## Agent Override injection
@@ -36,10 +36,10 @@ If `{Agent Overrides path}/fixer.toml` exists, append its rendered Markdown cont
 
 ## Fixer dispatch
 
-You MUST invoke `Task(subagent_type='ceos-agents:fixer', model='opus')`.
+You MUST invoke `Task(subagent_type='agent-flow:fixer', model='opus')`.
 DO NOT inline-execute. Inline execution is a CONTRACT VIOLATION detected by the PostToolUse validator.
 
-Inject Tier-1 variables: `EXPECTED_AGENT_NAME = "ceos-agents:fixer"`,
+Inject Tier-1 variables: `EXPECTED_AGENT_NAME = "agent-flow:fixer"`,
 `EXPECTED_STAGE_NAME = "fixer_reviewer"`.
 
 Context for the agent:
@@ -48,9 +48,9 @@ Max build retries = {Build retries from config}.
 Block Comment Template: {template from plugin CLAUDE.md}.
 Acceptance criteria: {AC from triage}.
 Impact report: {analyst --phase impact output for this bug}.
-Reproduction result: {contents of .ceos-agents/{ISSUE-ID}/reproduction-result.json or "browser-agent reproduce was skipped"}.
-Pipeline history: {last 5 entries from .ceos-agents/pipeline-history.md if exists, else "none"}.
-EXPECTED_AGENT_NAME = ceos-agents:fixer
+Reproduction result: {contents of .agent-flow/{ISSUE-ID}/reproduction-result.json or "browser-agent reproduce was skipped"}.
+Pipeline history: {last 5 entries from .agent-flow/pipeline-history.md if exists, else "none"}.
+EXPECTED_AGENT_NAME = agent-flow:fixer
 EXPECTED_STAGE_NAME = fixer_reviewer
 ```
 
@@ -68,7 +68,7 @@ If fixer output contains `## NEEDS_DECOMPOSITION`:
 If fixer output contains `## NEEDS_CLARIFICATION`:
 
 ```bash
-STATE=".ceos-agents/${ISSUE_ID}/state.json"
+STATE=".agent-flow/${ISSUE_ID}/state.json"
 RAW_QUESTION=$(grep -iE -A1 "^question:" "$FIXER_OUTPUT" | head -1 | sed -E 's/^[Qq]uestion: //')
 RAW_CONTEXT=$(grep -iE -A1 "^context:" "$FIXER_OUTPUT" | head -1 | sed -E 's/^[Cc]ontext: //' || echo "")
 QUESTION="$RAW_QUESTION"
@@ -115,7 +115,7 @@ if [ -n "${Webhook_URL:-}" ] && printf '%s' "${On_events:-}" | grep -qF 'pipelin
       > /dev/null 2>&1 || echo "[WARN] Webhook delivery failed"
 fi
 
-echo "[INFO] Pipeline paused for ${ISSUE_ID} — re-invoke /ceos-agents:fix-bugs ${ISSUE_ID} --clarification \"<answer>\" to resume."
+echo "[INFO] Pipeline paused for ${ISSUE_ID} — re-invoke /agent-flow:fix-bugs ${ISSUE_ID} --clarification \"<answer>\" to resume."
 continue
 ```
 
@@ -141,21 +141,21 @@ If `{Agent Overrides path}/reviewer.toml` exists, append its rendered Markdown c
 ## Reviewer dispatch
 
 Before invoking reviewer: re-write `fixer_reviewer.dispatched_at`, `fixer_reviewer.dispatch_witness`
-(sha256 with reviewer prompt head), and `fixer_reviewer.agent_name = "ceos-agents:reviewer"`.
+(sha256 with reviewer prompt head), and `fixer_reviewer.agent_name = "agent-flow:reviewer"`.
 Follow atomic write protocol.
 
-You MUST invoke `Task(subagent_type='ceos-agents:reviewer', model='opus')`.
+You MUST invoke `Task(subagent_type='agent-flow:reviewer', model='opus')`.
 DO NOT inline-execute. Inline execution is a CONTRACT VIOLATION detected by the PostToolUse validator.
 
-Inject Tier-1 variables: `EXPECTED_AGENT_NAME = "ceos-agents:reviewer"`,
+Inject Tier-1 variables: `EXPECTED_AGENT_NAME = "agent-flow:reviewer"`,
 `EXPECTED_STAGE_NAME = "fixer_reviewer"`.
 
 Context for the agent:
 ```
 Max fixer iterations = {Fixer iterations from config}.
 Acceptance criteria: {AC from triage}.
-Reviewer history: {last 10 entries from .ceos-agents/pipeline-history.md if exists, else "none"}.
-EXPECTED_AGENT_NAME = ceos-agents:reviewer
+Reviewer history: {last 10 entries from .agent-flow/pipeline-history.md if exists, else "none"}.
+EXPECTED_AGENT_NAME = agent-flow:reviewer
 EXPECTED_STAGE_NAME = fixer_reviewer
 ```
 
@@ -171,7 +171,7 @@ Run Build command and Test command from Automation Config after the loop complet
 ## Cumulative usage tracking
 
 After each fixer or reviewer invocation within the loop, cumulatively accumulate usage into
-`.ceos-agents/{ISSUE-ID}/state.json` per `../../../core/state-manager.md` "Fixer-Reviewer Cumulative Write":
+`.agent-flow/{ISSUE-ID}/state.json` per `../../../core/state-manager.md` "Fixer-Reviewer Cumulative Write":
 - `fixer_reviewer.tokens_used` += `result.usage.total_tokens` (or 0 if absent)
 - `fixer_reviewer.duration_ms` += iteration duration ms
 - `fixer_reviewer.tool_uses` += `result.usage.tool_uses` (or 0 if absent)

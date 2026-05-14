@@ -1,6 +1,6 @@
 # Custom Agents
 
-ceos-agents supports custom agents that extend the pipeline at two integration points: after the fixer (post-fix) and before the publisher (pre-publish). Custom agents follow the same definition format as built-in agents and can block the pipeline if they detect issues.
+agent-flow supports custom agents that extend the pipeline at two integration points: after the fixer (post-fix) and before the publisher (pre-publish). Custom agents follow the same definition format as built-in agents and can block the pipeline if they detect issues.
 
 This guide walks you through creating, testing, and integrating a custom agent.
 
@@ -143,7 +143,7 @@ Before integrating a custom agent into the pipeline, test it in isolation:
 3. **Test the BLOCK path.** Feed the agent input that should trigger a BLOCK and verify it produces the correct Block Comment Template format:
 
 ```
-[ceos-agents] Pipeline Block
+[agent-flow] Pipeline Block
 Agent: security-scanner
 Step: post-fix
 Reason: Hardcoded API key detected in config file
@@ -151,7 +151,7 @@ Detail: src/config.ts:15 contains string matching AWS access key pattern (AKIA..
 Recommendation: Move the API key to environment variables and use .env file
 ```
 
-4. **Test with real pipeline context.** Run `/ceos-agents:fix-bugs` on a test issue with the custom agent configured. Verify it runs at the correct point in the pipeline.
+4. **Test with real pipeline context.** Run `/agent-flow:fix-bugs` on a test issue with the custom agent configured. Verify it runs at the correct point in the pipeline.
 
 ## Example: Security Scanner Agent
 

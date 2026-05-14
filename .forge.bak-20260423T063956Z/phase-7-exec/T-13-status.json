@@ -1,9 +1,0 @@
-{
-  "task_id": "T-13",
-  "status": "DONE",
-  "files_modified": [".forge/phase-5-tdd/tests-hidden/h-block-handler-heredoc.sh"],
-  "revision_cycle": null,
-  "concerns": [],
-  "test_results": "AC-028: REPO_ROOT now uses ../../../ (3 levels) and resolves to repo root",
-  "completed_at": "2026-04-20T13:00:30Z"
-}

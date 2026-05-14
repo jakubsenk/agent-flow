@@ -59,7 +59,7 @@ Read Issue Tracker configuration (Type, State transitions) for posting the block
 
    Use the Block Comment Template. All values are passed in context from the orchestrating command:
 ```
-[ceos-agents] 🔴 Pipeline Block
+[agent-flow] 🔴 Pipeline Block
 Agent: {the agent that triggered the block}
 Step: {the pipeline step where failure occurred}
 Reason: {failure reason}
@@ -101,11 +101,11 @@ Recommendation: {what the human should do}
 | `No rollback needed — blocking agent ({name}) made no code changes.` literal | on read-only blocking agent | (terminal sentinel) |
 | `No rollback needed — publisher block requires manual cleanup (check for existing PR/branch).` literal | on publisher block | (terminal sentinel) |
 | `No rollback needed — scaffolder block handled by scaffold command.` literal | on scaffolder block | (terminal sentinel) |
-| `[ceos-agents] 🔴 Pipeline Block` | always (posted as tracker comment) | Agent (passed-in name); Step; Reason; Detail; Recommendation |
+| `[agent-flow] 🔴 Pipeline Block` | always (posted as tracker comment) | Agent (passed-in name); Step; Reason; Detail; Recommendation |
 
 ## Step Completion Invariants
 
-Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.ceos-agents/{ISSUE_ID}/state.json` (or the orchestrator-injected state path):
+Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.agent-flow/{ISSUE_ID}/state.json` (or the orchestrator-injected state path):
 
 1. `dispatched_at` — Field is present and non-empty for stage `rollback`. The orchestrator wrote this pre-dispatch.
 

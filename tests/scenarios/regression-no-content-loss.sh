@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Regression: Structural markers in all modified files still exist after v6.7.1 changes
+# Regression: Structural markers in all modified files still exist
 # Verifies no content loss in: 5 agent files, 2 skill files, 2 core files, 1 state file
 set -euo pipefail
 
@@ -51,7 +51,7 @@ else
       fail "core/external-input-sanitizer.md: section '$section' missing after edits"
     fi
   done
-  # Original process steps 1 and 3 must still exist (step 2 is the escape step added in v6.7.1)
+  # Original process steps 1 and 3 must still exist (step 2 is the escape step)
   if ! grep -q '^1\.' "$SANITIZER"; then
     fail "core/external-input-sanitizer.md: original step 1 missing after edits"
   fi
@@ -172,5 +172,5 @@ fi
 
 # ---------------------------------------------------------------------------
 
-[ "$FAIL" -eq 0 ] && echo "PASS: No content loss — all structural markers in modified files survive v6.7.1 changes"
+[ "$FAIL" -eq 0 ] && echo "PASS: No content loss — all structural markers in modified files survive"
 exit "$FAIL"

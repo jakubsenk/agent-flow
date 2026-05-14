@@ -2,7 +2,7 @@
 # All jobs will be cancelled at 0s. Tests run locally via ./tests/harness/run-tests.sh
 # This workflow is kept for future use if a runner is registered.
 
-name: Test ceos-agents
+name: Test agent-flow
 on:
   push:
     branches: [main]

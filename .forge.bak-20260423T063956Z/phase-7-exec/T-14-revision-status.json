@@ -1,9 +1,0 @@
-{
-  "task_id": "T-14",
-  "status": "DONE",
-  "revision_cycle": 1,
-  "files_modified": ["skills/fix-ticket/SKILL.md", "skills/fix-bugs/SKILL.md", "skills/implement-feature/SKILL.md", "skills/resume-ticket/SKILL.md"],
-  "concerns": [],
-  "test_results": "Security logic bug fixed at 4 sites: && -> || in dot-only-reject; path-traversal '..' now correctly rejected; mental enumeration verified for PROJ-123, PROJ.NAME-123, .., ...., foo/bar",
-  "completed_at": "2026-04-20T13:25:30Z"
-}

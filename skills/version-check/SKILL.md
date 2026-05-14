@@ -12,8 +12,8 @@ Check whether the installed plugin version is up to date. Works from any directo
 
 | Key | Value |
 |-----|-------|
-| Plugin | ceos-agents |
-| Marketplace | ceos-agents |
+| Plugin | agent-flow |
+| Marketplace | agent-flow |
 | Legacy names | CLAUDE-agents |
 
 All steps below use `{plugin}` and `{marketplace}` from this table.
@@ -98,7 +98,7 @@ All steps below use `{plugin}` and `{marketplace}` from this table.
 ### Part C: Auto-Update Cache (conditional — only when Part B detects repo is newer)
 
 8. Update the installed plugin cache via CLI commands.
-   - Extract the marketplace name from `{registry_key}` — it is the part after the `@` (e.g. `ceos-agents@CLAUDE-agents` → marketplace is `CLAUDE-agents`). Store as `{actual_marketplace}`.
+   - Extract the marketplace name from `{registry_key}` — it is the part after the `@` (e.g. `agent-flow@CLAUDE-agents` → marketplace is `CLAUDE-agents`). Store as `{actual_marketplace}`.
    - Run the marketplace update followed by the plugin update:
      ```bash
      claude plugin marketplace update {actual_marketplace}

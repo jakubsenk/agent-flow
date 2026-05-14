@@ -26,7 +26,7 @@ if [ "$FIRST_TOKEN" = "add" ]; then
   # Subcommand mode — extend an existing project with a single component.
   COMPONENT="${ARG_TOKENS[1]:-}"
   if [ -z "$COMPONENT" ]; then
-    echo "[ERROR] Usage: /ceos-agents:scaffold add <component>" >&2
+    echo "[ERROR] Usage: /agent-flow:scaffold add <component>" >&2
     echo "Supported components: claude-md | ci | docker | tests" >&2
     exit 1
   fi
@@ -142,7 +142,7 @@ If `no_implement = true`: execute legacy flow (scaffolder (with stack flags) →
 
 Each step receives: `MODE`, `GOT_YOLO`, `GOT_STEP_MODE`, all parsed flags and in-memory variables from prior steps.
 
-> **See also:** `/ceos-agents:scaffold validate` (the `validate` subcommand) for read-only validation of an existing project (tool contract: `Bash, Read, Glob, Grep` only). Note: the former standalone `scaffold-validate` skill was merged into `/scaffold` as a subcommand in v9.5.0.
+> **See also:** `/agent-flow:scaffold validate` (the `validate` subcommand) for read-only validation of an existing project (tool contract: `Bash, Read, Glob, Grep` only). Note: the former standalone `scaffold-validate` skill was merged into `/scaffold` as a subcommand in v9.5.0.
 
 ## Resume Detection
 
@@ -232,7 +232,7 @@ Determine `tracker_effective_status` and `sc_effective_status` based on user ans
 > **Path note:** `trackers.md` lives in the plugin installation directory, not in the consuming project. Glob is used to handle CWD-context mismatch.
 
 Resolve `{trackers_md_path}` once:
-1. Glob `.claude/plugins/**/docs/reference/trackers.md` — if results, use first (prefer path containing `.claude/plugins/` or `ceos-agents/`)
+1. Glob `.claude/plugins/**/docs/reference/trackers.md` — if results, use first (prefer path containing `.claude/plugins/` or `agent-flow/`)
 2. Glob `**/docs/reference/trackers.md` — use first result if step 1 found nothing
 3. Use `docs/reference/trackers.md` as last resort
 
@@ -247,13 +247,13 @@ Check `mcp_available` (follow `../../core/mcp-detection.md`).
 If `mcp_available: false`:
 ```
 MCP server unavailable. Options:
-  1. Configure now — run: /ceos-agents:setup-mcp --tracker-type <type> --tracker-instance <url> --sc-remote <owner/repo>
-     (Equivalent: /ceos-agents:init --tracker-type <type>)
+  1. Configure now — run: /agent-flow:setup-mcp --tracker-type <type> --tracker-instance <url> --sc-remote <owner/repo>
+     (Equivalent: /agent-flow:init --tracker-type <type>)
      Then restart this session and resume.
   2. Skip — continue without MCP (tracker and SC steps will be skipped).
 ```
 
-After "Configure now" is chosen: checkpoint — `"STOP scaffold — restart Claude Code session and resume with /ceos-agents:scaffold resume"`.
+After "Configure now" is chosen: checkpoint — `"STOP scaffold — restart Claude Code session and resume with /agent-flow:scaffold resume"`.
 
 If user selects Skip: continue in local-only mode. **Standard error message:**
 
@@ -299,7 +299,7 @@ Report includes v3.x next steps:
 ```
 Next steps:
 - Create issues in your issue tracker for each feature
-- Use /ceos-agents:implement-feature to implement each feature
+- Use /agent-flow:implement-feature to implement each feature
 ```
 
 ---
@@ -317,14 +317,14 @@ Loop exits on APPROVE or when max_iterations exhausted (5 iterations max). On ex
 Dispatch spec-writer:
 
 ```
-Task(subagent_type='ceos-agents:spec-writer', description='Write project specification',
+Task(subagent_type='agent-flow:spec-writer', description='Write project specification',
      prompt='...project description, context, flags...')
 ```
 
 Dispatch spec-reviewer:
 
 ```
-Task(subagent_type='ceos-agents:spec-reviewer', description='Review project specification',
+Task(subagent_type='agent-flow:spec-reviewer', description='Review project specification',
      prompt='...spec content, iteration number...')
 ```
 
@@ -357,7 +357,7 @@ NEEDS_CLARIFICATION — if spec-writer raises a question during spec phase:
 Dispatch scaffolder agent:
 
 ```
-Task(subagent_type='ceos-agents:scaffolder', description='Generate project skeleton',
+Task(subagent_type='agent-flow:scaffolder', description='Generate project skeleton',
      prompt='...spec path, stack flags, {trackers_md_path}, mode...')
 ```
 
@@ -398,7 +398,7 @@ For each epic file:
 Optionally dispatch `backlog-creator` to organize stories into sprint-ready issues:
 
 ```
-Task(subagent_type='ceos-agents:backlog-creator', description='Create tracker backlog from spec epics',
+Task(subagent_type='agent-flow:backlog-creator', description='Create tracker backlog from spec epics',
      prompt='...spec/epics path, tracker_type, trackers_md_path, {trackers_md_path}...')
 ```
 
@@ -426,7 +426,7 @@ Write to `state.json`:
 Dispatch architect agent:
 
 ```
-Task(subagent_type='ceos-agents:architect', description='Create feature decomposition plan',
+Task(subagent_type='agent-flow:architect', description='Create feature decomposition plan',
      prompt='...spec path, tracker_effective_status, trackers_md_path, {trackers_md_path}...')
 ```
 
@@ -441,13 +441,13 @@ Decompose spec into subtasks. Each subtask maps to `maps_to: AC-{N}: {text}`.
 For each subtask in decomposition, run fixer ↔ reviewer loop:
 
 ```
-Task(subagent_type='ceos-agents:fixer', description='Implement feature subtask N',
+Task(subagent_type='agent-flow:fixer', description='Implement feature subtask N',
      prompt='...subtask description, AC, spec path...',
      model='opus')
 ```
 
 ```
-Task(subagent_type='ceos-agents:reviewer', description='Review implementation for subtask N',
+Task(subagent_type='agent-flow:reviewer', description='Review implementation for subtask N',
      prompt='...diff, AC, fixer output...',
      model='opus')
 ```
@@ -472,7 +472,7 @@ Write state per subtask:
 Dispatch test-engineer:
 
 ```
-Task(subagent_type='ceos-agents:test-engineer', description='Run tests for scaffold pipeline',
+Task(subagent_type='agent-flow:test-engineer', description='Run tests for scaffold pipeline',
      prompt='...project dir, test command, spec path...')
 ```
 
@@ -489,7 +489,7 @@ Write state:
 Run spec-reviewer in `--verify` mode to check implementation against spec.
 
 ```
-Task(subagent_type='ceos-agents:spec-reviewer', description='Verify implementation against spec',
+Task(subagent_type='agent-flow:spec-reviewer', description='Verify implementation against spec',
      prompt='...spec path, implementation summary, --verify mode...')
 ```
 
@@ -500,7 +500,7 @@ Task(subagent_type='ceos-agents:spec-reviewer', description='Verify implementati
 Run test-engineer E2E suite:
 
 ```
-Task(subagent_type='ceos-agents:test-engineer', description='Run E2E test suite',
+Task(subagent_type='agent-flow:test-engineer', description='Run E2E test suite',
      prompt='...e2e framework, command, project dir...',
      model='sonnet')
 ```
@@ -562,7 +562,7 @@ If any unrecoverable error occurs (repeated test failures, block from reviewer, 
    ```
 2. Output Block Comment to stdout:
    ```
-   [ceos-agents] 🔴 Pipeline Block
+   [agent-flow] 🔴 Pipeline Block
    Agent: scaffold
    Step: <step>
    Reason: <max 2 sentences>
@@ -579,14 +579,14 @@ All agents dispatched via Task tool only. Model assignments per `../../core/agen
 
 | Agent | Model | Dispatch Form |
 |-------|-------|---------------|
-| spec-writer | opus | `Task(subagent_type='ceos-agents:spec-writer', ...)` |
-| spec-reviewer | opus | `Task(subagent_type='ceos-agents:spec-reviewer', ...)` |
-| scaffolder | sonnet | `Task(subagent_type='ceos-agents:scaffolder', ...)` |
-| architect | opus | `Task(subagent_type='ceos-agents:architect', ...)` |
-| fixer | opus | `Task(subagent_type='ceos-agents:fixer', model='opus', ...)` |
-| reviewer | opus | `Task(subagent_type='ceos-agents:reviewer', model='opus', ...)` |
-| test-engineer | sonnet | `Task(subagent_type='ceos-agents:test-engineer', ...)` |
-| backlog-creator | sonnet | `Task(subagent_type='ceos-agents:backlog-creator', ...)` |
+| spec-writer | opus | `Task(subagent_type='agent-flow:spec-writer', ...)` |
+| spec-reviewer | opus | `Task(subagent_type='agent-flow:spec-reviewer', ...)` |
+| scaffolder | sonnet | `Task(subagent_type='agent-flow:scaffolder', ...)` |
+| architect | opus | `Task(subagent_type='agent-flow:architect', ...)` |
+| fixer | opus | `Task(subagent_type='agent-flow:fixer', model='opus', ...)` |
+| reviewer | opus | `Task(subagent_type='agent-flow:reviewer', model='opus', ...)` |
+| test-engineer | sonnet | `Task(subagent_type='agent-flow:test-engineer', ...)` |
+| backlog-creator | sonnet | `Task(subagent_type='agent-flow:backlog-creator', ...)` |
 
 ---
 
@@ -610,7 +610,7 @@ Input: `$COMPONENT` = component name validated by Step 0 dispatch (one of `claud
 Before any pipeline operation, verify MCP tool availability:
 - Read Type from Automation Config (Issue Tracker section)
 - Check that at least one `mcp__*` tool matching the tracker type is accessible
-- If not accessible → STOP with: "Cannot connect to your {Type} issue tracker. Is the {Type} integration configured? Run `/ceos-agents:check-setup` for diagnostics."
+- If not accessible → STOP with: "Cannot connect to your {Type} issue tracker. Is the {Type} integration configured? Run `/agent-flow:check-setup` for diagnostics."
 
 ### Orchestration
 
@@ -641,7 +641,7 @@ Display: "Detected stack: {language} + {framework}. Generating {component}. Cont
 
 #### 4. Generation
 
-You MUST invoke `Task(subagent_type='ceos-agents:scaffolder', model='sonnet')`. DO NOT inline-execute.
+You MUST invoke `Task(subagent_type='agent-flow:scaffolder', model='sonnet')`. DO NOT inline-execute.
 - Context: detected stack + requested component (`$COMPONENT`)
 - Scaffolder generates ONLY the requested component
 

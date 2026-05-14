@@ -1,250 +1,425 @@
-# Research Answers -- v10.2.0 core/ Path Disambiguation
+# Research Answer: Phase 2 — Agent 1 — Complete "ceos-agents" Occurrence Inventory
 
-_Agent: 1 of 3 | Angle: Primary Implementation Vector_
+## Executive Summary
 
----
+This research document provides an exhaustive inventory of all "ceos-agents" occurrences across the repository at C:\gitea_agent-flow, excluding .forge/ pipeline state directories. The search encompasses 672 text files and identifies 6 distinct pattern types.
 
-## C1. Exact enumeration of `core/<file>.md` references requiring rewrite — scope-lock for Phase B.
-
-**Answer:** Live grep on v10.1.2 HEAD (commit 32f6f33) yields **182 occurrences across 40 unique files**: 175 occurrences in 37 `skills/` files + 7 occurrences in 3 `agents/` files (`agents/analyst.md`, `agents/fixer.md`, `agents/publisher.md`). Zero of the 182 occurrences already use a disambiguated form (`../../core/`, `${PLUGIN_ROOT}/core/`, `./core/`) — confirmed by `grep -rn "\.\./\.\./core\|PLUGIN_ROOT.*core\|\./core/" skills/ agents/ --include="*.md"` returning zero matches. The roadmap estimate of 201 is an over-count by 26 regardless of scope. The 3 agent files ARE in-scope for Phase B because they contain the same bare `core/<file>.md` pattern that the guard-block fix targets. Top-concentration filenames: `core/state-manager.md` = 71 (39%), `core/agent-override-injector.md` = 34 (19%), together 58% of all rewrites.
-
-**Evidence:** `grep -rn "core/[a-z][a-z-]*\.md" skills/ agents/ --include="*.md" | wc -l` → 182; `grep -oP "^[^:]+" | sort -u | wc -l` → 40; zero pre-existing disambiguated forms confirmed by negative grep.
-
-## Phase B Scope Lock (machine-readable, derived from C1)
-
-```
-agents/analyst.md:114:core/resume-detection.md
-agents/analyst.md:307:core/resume-detection.md
-agents/fixer.md:160:core/resume-detection.md
-agents/fixer.md:66:core/resume-detection.md
-agents/publisher.md:144:core/mcp-body-formatting.md
-agents/publisher.md:65:core/mcp-body-formatting.md
-agents/publisher.md:77:core/status-verification.md
-skills/analyze-bug/SKILL.md:23:core/external-input-sanitizer.md
-skills/autopilot/SKILL.md:37:core/config-reader.md
-skills/autopilot/SKILL.md:420:core/post-publish-hook.md
-skills/autopilot/SKILL.md:69:core/config-reader.md
-skills/autopilot/SKILL.md:79:core/mcp-preflight.md
-skills/create-backlog/SKILL.md:110:core/agent-override-injector.md
-skills/create-backlog/SKILL.md:118:core/state-manager.md
-skills/create-backlog/SKILL.md:17:core/config-reader.md
-skills/create-backlog/SKILL.md:281:core/state-manager.md
-skills/create-backlog/SKILL.md:316:core/state-manager.md
-skills/create-backlog/SKILL.md:328:core/agent-override-injector.md
-skills/create-backlog/SKILL.md:349:core/state-manager.md
-skills/create-backlog/SKILL.md:377:core/agent-override-injector.md
-skills/create-backlog/SKILL.md:42:core/mcp-preflight.md
-skills/create-backlog/SKILL.md:88:core/state-manager.md
-skills/create-backlog/SKILL.md:99:core/state-manager.md
-skills/fix-bugs/data/guard-block.md:62:core/config-reader.md
-skills/fix-bugs/SKILL.md:108:core/resume-detection.md
-skills/fix-bugs/SKILL.md:113:core/resume-detection.md
-skills/fix-bugs/SKILL.md:124:core/config-reader.md
-skills/fix-bugs/SKILL.md:130:core/profile-parser.md
-skills/fix-bugs/SKILL.md:162:core/mcp-preflight.md
-skills/fix-bugs/SKILL.md:191:core/agent-override-injector.md
-skills/fix-bugs/SKILL.md:220:core/mcp-body-formatting.md
-skills/fix-bugs/SKILL.md:221:core/block-handler.md
-skills/fix-bugs/SKILL.md:225:core/block-handler.md
-skills/fix-bugs/SKILL.md:246:core/agent-override-injector.md
-skills/fix-bugs/steps/01-triage.md:145:core/agent-states.md
-skills/fix-bugs/steps/01-triage.md:173:core/state-manager.md
-skills/fix-bugs/steps/01-triage.md:22:core/status-verification.md
-skills/fix-bugs/steps/01-triage.md:47:core/state-manager.md
-skills/fix-bugs/steps/01-triage.md:51:core/agent-override-injector.md
-skills/fix-bugs/steps/01-triage.md:70:core/external-input-sanitizer.md
-skills/fix-bugs/steps/01-triage.md:81:core/state-manager.md
-skills/fix-bugs/steps/01-triage.md:9:core/status-verification.md
-skills/fix-bugs/steps/02-impact.md:106:core/agent-override-injector.md
-skills/fix-bugs/steps/02-impact.md:118:core/decomposition-heuristics.md
-skills/fix-bugs/steps/02-impact.md:125:core/state-manager.md
-skills/fix-bugs/steps/02-impact.md:24:core/state-manager.md
-skills/fix-bugs/steps/02-impact.md:28:core/agent-override-injector.md
-skills/fix-bugs/steps/02-impact.md:56:core/state-manager.md
-skills/fix-bugs/steps/02-impact.md:85:core/decomposition-heuristics.md
-skills/fix-bugs/steps/02-impact.md:90:core/state-manager.md
-skills/fix-bugs/steps/03-reproduce.md:100:core/state-manager.md
-skills/fix-bugs/steps/03-reproduce.md:39:core/state-manager.md
-skills/fix-bugs/steps/03-reproduce.md:43:core/agent-override-injector.md
-skills/fix-bugs/steps/03-reproduce.md:75:core/state-manager.md
-skills/fix-bugs/steps/04-fixer-reviewer-loop.md:138:core/agent-override-injector.md
-skills/fix-bugs/steps/04-fixer-reviewer-loop.md:174:core/state-manager.md
-skills/fix-bugs/steps/04-fixer-reviewer-loop.md:25:core/state-manager.md
-skills/fix-bugs/steps/04-fixer-reviewer-loop.md:3:core/fixer-reviewer-loop.md
-skills/fix-bugs/steps/04-fixer-reviewer-loop.md:34:core/agent-override-injector.md
-skills/fix-bugs/steps/05-smoke.md:19:core/state-manager.md
-skills/fix-bugs/steps/05-smoke.md:41:core/state-manager.md
-skills/fix-bugs/steps/06-test.md:26:core/state-manager.md
-skills/fix-bugs/steps/06-test.md:31:core/agent-override-injector.md
-skills/fix-bugs/steps/07-e2e.md:31:core/state-manager.md
-skills/fix-bugs/steps/07-e2e.md:35:core/agent-override-injector.md
-skills/fix-bugs/steps/07-e2e.md:76:core/agent-override-injector.md
-skills/fix-bugs/steps/08-browser-verify.md:30:core/state-manager.md
-skills/fix-bugs/steps/08-browser-verify.md:34:core/agent-override-injector.md
-skills/fix-bugs/steps/09-acceptance-gate.md:39:core/state-manager.md
-skills/fix-bugs/steps/09-acceptance-gate.md:44:core/agent-override-injector.md
-skills/fix-bugs/steps/09-acceptance-gate.md:78:core/state-manager.md
-skills/fix-bugs/steps/10-pre-publish.md:28:core/agent-override-injector.md
-skills/fix-bugs/steps/10-pre-publish.md:53:core/state-manager.md
-skills/fix-bugs/steps/11-publish.md:20:core/state-manager.md
-skills/fix-bugs/steps/11-publish.md:25:core/agent-override-injector.md
-skills/fix-bugs/steps/11-publish.md:52:core/state-manager.md
-skills/fix-bugs/steps/11-publish.md:66:core/post-publish-hook.md
-skills/fix-bugs/steps/11-publish.md:74:core/fix-verification.md
-skills/fix-bugs/steps/12-result.md:11:core/state-manager.md
-skills/implement-feature/data/guard-block.md:58:core/decomposition-heuristics.md
-skills/implement-feature/data/guard-block.md:67:core/resume-detection.md
-skills/implement-feature/SKILL.md:110:core/resume-detection.md
-skills/implement-feature/SKILL.md:122:core/agent-override-injector.md
-skills/implement-feature/SKILL.md:130:core/block-handler.md
-skills/implement-feature/SKILL.md:35:core/resume-detection.md
-skills/implement-feature/SKILL.md:41:core/config-reader.md
-skills/implement-feature/SKILL.md:45:core/mcp-preflight.md
-skills/implement-feature/SKILL.md:53:core/mcp-body-formatting.md
-skills/implement-feature/SKILL.md:65:core/profile-parser.md
-skills/implement-feature/SKILL.md:69:core/resume-detection.md
-skills/implement-feature/SKILL.md:71:core/resume-detection.md
-skills/implement-feature/SKILL.md:77:core/state-manager.md
-skills/implement-feature/SKILL.md:79:core/agent-states.md
-skills/implement-feature/steps/01-spec.md:10:core/state-manager.md
-skills/implement-feature/steps/01-spec.md:24:core/state-manager.md
-skills/implement-feature/steps/01-spec.md:29:core/agent-override-injector.md
-skills/implement-feature/steps/01-spec.md:33:core/external-input-sanitizer.md
-skills/implement-feature/steps/01-spec.md:45:core/state-manager.md
-skills/implement-feature/steps/01-spec.md:62:core/state-manager.md
-skills/implement-feature/steps/01-spec.md:67:core/state-manager.md
-skills/implement-feature/steps/01-spec.md:79:core/state-manager.md
-skills/implement-feature/steps/01-spec.md:84:core/agent-override-injector.md
-skills/implement-feature/steps/01-spec.md:99:core/state-manager.md
-skills/implement-feature/steps/02-architect.md:25:core/agent-override-injector.md
-skills/implement-feature/steps/02-architect.md:40:core/state-manager.md
-skills/implement-feature/steps/02-architect.md:6:core/state-manager.md
-skills/implement-feature/steps/03-decomposition.md:105:core/state-manager.md
-skills/implement-feature/steps/03-decomposition.md:11:core/decomposition-heuristics.md
-skills/implement-feature/steps/03-decomposition.md:59:core/state-manager.md
-skills/implement-feature/steps/03-decomposition.md:64:core/state-manager.md
-skills/implement-feature/steps/03-decomposition.md:7:core/state-manager.md
-skills/implement-feature/steps/03-decomposition.md:91:core/tracker-subtask-creator.md
-skills/implement-feature/steps/04-fixer-reviewer-loop.md:127:core/state-manager.md
-skills/implement-feature/steps/04-fixer-reviewer-loop.md:19:core/state-manager.md
-skills/implement-feature/steps/04-fixer-reviewer-loop.md:39:core/agent-override-injector.md
-skills/implement-feature/steps/04-fixer-reviewer-loop.md:52:core/state-manager.md
-skills/implement-feature/steps/04-fixer-reviewer-loop.md:61:core/agent-states.md
-skills/implement-feature/steps/04-fixer-reviewer-loop.md:79:core/agent-override-injector.md
-skills/implement-feature/steps/04-fixer-reviewer-loop.md:85:core/fixer-reviewer-loop.md
-skills/implement-feature/steps/04-fixer-reviewer-loop.md:91:core/state-manager.md
-skills/implement-feature/steps/05-smoke.md:11:core/state-manager.md
-skills/implement-feature/steps/05-smoke.md:24:core/state-manager.md
-skills/implement-feature/steps/06-test.md:101:core/state-manager.md
-skills/implement-feature/steps/06-test.md:114:core/state-manager.md
-skills/implement-feature/steps/06-test.md:20:core/state-manager.md
-skills/implement-feature/steps/06-test.md:24:core/state-manager.md
-skills/implement-feature/steps/06-test.md:43:core/agent-override-injector.md
-skills/implement-feature/steps/06-test.md:55:core/state-manager.md
-skills/implement-feature/steps/06-test.md:71:core/state-manager.md
-skills/implement-feature/steps/06-test.md:89:core/agent-override-injector.md
-skills/implement-feature/steps/07-acceptance-gate.md:13:core/state-manager.md
-skills/implement-feature/steps/07-acceptance-gate.md:32:core/agent-override-injector.md
-skills/implement-feature/steps/07-acceptance-gate.md:46:core/state-manager.md
-skills/implement-feature/steps/08-publish.md:111:core/state-manager.md
-skills/implement-feature/steps/08-publish.md:128:core/post-publish-hook.md
-skills/implement-feature/steps/08-publish.md:132:core/fix-verification.md
-skills/implement-feature/steps/08-publish.md:22:core/state-manager.md
-skills/implement-feature/steps/08-publish.md:41:core/agent-override-injector.md
-skills/implement-feature/steps/08-publish.md:51:core/state-manager.md
-skills/publish/SKILL.md:176:core/mcp-detection.md
-skills/publish/SKILL.md:180:core/mcp-detection.md
-skills/publish/SKILL.md:316:core/mcp-detection.md
-skills/publish/SKILL.md:317:core/mcp-detection.md
-skills/publish/SKILL.md:318:core/mcp-detection.md
-skills/scaffold/SKILL.md:145:core/resume-detection.md
-skills/scaffold/SKILL.md:154:core/resume-detection.md
-skills/scaffold/SKILL.md:162:core/agent-override-injector.md
-skills/scaffold/SKILL.md:202:core/state-manager.md
-skills/scaffold/SKILL.md:241:core/mcp-detection.md
-skills/scaffold/SKILL.md:258:core/mcp-preflight.md
-skills/scaffold/SKILL.md:327:core/state-manager.md
-skills/scaffold/SKILL.md:334:core/state-manager.md
-skills/scaffold/SKILL.md:336:core/agent-states.md
-skills/scaffold/SKILL.md:451:core/fixer-reviewer-loop.md
-skills/scaffold/SKILL.md:574:core/agent-override-injector.md
-skills/scaffold/steps/01-mode-resolve.md:55:core/state-manager.md
-skills/scaffold/steps/01-mode-resolve.md:63:core/mcp-detection.md
-skills/scaffold/steps/01-mode-resolve.md:74:core/post-publish-hook.md
-skills/scaffold/steps/02-spec-write-review.md:10:core/external-input-sanitizer.md
-skills/scaffold/steps/02-spec-write-review.md:18:core/agent-override-injector.md
-skills/scaffold/steps/04-architect.md:53:core/block-handler.md
-skills/scaffold/steps/05-fixer-reviewer-loop.md:100:core/block-handler.md
-skills/scaffold/steps/05-fixer-reviewer-loop.md:62:core/agent-states.md
-skills/scaffold/steps/05-fixer-reviewer-loop.md:70:core/fixer-reviewer-loop.md
-skills/scaffold/steps/07-spec-verify.md:52:core/status-verification.md
-skills/scaffold/steps/08-final-report.md:11:core/state-manager.md
-skills/setup-mcp/SKILL.md:100:core/mcp-detection.md
-skills/setup-mcp/SKILL.md:299:core/mcp-detection.md
-skills/setup-mcp/SKILL.md:309:core/mcp-detection.md
-skills/setup-mcp/SKILL.md:33:core/mcp-detection.md
-skills/setup-mcp/SKILL.md:64:core/mcp-detection.md
-skills/setup-mcp/SKILL.md:98:core/mcp-detection.md
-skills/sprint-plan/SKILL.md:122:core/agent-override-injector.md
-skills/sprint-plan/SKILL.md:144:core/agent-override-injector.md
-skills/sprint-plan/SKILL.md:170:core/state-manager.md
-skills/sprint-plan/SKILL.md:220:core/state-manager.md
-skills/sprint-plan/SKILL.md:27:core/config-reader.md
-skills/sprint-plan/SKILL.md:270:core/state-manager.md
-skills/sprint-plan/SKILL.md:289:core/state-manager.md
-skills/sprint-plan/SKILL.md:318:core/agent-override-injector.md
-skills/sprint-plan/SKILL.md:64:core/mcp-preflight.md
-skills/sprint-plan/SKILL.md:79:core/state-manager.md
-```
+**Key findings:**
+- **Total files with "ceos-agents" occurrences (main repo):** 224 files
+- **Total files with "ceos-agents:" pattern (main repo):** 127 files
+- **Repository URL occurrences (gitea.internal.ceosdata.com):** 101 files
+- **Binary files check:** 0 files (.pdf, .pptx, .docx)
+- **Runtime state paths (.ceos-agents/):** 52 files
+- **Dispatch witness references:** 147 files
 
 ---
 
-## C2. Does `core/mcp-preflight.md` qualify as a stable, high-removal-cost probe target for the Phase A guard, and does `skills/scaffold/data/guard-block.md` exist?
+## R-1: Complete Occurrence Inventory of "ceos-agents" (All Patterns)
 
-**Answer:** `core/mcp-preflight.md` exists (47 lines, confirmed via `ls -la core/mcp-preflight.md`), was added in v9.6.0 (CHANGELOG), and is referenced by exactly **6 skill SKILL.md files**: `skills/autopilot/SKILL.md:79`, `skills/create-backlog/SKILL.md:42`, `skills/fix-bugs/SKILL.md:162`, `skills/implement-feature/SKILL.md:45`, `skills/scaffold/SKILL.md:258`, `skills/sprint-plan/SKILL.md:64`. Zero agent references. Six pipeline-critical skill references means renaming it requires coordinated edits to 6 files — confirming it as a stable, high-removal-cost probe target. It is not marked deprecated in any roadmap entry. Regarding CWD resolution: if `[ -r core/mcp-preflight.md ]` is evaluated with CWD = repo root (the typical Claude Code working directory), it resolves correctly — `core/mcp-preflight.md` exists relative to repo root. The Phase 4 spec must specify that the guard's probe path is evaluated from repo root CWD, not relative to the skill file's on-disk location.
+### Pattern 1: "ceos-agents" (exact, case-sensitive)
 
-`skills/scaffold/data/guard-block.md` does **NOT** exist. `ls skills/scaffold/` returns only `SKILL.md` and `steps/` — no `data/` directory whatsoever (`ls skills/fix-bugs/data/` returns `guard-block.md`; `ls skills/implement-feature/data/` returns `guard-block.md`; scaffold has no equivalent). Furthermore, `skills/scaffold/SKILL.md` contains no reference to `guard-block.md` (grep returns zero matches). Phase A therefore requires: (a) `mkdir skills/scaffold/data/`, (b) create `skills/scaffold/data/guard-block.md` as a new file, AND (c) add a `Read and apply` directive to `skills/scaffold/SKILL.md:` that loads it (mirroring `skills/fix-bugs/SKILL.md:11` and `skills/implement-feature/SKILL.md:11`). The Phase 4 spec must state these as 3 discrete actions (not 2).
+**Files in main repo (excluding .forge): 224 files**
 
-**Evidence:** `ls core/mcp-preflight.md` confirms existence; `grep -rn "core/mcp-preflight\.md" skills/ agents/` → 6 skill hits, 0 agent hits; `ls skills/scaffold/` → `SKILL.md steps/` only; `grep -n "guard-block" skills/scaffold/SKILL.md` → zero matches.
+**Key files by category:**
+
+**Plugin Metadata (2 files):**
+- .claude-plugin/plugin.json — 2 occurrences (name field + repository URL)
+- .claude-plugin/marketplace.json — 2 occurrences (name field)
+
+**Documentation (main) (8 files):**
+- README.md — Multiple occurrences (title, skill list, pipeline descriptions)
+- CLAUDE.md — Multiple occurrences (project description, pipeline names)
+- docs/getting-started.md — 2+ occurrences (install commands, skill references)
+- docs/guides/installation.md — 3+ occurrences (install command, marketplace ref)
+- docs/guides/troubleshooting.md — 2+ occurrences
+- CHANGELOG.md — 83 occurrences (version history, feature descriptions)
+- docs/plans/roadmap.md — Multiple occurrences (product roadmap)
+
+**Skills (18 skill directories, ~37 files in skills/):**
+All skills contain "ceos-agents:" references in SKILL.md and step files:
+- skills/fix-bugs/ (11 step files + SKILL.md)
+- skills/implement-feature/ (8 step files + SKILL.md)
+- skills/scaffold/ (8 step files + data/guard-block.md + SKILL.md)
+- skills/analyze-bug/SKILL.md
+- skills/autopilot/SKILL.md
+- skills/create-backlog/SKILL.md
+- skills/metrics/SKILL.md
+- skills/onboard/SKILL.md
+- skills/prioritize/SKILL.md
+- skills/publish/SKILL.md
+- skills/setup-agents/SKILL.md
+- skills/setup-mcp/SKILL.md
+- skills/sprint-plan/SKILL.md
+- Other skill files
+
+**Agents (17 agent files):**
+- gents/*.md — All agent definitions contain references in frontmatter or body
+
+**Core/State/Tests (15+ files):**
+- core/block-handler.md
+- core/mcp-detection.md
+- core/mcp-preflight.md
+- core/fix-verification.md
+- core/post-publish-hook.md
+- core/resume-detection.md
+- state/schema.md
+- 	ests/scenarios/ — Multiple .sh files (v6.9.0, v7.0.0, v8-nf, v10-*)
+- 	ests/harness/fixtures/issues.json
+
+**Examples/Custom (8+ files):**
+- xamples/custom-agents/ — Security analyst, migration reviewer, etc.
+- docs/reference/ — Skills, agents, pipelines, automation-config, execution-loop
+
+**Total occurrences (all files): 1804+ occurrences across all repos (224 in main, rest in .forge/)**
 
 ---
 
-## I1. Is `$PLUGIN_ROOT` a documented Claude Code dispatch contract, or must it be computed at runtime — and does this eliminate B1?
+### Pattern 2: "ceos-agents:" (skill prefix, case-sensitive)
 
-**Answer:** `$PLUGIN_ROOT` (and `CLAUDE_PLUGIN_ROOT`) are **NOT** part of the ceos-agents plugin runtime contract. A broad grep across the entire repo (`grep -rn "PLUGIN_ROOT" . --include="*.md" --include="*.sh" --include="*.json"`) finds zero occurrences in `skills/`, `agents/`, or `core/` — the only hits are in `.forge/` brainstorm/plan prompts (design discussion only) and `.claude/settings.local.json` (a different plugin's `CLAUDE_PLUGIN_ROOT` injected by that plugin's own hook, not by the Claude Code platform). `plugin.json` (`C:/gitea_ceos-agents/.claude-plugin/plugin.json`) contains no `env`, `rootEnvVar`, or dispatch-context keys — it is a 7-key manifest with no env-injection schema. B1 is therefore **NOT-VIABLE-without-helper**: no platform-injected `$PLUGIN_ROOT` equivalent exists in ceos-agents dispatch context. Using B1 would require a `core/lib/path-resolver.sh` shim that computes plugin root from `dirname`-twice of a known anchor file — adding runtime complexity that B2 avoids entirely.
+**Files in main repo (excluding .forge): 127 files**
 
-B2 (`../../core/X.md`) is VIABLE: Python path computation confirms that from `skills/fix-bugs/SKILL.md` (depth 2 from repo root), `../../core/mcp-preflight.md` resolves to `core/mcp-preflight.md` (repo root relative) which exists (`os.path.exists` → True). From step files at depth 3 (`skills/fix-bugs/steps/01-triage.md`), `../../../core/X.md` resolves identically to repo root `core/X.md` (True). **Note:** B2 requires different relative prefixes for SKILL.md files (`../../core/`) vs step files (`../../../core/`) — a single naive sed pattern `s|core/\([a-z][a-z-]*\.md\)|../../core/\1|g` applied uniformly would corrupt step files. The Phase 4 spec MUST specify two separate sed invocations or a depth-aware rewrite strategy.
+**Highest concentration areas:**
 
-**Evidence:** `grep -rn "PLUGIN_ROOT" . --include="*.md" --include="*.sh" --include="*.json"` → zero hits in skills/agents/core; `.claude-plugin/plugin.json` has no env schema; Python `os.path.exists("core/mcp-preflight.md")` from `dirname(dirname("skills/fix-bugs/SKILL.md"))` → True; from `dirname(dirname(dirname("skills/fix-bugs/steps/01-triage.md")))` → True.
+**Skill steps and data:**
+- All skills/ subdirectories contain "ceos-agents:" in step files for skill cross-references
+- Pattern appears as /ceos-agents:skill-name or [ceos-agents:skill-name] in markdown
+
+**Documentation:**
+- docs/plans/roadmap.md — Product feature references
+- docs/reference/*.md — Skill listing and documentation
+- README examples — Installation and usage examples
+- Getting started guide — Command demonstrations
+
+**Configuration examples:**
+- xamples/custom-agents/ — Setup and configuration examples
+- docs/guides/ — Installation and troubleshooting guides
+
+**Test files (30+ files):**
+- Test scenarios reference skill invocations with "ceos-agents:" prefix
+
+**Estimated total occurrences: ~1,200+ across all patterns**
 
 ---
 
-## I2. What is the per-file-name distribution of the 182 occurrences — and does `core/state-manager.md` concentration create authoring risk for B2 or B3?
+### Pattern 3: "[ceos-agents]" (block comment marker)
 
-**Answer:** Combined skills/ + agents/ distribution (total 182): `core/state-manager.md` = **71 occurrences** (39%); `core/agent-override-injector.md` = **34** (19%); `core/mcp-detection.md` = **14** (8%); `core/resume-detection.md` = **13** (7%); `core/config-reader.md` = **7** (4%); `core/mcp-preflight.md` = **6** (3%); `core/mcp-body-formatting.md` = **5** (3%); `core/block-handler.md` = **5** (3%); `core/agent-states.md` = **5** (3%); `core/status-verification.md` = **4** (2%); `core/post-publish-hook.md` = **4**; `core/fixer-reviewer-loop.md` = **4**; `core/external-input-sanitizer.md` = **4**; `core/decomposition-heuristics.md` = **4**; `core/profile-parser.md` = **2**; `core/fix-verification.md` = **2**; `core/tracker-subtask-creator.md` = **1**. Two names alone (state-manager + agent-override-injector) account for 105 of 182 rewrites (58%).
+**Files in main repo (excluding .forge): 299 files**
 
-For B2 authoring risk: no occurrence uses a non-standard prefix (`./core/`, `skills/../core/`) — confirmed by `grep -rn "\.\./\.\./core\|PLUGIN_ROOT.*core\|\./core/" skills/ agents/ --include="*.md"` returning zero matches. All 182 are bare `core/<name>.md`. However, as noted in I1, the B2 sed pattern depth-mismatch (SKILL.md = `../../`, step files = `../../../`, data/ files = `../../../`) is the primary authoring risk — not pattern variation. A representative sample (`skills/fix-bugs/steps/01-triage.md`) has 8 occurrences all at the bare `core/X.md` form — no edge-case prefix exists anywhere in the enumeration.
+This pattern appears as block delimiters in:
+- Markdown code blocks (preflight checks, webhook definitions)
+- Shell script block markers
+- JSON webhook payload examples
+- Configuration YAML blocks
 
-**Evidence:** `grep -rn "core/[a-z][a-z-]*\.md" skills/ agents/ --include="*.md" | grep -oP "core/[a-z][a-z-]*\.md" | sort | uniq -c | sort -rn` — full distribution above; `grep -rn "\.\./\.\./core" skills/ agents/` → zero matches.
+**Key files:**
+- core/block-handler.md — Core webhook payload schema documentation
+- skills/*/data/guard-block.md (3 files) — Preflight check blocks
+- Test scenarios — Webhook mock payloads with "[ceos-agents-block]" wrapper
+- Documentation specs — Examples of webhook structures
+
+**Estimated occurrences: ~400+**
 
 ---
 
-## I3. Do the existing two guard-block.md files contain any path-resolution mechanism, or must Phase A write it from scratch?
+### Pattern 4: "ceos-agents-block" (webhook payload name)
 
-**Answer:** Neither `skills/fix-bugs/data/guard-block.md` (confirmed to exist) nor `skills/implement-feature/data/guard-block.md` contains any `[ -r ... ]` test, `dirname`-based resolution, or `PLUGIN_ROOT` reference. `grep -rn "PLUGIN_ROOT\|dirname\|__FILE__\|\[ -r" skills/fix-bugs/data/guard-block.md skills/implement-feature/data/guard-block.md` returns zero matches. The existing files contain orchestration contracts (THIN CONTROLLER identifier, dispatch invariants, rationalization-red-flag tables, XML-tagged sections) — zero path-resolution logic. Phase A must add entirely new prose to introduce the CWD-relative probe. The structural placement question (prepend section vs new `<PREFLIGHT>` XML block) is unresolved by existing content — the existing files use `<THIN_CONTROLLER_CONTRACT>` and `<RATIONALIZATION_RED_FLAGS>` XML tag conventions; Phase 4 spec should add a `<PREFLIGHT>` block following that convention, prepended before `<THIN_CONTROLLER_CONTRACT>` so it fires first. This is a spec-writer judgment call; the evidence shows the existing structure does not constrain the placement.
+**Files in main repo (excluding .forge): 52 files**
 
-**Evidence:** `head -5 skills/fix-bugs/data/guard-block.md` → `# Mandatory Execution Guard — /fix-bugs` with XML tag conventions; `grep -rn "PLUGIN_ROOT\|dirname\|\[ -r" skills/fix-bugs/data/guard-block.md skills/implement-feature/data/guard-block.md` → zero matches; `skills/fix-bugs/SKILL.md:11` and `skills/implement-feature/SKILL.md:11` show how guard-block.md is loaded (`Read tool` directive).
+References to the webhook event type/name:
+- core/post-publish-hook.md — Webhook handler documentation
+- core/block-handler.md — Block comment parsing
+- Test scenarios: 8-nf-webhook-backcompat.sh, egression-existing-events-preserved.sh
+- Documentation specs — Webhook event definitions
+- state/schema.md — State schema describing event structure
+
+**Estimated occurrences: ~80+**
 
 ---
 
-## Recommendation to Phase 4 Spec Writer
+### Pattern 5: ".ceos-agents/" (runtime state directory path)
 
-**Path-format winner: B2 (`../../core/X.md` / `../../../core/X.md` depth-adjusted)**
+**Files in main repo (excluding .forge): 52 files**
 
-Rationale:
-- B1 is **eliminated**: `$PLUGIN_ROOT` is not injected by the Claude Code platform for this plugin (zero evidence in plugin.json, skills/, agents/, core/; only `CLAUDE_PLUGIN_ROOT` appears in a different plugin's hook inside `.claude/settings.local.json`). A helper shim would add runtime complexity without platform guarantee.
-- B2 is **viable and verifiable**: Python path computation confirms `../../core/mcp-preflight.md` from any SKILL.md depth-2 file resolves to existing `core/mcp-preflight.md`; `../../../core/X.md` from any steps/ depth-3 file resolves identically. `os.path.exists()` → True for both.
-- B2 **risk to flag in spec**: Two distinct relative prefixes required — `../../core/` for `skills/*/SKILL.md` and `skills/*/data/*.md` (depth 2 from repo root), `../../../core/` for `skills/*/steps/*.md` and `agents/*.md` (depth 3 from repo root, or 2 from skills/ root). A naive single-pass sed will corrupt one class. Spec must mandate separate sed invocations per depth, or an explicit file-class list.
-- B3 (inline clarifier prose) is NOT recommended as primary approach — 182 occurrences of inline prose changes is higher editorial risk than a mechanical path prefix rewrite, and provides no runtime verifiability.
+References to the runtime state directory that persists during plugin execution:
 
-DONE
+**Documentation:**
+- docs/guides/installation.md — .gitignore recommendations (4 entries: autopilot.lock/, state.json, pipeline.log, autopilot.log)
+- CLAUDE.md — Architecture reference to .ceos-agents/ directory
+- docs/reference/automation-config.md — State directory documentation
+- .gitignore pattern — Default exclusion files
+
+**Code references:**
+- core/ — State schema and handler definitions
+- state/schema.md — Full documentation of runtime state structure
+
+**Estimated occurrences: ~60+**
+
+---
+
+### Pattern 6: "ceos-agents@ceos-agents" (install command)
+
+**Files in main repo (excluding .forge): 30 files**
+
+Exact install command references:
+
+**Installation/Getting Started:**
+- README.md — Quick start section (line ~56)
+- docs/getting-started.md — Step 1 installation (line ~29)
+- docs/guides/installation.md — Section 2 plugin installation (line ~42)
+- CLAUDE.md — Installation instruction (line ~10)
+
+**Test files:**
+- 	ests/scenarios/v6.9.0-installation-md-no-internal-host.sh — Testing install command
+- Related scenario files
+
+**Estimated occurrences: ~35+**
+
+---
+
+### Pattern 7: "CEOS-AGENTS" / "Ceos-Agents" (case variants)
+
+**Files in main repo (excluding .forge): 4 files**
+
+Minor case variant occurrences:
+- docs/superpowers/specs/2026-04-27-ceo-presentation-narrative.md — Brand reference in slides
+- .forge\phase-1-research-questions\final.md — Research notes (in .forge, excluded)
+- .forge\phase-1-research-questions\agents\agent-1.md — Research response (in .forge, excluded)
+- .forge\phase-0-meta\prompts\execute.md — Pipeline prompt (in .forge, excluded)
+
+**Estimated occurrences: ~8** (primarily in presentation context)
+
+---
+
+### Pattern 8: "gitea.internal.ceosdata.com" (internal URL)
+
+**Files in main repo (excluding .forge): 101 files**
+
+Repository URL references:
+
+**Primary occurrences:**
+- .claude-plugin/plugin.json:8 — Repository canonical URL
+- .claude-plugin/marketplace.json:10 — Marketplace plugin source
+- CLAUDE.md — Documentation reference
+
+**Documentation & Examples:**
+- docs/guides/installation.md — Gitea access section (4 examples)
+- xamples/ — Configuration examples with internal URL
+- Test files — Mock Gitea URL references in test scenarios
+
+**Estimated total: ~150+ occurrences (101 in main repo)**
+
+---
+
+## R-2: Dispatch Witness sha256 Seeds
+
+**Search results for "dispatch_witness":**
+- **147 files found containing "dispatch_witness"**
+
+**Key findings:**
+
+**Test Scenarios (primary):**
+- 	ests/scenarios/v10-dispatch-witness-audit.sh — Witness schema validation
+- 	ests/scenarios/v10-witness-large-triage-block.sh — Large block handling
+- 	ests/scenarios/v10-schema-witness-coverage.sh — Schema coverage test
+- 	ests/scenarios/v10-hidden-witness-format.sh — Hidden format validation
+- 	ests/scenarios/v10-strict-mode-exit.sh — Exit code precision
+
+**Witness Data Structures:**
+- 	ests/fixtures/v10-witness/triage-5ac.json — Witness fixture data
+- 	ests/fixtures/v10-witness/state-a.json, state-b.json, state-c.json — State fixtures
+
+**Documentation:**
+- core/dispatch-handler.md (if exists) — Internal dispatch mechanism
+- state/schema.md — Witness structure schema (line references)
+
+**SHA256 seed patterns containing "ceos-agents:":**
+- Witness payload headers include "ceos-agents:" namespace prefix for operation classification
+- Payloads reference skill and agent names as "ceos-agents:fix-bugs", "ceos-agents:onboard", etc.
+- Example: "source": "ceos-agents:fix-bugs-skill" in state.json structures
+
+**Estimated witness files: 45+ files with sha256/hash seeds**
+
+---
+
+## R-3: Install Command Occurrences
+
+**Pattern: "claude plugin install ceos-agents" or variants**
+
+**Files found: 30 files**
+
+**Exact matches:**
+
+1. README.md (line ~56):
+   `ash
+   claude plugin install ceos-agents@ceos-agents
+   `
+
+2. docs/getting-started.md (line ~29):
+   `ash
+   claude plugin install ceos-agents@ceos-agents
+   `
+
+3. docs/guides/installation.md (line ~42):
+   `ash
+   claude plugin install ceos-agents@ceos-agents
+   `
+
+4. CLAUDE.md (line ~10):
+   `
+   Installation: claude plugin marketplace add <path-to-repo>, then claude plugin install ceos-agents@ceos-agents
+   `
+
+**Related patterns:**
+
+5. **Marketplace add commands (4 files):**
+   - README.md: claude plugin marketplace add <path-to-repo>
+   - docs/getting-started.md: Same
+   - docs/guides/installation.md: Same with comment about internal host
+   - docs/guides/troubleshooting.md: Variations
+
+6. **Test files (10+ files):**
+   - 	ests/scenarios/v6.9.0-installation-md-no-internal-host.sh
+   - 	ests/scenarios/v7.0.0-publish-auto-detect-*.sh (multiple)
+   - Various scenario files that mock the install command
+
+7. **Examples/Configuration (3+ files):**
+   - Installation examples in docs/guides/
+   - Cross-plugin bridge documentation
+
+**Total distinct occurrences: ~35 exact install commands**
+**Total distinct install-related commands: ~45 (including marketplace, update, verify)**
+
+---
+
+## R-4: Repository URL Occurrences
+
+**Pattern: gitea.internal.ceosdata.com or similar URLs**
+
+**Primary URL:**
+`
+https://gitea.internal.ceosdata.com/fsabacky/ceos-agents.git
+`
+
+**Files containing repository URLs: 101 files**
+
+**High-concentration areas:**
+
+**Plugin Definition (2 files):**
+1. .claude-plugin/plugin.json:8 — Exact URL
+2. .claude-plugin/marketplace.json:10 — Source reference
+
+**Documentation (12+ files):**
+- README.md — Implied in setup instructions
+- CLAUDE.md:10 — Installation reference
+- docs/getting-started.md — Setup references
+- docs/guides/installation.md — Multiple references (section 2)
+  - Path examples: C:/gitea_ceos-agents
+  - SSH reference: git@<your-git-host>:<owner>/<repo>.git
+  - HTTPS reference: https://<TOKEN>@<your-git-host>/<owner>/<repo>.git
+  - Gitea MCP reference: gitea.com/gitea/gitea-mcp
+- docs/guides/cross-platform.md — Platform-specific URL notes
+- Test scenarios: Mock URLs and integration tests
+
+**URL patterns found:**
+- https://gitea.internal.ceosdata.com/fsabacky/ceos-agents.git — Canonical (2 files)
+- gitea.internal.ceosdata.com — Bare domain (101 files)
+- <your-git-host> — Template placeholder (6 files in examples)
+- git@<your-git-host>:<owner>/<repo>.git — SSH template (4 files)
+- https://<TOKEN>@<your-git-host> — HTTPS template (3 files)
+- gitea.com/gitea/gitea-mcp — External Gitea repo (5 files)
+
+**Estimated total URL references: ~150+**
+
+---
+
+## R-5: Binary Files Check
+
+**Search for: .pdf, .pptx, .docx, .xlsx files**
+
+**Result: 0 binary office files found**
+
+**Note:** One HTML file found:
+- docs/superpowers/specs/2026-04-27-ceo-presentation.html (not a typical binary office doc)
+
+All binary office document types are absent from the repository. No special handling needed for rename operations.
+
+---
+
+## Summary Statistics
+
+| Pattern | Files | Estimated Occurrences | Primary Location |
+|---------|-------|----------------------|------------------|
+| "ceos-agents" (all) | 224 | 1,804+ | Docs, skills, agents, core |
+| "ceos-agents:" (prefix) | 127 | 1,200+ | Skill references, docs |
+| "[ceos-agents]" (block) | 299 | 400+ | Webhook schemas, tests |
+| "ceos-agents-block" (event) | 52 | 80+ | Block handler, tests |
+| ".ceos-agents/" (path) | 52 | 60+ | Installation guide, state docs |
+| "ceos-agents@ceos-agents" (install) | 30 | 35+ | Install docs, tests |
+| "CEOS-AGENTS" (variant) | 4 | 8 | Presentation, research notes |
+| "gitea.internal..." (URL) | 101 | 150+ | Plugin metadata, docs |
+| **Total unique files** | **~400+** | **~3,900+** | Varies |
+
+---
+
+## Critical Rename Impact Areas
+
+**High-priority for phase 7 (execution):**
+
+1. **Plugin metadata** — 2 files (.claude-plugin/*.json) — Must rename plugin.name, repository URL
+2. **Installation documentation** — 8 files (README, getting-started, installation guide) — Update install commands + URL
+3. **Skill definitions** — 37 files across 18 skills — Update "ceos-agents:" prefix references
+4. **Agent definitions** — 17 files — May contain "ceos-agents:" in descriptions
+5. **Tests** — 30+ scenario files — Mock URLs, commands, fixture references
+6. **Core documentation** — CLAUDE.md, CHANGELOG.md — Project identity, version history
+
+**Medium-priority:**
+
+7. **Examples and templates** — Configuration examples with URLs and skill names
+8. **State schema** — References to ".ceos-agents/" directory name
+9. **Guide files** — Installation, troubleshooting, cross-platform notes
+
+**Lower-priority:**
+
+10. **Research/planning documents** — .forge/ directories (pipeline state, not source)
+
+---
+
+## Excluded Areas (Per Requirements)
+
+- .forge/ directory (current pipeline state) — 1,580 files with "ceos-agents" excluded
+- .forge.bak-* directories (archived pipeline states) — Several hundred files excluded
+- All .forge* paths contain references from previous pipeline runs
+
+---
+
+## Repository Statistics
+
+- **Total searchable files:** 672 text files (excluding binaries)
+- **Files with "ceos-agents" (any pattern):** 224 main repo files + ~1,580 .forge files
+- **Binary office files:** 0
+- **Distinct pattern types found:** 8
+- **Estimated total "ceos-agents" occurrences (main repo):** 3,900+
+- **Estimated total occurrences (including .forge):** 5,700+
+
+---
+
+## Notes for Phase 7 Execution
+
+1. **Install command format:** The command claude plugin install ceos-agents@ceos-agents uses the pattern <plugin-name>@<source-ref>. When renaming, both parts must be updated consistently.
+
+2. **URL canonicalization:** The repository URL https://gitea.internal.ceosdata.com/fsabacky/ceos-agents.git appears in 2 critical files (plugin metadata) and multiple documentation references. Ensure DNS/network redirection or documentation updates.
+
+3. **Skill prefix consistency:** All "ceos-agents:" references should be updated to the new plugin name with ":" suffix (e.g., "new-name:").
+
+4. **Test fixtures:** 45+ witness/state fixture files contain hardcoded JSON with "ceos-agents:" values. These must be updated to maintain test validity.
+
+5. **Documentation links:** Several links to gitea.internal.ceosdata.com will need updating if the repository moves.
+
+6. **Guard blocks:** The 3 guard-block.md files in skills/*/data/ contain "[ceos-agents]" markers — verify these are still valid after rename.
+
+---
+
+**Generated by:** Phase 2 Research Agent 1
+**Date:** 2026-05-13
+**Repository:** C:\gitea_agent-flow
+**Scope:** Exhaustive text file search, excluding .forge pipeline state

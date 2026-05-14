@@ -100,11 +100,11 @@ API design, database schema design, integration patterns.
 |------------------|------|-----------------|
 | `## Architecture Design` | always | Architecture (2-3 sentences); Approach rationale; Files affected; Risk assessment (LOW/MEDIUM/HIGH); Decomposition (YES/NO + count + strategy); Task tree (YAML if decomposed) |
 | `decomposition:` YAML block | on decomposition needed | strategy (sequential/parallel/mixed); reason; subtasks[] with id/title/scope/files/estimated_lines/depends_on/maps_to/acceptance_criteria |
-| `[ceos-agents] 🔴 Pipeline Block` | on Block | Agent: architect; Step: Architecture Design; Reason; Detail; Recommendation |
+| `[agent-flow] 🔴 Pipeline Block` | on Block | Agent: architect; Step: Architecture Design; Reason; Detail; Recommendation |
 
 ## Step Completion Invariants
 
-Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.ceos-agents/{ISSUE_ID}/state.json` (or the orchestrator-injected state path):
+Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.agent-flow/{ISSUE_ID}/state.json` (or the orchestrator-injected state path):
 
 1. `dispatched_at` — Field is present and non-empty for stage `code_analysis` (EXPECTED_STAGE_NAME=`code_analysis`). The orchestrator wrote this pre-dispatch.
 
@@ -133,7 +133,7 @@ Do NOT attempt to write `tool_uses`, `completed_at`, or `status="completed"` —
 - If decomposition exceeds max subtasks after 2 attempts: Block with recommendation to split the issue manually
 - On failure: Block using the Block Comment Template:
   ```
-  [ceos-agents] 🔴 Pipeline Block
+  [agent-flow] 🔴 Pipeline Block
   Agent: architect
   Step: Architecture Design
   Reason: {reason}

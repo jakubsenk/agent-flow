@@ -4,7 +4,7 @@ Pre-built Automation Config templates for common tech stacks and issue tracker c
 
 ## Heading-Extraction Contract
 
-Every config file in `examples/configs/*.md` MUST start with `# Stack Name` as the first line (single H1 heading). This is required by the `/ceos-agents:onboard` Step 1 inline glob+extract logic, which reads the H1 heading to build the Available Templates table.
+Every config file in `examples/configs/*.md` MUST start with `# Stack Name` as the first line (single H1 heading). This is required by the `/agent-flow:onboard` Step 1 inline glob+extract logic, which reads the H1 heading to build the Available Templates table.
 
 ## Naming Convention
 
@@ -32,4 +32,4 @@ Tracker prefixes:
 
 ## Usage
 
-To use a template, run `/ceos-agents:onboard` — Step 1 lists available templates automatically via glob+extract. Select a template name to load it as pre-filled defaults, then adjust values in the wizard steps.
+To use a template, run `/agent-flow:onboard` — Step 1 lists available templates automatically via glob+extract. Select a template name to load it as pre-filled defaults, then adjust values in the wizard steps.

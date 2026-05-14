@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Test: FC-13 — GitHub/Gitea checklist format and sentinel comment in all 3 skills
-# Since v6.7.2, tracker subtask creation logic lives in core/tracker-subtask-creator.md.
+# Tracker subtask creation logic lives in core/tracker-subtask-creator.md.
 # Each skill delegates via "Follow core/tracker-subtask-creator.md". This test searches
 # both the skill file and the core contract file so delegation is accepted.
 set -uo pipefail
@@ -40,10 +40,10 @@ for i in "${!SKILL_FILES[@]}"; do
 
   # -----------------------------------------------------------------------
   # FC-13: Sentinel comment format must be present
-  # REQ-7.2: <!-- ceos-agents:decomposition-checklist:{PARENT-ISSUE-ID} -->
+  # REQ-7.2: <!-- agent-flow:decomposition-checklist:{PARENT-ISSUE-ID} -->
   # -----------------------------------------------------------------------
-  if ! grep -q 'ceos-agents:decomposition-checklist' "${SEARCH_FILES[@]}" 2>/dev/null; then
-    fail "FC-13 ($name): missing sentinel comment 'ceos-agents:decomposition-checklist' for GitHub/Gitea idempotency guard"
+  if ! grep -q 'agent-flow:decomposition-checklist' "${SEARCH_FILES[@]}" 2>/dev/null; then
+    fail "FC-13 ($name): missing sentinel comment 'agent-flow:decomposition-checklist' for GitHub/Gitea idempotency guard"
   fi
 
   # -----------------------------------------------------------------------

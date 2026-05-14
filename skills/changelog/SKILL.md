@@ -14,7 +14,7 @@ Generate a changelog from merged PRs since the last git tag. Write to `CHANGELOG
 Before any pipeline operation, verify MCP tool availability:
 - Read Type from Automation Config (Issue Tracker section)
 - Check that at least one `mcp__*` tool matching the tracker type is accessible
-- If not accessible → STOP with: "Cannot connect to your {Type} issue tracker. Is the {Type} integration configured? Run `/ceos-agents:check-setup` for diagnostics."
+- If not accessible → STOP with: "Cannot connect to your {Type} issue tracker. Is the {Type} integration configured? Run `/agent-flow:check-setup` for diagnostics."
 
 ## Steps
 

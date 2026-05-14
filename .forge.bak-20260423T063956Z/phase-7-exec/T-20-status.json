@@ -1,9 +1,0 @@
-{
-  "task_id": "T-20",
-  "status": "DONE",
-  "files_modified": ["skills/fix-ticket/SKILL.md", "skills/implement-feature/SKILL.md"],
-  "revision_cycle": null,
-  "concerns": [],
-  "test_results": "AC-056/057/058/059: identical 12-line freshness block at 2 insertion points; lowercase docs/architecture.md; 2>/dev/null silent fallback; non-blocking",
-  "completed_at": "2026-04-19T00:00:00Z"
-}

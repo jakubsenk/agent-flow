@@ -14,7 +14,7 @@ Input: `$ARGUMENTS` = optional flags (`--all`, `--apply`, `--dry-run`, `--limit 
 
 Parse `$ARGUMENTS`:
 - `--all`: Plan ALL sprints (release plan), not just the next one
-- `--apply`: After planning, dispatch `/ceos-agents:implement-feature` or `/ceos-agents:fix-bugs` per selected issue
+- `--apply`: After planning, dispatch `/agent-flow:implement-feature` or `/agent-flow:fix-bugs` per selected issue
 - `--dry-run`: Display plan only, no tracker writes, no execution dispatch
 - `--limit <N>`: Override Max issues config value (valid range: 1–50; out of range → clamp with WARN)
 - `--yolo`: Auto-approve Gate 1 and Gate 3 (Gate 2 ALWAYS blocks — even in `--yolo`)
@@ -65,11 +65,11 @@ Follow `../../core/mcp-preflight.md`. Before any pipeline operation, verify MCP 
 - Read Type from Automation Config (Issue Tracker section)
 - Check that at least one `mcp__*` tool matching the tracker type is accessible
 - Record `tracker_tier` for Gate 1 display: `MCP` if available, `Bash` if only REST fallback, `Skip` if neither
-- If not accessible → STOP with: "Cannot connect to your {Type} issue tracker. Is the {Type} integration configured? Run `/ceos-agents:check-setup` for diagnostics."
+- If not accessible → STOP with: "Cannot connect to your {Type} issue tracker. Is the {Type} integration configured? Run `/agent-flow:check-setup` for diagnostics."
 
 ### Step 0b: State initialization
 
-Create `.ceos-agents/sprint-{YYYYMMDD-HHmmss}/` directory.
+Create `.agent-flow/sprint-{YYYYMMDD-HHmmss}/` directory.
 Initialize `state.json` following the schema in `state/schema.md` with:
 - `status: "running"`, `mode: "sprint-planning"`, `pipeline: "sprint-plan"`
 - `run_id: "sprint-{YYYYMMDD-HHmmss}"`
@@ -97,7 +97,7 @@ Follow atomic write protocol from `../../core/state-manager.md`.
 - In `--yolo` mode: skip prompt, set `effective_capacity = null`, `velocity_source = "unconstrained"`.
 
 Display cold-start warning if `velocity_source != "historical"`:
-"No velocity data available. Sprint plan uses {velocity_source} data. Run `/ceos-agents:metrics` after this sprint to calibrate future planning."
+"No velocity data available. Sprint plan uses {velocity_source} data. Run `/agent-flow:metrics` after this sprint to calibrate future planning."
 This warning is displayed at every gate until `velocity_source = "historical"`.
 
 ### Step 1: Fetch issues
@@ -112,11 +112,11 @@ If 0 issues found: display "No open issues found matching the query. Nothing to 
 ### Step 2: Enrich with history
 
 If metrics report exists (from Step 0c Tier 1 check): read per-area data.
-For each fetched issue: check tracker comments for `[ceos-agents] Triage completed` or `[ceos-agents] Spec analysis completed`. Extract complexity estimate if present. Store as `triage_complexity[issue_id]`.
+For each fetched issue: check tracker comments for `[agent-flow] Triage completed` or `[agent-flow] Spec analysis completed`. Extract complexity estimate if present. Store as `triage_complexity[issue_id]`.
 
 ### Step 3: Run priority-engine
 
-You MUST invoke `Task(subagent_type='ceos-agents:priority-engine', model='opus')`. DO NOT inline-execute.
+You MUST invoke `Task(subagent_type='agent-flow:priority-engine', model='opus')`. DO NOT inline-execute.
 Context: list of issues + historical data (if available) + triage complexity map.
 
 Before dispatch, check Agent Overrides: follow `../../core/agent-override-injector.md`.
@@ -124,17 +124,17 @@ If `{Agent Overrides path}/priority-engine.md` exists, append its content to age
 
 If priority-engine fails or returns an error: BLOCK with:
 ```
-[ceos-agents] 🔴 Pipeline Block
+[agent-flow] 🔴 Pipeline Block
 Agent: priority-engine
 Step: Step 3 (Priority ranking)
 Reason: Priority-engine agent failed.
 Detail: {error output}
-Recommendation: Check agent logs. Run /ceos-agents:prioritize standalone to diagnose.
+Recommendation: Check agent logs. Run /agent-flow:prioritize standalone to diagnose.
 ```
 
 ### Step 4: Run sprint-planner
 
-You MUST invoke `Task(subagent_type='ceos-agents:sprint-planner', model='sonnet')`. DO NOT inline-execute.
+You MUST invoke `Task(subagent_type='agent-flow:sprint-planner', model='sonnet')`. DO NOT inline-execute.
 Context:
 - Priority-engine output (full ranked list: P0/P1/P2 tiers)
 - Sprint Planning config values: sprint_duration, capacity_unit, effective_capacity, velocity_source
@@ -187,7 +187,7 @@ If `unmapped_ac_list` is non-empty:
   | {ID}  | {N}      | {No triage/spec analysis found | Only {N} AC — may produce incomplete implementation} |
 
   Issues without sufficient AC may produce lower-quality implementations.
-  Consider running /ceos-agents:analyze-bug or /ceos-agents:implement-feature --dry-run on these issues first.
+  Consider running /agent-flow:analyze-bug or /agent-flow:implement-feature --dry-run on these issues first.
 
   Continue with sprint? [Y/n]
   ```
@@ -274,14 +274,14 @@ Update `state.json` per issue: write `sprint_assigned` (true/false). Follow atom
 If `--apply` is NOT present: display suggested commands and STOP:
 ```
 Sprint planned. To implement:
-/ceos-agents:implement-feature {ID-1}
-/ceos-agents:implement-feature {ID-2}
+/agent-flow:implement-feature {ID-1}
+/agent-flow:implement-feature {ID-2}
 ...
-/ceos-agents:fix-bugs {BUG-ID-1}
+/agent-flow:fix-bugs {BUG-ID-1}
 ```
 
 If `--apply` is present: for each selected issue in dependency order:
-1. Determine type: if issue labels/type contain "bug" → dispatch `/ceos-agents:fix-bugs {ID}`; otherwise → dispatch `/ceos-agents:implement-feature {ID}`
+1. Determine type: if issue labels/type contain "bug" → dispatch `/agent-flow:fix-bugs {ID}`; otherwise → dispatch `/agent-flow:implement-feature {ID}`
 2. Wait for child pipeline completion before starting dependent issues
 3. On child pipeline block: mark dependent issues as blocked too; log WARN; continue with non-dependent issues
 4. Update `state.json` per child: write `child_run_id`, issue `status`, increment `completed_issues` or `blocked_issues`

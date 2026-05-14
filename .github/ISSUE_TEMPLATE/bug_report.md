@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report a bug in ceos-agents
+about: Report a bug in agent-flow
 labels: bug
 ---
 
@@ -18,6 +18,6 @@ labels: bug
 ## Actual behavior
 
 ## Environment
-- ceos-agents version:
+- agent-flow version:
 - Claude Code version:
 - OS:

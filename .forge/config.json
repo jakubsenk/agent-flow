@@ -1,138 +1,46 @@
 {
-  "schema_version": "1.0.0",
-  "generated_at": "2026-05-13T11:28:00Z",
-  "generated_by": "phase-0-meta-agent",
-
   "pipeline_mode": "adaptive",
-  "pipeline_mode__provenance": {
-    "source": "default",
-    "reason": "No CLI override; default adaptive mode appropriate for v10.2.0 refactor scope."
-  },
-
+  "pipeline_mode__provenance": { "source": "default", "reason": "Adaptive mode suitable for cross-cutting migration with many parallel subtasks" },
   "jit": {
     "enabled": true,
-    "enabled__provenance": {
-      "source": "meta-agent",
-      "reason": "Composite complexity = 3 (>= 3 threshold per JIT Recommendation rule). 37-file rewrite + 3 new test scenarios benefits from per-phase context injection."
-    },
+    "enabled__provenance": { "source": "meta-agent", "reason": "Composite complexity 5 — JIT refinement recommended for phase-specific prompt adaptation" },
     "timeout": 120,
-    "timeout__provenance": { "source": "default", "reason": "No override." },
     "fallback_timeout": 60,
-    "fallback_timeout__provenance": { "source": "default", "reason": "No override." },
-    "max_consecutive_fallbacks": 2,
-    "max_consecutive_fallbacks__provenance": { "source": "default", "reason": "No override." }
+    "max_consecutive_fallbacks": 2
   },
-
   "replanning": {
     "enabled": true,
-    "enabled__provenance": { "source": "default", "reason": "Default true." },
     "max_cycles": 1,
-    "max_cycles__provenance": {
-      "source": "default",
-      "reason": "Ambiguity score = 2 (moderate but bounded; B1/B2/B3 design choice is the only open question). Default 1 cycle sufficient; no high-ambiguity expansion warranted."
-    },
+    "max_cycles__provenance": { "source": "default", "reason": "Ambiguity score 1 — task is fully specified, single replanning cycle sufficient" },
     "divergence_threshold": 0.3,
-    "divergence_threshold__provenance": {
-      "source": "default",
-      "reason": "Risk score = 3 (refactor with silent-degradation failure mode, but mitigated by Phase A guard + Phase C scenario). Default threshold sufficient."
-    },
-    "trigger_classes": ["PIVOTED"],
-    "trigger_classes__provenance": { "source": "default", "reason": "No override." }
+    "divergence_threshold__provenance": { "source": "default", "reason": "Standard threshold appropriate for fully-specified migration task" },
+    "trigger_classes": ["PIVOTED"]
   },
-
   "fast_track": {
     "enabled": false,
-    "enabled__provenance": {
-      "source": "meta-agent",
-      "reason": "Composite complexity = 3 fails fast-track precondition (must be <= 2). Confidence = 0.85 fails fast-track precondition (must be >= 0.9). Pipeline runs full Phases 1-9."
-    }
+    "enabled__provenance": { "source": "meta-agent", "reason": "Composite complexity 5 exceeds fast-track threshold of 2 — full pipeline required" }
   },
-
   "meta_agent": {
-    "confidence_threshold": 0.7,
-    "confidence_threshold__provenance": { "source": "default", "reason": "No override." }
+    "confidence_threshold": 0.7
   },
-
-  "routing": {
-    "enabled": null,
-    "enabled__provenance": { "source": "default", "reason": "No override." },
-    "confidence_threshold": 0.85,
-    "confidence_threshold__provenance": { "source": "default", "reason": "No override." },
-    "auto_select_template": false,
-    "auto_select_template__provenance": { "source": "default", "reason": "No project template registry; section skipped per protocol." },
-    "default_template": null,
-    "default_template__provenance": { "source": "default", "reason": "No override." }
-  },
-
-  "templates": {},
-  "templates__provenance": { "source": "default", "reason": "Auto-select disabled; no template applied." },
-
   "verification": {
     "dimension_weights": {
-      "security": 0.25,
-      "correctness": 0.35,
-      "spec_alignment": 0.2,
-      "robustness": 0.2
+      "security": 0.2,
+      "correctness": 0.4,
+      "spec_alignment": 0.3,
+      "robustness": 0.1
     },
-    "dimension_weights__provenance": {
-      "source": "meta-agent",
-      "reason": "Tilt toward correctness (+0.05 from default 0.30) because Phase B is mechanical rewrite across 37 files / ~175-201 occurrences -- a single missed reference returns the silent-degradation bug v10.2.0 is designed to fix. Security reduced symmetrically (-0.05 from default 0.30) because v10.2.0 is internal text refactor with no credential/network/data path. spec_alignment + robustness held at default. Weights sum to 1.0."
-    }
+    "dimension_weights__provenance": { "source": "meta-agent", "reason": "Migration correctness is critical (every rename must be caught); spec alignment important to verify all user-specified changes were applied" }
   },
-
   "skip_phases": [],
-  "skip_phases__provenance": {
-    "source": "meta-agent",
-    "reason": "task_type = refactor (implementation type); action = full_pipeline per routing-decision.json. No phase skip recommended. All 9 phases active."
-  },
-
-  "active_phases": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-  "active_phases__provenance": {
-    "source": "meta-agent",
-    "reason": "Refactor with composite complexity 3 + cross-file scope warrants full pipeline."
-  },
-
   "approval_gates": [3, 4, 6],
-  "approval_gates__provenance": { "source": "default", "reason": "No override." },
-
   "tdd": {
-    "mutation_threshold": 70,
-    "mutation_threshold__provenance": { "source": "default", "reason": "No override." }
+    "mutation_threshold": 70
   },
-
   "review": {
-    "triage_enabled": false,
-    "triage_enabled__provenance": { "source": "default", "reason": "No override." }
+    "triage_enabled": false
   },
-
   "oracle": {
-    "enabled": true,
-    "enabled__provenance": { "source": "default", "reason": "No override." }
-  },
-
-  "agents": {
-    "phase_1_count": 3,
-    "phase_2_count": 3,
-    "phase_3_count": 3,
-    "phase_8_count": 4,
-    "agents__provenance": {
-      "source": "default",
-      "reason": "Composite complexity = 3 -> default agent scaling. Phase 1-2 research = 3 parallel angles. Phase 3 brainstorm = 3 personas (conservative/innovative/skeptical). Phase 8 verification = 4 adversarial dimensions."
-    }
-  },
-
-  "models": {
-    "research": "sonnet",
-    "brainstorm": "sonnet",
-    "spec": "opus",
-    "tdd": "sonnet",
-    "plan": "opus",
-    "execute": "sonnet",
-    "verify": "sonnet",
-    "completion": "haiku",
-    "models__provenance": {
-      "source": "meta-agent",
-      "reason": "Composite complexity 3 = default tier (no upgrade or downgrade). Spec + plan use opus (design-critical). Research + brainstorm + tdd + execute + verify use sonnet (mechanical / analytical). Completion uses haiku (template-driven release notes + roadmap diff)."
-    }
+    "enabled": true
   }
 }

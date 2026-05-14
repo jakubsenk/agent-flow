@@ -4,10 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-A Claude Code plugin (`ceos-agents`) that automates bug-fix workflows, feature implementation, and project scaffolding. It provides specialized agents that are orchestrated by commands to take an issue from triage through fix, review, test, and publish — or to scaffold a new project from scratch. The plugin is generic — all project-specific configuration lives in the consuming project's CLAUDE.md under `## Automation Config`.
+A Claude Code plugin (`agent-flow`) that automates bug-fix workflows, feature implementation, and project scaffolding. It provides specialized agents that are orchestrated by commands to take an issue from triage through fix, review, test, and publish — or to scaffold a new project from scratch. The plugin is generic — all project-specific configuration lives in the consuming project's CLAUDE.md under `## Automation Config`.
 
 **Author:** Filip Sabacky
-**Installation:** `claude plugin marketplace add <path-to-repo>`, then `claude plugin install ceos-agents@ceos-agents`
+**Installation:** `claude plugin marketplace add <path-to-repo>`, then `claude plugin install agent-flow@agent-flow`
 
 ## Repository Structure
 
@@ -15,20 +15,19 @@ No build system, no dependencies. Manual test suite in `tests/`. This is a pure 
 
 - `.claude-plugin/` — Plugin metadata (`plugin.json`, `marketplace.json`)
 - `agents/` — 17 agent definitions (markdown with YAML frontmatter)
-- `skills/` — 18 skills (slash commands)
-- `docs/plans/` — Architecture decision records
+- `skills/` — 17 skills (slash commands)
 - `docs/guides/` — Installation and configuration guides
 - `docs/reference/` — Command, agent, pipeline, and config reference
 - `examples/` — Config templates, custom agent examples, MCP config examples
 - `checklists/` — Pipeline phase checklists (review, test, publish)
 - `tests/` — Test harness with scenarios and CI workflow
-- `.ceos-agents/` — Per-run pipeline state files (state.json, pipeline.log, browser artifacts)
+- `.agent-flow/` — Per-run pipeline state files (state.json, pipeline.log, browser artifacts)
 - `state/` — State schema documentation
 - `core/` — 17 shared pipeline pattern contracts
 
 ## Architecture: 2-Layer System
 
-**Skills** (orchestration — WHAT to do): `/analyze-bug`, `/autopilot`, `/changelog`, `/check-setup`, `/create-backlog`, `/discuss`, `/fix-bugs`, `/implement-feature`, `/metrics`, `/onboard`, `/prioritize`, `/publish`, `/scaffold`, `/setup-agents`, `/setup-mcp`, `/sprint-plan`, `/version-bump`, `/version-check`
+**Skills** (orchestration — WHAT to do): `/analyze-bug`, `/autopilot`, `/changelog`, `/check-setup`, `/create-backlog`, `/discuss`, `/fix-bugs`, `/implement-feature`, `/metrics`, `/onboard`, `/prioritize`, `/publish`, `/scaffold`, `/setup-agents`, `/setup-mcp`, `/sprint-plan`, `/version-check`
 **Agents** (specialists — HOW to do it): acceptance-gate, analyst, architect, backlog-creator, browser-agent, deployment-verifier, fixer, priority-engine, publisher, reviewer, rollback-agent, scaffolder, spec-analyst, spec-reviewer, spec-writer, sprint-planner, test-engineer
 
 Skills read `## Automation Config` from the project's CLAUDE.md and dispatch agents. Skills contain zero project-specific logic.
@@ -98,12 +97,12 @@ You are a [Role] specializing in [domain].
 ## Goal
 ## Expertise
 ## Process (numbered steps)
-## Output Contract (v9.0.0+, mandatory — structured output schema agents return)
-## Step Completion Invariants (v10.0.0+, mandatory — fields the orchestrator MUST verify in state.json before considering the stage complete: `dispatched_at` non-null ISO 8601, `dispatch_witness` non-null 64-hex sha256, `tool_uses` ≥ 1, `status="completed"`. Failure → orchestrator returns BLOCKED with reason `completion_invariant_violated:<missing-field>`. Witness verified via `core/lib/stage-invariant.sh::check_dispatch_witness`.)
+## Output Contract (mandatory — structured output schema agents return)
+## Step Completion Invariants (mandatory — fields the orchestrator MUST verify in state.json before considering the stage complete: `dispatched_at` non-null ISO 8601, `dispatch_witness` non-null 64-hex sha256, `tool_uses` ≥ 1, `status="completed"`. Failure → orchestrator returns BLOCKED with reason `completion_invariant_violated:<missing-field>`. Witness verified via `core/lib/stage-invariant.sh::check_dispatch_witness`.)
 ## Constraints (NEVER rules, limits, failure handling)
 ```
 
-> **v10.0.0 reliability contract:** `## Step Completion Invariants` is a mandatory structured section in every `agents/*.md`. Custom agents that lack it will fail the harness scenario `tests/scenarios/v10-step-completion-invariants-completeness.sh`. See `core/lib/stage-invariant.sh` for the runtime helper functions (`compute_dispatch_witness`, `check_dispatch_witness`, `emit_witness_audit`).
+> **Reliability contract:** `## Step Completion Invariants` is a mandatory structured section in every `agents/*.md`. Custom agents that lack it will fail the harness scenario `tests/scenarios/v10-step-completion-invariants-completeness.sh`. See `core/lib/stage-invariant.sh` for the runtime helper functions (`compute_dispatch_witness`, `check_dispatch_witness`, `emit_witness_audit`).
 
 ### Model Selection
 
@@ -164,7 +163,7 @@ Projects using this plugin must have `## Automation Config` in their CLAUDE.md w
 | Agent Overrides | Path | customization/ |
 | Local Deployment | Type, Start command, Stop command, Health check URL, Health check timeout, Ports | (none) |
 | Sprint Planning | Sprint duration, Capacity unit, Team capacity, Velocity target, Sprint field, Mode, Max issues, Epic template | 2 weeks, story-points, (none), (none), (tracker-dependent), suggest, 20, (none) |
-| Autopilot | Max issues per run, Lock timeout, Log file, Bug limit, Feature limit, On error, Dry run | 1, 120, .ceos-agents/autopilot.log, 0, 0, skip, false |
+| Autopilot | Max issues per run, Lock timeout, Log file, Bug limit, Feature limit, On error, Dry run | 1, 120, .agent-flow/autopilot.log, 0, 0, skip, false |
 | Pause Limits | Pause timeout | 30 days |
 
 ---
@@ -243,7 +242,7 @@ Optional. The `### Autopilot` section has exactly 7 keys. `Bug query` and `Featu
 |-----|---------|---------|
 | Max issues per run | 1 | Total cap per invocation (bugs + features combined) |
 | Lock timeout | 120 | Stale lock threshold in minutes |
-| Log file | .ceos-agents/autopilot.log | Append-only run log path |
+| Log file | .agent-flow/autopilot.log | Append-only run log path |
 | Bug limit | 0 | Per-type bug cap (0 = no per-type cap) |
 | Feature limit | 0 | Per-type feature cap (0 = no per-type cap) |
 | On error | skip | `skip` = continue on error; `stop` = abort run on first error |
@@ -261,26 +260,26 @@ Valid range: min 1 hour, max 365 days. Invalid values fall back to the default (
 
 ## Webhook Payloads
 
-Webhook payloads are forward-compatible — additive fields may be added in future MINOR versions without a schema version bump. Consumers MUST use lenient JSON parsing (ignore unknown fields). Existing payload fields (`pr-created`, `ceos-agents-block`) are never renamed or removed. New events (`pipeline-started`, `step-completed`, `pipeline-completed`) were added in v6.8.0. Webhook delivery failure is advisory — `[WARN] Webhook delivery failed` is logged and the pipeline continues.
+Webhook payloads are forward-compatible — additive fields may be added in future MINOR versions without a schema version bump. Consumers MUST use lenient JSON parsing (ignore unknown fields). Existing payload fields (`pr-created`, `agent-flow-block`) are never renamed or removed. The events `pipeline-started`, `step-completed`, and `pipeline-completed` are supported. Webhook delivery failure is advisory — `[WARN] Webhook delivery failed` is logged and the pipeline continues.
 
-**Operator trust required**: The `Webhook URL` value is dispatched via `curl` without scheme or host validation. Operators are responsible for configuring trusted URLs pointing to internal observability endpoints. SSRF defenses (e.g., restricting `file://`/`gopher://` schemes) are deferred to v6.9.0. Per spec design §3.6.
+**Operator trust required**: The `Webhook URL` value is dispatched via `curl` without scheme or host validation. Operators are responsible for configuring trusted URLs pointing to internal observability endpoints. SSRF defenses (e.g., restricting `file://`/`gopher://` schemes) are deferred to a future release. Per spec design §3.6.
 
-**Known v6.9.0 limitation — covert-channel DoS:** the `Webhook URL` value in Automation Config is dispatched via curl without scheme/host validation beyond `--proto "=http,https"`. A malicious PR that injects a slow-responding `Webhook URL` could trigger the v6.9.0 circuit-breaker (3 consecutive failures, then suppression for the run). This is bounded but not zero-cost. **Operator guidance:** (a) treat CLAUDE.md `Webhook URL` PR changes as security-relevant, (b) defer setting `Webhook URL` in multi-contributor environments until v6.9.1 (which will add cross-run circuit persistence + URL allowlist).
+**Known limitation — covert-channel DoS:** the `Webhook URL` value in Automation Config is dispatched via curl without scheme/host validation beyond `--proto "=http,https"`. A malicious PR that injects a slow-responding `Webhook URL` could trigger the circuit-breaker (3 consecutive failures, then suppression for the run). This is bounded but not zero-cost. **Operator guidance:** (a) treat CLAUDE.md `Webhook URL` PR changes as security-relevant, (b) defer setting `Webhook URL` in multi-contributor environments until cross-run circuit persistence + URL allowlist are available.
 
 ## Plugin Composability
 
-ceos-agents uses the `ceos-agents:` namespace prefix on all skills. To ensure compatibility with other plugins:
+agent-flow uses the `agent-flow:` namespace prefix on all skills. To ensure compatibility with other plugins:
 
-- All skills are invoked as `/ceos-agents:<skill>` (e.g., `/ceos-agents:fix-bugs`)
+- All skills are invoked as `/agent-flow:<skill>` (e.g., `/agent-flow:fix-bugs`)
 - Custom agents should follow a similar namespace convention (e.g., `my-plugin:agent-name`)
-- Run `/ceos-agents:check-setup` to detect potential skill name conflicts with other installed plugins
+- Run `/agent-flow:check-setup` to detect potential skill name conflicts with other installed plugins
 
 ## Block Comment Template
 
 When an agent blocks an issue, skills instruct it to use this format:
 
 ```
-[ceos-agents] 🔴 Pipeline Block
+[agent-flow] 🔴 Pipeline Block
 Agent: {agent name}
 Step: {pipeline step where failure occurred}
 Reason: {max 2 sentences}
@@ -291,10 +290,10 @@ Recommendation: {what the human should do}
 Triage checkpoint comment format (after successful triage):
 
 ```
-[ceos-agents] Triage completed. Severity: {severity}. Area: {area}. Complexity: {complexity}. AC: {count}.
+[agent-flow] Triage completed. Severity: {severity}. Area: {area}. Complexity: {complexity}. AC: {count}.
 ```
 
-Both use `[ceos-agents]` prefix for machine-parseable detection by entry-point skills (`/fix-bugs`, `/implement-feature`, `/scaffold`) which auto-resume paused pipelines.
+Both use `[agent-flow]` prefix for machine-parseable detection by entry-point skills (`/fix-bugs`, `/implement-feature`, `/scaffold`) which auto-resume paused pipelines.
 
 ## Versioning Policy
 
@@ -316,7 +315,7 @@ The following invariants MUST hold across release commits. Phase 8 verification 
 2. **Maintainer email consistency** — `SECURITY.md`, `CODE_OF_CONDUCT.md`, and `CONTRIBUTING.md` MUST all reference `filip.sabacky@ceosdata.com` as the maintainer contact (no other emails for this role).
 3. **Issue/PR template parity** — corresponding files under `.gitea/issue_template/`, `.gitea/pull_request_template.md`, `.github/ISSUE_TEMPLATE/`, `.github/PULL_REQUEST_TEMPLATE.md` MUST be byte-identical pairs (verify via `diff -q`).
 
-See `feedback_doc_completeness.md` for the doc-count drift audit discipline (CLAUDE.md, README.md, docs/reference/automation-config.md, docs/reference/skills.md, docs/architecture.md count fields must be kept in sync).
+Doc-count drift discipline: when adding or removing a skill, agent, optional config section, or core contract, the corresponding count fields in CLAUDE.md, README.md, docs/reference/automation-config.md, docs/reference/skills.md, and docs/architecture.md must be updated together in the same commit.
 
 ## When Editing Agent Definitions
 

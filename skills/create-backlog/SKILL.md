@@ -29,7 +29,7 @@ Read Automation Config from CLAUDE.md section `## Automation Config`. Follow `..
 Parse `$ARGUMENTS`:
 - Remove `--decompose`, `--update`, `--dry-run`, `--yolo` from the arguments string
 - Remainder = spec path (file or directory)
-- If spec path is empty: STOP with "Usage: /ceos-agents:create-backlog <spec-path> [--decompose] [--update] [--dry-run] [--yolo]"
+- If spec path is empty: STOP with "Usage: /agent-flow:create-backlog <spec-path> [--decompose] [--update] [--dry-run] [--yolo]"
 - `--decompose` and `--update` are mutually exclusive. If both present: STOP with "Cannot use --decompose with --update."
 - `--dry-run` can combine with any other flag.
 
@@ -44,17 +44,17 @@ Otherwise, follow `../../core/mcp-preflight.md`:
 - Check that at least one `mcp__*` tool matching the tracker type is accessible
 - If not accessible → BLOCK with:
   ```
-  [ceos-agents] 🔴 Pipeline Block
+  [agent-flow] 🔴 Pipeline Block
   Agent: create-backlog
   Step: MCP pre-flight check
   Reason: Cannot connect to your {Type} issue tracker.
   Detail: Expected tool prefix: mcp__{Type}__*. No matching tool is registered in this session.
-  Recommendation: Run /ceos-agents:check-setup for diagnostics, or /ceos-agents:setup-mcp to configure the {Type} integration.
+  Recommendation: Run /agent-flow:check-setup for diagnostics, or /agent-flow:setup-mcp to configure the {Type} integration.
   ```
 
 ### 0b. State initialization
 
-Create `.ceos-agents/backlog-{YYYYMMDD-HHmmss}/` directory.
+Create `.agent-flow/backlog-{YYYYMMDD-HHmmss}/` directory.
 Initialize `state.json` with:
 ```json
 {
@@ -100,7 +100,7 @@ Update `state.json`: write `backlog.spec_path`. Follow atomic write protocol fro
 
 ### Step 2: Extract epics (backlog-creator agent)
 
-You MUST invoke `Task(subagent_type='ceos-agents:backlog-creator', model='sonnet')`. DO NOT inline-execute.
+You MUST invoke `Task(subagent_type='agent-flow:backlog-creator', model='sonnet')`. DO NOT inline-execute.
 
 Context to pass:
 - Specification content (all files read in Step 1, concatenated with file boundary markers)
@@ -323,7 +323,7 @@ Run AFTER Step 4 for each successfully created epic issue (i.e., every issue in 
 
 For each epic in `created_issues`:
 
-1. You MUST invoke `Task(subagent_type='ceos-agents:architect', model='opus')`. DO NOT inline-execute.
+1. You MUST invoke `Task(subagent_type='agent-flow:architect', model='opus')`. DO NOT inline-execute.
    - Context: `Epic: {epic.title}\nSpec content:\n{epic_card_content}\nParent tracker issue: {tracker_issue_id}`
    - Before dispatch, follow `../../core/agent-override-injector.md` for architect overrides
    - Expected output: architectural task tree with subtasks (each subtask includes title, scope, files, estimated_lines, maps_to)
@@ -381,7 +381,7 @@ Edge cases:
 - All tracker writes use the SAME MCP tool conventions as implement-feature Step 5a — no divergence from established patterns
 - Block Comment Template for fatal errors:
   ```
-  [ceos-agents] 🔴 Pipeline Block
+  [agent-flow] 🔴 Pipeline Block
   Agent: create-backlog
   Step: {step where failure occurred}
   Reason: {max 2 sentences}

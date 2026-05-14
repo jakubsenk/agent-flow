@@ -41,7 +41,7 @@ If not in a git repo → use CWD.
 |-------|--------|
 | No config exists | Fresh mode (step 1) |
 | Config exists, current version (has Pipeline Profiles or Metrics) | Offer: "[1] Update existing config [2] Start fresh (overwrites)" |
-| Config exists, old version (no Pipeline Profiles and no Metrics) | "Detected older config format. For structural upgrade, see `docs/guides/migration-v7-to-v8.md` (the `/migrate-config` skill that previously automated this was removed in v9.5.0). Continue anyway with manual migration? [y/N]" |
+| Config exists, old version (no Pipeline Profiles and no Metrics) | "Detected older config format. Update it manually to match the current format in `docs/reference/automation-config.md`. Continue anyway? [y/N]" |
 
 In update mode: parse entire existing config into key→value structure per section. This provides default values throughout the wizard.
 
@@ -84,7 +84,7 @@ Ask step by step:
 > project. Glob is used to handle CWD-context mismatch.
 
 Resolve `{trackers_md_path}` once:
-1. Glob `.claude/plugins/**/docs/reference/trackers.md` — if results, use first (prefer path containing `.claude/plugins/` or `ceos-agents/`; if ambiguous → [WARN] "Multiple trackers.md found — using {path}.")
+1. Glob `.claude/plugins/**/docs/reference/trackers.md` — if results, use first (prefer path containing `.claude/plugins/` or `agent-flow/`; if ambiguous → [WARN] "Multiple trackers.md found — using {path}.")
 2. Glob `**/docs/reference/trackers.md` — use first result if step 1 found nothing
 3. Use `docs/reference/trackers.md` as last resort
 If not found → [WARN] "trackers.md not found — using built-in defaults for this tracker type." and use default values from knowledge.
@@ -250,21 +250,21 @@ Safety: Never delete existing sections/keys that the wizard does not recognize. 
 Automation Config generated successfully.
 
 Next steps:
-1. Run /ceos-agents:check-setup to validate your configuration
-2. Run /ceos-agents:setup-mcp to configure MCP servers and permissions
-3. Try /ceos-agents:analyze-bug <issue-id> to test the bug pipeline
+1. Run /agent-flow:check-setup to validate your configuration
+2. Run /agent-flow:setup-mcp to configure MCP servers and permissions
+3. Try /agent-flow:analyze-bug <issue-id> to test the bug pipeline
 ```
 
 If Feature query was configured, add:
 ```
-4. Try /ceos-agents:implement-feature <issue-id> to test the feature pipeline
+4. Try /agent-flow:implement-feature <issue-id> to test the feature pipeline
 ```
 
 Always end with:
 ```
-Note: ceos-agents uses semantic versioning. See Versioning Policy in the plugin's CLAUDE.md.
+Note: agent-flow uses semantic versioning. See Versioning Policy in the plugin's CLAUDE.md.
 
-Tip: You can use tab-completion (`/ceos<tab>`) to discover commands, or describe what you want in natural language — the skill router will find the right command.
+Tip: You can use tab-completion (`/agent-flow<tab>`) to discover commands, or describe what you want in natural language — the skill router will find the right command.
 ```
 
 ## Update Mode

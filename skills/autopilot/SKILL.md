@@ -8,18 +8,18 @@ argument-hint: "[--dry-run]"
 
 # Autopilot
 
-Headless dispatcher skill for unattended cron / batch / CI invocation. Reads `### Issue Tracker`, `### Feature Workflow` (optional) and `### Autopilot` (optional) from `## Automation Config`, classifies issues into bugs and features, enforces a portable `mkdir`-based lock, and dispatches `ceos-agents:fix-bugs` or `ceos-agents:implement-feature` per issue sequentially via the Skill tool.
+Headless dispatcher skill for unattended cron / batch / CI invocation. Reads `### Issue Tracker`, `### Feature Workflow` (optional) and `### Autopilot` (optional) from `## Automation Config`, classifies issues into bugs and features, enforces a portable `mkdir`-based lock, and dispatches `agent-flow:fix-bugs` or `agent-flow:implement-feature` per issue sequentially via the Skill tool.
 
 Invoke typically as:
 
 ```
-claude -p "Run /ceos-agents:autopilot" --dangerously-skip-permissions
+claude -p "Run /agent-flow:autopilot" --dangerously-skip-permissions
 ```
 
 or, for safe inspection:
 
 ```
-claude -p "Run /ceos-agents:autopilot --dry-run" --dangerously-skip-permissions
+claude -p "Run /agent-flow:autopilot --dry-run" --dangerously-skip-permissions
 ```
 
 Reference: `docs/guides/autopilot.md` for operator onboarding, exit-code matrix, and cron guidance.
@@ -27,7 +27,7 @@ Reference: `docs/guides/autopilot.md` for operator onboarding, exit-code matrix,
 ## Scope & Boundaries
 
 - **Dispatcher only** — this skill never itself modifies code, writes PRs, or runs tests. Those responsibilities belong to the child skills (`fix-bugs`, `implement-feature`).
-- **Process-local lock** — `.ceos-agents/autopilot.lock/` guards ONE host / filesystem. Multi-host deployments MUST coordinate via DISJOINT `Bug query` / `Feature query` filters per host, or run Autopilot from exactly one host. The plugin emits an INFO line with the hostname on every successful lock acquisition (see Step 3) but does NOT automatically detect cross-host contention. See `docs/guides/autopilot.md#single-host-operation`.
+- **Process-local lock** — `.agent-flow/autopilot.lock/` guards ONE host / filesystem. Multi-host deployments MUST coordinate via DISJOINT `Bug query` / `Feature query` filters per host, or run Autopilot from exactly one host. The plugin emits an INFO line with the hostname on every successful lock acquisition (see Step 3) but does NOT automatically detect cross-host contention. See `docs/guides/autopilot.md#single-host-operation`.
 - **Sequential dispatch** — issues are dispatched one at a time. No per-issue parallelism at the Autopilot layer.
 - **Top-level observability only** — Autopilot itself fires NO per-iteration webhooks. Child skills fire their own `pipeline-started` / `step-completed` / `pipeline-completed` events per-issue.
 - **Dry-run is a full short-circuit** — `Dry run: true` means no lock, no state.json, no webhook, no dispatch.
@@ -50,7 +50,7 @@ The Autopilot section uses a `| Key | Value |` table. The 7 keys are (name is EX
 |---|---|---|---|
 | `Max issues per run` | integer ≥ 1 | 1 | Total cap on issues dispatched per invocation (bugs + features combined). Default of 1 is a safety cap for first use. |
 | `Lock timeout` | integer (minutes) | 120 | Age threshold after which an existing lock directory is considered stale and auto-recovered. |
-| `Log file` | path | `.ceos-agents/autopilot.log` | Append-only run log. Each invocation appends a timestamped summary line. Separate from the lock directory. |
+| `Log file` | path | `.agent-flow/autopilot.log` | Append-only run log. Each invocation appends a timestamped summary line. Separate from the lock directory. |
 | `Bug limit` | integer ≥ 0 | 0 | Per-type cap on bug dispatches. `0` = no per-type cap (only `Max issues per run` applies). |
 | `Feature limit` | integer ≥ 0 | 0 | Per-type cap on feature dispatches. `0` = no per-type cap (only `Max issues per run` applies). |
 | `On error` | enum: `skip` \| `stop` | `skip` | Per-issue error policy: `On error: skip` = log [WARN] and continue with next issue; `On error: stop` = abort the whole run on the first per-issue error. |
@@ -58,7 +58,7 @@ The Autopilot section uses a `| Key | Value |` table. The 7 keys are (name is EX
 
 **Query keys are NOT in `### Autopilot`:** `Bug query` is read from `### Issue Tracker` (required existing key). `Feature query` is read from `### Feature Workflow` (optional existing section — absent triggers [WARN] and bug-only mode). Autopilot references them; it does not own them.
 
-When the `### Autopilot` section is absent, Autopilot MAY still run with all 7 keys at their defaults. Operators who do NOT wish to use Autopilot should simply not invoke `/ceos-agents:autopilot`.
+When the `### Autopilot` section is absent, Autopilot MAY still run with all 7 keys at their defaults. Operators who do NOT wish to use Autopilot should simply not invoke `/agent-flow:autopilot`.
 
 ## Process
 
@@ -96,7 +96,7 @@ Then exit 0 immediately. NO lock acquisition, NO state.json write, NO webhook fi
 
 ### Step 2: Acquire lock (mkdir-based, portable bash)
 
-The lock is a DIRECTORY `.ceos-agents/autopilot.lock/` (NOT a file) — `mkdir` is atomic on POSIX and NTFS. A JSON file `owner.json` inside the directory records `{pid, hostname, acquired_at}`. The trap that releases the lock on EXIT is installed ONLY AFTER a successful `mkdir` (avoids the trap-race where an early-failing process would nuke a lock it never acquired). The trap verifies `pid == $$` before `rm -rf` (refuses to delete another process's lock).
+The lock is a DIRECTORY `.agent-flow/autopilot.lock/` (NOT a file) — `mkdir` is atomic on POSIX and NTFS. A JSON file `owner.json` inside the directory records `{pid, hostname, acquired_at}`. The trap that releases the lock on EXIT is installed ONLY AFTER a successful `mkdir` (avoids the trap-race where an early-failing process would nuke a lock it never acquired). The trap verifies `pid == $$` before `rm -rf` (refuses to delete another process's lock).
 
 **Stale detection:** if an existing lock has `acquired_at` older than `Lock timeout` minutes (default 120), the lock is considered stale and recovery re-acquires it exactly once. Stale-arithmetic primary path uses `awk mktime`; on BusyBox < 1.30 (Alpine 3.9 and earlier) `awk mktime` is not available — the fallback uses a filesystem mtime check via `find -mmin +121`.
 
@@ -118,9 +118,9 @@ iso_to_epoch() {
 }
 
 # --- Lock acquisition ---
-# The literal lock directory path is .ceos-agents/autopilot.lock/ (created by mkdir .ceos-agents/autopilot.lock below).
+# The literal lock directory path is .agent-flow/autopilot.lock/ (created by mkdir .agent-flow/autopilot.lock below).
 # We resolve it to an absolute path here so the trap is CWD-change-safe.
-LOCK_DIR="$(pwd)/.ceos-agents/autopilot.lock"      # ABSOLUTE path — CWD-change-safe
+LOCK_DIR="$(pwd)/.agent-flow/autopilot.lock"      # ABSOLUTE path — CWD-change-safe
 OWNER_PID=$$
 OWNER_HOST=$(hostname)
 OWNER_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
@@ -316,7 +316,7 @@ For each classified issue in turn, SEQUENTIALLY (one at a time):
 
 ```bash
 # Round-2 paused-state detection (REQ-050b)
-state_file=".ceos-agents/${ISSUE_ID}/state.json"
+state_file=".agent-flow/${ISSUE_ID}/state.json"
 if [ -f "$state_file" ]; then
   current_status=$(jq -r '.status // empty' "$state_file" 2>/dev/null)
   if [ "$current_status" = "paused" ]; then
@@ -368,21 +368,21 @@ fi
 
 ```bash
 # Ensure per-issue artifact directory exists
-mkdir -p ".ceos-agents/${ISSUE_ID}"
+mkdir -p ".agent-flow/${ISSUE_ID}"
 
 # Select target skill per classification ("bug" | "feature")
 if [ "$classification" = "bug" ]; then
-  TARGET_SKILL="/ceos-agents:fix-bugs"
+  TARGET_SKILL="/agent-flow:fix-bugs"
 elif [ "$classification" = "feature" ]; then
-  TARGET_SKILL="/ceos-agents:implement-feature"
+  TARGET_SKILL="/agent-flow:implement-feature"
 fi
 
 # Dispatch as isolated child claude session (plain-text bypass of disable-model-invocation).
-# Child session writes state.json to .ceos-agents/${ISSUE_ID}/state.json per standard pipeline.
+# Child session writes state.json to .agent-flow/${ISSUE_ID}/state.json per standard pipeline.
 claude -p "Run ${TARGET_SKILL} ${ISSUE_ID}" \
   --dangerously-skip-permissions \
-  > ".ceos-agents/${ISSUE_ID}/dispatch-stdout.log" \
-  2> ".ceos-agents/${ISSUE_ID}/dispatch-stderr.log"
+  > ".agent-flow/${ISSUE_ID}/dispatch-stdout.log" \
+  2> ".agent-flow/${ISSUE_ID}/dispatch-stderr.log"
 child_exit=$?
 ```
 
@@ -391,7 +391,7 @@ Rationale: per-issue child-session isolation also provides crash containment (a 
 3. Capture per-issue outcome from `child_exit` and the child's `state.json`:
 
 ```bash
-child_state_file=".ceos-agents/${ISSUE_ID}/state.json"
+child_state_file=".agent-flow/${ISSUE_ID}/state.json"
 if [ "$child_exit" -eq 0 ] && [ -f "$child_state_file" ]; then
   child_status=$(jq -r '.status // "unknown"' "$child_state_file" 2>/dev/null)
   case "$child_status" in
@@ -439,7 +439,7 @@ After all issues are processed (or after an `On error: stop` break):
    ```
 
    `Tokens` column is read from the per-issue `state.json.pipeline.total_tokens` after each child dispatch completes (see Real-Time Cost Visibility in the v6.8.0 roadmap). If absent (child exited without writing a completed pipeline accumulator), the column reads `—`.
-2. Append the run summary to `$LOG_FILE` (the `Log file` config key, default `.ceos-agents/autopilot.log`). One line per Autopilot invocation in the format:
+2. Append the run summary to `$LOG_FILE` (the `Log file` config key, default `.agent-flow/autopilot.log`). One line per Autopilot invocation in the format:
    ```
    {ISO8601}|{run_id}|{issues_processed}|{n_success}|{n_block}|{n_error}|{total_tokens}|{total_duration_ms}
    ```
@@ -482,7 +482,7 @@ Tracker-level distributed lock is NOT_IN_SCOPE for v6.8.0 and is deferred to v6.
 ## Dry-Run Example
 
 ```bash
-$ claude -p "Run /ceos-agents:autopilot --dry-run" --dangerously-skip-permissions
+$ claude -p "Run /agent-flow:autopilot --dry-run" --dangerously-skip-permissions
 [DRY RUN] Autopilot dry-run mode — full short-circuit. No lock, no state, no webhook, no dispatch.
 [autopilot][INFO] Dry run mode — short-circuit. No lock, no state, no webhook, no dispatch.
 [autopilot][INFO] Would process: Bug query=State: Open and type: Bug, Feature query=State: Open and type: Feature, Max issues per run=1, Bug limit=0, Feature limit=0
@@ -492,8 +492,8 @@ Dry-run is safe to schedule in parallel with a live Autopilot run because it tou
 
 ## Troubleshooting
 
-- **`[autopilot][ERROR] Another Autopilot run in progress`** → check `.ceos-agents/autopilot.lock/owner.json` for the owning PID and host. If the owning process is gone but the lock is less than the effective stale threshold (the configured `Lock timeout` value plus a 5-minute NFS/CIFS clock-skew buffer; default: 125 min on primary path, 121 min on BusyBox fallback), wait for stale auto-recovery or manually `rm -rf .ceos-agents/autopilot.lock/` (only after verifying no live process).
-- **`[STOP] MCP unreachable`** → run `/ceos-agents:check-setup` to diagnose tracker MCP configuration. Autopilot does NOT retry MCP pings; next cron cycle will re-attempt.
+- **`[autopilot][ERROR] Another Autopilot run in progress`** → check `.agent-flow/autopilot.lock/owner.json` for the owning PID and host. If the owning process is gone but the lock is less than the effective stale threshold (the configured `Lock timeout` value plus a 5-minute NFS/CIFS clock-skew buffer; default: 125 min on primary path, 121 min on BusyBox fallback), wait for stale auto-recovery or manually `rm -rf .agent-flow/autopilot.lock/` (only after verifying no live process).
+- **`[STOP] MCP unreachable`** → run `/agent-flow:check-setup` to diagnose tracker MCP configuration. Autopilot does NOT retry MCP pings; next cron cycle will re-attempt.
 - **`[autopilot][WARN] Feature Workflow section absent`** → expected for bug-only projects; no action needed.
 - **`[autopilot][WARN] Feature limit=N configured but no Feature query`** → either remove `Feature limit` from `### Autopilot` or add `Feature query` to `### Feature Workflow`.
 

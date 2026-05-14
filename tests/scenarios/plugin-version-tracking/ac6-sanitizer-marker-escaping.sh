@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Test: core/external-input-sanitizer.md has step 1b with marker escape logic
-# AC-26 through AC-31 (v6.7.1 — Item 5)
+# AC-26 through AC-31
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"

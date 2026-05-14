@@ -1,9 +1,0 @@
-{
-  "task_type": "migration",
-  "secondary_types": ["refactor"],
-  "action": "full_pipeline",
-  "target_skill": null,
-  "confidence": 0.95,
-  "reasoning": "Well-specified PATCH migration with 3 independent work items across 5 files. Source patterns exist from v6.4.3. Full pipeline required due to scope (composite 3).",
-  "skip_profile": null
-}

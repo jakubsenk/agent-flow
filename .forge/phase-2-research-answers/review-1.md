@@ -1,53 +1,119 @@
-# Phase 2 Review — Round 1
-# forge-2026-05-13-001 — v10.2.0 core/ Path Disambiguation
+# Phase 2 Research Answers — Reviewer Assessment
 
-**Reviewer:** Phase 2 Reviewer (round 1)
-**Artifact:** `.forge/phase-2-research-answers/synthesis.md`
+**Reviewer:** Phase 2 Reviewer (Claude Sonnet 4.6)
 **Date:** 2026-05-13
+**Artifact:** `.forge/phase-2-research-answers/final.md`
+**Task context:** Migrating "ceos-agents" Claude Code plugin to "agent-flow" v1.0.0 for OSS release
 
 ---
 
-## Empirical Re-verification Results
+## Review Summary
 
-All 7 mandated checks executed against v10.1.2 HEAD (commit 32f6f33):
-
-| Check | Expected | Actual | Match |
-|-------|----------|--------|-------|
-| `grep -rn 'core/[a-z][a-z-]*\.md' skills/ agents/ --include='*.md' \| wc -l` | 182 | **182** | PASS |
-| `grep -roh 'core/[a-z][a-z-]*\.md' skills/ agents/ --include='*.md' \| wc -l` | 185 | **185** | PASS |
-| `grep -r 'PLUGIN_ROOT' skills/ agents/ core/ .claude-plugin/` | 0 hits | **0 hits** | PASS |
-| `[ -d skills/scaffold/data/ ]` | NOT exist | **NOT_EXISTS** | PASS |
-| `[ -f skills/scaffold/data/guard-block.md ]` | NOT exist | **NOT_EXISTS** | PASS |
-| `ls core/mcp-preflight.md && wc -l` | exists, ~47L | **exists, 47L** | PASS |
-| `grep -rn 'core/mcp-preflight\.md' skills/ --include='*.md' \| wc -l` | 6+ | **6** | PASS |
-
-Additional verifications performed:
-
-- **skills/ vs agents/ breakdown:** 175 + 7 = 182 CONFIRMED (synthesis claim correct)
-- **Per-name distribution:** Full uniq-c sort matches synthesis C1 table exactly (71/34/14/13/7/6/5/5/5/4/4/4/4/4/2/2/1)
-- **Dual-pattern lines:** 3 confirmed (implement-feature/SKILL.md:130, steps/03-decomposition.md:91, publish/SKILL.md:176) — 6 annotated entries in scope-lock + 179 regular = 185 total, consistent
-- **guard-block.md path logic absent:** grep for PLUGIN_ROOT, dirname, `[ -r`, `__FILE__` returns 0 matches in both existing guard-block files — CONFIRMED
-- **publisher.md line numbers:** :65, :77, :144 verified accurate against live file
-- **depth classes:** agents/ = depth 1 (`../core/`), skills/{name}/SKILL.md = depth 2 (`../../core/`), steps/ and data/ = depth 3 (`../../../core/`) — mathematically correct
-- **Non-standard prefix check:** 0 matches for `./core/`, `skills/../core/`, `../../core/` — CONFIRMED
+The document is comprehensive, well-structured, and answers all 8 key questions from the review mandate. It provides an actionable Phase 7 execution checklist with correct sequencing. However, **two numerical claims are materially overstated**, both traceable to the same root cause: the research appears to have counted `.forge*` and `.forge.bak-*` directories together with main-repo files. These errors do not invalidate the migration plan — most over-counted files are in the deletion set — but Phase 7 executors must not rely on the raw counts for scope estimation.
 
 ---
 
-## Findings
+## Key Question Verdicts
 
-### F1 — MINOR — Completeness
-**ID:** `ff7230`
-**Location:** `synthesis.md:I2:header-says-182-but-185-is-correct`
-**Description:** I2's section header reads "per-file-name distribution of the **182** occurrences" but the percentages quoted (38%, 18%, 57%) are computed against 185 occurrences, which is correct. The number 182 in the I2 header is the line count, not the occurrence count — it's used inconsistently here, since per-name distribution is inherently an occurrence-count operation. The C1 distinction between 182 (lines) and 185 (occurrences) is well-defined and internally consistent; I2 fails to apply it correctly in the heading.
-**Impact:** Minor readability/precision issue. The underlying data is correct; Phase 4 spec writers won't be misled by the actual table numbers.
-**Recommendation:** Change I2 header to "per-file-name distribution of the 185 true occurrences." No other changes needed.
+### Q1 — Total count of files/occurrences to rename
+**PARTIAL PASS — counts overstated in 2 categories.**
 
-### F2 — INFO — Correctness
-**ID:** `314de5`
-**Location:** `synthesis.md:C2:probe-CWD-note-incomplete`
-**Description:** C2 states "the path resolves correctly without any path prefix" when CWD = repo root, but does not explicitly address *how* Claude Code sets CWD when dispatching a skill vs loading a guard-block include. The Phase 1 question explicitly asks this. The synthesis answers "if CWD is repo root" — but does not cite evidence that Claude Code always sets CWD to repo root (not to the skill's directory). The existing guard directives at fix-bugs/SKILL.md:11 and implement-feature/SKILL.md:11 load paths like `skills/fix-bugs/data/guard-block.md` (not `./data/guard-block.md`), which implies CWD = repo root — this is implicit evidence but not stated. For Phase 4, this is low-risk since operational behavior is consistent; however the logic gap is present.
-**Impact:** INFO only — no blocking effect on Phase 4. The CWD-is-repo-root conclusion is almost certainly correct given the guard directive evidence; it just isn't argued explicitly.
-**Recommendation:** Noted for awareness; does not require revision before Phase 4 proceeds.
+| Claim | Verified actual | Delta | Verdict |
+|-------|----------------|-------|---------|
+| 224 files with "ceos-agents" | 223 files (main repo, .md/.json/.sh/.yaml) | -1 (negligible) | OK |
+| 127 files with "ceos-agents:" skill prefix | 127 files | 0 | OK |
+| 101 files with gitea.internal.ceosdata.com | **18 files total** (15 excl. .git/.claude) | -83 | OVERSTATED |
+| 147 files with dispatch_witness | **63 files** (all types, excl. .forge) | -84 | OVERSTATED |
+| 30 files / ~35 install-cmd occurrences | Not independently verified; plausible | — | ACCEPTED |
+| 61 .forge.bak-* directories | 61 directories confirmed | 0 | OK |
+
+**Root cause of over-counts:** The 101 and 147 figures likely included `.forge*` directories (61 bak dirs + current `.forge/`). Since docs/plans/ (the primary location of internal gitea URLs) is itself being deleted, and `.forge*` is being deleted, the practical rename burden for `gitea.internal.ceosdata.com` is only ~5 survivor files: `.claude-plugin/plugin.json`, `CHANGELOG.md`, `tests/scenarios/v6.9.0-installation-md-no-internal-host.sh`, `.claude/settings.local.json` (possibly out of scope), and `docs/superpowers/specs/` (in deletion set).
+
+**Impact on Phase 7:** The checklist Step 4b is still correct in approach; executors should expect far fewer files than 101 for the URL rename after deletions are applied.
+
+### Q2 — dispatch_witness sha256 seeds issue
+**PASS.** Section 1.2 correctly identifies:
+- The functional concern: JSON seed payloads reference `"source": "ceos-agents:fix-bugs-skill"` etc.
+- Must be renamed `agent-flow:` to match new namespace
+- Identifies primary files: `tests/scenarios/` (5 named files), `tests/fixtures/v10-witness/` (4 files), `state/schema.md`, `core/lib/stage-invariant.sh`
+- Notes "45+ fixture/state files with hardcoded JSON sha256 witness seed strings" — this count may share the same over-count issue, but the approach and the named key files are correct.
+
+The actionable guidance (rename `"ceos-agents:` → `"agent-flow:` inside JSON witness payloads) is correct and sufficient.
+
+### Q3 — Location of plugin.json/marketplace.json
+**PASS.** Section 3.1–3.2 and Critical Finding #3 correctly confirm:
+- Both files are in `.claude-plugin/`, NOT at repo root
+- Current content of both files is quoted verbatim and matches live file reads (verified)
+- Required changes for each field are correctly specified
+- `marketplace.json` does NOT have a `repository` field — correctly absent from the required-changes list
+
+### Q4 — Location of "v9.0.0+, mandatory"
+**PASS.** Critical Finding #2 and Section 2.1 correctly state:
+- The version-labeled strings (`## Output Contract (v9.0.0+, mandatory — ...)` and `## Step Completion Invariants (v10.0.0+, mandatory — ...)`) appear **ONLY in CLAUDE.md lines 101–102**
+- Verified by grep: `CLAUDE.md:101` and `CLAUDE.md:102` are the only hits in the repo
+- agents/*.md use plain section headers (`## Output Contract`, `## Step Completion Invariants`) without version labels
+- Correct Phase 7 implication: no search-and-replace of version labels needed in agents/*.md
+
+### Q5 — docs/plans/roadmap.md before deletion
+**PASS.** Critical Finding #4 and Step 1 of the checklist correctly address this:
+- roadmap.md confirmed at 2192 lines
+- `git mv docs/plans/roadmap.md docs/roadmap.md` as separate first commit before bulk deletion — correct
+- Identifies README.md L268 as the ref to update
+- Documents what content to extract/rewrite for community audience
+- Notes the rewrite should be English-only, future-facing, no internal Czech notes
+
+One gap: the checklist does not mention `CHANGELOG.md` roadmap refs needing update — Step 1 mentions it in the narrative but Step 8 validation does not verify `docs/plans/roadmap.md` reference removal from CHANGELOG.
+
+### Q6 — .gitignore current state
+**PASS.** Section 2.4 provides exact current contents (4 entries: `.vs/`, `nul`, `.claude/settings.local.json`, `.env`) — verified against live file. The 7+1 patterns to add are correctly specified and actionable.
+
+Minor note: The checklist mentions 8 patterns to add but the list in Section 2.4 shows 8 (including `docs/superpowers/`). This is consistent; no issue.
+
+### Q7 — SECURITY.md current state
+**PASS.** Section 3.5 correctly documents:
+- 16-line file with `# Security Policy` heading
+- Reporting contact: `filip.sabacky@ceosdata.com` (matches Cross-File Invariant #2)
+- 5 business days SLA
+- "Latest version only" support policy
+- Roadmap decision L1632: add GitHub Security Advisories as secondary channel
+All verified against live file.
+
+### Q8 — Phase 7 execution checklist usability
+**PASS with minor gaps.** The 9-step checklist (Steps 0–8, plus Step 9 for orphan commit) is:
+- Correctly sequenced (gitignore → roadmap mv → deletions → plugin metadata → mass rename → doc-count → changelog → invariant check → validation → orphan commit)
+- The critical dependency (roadmap.md relocation before docs/plans/ deletion) is correctly placed
+- Sub-batching of the mass rename (4a–4e) is practical and reviewable
+- Final grep validation commands (Step 8) are correctly targeted
+
+**Gaps in checklist:**
+1. Step 1 does not include verifying `CHANGELOG.md` has no remaining `docs/plans/roadmap.md` refs
+2. Step 4 does not address `docs/superpowers/` — it's in the deletion list but Step 2 only mentions `docs/superpowers/specs/`. The parent `docs/superpowers/` directory itself needs deletion.
+3. Step 8 validation does not check for `.ceos-agents/` remaining occurrences (only checks `ceos-agents`, `gitea.internal.ceosdata.com`, `ceos-agents@ceos-agents`)
+4. The orphan commit step (Step 9) is present but references the current Gitea repo — executors should note that the `.claude/settings.local.json` currently has a gitea remote that will need updating
+
+---
+
+## Minor Factual Issues
+
+| Issue | Severity | Details |
+|-------|----------|---------|
+| docs/superpowers/specs/ file count: "8 files" | LOW | Actual count is 9 files (the HTML file was counted; the directory listing shows 9 items) |
+| docs/plans/ file count: "96 files" | LOW | Actual count is 76 files (ls shows 76). The "96" claim is overstated. |
+| dispatch_witness file count: "147 files" | MEDIUM | Actual count is 63 files excluding .forge (see Q1 analysis). Affects scope estimation but not approach. |
+| gitea.internal.ceosdata.com: "101 files" | MEDIUM | Actual count is 18 files total (15 outside .git/.claude). Most are in the deletion set. |
+
+---
+
+## Strengths
+
+1. **All 8 key questions answered with concrete, actionable guidance** — the document succeeds at its primary mission.
+2. **plugin.json and marketplace.json states are verbatim-correct** — verified exact match to live files.
+3. **SECURITY.md state is correct** — exact match to live file.
+4. **.gitignore state is exact** — all 4 entries correctly reproduced.
+5. **Critical ordering constraint (roadmap before docs/plans/ deletion) is correctly surfaced** — this is the single most important sequencing constraint and it is prominently documented.
+6. **dispatch_witness rename approach is correct** — even if the count is overstated, renaming `"ceos-agents:` → `"agent-flow:` in JSON witness payloads is the right action.
+7. **The 6 rename patterns are complete** — covers all `ceos-agents` variants including the less-obvious `[ceos-agents]` block markers and `ceos-agents-block` webhook event name.
+8. **CHANGELOG replacement decision is correctly documented** — clean v1.0.0 start as per roadmap.md L1524.
 
 ---
 
@@ -60,52 +126,82 @@ Additional verifications performed:
     "requirements_traced": true,
     "no_regressions": true,
     "lint_clean": true,
-    "pass": true,
-    "notes": "All 5 questions (C1, C2, I1, I2, I3) have Answer + Evidence blocks. B1 disposition present with grep evidence. No scope creep into Phase 4 spec writing (B2 depth-split is a mandatory Phase 4 input, not Phase 4 prose). Scope-lock list is present and verifiable."
+    "pass": true
   },
   "tier_2": {
     "fail_to_pass": null,
     "hidden_test_gap": null,
     "mutation_score": null,
     "mutation_available": false,
-    "pass": true,
-    "notes": "Tier 2 not applicable to research synthesis phase."
+    "pass": true
   },
   "tier_3": {
-    "correctness": 5,
+    "correctness": 4,
     "completeness": 4,
-    "security": 5,
+    "security": 4,
     "maintainability": 5,
-    "robustness": 5,
-    "weighted_aggregate": 4.75,
-    "pass": true,
-    "notes": {
-      "correctness": "All 7 empirical checks pass. Per-name distribution matches exactly. Line numbers spot-checked accurate. Dual-pattern line count (3) confirmed. Depth class assignments mathematically verified. No factual errors found.",
-      "completeness": "All 5 questions answered with Answer + Evidence. C1 scope-lock list is complete (182 lines / 185 occurrences, both consistent). B1 disposition confirmed VIABLE/NOT-VIABLE with grep evidence. scaffold/data/ 3-action breakdown present. Depth-split per-class (4 classes) enumerated. One minor: I2 header says 182 where 185 is correct (finding F1). Security N/A = 5 justified (research phase, no executable code produced). Maintainability score: Phase 4 spec writer's job is fully mechanical — depth-class table + sed templates are provided, no judgment calls remain. Robustness: synthesis preempts depth-split surprise (elevated to top-level section), dual-pattern line handling, non-standard prefix absence, guard-block write-from-scratch constraint, and scaffold 3-action prerequisite. No downstream surprises remain unaddressed.",
-      "completeness_deduction": "−1 for I2 header typo (182 vs 185) — minor but measurable against the synthesis's own precision standard for line vs occurrence count distinction.",
-      "security": "N/A — research artifact. No executable code, no injection surface. Set to 5.",
-      "maintainability": "The B2 depth-split mandate section is well-structured with a table and explicit sed instruction count. Phase 4 can implement mechanically. The synthesis explicitly calls out the critical risk (depth-split) and elevates it to a dedicated top-level section. Score 5.",
-      "robustness": "The synthesis resolves all agent contradictions (line vs occurrence count, agents/ depth, scaffold/data/ existence). Disagreement flags section confirms convergence. The DONE_WITH_CONCERNS flag from Agent 3 was appropriately resolved (depth-split risk addressed in dedicated section). Score 5."
-    }
+    "robustness": 3,
+    "weighted_aggregate": 4.0,
+    "pass": true
   },
   "overall_verdict": "PASS",
-  "confidence": 0.93,
+  "confidence": 0.87,
   "findings": [
     {
-      "id": "ff7230",
-      "severity": "MINOR",
-      "criterion": "completeness",
-      "location": "synthesis.md:I2:header-says-182-but-185-is-correct",
-      "description": "I2 section header says 'distribution of the 182 occurrences' but 182 is the line count; the per-name distribution is an occurrence-count operation and should reference 185. Percentages in the table are correctly computed against 185.",
-      "recommendation": "Change I2 header to reference 185 occurrences; no data changes needed."
+      "id": "F-01",
+      "severity": "MEDIUM",
+      "category": "correctness",
+      "title": "gitea.internal.ceosdata.com file count overstated by 83 files",
+      "detail": "Research claims 101 files; actual grep finds 18 files (15 excluding .git/.claude). Root cause: likely included .forge.bak-* directories in the count. Most survivors are in the deletion set (docs/plans/, docs/superpowers/). The practical rename target after deletions is ~5 files.",
+      "action": "Phase 7 executors should not use 101 as scope estimate; run a fresh grep after Step 2 deletions to confirm remaining files."
     },
     {
-      "id": "314de5",
-      "severity": "INFO",
-      "criterion": "correctness",
-      "location": "synthesis.md:C2:probe-CWD-note-incomplete",
-      "description": "C2 asserts CWD = repo root resolves the guard path correctly but does not cite explicit evidence that Claude Code always sets CWD to repo root for skill dispatch. The implicit evidence (existing guard directives use repo-root-relative paths) supports the conclusion but is not stated.",
-      "recommendation": "Noted for Phase 4 awareness; does not block approval. Phase 4 spec should cite fix-bugs/SKILL.md:11 as the CWD evidence."
+      "id": "F-02",
+      "severity": "MEDIUM",
+      "category": "correctness",
+      "title": "dispatch_witness file count overstated by 84 files",
+      "detail": "Research claims 147 files; actual grep finds 63 files excluding .forge directories. The named key files and rename approach are correct. Impact: scope estimation error only.",
+      "action": "Phase 7 executors: use Step 8 grep validation rather than pre-counts to confirm completeness."
+    },
+    {
+      "id": "F-03",
+      "severity": "LOW",
+      "category": "correctness",
+      "title": "docs/plans/ file count: 96 claimed, 76 actual",
+      "detail": "ls docs/plans/ returns 76 entries. The 96 figure may have included subdirectory files (brainstorm/ subdirectory). Does not affect the deletion approach.",
+      "action": "Use `find docs/plans/ -type f` for accurate pre-deletion count."
+    },
+    {
+      "id": "F-04",
+      "severity": "LOW",
+      "category": "correctness",
+      "title": "docs/superpowers/specs/ file count: 8 claimed, 9 actual",
+      "detail": "The directory contains 9 files including 2026-04-27-ceo-presentation.html. Minor off-by-one.",
+      "action": "No impact on execution; delete the whole directory."
+    },
+    {
+      "id": "F-05",
+      "severity": "LOW",
+      "category": "completeness",
+      "title": "Step 8 validation missing .ceos-agents/ occurrence check",
+      "detail": "The final grep validation commands do not include a check for remaining `.ceos-agents/` occurrences after Step 4c renames.",
+      "action": "Add `grep -rn '\\.ceos-agents/'` to Step 8 validation."
+    },
+    {
+      "id": "F-06",
+      "severity": "LOW",
+      "category": "completeness",
+      "title": "docs/superpowers/ parent directory missing from Step 2 deletion list",
+      "detail": "Step 2 lists 'Delete docs/superpowers/specs/ (8 files)' but the parent docs/superpowers/ directory also needs deletion (it contains only the specs/ subdirectory).",
+      "action": "Change Step 2 item to: 'Delete docs/superpowers/ (entire directory, 9 files in specs/)'"
+    },
+    {
+      "id": "F-07",
+      "severity": "LOW",
+      "category": "completeness",
+      "title": "Cross-File Invariants #2 and #3 not fully verified in this research phase",
+      "detail": "CODE_OF_CONDUCT.md and CONTRIBUTING.md email content not confirmed; .gitea/.github template parity not verified. Flagged correctly in the document as 'Phase 7 action' items.",
+      "action": "Acceptable deferral — Phase 7 checklist Step 7 correctly addresses these."
     }
   ]
 }
@@ -113,16 +209,10 @@ Additional verifications performed:
 
 ---
 
-## Summary
+## Recommendation
 
-**Tier 1: PASS** — All 5 questions answered, citation discipline strong, B1 disposition with grep evidence, no scope creep.
+**PASS — proceed to Phase 3.** The research document provides sufficient, accurate, and actionable information for all downstream phases. The two over-counted metrics (URL files: 101 vs 18; witness files: 147 vs 63) are immaterial to the migration approach and primarily affected the deleted set anyway. The Phase 7 checklist is correctly sequenced and covers all critical operations. Phase 7 executors should:
 
-**Tier 3 weighted aggregate: 4.75** — correctness 5, completeness 4 (−1 for I2 header typo), security 5, maintainability 5, robustness 5.
-
-**Overall verdict: PASS** with confidence 0.93.
-
-**Findings:** 2 total — 1 MINOR (I2 header label inconsistency), 1 INFO (implicit CWD assumption). Neither blocks Phase 4 progression. The MINOR finding (F1) is a cosmetic fix that can be applied in the final.md without a revision loop.
-
-**Count discrepancies vs synthesis:** None. All 7 mandated empirical checks matched synthesis claims exactly. The scope-lock list is structurally consistent (185 entries = 182 unique file:line pairs + 3 dual-pattern expansions).
-
-**Recommendation:** Approve with F1 fix applied inline when writing final.md. Do not re-enter revision loop — the fix is trivially mechanical (one word: "182" → "185" in I2 header).
+1. Note F-01/F-02: do not use the pre-deletion file counts as accuracy benchmarks; rely on Step 8 grep validation instead
+2. Fix F-06: delete `docs/superpowers/` (entire dir), not just `docs/superpowers/specs/`
+3. Fix F-05: add `.ceos-agents/` check to Step 8 validation greps

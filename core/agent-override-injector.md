@@ -65,7 +65,7 @@ md_path="${override_path}/${agent_name}.md"
 
 if [ ! -f "$toml_path" ] && [ -f "$md_path" ]; then
     # .md-only: v9.0.0 hard removal — emit [ERROR], log provenance, return empty
-    echo "[ERROR] Legacy .md overlay format removed in v9.0.0; manual conversion required — see docs/guides/migration-v7-to-v8.md (the /migrate-config skill that previously automated this was removed in v9.5.0)." >&2
+    echo "[ERROR] Legacy .md overlay format is not supported; manual conversion required — see docs/guides/toml-overlay-syntax.md for TOML overlay format examples." >&2
     log_overlay_provenance "$agent_name" "md_rejected" "$md_path"
     additional_instructions=""
     # DO NOT continue to Step 3 for this agent
@@ -169,7 +169,7 @@ internally by lib but is unreachable via this injector's call path.
 
 Format: `agent={name} overlay_source={toml|md|none|md_rejected} overlay_path={path|(none)}`
 
-Append-mode target: `.ceos-agents/pipeline.log` (relative to project root / CWD).
+Append-mode target: `.agent-flow/pipeline.log` (relative to project root / CWD).
 
 **Exactly one line per agent dispatch** — calling `resolve_overlay()` automatically logs
 once for the `toml`/`md`/`none` branches. The injector adds one explicit

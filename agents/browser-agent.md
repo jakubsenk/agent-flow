@@ -39,7 +39,7 @@ If `--phase` is not supplied, default to `reproduce`.
    - If not → infer from bug title + description + analyst-impact affected files. Identify the most likely UI entry point.
    - If cannot determine any steps → output with `status: skipped`, reason `no-reproduction-steps`. Stop.
 
-4. Create the screenshot storage directory and generate a Playwright script. Save it to `.ceos-agents/{ISSUE-ID}/reproduction-script.js`:
+4. Create the screenshot storage directory and generate a Playwright script. Save it to `.agent-flow/{ISSUE-ID}/reproduction-script.js`:
 
    First ensure the directory exists:
    ```bash
@@ -70,7 +70,7 @@ If `--phase` is not supplied, default to `reproduce`.
        // ariaSnapshot() requires Playwright >= 1.48. Returns null on older versions via .catch fallback.
        const snapshot = await page.locator(':root').ariaSnapshot().catch(() => null);
        await page.screenshot({ path: '{screenshot_path}', fullPage: false });
-       require('fs').writeFileSync('.ceos-agents/{ISSUE-ID}/reproduction-result.json', JSON.stringify({
+       require('fs').writeFileSync('.agent-flow/{ISSUE-ID}/reproduction-result.json', JSON.stringify({
          status: 'reproduced',
          page_url: page.url(),
          accessibility_snapshot: (snapshot || '').slice(0, 8000),
@@ -83,7 +83,7 @@ If `--phase` is not supplied, default to `reproduce`.
        // If console_errors or network_failures are non-empty the page had issues before the throw — treat as reproduced.
        // Otherwise the error was an unexpected script failure (selector not found, navigation error) — treat as not_reproduced.
        const isReproduced = errors.length > 0 || netFails.length > 0;
-       require('fs').writeFileSync('.ceos-agents/{ISSUE-ID}/reproduction-result.json', JSON.stringify({
+       require('fs').writeFileSync('.agent-flow/{ISSUE-ID}/reproduction-result.json', JSON.stringify({
          status: isReproduced ? 'reproduced' : 'not_reproduced',
          error: e.message,
          page_url: page.url(),
@@ -100,13 +100,13 @@ If `--phase` is not supplied, default to `reproduce`.
 
 5. Run the script with timeout enforcement:
    ```bash
-   timeout {Timeout}s node .ceos-agents/{ISSUE-ID}/reproduction-script.js
+   timeout {Timeout}s node .agent-flow/{ISSUE-ID}/reproduction-script.js
    ```
-   Default timeout: 60s. If the command exits with code 124 (timeout) → write `.ceos-agents/{ISSUE-ID}/reproduction-result.json` with `status: skipped`, reason `timeout`. If the app was started in step 2 via `Start command` → stop it after step 5 completes (success or failure, including any retry in step 6) to avoid port conflicts with downstream pipeline steps. Use `pkill -f "{Start command pattern}"` (the Start command string from config is a sufficient match pattern).
+   Default timeout: 60s. If the command exits with code 124 (timeout) → write `.agent-flow/{ISSUE-ID}/reproduction-result.json` with `status: skipped`, reason `timeout`. If the app was started in step 2 via `Start command` → stop it after step 5 completes (success or failure, including any retry in step 6) to avoid port conflicts with downstream pipeline steps. Use `pkill -f "{Start command pattern}"` (the Start command string from config is a sufficient match pattern).
 
 6. If step 5 fails unexpectedly (script error, not a reproduction failure) → run once more. If fails again → write `status: skipped`, reason `script-error`, detail: error message.
 
-7. Read `.ceos-agents/{ISSUE-ID}/reproduction-result.json`. Output:
+7. Read `.agent-flow/{ISSUE-ID}/reproduction-result.json`. Output:
 
    ```markdown
    ## Reproduction Result
@@ -119,20 +119,20 @@ If `--phase` is not supplied, default to `reproduce`.
    - **Screenshot:** {path or "none"}
    ```
 
-   Pass the full contents of `.ceos-agents/{ISSUE-ID}/reproduction-result.json` in context for the fixer.
+   Pass the full contents of `.agent-flow/{ISSUE-ID}/reproduction-result.json` in context for the fixer.
 
 ## Process: Phase verify (`--phase verify`)
 
-1. Read context: reproduction result from `.ceos-agents/{ISSUE-ID}/reproduction-result.json`, fixer diff, acceptance criteria, Browser Verification config (Base URL, Timeout, Max pages, Exploration, Exploration max clicks, On events).
+1. Read context: reproduction result from `.agent-flow/{ISSUE-ID}/reproduction-result.json`, fixer diff, acceptance criteria, Browser Verification config (Base URL, Timeout, Max pages, Exploration, Exploration max clicks, On events).
    - Check `On events` — if it does not include `verify` → output verdict `SKIPPED`, reason `not-configured`. Stop.
 
 2. Check prerequisites (same as reproduce phase — Playwright installed, app running). If either missing → output verdict `SKIPPED`, stop.
 
 3. **Sub-phase A — Scoped Verification (always runs):**
 
-   a. **Replay reproduction steps:** Reuse the reproduction script from `.ceos-agents/{ISSUE-ID}/reproduction-script.js` (generated during reproduce phase).
-      - If the script doesn't exist AND `.ceos-agents/{ISSUE-ID}/reproduction-result.json` exists with a `page_url` → generate a minimal navigation script from that `page_url`. Run it. Expect: no console errors at the failure point, correct page state.
-      - If neither `.ceos-agents/{ISSUE-ID}/reproduction-script.js` nor `.ceos-agents/{ISSUE-ID}/reproduction-result.json` exist (reproduce phase was skipped before writing any file, e.g., `playwright-not-installed` or `app-not-running`) → set `reproduction_replay: skipped`, continue to adjacent page check with verdict limited to PARTIAL at best.
+   a. **Replay reproduction steps:** Reuse the reproduction script from `.agent-flow/{ISSUE-ID}/reproduction-script.js` (generated during reproduce phase).
+      - If the script doesn't exist AND `.agent-flow/{ISSUE-ID}/reproduction-result.json` exists with a `page_url` → generate a minimal navigation script from that `page_url`. Run it. Expect: no console errors at the failure point, correct page state.
+      - If neither `.agent-flow/{ISSUE-ID}/reproduction-script.js` nor `.agent-flow/{ISSUE-ID}/reproduction-result.json` exist (reproduce phase was skipped before writing any file, e.g., `playwright-not-installed` or `app-not-running`) → set `reproduction_replay: skipped`, continue to adjacent page check with verdict limited to PARTIAL at best.
 
    b. **Adjacent page check:** Read the fixer diff. Identify up to 3 routes/pages directly modified. If the diff contains no identifiable routes (e.g., a global stylesheet or config-only change), record `adjacent_pages: []` and continue — do not invent routes. For each identified route:
       - Navigate to the route
@@ -166,7 +166,7 @@ If `--phase` is not supplied, default to `reproduce`.
 
    d. Hard stop when: clicks ≥ `Exploration max clicks` OR elapsed ≥ `Timeout`. Never recurse deeper than 2 link-hops from a changed route.
 
-5. Save results to `.ceos-agents/{ISSUE-ID}/verification-result.json`:
+5. Save results to `.agent-flow/{ISSUE-ID}/verification-result.json`:
    ```json
    {
      "verdict": "VERIFIED|PARTIAL|FAILED|SKIPPED",
@@ -215,8 +215,8 @@ If `--phase` is not supplied, default to `reproduce`.
 | Section produced | When | Required fields |
 |------------------|------|-----------------|
 | `## Reproduction Result` | always | Status (reproduced / not_reproduced / skipped); Reason (skipped only); Page URL; Console errors; Network failures; Accessibility snapshot (≤2000 chars); Screenshot path |
-| `.ceos-agents/{ISSUE-ID}/reproduction-script.js` | always (when not skipped) | Playwright script literal |
-| `.ceos-agents/{ISSUE-ID}/reproduction-result.json` | always | status; page_url; accessibility_snapshot; console_errors; network_failures; screenshot_path |
+| `.agent-flow/{ISSUE-ID}/reproduction-script.js` | always (when not skipped) | Playwright script literal |
+| `.agent-flow/{ISSUE-ID}/reproduction-result.json` | always | status; page_url; accessibility_snapshot; console_errors; network_failures; screenshot_path |
 
 ### Output Contract — Phase: verify
 
@@ -225,7 +225,7 @@ If `--phase` is not supplied, default to `reproduce`.
 | Section | Source | Required |
 |---------|--------|----------|
 | `--phase verify` flag | dispatching skill prompt | yes |
-| Reproducer JSON from reproduce phase | `.ceos-agents/{ISSUE-ID}/reproduction-result.json` (CWD file) | no (falls back to SKIPPED) |
+| Reproducer JSON from reproduce phase | `.agent-flow/{ISSUE-ID}/reproduction-result.json` (CWD file) | no (falls back to SKIPPED) |
 | Fixer diff | upstream fixer | yes |
 | Acceptance criteria | upstream (analyst --phase triage / spec-analyst) | yes |
 | `Browser Verification` config block | Automation Config (On events required + Exploration optional + Exploration max clicks optional) | yes |
@@ -235,11 +235,11 @@ If `--phase` is not supplied, default to `reproduce`.
 | Section produced | When | Required fields |
 |------------------|------|-----------------|
 | `## Browser Verification Report` | always | Verdict (VERIFIED / PARTIAL / FAILED / SKIPPED); Reproduction replay; Adjacent pages checked; Visual AC check; Exploration; Screenshots |
-| `.ceos-agents/{ISSUE-ID}/verification-result.json` | when not SKIPPED | verdict; subphase_a (reproduction_replay/adjacent_pages/visual_ac_check); subphase_b (ran/observations); screenshots[] |
+| `.agent-flow/{ISSUE-ID}/verification-result.json` | when not SKIPPED | verdict; subphase_a (reproduction_replay/adjacent_pages/visual_ac_check); subphase_b (ran/observations); screenshots[] |
 
 ## Step Completion Invariants
 
-Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.ceos-agents/{ISSUE_ID}/state.json` (or the orchestrator-injected state path):
+Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.agent-flow/{ISSUE_ID}/state.json` (or the orchestrator-injected state path):
 
 1. `dispatched_at` — Field is present and non-empty for the active stage. The active stage is `reproduce_browser` if invoked with --phase reproduce, or `browser_verification` if invoked with --phase verify (EXPECTED_STAGE_NAME is injected by the orchestrator per-phase). The orchestrator wrote this pre-dispatch.
 
@@ -262,7 +262,7 @@ Do NOT attempt to write `tool_uses`, `completed_at`, or `status="completed"` —
 - NEVER submit forms, click delete buttons, or perform destructive actions during exploration or reproduction
 - NEVER run Sub-phase B if Sub-phase A verdict is FAILED — pointless and wastes tokens
 - NEVER leave a background dev server running after completion — stop any server started via `Start command` before returning
-- NEVER commit `.ceos-agents/` artifact files (reproduction-script.js, reproduction-result.json, verification-result.json, verifier-script.js)
+- NEVER commit `.agent-flow/` artifact files (reproduction-script.js, reproduction-result.json, verification-result.json, verifier-script.js)
 - NEVER run if `Browser Verification` section is absent from Automation Config
 - NEVER run the verify phase if `On events` in config does not include `verify` (check in Process step 1; output verdict SKIPPED if condition is met after section is present)
 - FAILED verdict from Sub-phase A in the verify phase returns control to the fixer (pipeline blocks on FAILED)

@@ -17,7 +17,7 @@ Determine input for spec-writer:
 
 Check Agent Overrides: if `{Agent Overrides path}/spec-writer.md` exists, append as `## Project-Specific Instructions` per `../../../core/agent-override-injector.md`.
 
-You MUST invoke Task(subagent_type='ceos-agents:spec-writer', model='opus'). DO NOT inline-execute.
+You MUST invoke Task(subagent_type='agent-flow:spec-writer', model='opus'). DO NOT inline-execute.
 Context: input source + MODE + tech stack flags (--lang, --framework, --db, --ci)
 
 **Post-dispatch (COST-R2, COST-R3):** Defensive-read `result.usage`. Write `spec_writer.completed_at`, `spec_writer.tokens_used`, `spec_writer.duration_ms`, `spec_writer.tool_uses` (fallback `0`). Set `spec_writer.status = "completed"`.
@@ -29,7 +29,7 @@ Read `Spec iterations` from Automation Config → Retry Limits (default 5; on fr
 For each iteration:
 1. **Pre-dispatch spec_reviewer (COST-R4):** Write `spec_reviewer.started_at`, `spec_reviewer.model = "opus"`, status `"in_progress"`, counters `0`.
 2. Check Agent Overrides for `spec-reviewer.md`.
-3. You MUST invoke Task(subagent_type='ceos-agents:spec-reviewer', model='opus'). DO NOT inline-execute.
+3. You MUST invoke Task(subagent_type='agent-flow:spec-reviewer', model='opus'). DO NOT inline-execute.
    Context: `spec/` folder path + review mode
 4. **Post-dispatch (COST-R2, COST-R3, COST-R5):** Accumulate cumulatively: `spec_reviewer.tokens_used += iteration_tokens`, `spec_reviewer.duration_ms += iteration_duration_ms`, `spec_reviewer.tool_uses += iteration_tool_uses`.
 5. If APPROVE → set `spec_reviewer.status = "completed"`, write `spec_reviewer.completed_at`. Break loop.

@@ -7,7 +7,7 @@ then posts implementation comments and closes tracker issues for completed epics
 
 Check Agent Overrides for `spec-reviewer.md`.
 
-You MUST invoke Task(subagent_type='ceos-agents:spec-reviewer', model='opus'). DO NOT inline-execute.
+You MUST invoke Task(subagent_type='agent-flow:spec-reviewer', model='opus'). DO NOT inline-execute.
 Context: `--verify mode. Compare spec/ against implemented codebase.`
 
 Verdict handling:
@@ -29,7 +29,7 @@ If guard does not trigger:
 2. Determine fully completed epics: epic is complete if NONE of its subtasks appear in blocked features list.
 3. For each fully-completed epic, post comment to the epic tracker issue:
    ```
-   [ceos-agents] Scaffold implementation completed.
+   [agent-flow] Scaffold implementation completed.
    Features: {comma-separated list of implemented subtask titles for this epic}
    Branch: {current branch name}
    Stories: {N} implemented, {B} blocked

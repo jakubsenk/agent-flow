@@ -10,7 +10,7 @@ infrastructure (no `smoke_check` agent exists), so no `dispatch_witness` write i
 ## Pre-step state write
 
 Before running smoke commands, write per-stage pre-dispatch fields to
-`.ceos-agents/{ISSUE-ID}/state.json`:
+`.agent-flow/{ISSUE-ID}/state.json`:
 - `smoke_check.started_at` = current ISO-8601 UTC timestamp
 - `smoke_check.status`     = `"in_progress"`
 - `smoke_check.stage_name` = `"smoke_check"`

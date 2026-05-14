@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Test: State-manager graceful degradation for missing/malformed plugin.json
-# AC-32 through AC-35 (v6.7.1 — Item 6)
+# AC-32 through AC-35
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"

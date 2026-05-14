@@ -1,9 +1,0 @@
-{
-  "task_id": "T-08",
-  "status": "DONE",
-  "files_modified": [],
-  "revision_cycle": null,
-  "concerns": [],
-  "test_results": "Both T-03 (SECURITY.md pointer in Reporting Issues, line 103) and T-04 (CODE_OF_CONDUCT.md link replacing 4 bullets, line 107) merged cleanly; no duplicate boilerplate; markdown formatting intact; grep SECURITY.md returns 1 hit, grep CODE_OF_CONDUCT.md returns 1 hit; no orphaned CoC bullet text found",
-  "completed_at": "2026-04-19T00:00:00Z"
-}

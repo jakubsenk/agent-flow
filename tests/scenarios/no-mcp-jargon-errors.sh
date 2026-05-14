@@ -9,7 +9,7 @@ FAIL=0
 fail() { echo "FAIL: $1"; FAIL=1; }
 
 # Files that MUST have the old pattern replaced (standard error files)
-# (estimate and pipeline-status deleted in v9.5.0)
+# (estimate and pipeline-status deleted)
 STANDARD_ERROR_FILES=(
   "skills/analyze-bug/SKILL.md"
   "skills/changelog/SKILL.md"

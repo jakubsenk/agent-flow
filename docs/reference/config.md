@@ -4,7 +4,7 @@ This file documents the **Autopilot** section and the updated **Notifications** 
 
 ## Autopilot
 
-Optional section. Enables unattended continuous processing via `/ceos-agents:autopilot`. All 7 keys have defaults — the section may be omitted entirely, in which case Autopilot reads `Bug query` from `### Issue Tracker` and `Feature query` from `### Feature Workflow` with all other values at their defaults.
+Optional section. Enables unattended continuous processing via `/agent-flow:autopilot`. All 7 keys have defaults — the section may be omitted entirely, in which case Autopilot reads `Bug query` from `### Issue Tracker` and `Feature query` from `### Feature Workflow` with all other values at their defaults.
 
 **NOTE on query keys:** `Bug query` and `Feature query` are NOT Autopilot-section keys. They are read from existing sections: `Bug query` from `### Issue Tracker` (required), `Feature query` from `### Feature Workflow` (optional). Autopilot only references them — it does not own them.
 
@@ -16,7 +16,7 @@ Optional section. Enables unattended continuous processing via `/ceos-agents:aut
 |-----|------|---------|-------------|
 | Max issues per run | int | `1` | Total cap on issues dispatched per invocation (bugs + features combined). Default of 1 is a safety cap for first use |
 | Lock timeout | int (minutes) | `120` | Age threshold in minutes after which an existing lock directory is considered stale and is auto-recovered |
-| Log file | string | `.ceos-agents/autopilot.log` | Path to the append-only run log. Each invocation appends a timestamped summary line |
+| Log file | string | `.agent-flow/autopilot.log` | Path to the append-only run log. Each invocation appends a timestamped summary line |
 | Bug limit | int | `0` | Per-type cap on bug dispatches. `0` = no per-type cap (total cap from `Max issues per run` applies) |
 | Feature limit | int | `0` | Per-type cap on feature dispatches. `0` = no per-type cap (total cap from `Max issues per run` applies) |
 | On error | enum | `skip` | Per-issue error policy: `skip` = log [WARN] and continue with next issue; `stop` = abort the whole run on the first per-issue error |
@@ -34,7 +34,7 @@ Optional section. Enables unattended continuous processing via `/ceos-agents:aut
 ### Autopilot
 | Max issues per run | 1 |
 | Lock timeout | 120 |
-| Log file | .ceos-agents/autopilot.log |
+| Log file | .agent-flow/autopilot.log |
 | Bug limit | 0 |
 | Feature limit | 0 |
 | On error | skip |
@@ -46,7 +46,7 @@ Optional section. Enables unattended continuous processing via `/ceos-agents:aut
 - `Bug query` lives under `### Issue Tracker` — it is the same query used by the interactive `fix-bugs` pipeline. Autopilot reads it from there.
 - `Feature query` lives under `### Feature Workflow` — absent section triggers `[WARN]` and bug-only mode.
 - `Bug limit: 0` and `Feature limit: 0` mean no per-type cap; the only cap in effect is `Max issues per run`.
-- Lock directory (`.ceos-agents/autopilot.lock/`) is separate from the log file (`Log file`). The lock is `mkdir`-based (atomic on POSIX and NTFS); the log file is append-only text.
+- Lock directory (`.agent-flow/autopilot.lock/`) is separate from the log file (`Log file`). The lock is `mkdir`-based (atomic on POSIX and NTFS); the log file is append-only text.
 - Stale lock auto-recovery: if the lock directory's `owner.json` has `acquired_at` older than `Lock timeout` minutes, the next run re-acquires the lock automatically.
 - `Dry run` overrides all side effects: the lock directory is not created, `state.json` is not written, webhook events are not fired, and no skill is dispatched to process issues.
 
@@ -80,6 +80,6 @@ Optional section. Configures webhook delivery for pipeline lifecycle events.
 
 | Key | Value |
 |-----|-------|
-| Webhook URL | https://hooks.example.com/ceos-agents |
+| Webhook URL | https://hooks.example.com/agent-flow |
 | On events | pipeline-started, step-completed, pipeline-completed, issue-blocked |
 ```

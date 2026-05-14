@@ -44,7 +44,7 @@ Follow `../../core/config-reader.md`. Required sections: `Issue Tracker` (Type, 
 
 Follow `../../core/mcp-preflight.md`. In `--description` + `--yolo` mode: BLOCK with context-specific error (cannot create tracker card; no interactive fallback). Otherwise STOP with setup guidance.
 
-If the MCP server is unavailable, display: `Cannot connect to your issue tracker — MCP server unavailable. Please configure with /ceos-agents:setup-mcp before retrying.`
+If the MCP server is unavailable, display: `Cannot connect to your issue tracker — MCP server unavailable. Please configure with /agent-flow:setup-mcp before retrying.`
 
 ### Step 0b: Config Validity Gate
 
@@ -74,7 +74,7 @@ If `RESUME_POINT == "FRESH"`, run the dispatch table below from step 01. Otherwi
 
 After resume detection (when `RESUME_POINT == "FRESH"`):
 
-1. Create `.ceos-agents/{ISSUE_ID}/` and initialize `state.json` via `../../core/state-manager.md` — top-level `status = "running"`, `pipeline = "implement-feature"`, `mode = "feature"`, empty `stages = {}` map, `run_id = <uuid>`.
+1. Create `.agent-flow/{ISSUE_ID}/` and initialize `state.json` via `../../core/state-manager.md` — top-level `status = "running"`, `pipeline = "implement-feature"`, `mode = "feature"`, empty `stages = {}` map, `run_id = <uuid>`.
 2. Check out the working branch per `Branch naming` in `Source Control` config.
 3. Fire `pipeline-started` webhook if configured (see `../../core/agent-states.md`).
 4. Apply `Issue Tracker → On start set` transition to the issue (state + implicit self-assign — same protocol as `skills/fix-bugs/SKILL.md` Step 1).
@@ -121,13 +121,13 @@ If `$ARGUMENTS` contains `--dry-run`: execute steps 01 and 02 only, display the 
 
 Before EVERY Task dispatch, follow `../../core/agent-override-injector.md` for TOML override loading and prompt injection (handled inside each step file — the controller never re-implements override loading).
 
-After each step completes, if `$GOT_STEP_MODE == true`: pause and display step-result summary, prompt `[step-mode] Step NN/08 completed. Continue? [c/s/a]`. `c` = continue; `s` = skip next step (write `status = "skipped"` to next stage's state.json record before resuming); `a` = abort (write `status = "paused"` and `last_completed_step` to state.json; exit 0; resume by re-invoking `/ceos-agents:implement-feature <ISSUE-ID>`).
+After each step completes, if `$GOT_STEP_MODE == true`: pause and display step-result summary, prompt `[step-mode] Step NN/08 completed. Continue? [c/s/a]`. `c` = continue; `s` = skip next step (write `status = "skipped"` to next stage's state.json record before resuming); `a` = abort (write `status = "paused"` and `last_completed_step` to state.json; exit 0; resume by re-invoking `/agent-flow:implement-feature <ISSUE-ID>`).
 
 **Near-miss WARN**: if a file exists at `customization/steps/implement-feature/{NN}-*.md` that does NOT match any of the 8 canonical step filenames, log `[WARN] Unrecognized step override file: {filename}` and continue.
 
 ## Block handler
 
-Follow `../../core/block-handler.md`. On `fixer` / `reviewer` / `test-engineer` block → dispatch `rollback-agent` (haiku) to revert git state. Block comment format: `[ceos-agents]` prefix per CLAUDE.md "Block Comment Template". Write to state.json: `status = "blocked"`, `outcome = "failed"`, `block = {...}` per `../../core/state-manager.md` atomic write protocol. Pipeline halts cleanly with `exit 0` (graceful block).
+Follow `../../core/block-handler.md`. On `fixer` / `reviewer` / `test-engineer` block → dispatch `rollback-agent` (haiku) to revert git state. Block comment format: `[agent-flow]` prefix per CLAUDE.md "Block Comment Template". Write to state.json: `status = "blocked"`, `outcome = "failed"`, `block = {...}` per `../../core/state-manager.md` atomic write protocol. Pipeline halts cleanly with `exit 0` (graceful block).
 
 ## Architecture freshness check (advisory)
 

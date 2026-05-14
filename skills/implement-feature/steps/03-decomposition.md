@@ -81,8 +81,8 @@ If the optional `backlog-creator` dispatch fires (Step 03a backlog mode), comput
 
 ```bash
 PROMPT_HEAD_128="$(printf '%s' "$BACKLOG_CREATOR_PROMPT_TEMPLATE" | head -c 128)"
-DISPATCH_WITNESS="$(compute_dispatch_witness backlog_creation ceos-agents:backlog-creator sonnet "$PROMPT_HEAD_128")"
-EXPECTED_AGENT_NAME="ceos-agents:backlog-creator"
+DISPATCH_WITNESS="$(compute_dispatch_witness backlog_creation agent-flow:backlog-creator sonnet "$PROMPT_HEAD_128")"
+EXPECTED_AGENT_NAME="agent-flow:backlog-creator"
 EXPECTED_STAGE_NAME="backlog_creation"
 ```
 
@@ -93,14 +93,14 @@ multi-line MCP tool parameters.
 
 Required in-memory values: `ISSUE_ID`, `tracker_type`, `tracker_project`, `tracker_effective_status`,
 `decomposition_decision`, `create_tracker_subtasks_config`, subtask list, YAML path
-(`.claude/decomposition/{ISSUE-ID}.yaml`), state.json path (`.ceos-agents/{ISSUE-ID}/state.json`).
+(`.claude/decomposition/{ISSUE-ID}.yaml`), state.json path (`.agent-flow/{ISSUE-ID}/state.json`).
 
 ## Step 03b: --decompose-only exit
 
 If `decompose_only_mode = true`:
 1. Display decomposition result table (the same table shown during plan approval above)
 2. Output: "Decomposition complete. {N} subtasks created in tracker. Run
-   `/ceos-agents:implement-feature {ISSUE-ID}` to begin implementation."
+   `/agent-flow:implement-feature {ISSUE-ID}` to begin implementation."
 3. Update `state.json`: set top-level `status: "completed"`, `decomposition.status: "completed"`.
    Follow atomic write protocol from `../../../core/state-manager.md`.
 4. EXIT — do not proceed to step 04 or beyond.

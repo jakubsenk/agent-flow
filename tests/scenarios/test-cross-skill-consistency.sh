@@ -81,7 +81,7 @@ done
 # -----------------------------------------------------------------------
 # FC-16: resume detection awareness of tracker_issue_id
 # REQ-8.1: resume handling must reference tracker_issue_id in DECOMPOSE_PARTIAL context
-# (v9.3.0: resume-ticket deleted — checked in core/resume-detection.md or fix-bugs)
+# (resume-ticket deleted — checked in core/resume-detection.md or fix-bugs)
 # -----------------------------------------------------------------------
 DECOMP_CHECK="$REPO_ROOT/core/tracker-subtask-creator.md"
 if grep -q 'tracker_issue_id' "$DECOMP_CHECK" 2>/dev/null || grep -q 'tracker_issue_id' "$FB" 2>/dev/null; then

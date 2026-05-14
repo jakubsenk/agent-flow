@@ -1,8 +1,0 @@
-{
-  "task_id": "T01",
-  "status": "completed",
-  "files_modified": ["state/schema.md"],
-  "verification_passed": true,
-  "maps_to": ["COST-R1","COST-R2","COST-R3","COST-R4","COST-R5","COST-R6","COST-R7","COST-R8","COST-R9","COST-R10"],
-  "summary": "Added per-stage usage fields (tokens_used, duration_ms, tool_uses, model, started_at, completed_at), pipeline.{total_tokens, total_duration_ms, total_tool_uses, summary_table} accumulator with truncation rule, fixer_reviewer cumulative semantics note, backward-compat subsection, full JSON example. schema_version stays '1.0'."
-}

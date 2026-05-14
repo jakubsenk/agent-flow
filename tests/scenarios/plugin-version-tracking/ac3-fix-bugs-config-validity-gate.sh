@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Test: fix-bugs SKILL.md contains Config Validity Gate (Step 0b)
-# AC-4 through AC-9 (v6.7.1 — Item 2)
+# AC-4 through AC-9
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
@@ -30,9 +30,9 @@ if ! grep 'Issue Tracker' "$FIX_BUGS" | grep 'Source Control' | grep 'PR Rules' 
   fail "skills/fix-bugs/SKILL.md Step 0b does not check all 4 required sections (Issue Tracker, Source Control, PR Rules, Build & Test) together"
 fi
 
-# AC-7: Block comment template with [ceos-agents] prefix and rocket/red emoji
-if ! grep -q '\[ceos-agents\].*Pipeline Block' "$FIX_BUGS"; then
-  fail "skills/fix-bugs/SKILL.md missing block comment template with '[ceos-agents]' prefix and 'Pipeline Block'"
+# AC-7: Block comment template with [agent-flow] prefix and rocket/red emoji
+if ! grep -q '\[agent-flow\].*Pipeline Block' "$FIX_BUGS"; then
+  fail "skills/fix-bugs/SKILL.md missing block comment template with '[agent-flow]' prefix and 'Pipeline Block'"
 fi
 
 # AC-8: Step 0b appears between MCP pre-flight check and Orchestration heading (structural position)

@@ -1,23 +1,23 @@
-# Pipeline Reference (v8.0.0)
+# Pipeline Reference
 
-Tento dokument popisuje interní strukturu v8.0.0 pipeline architektury: jak jsou SKILL.md soubory
-rozděleny na kroky, jak funguje override resolution, mode flag framework (`--yolo` / default /
-`--step-mode`), a jak Pipeline Profiles mapují stage names z v7 na v8. Pro high-level pipeline
-diagramy (flow chart, stage tables) viz `docs/reference/pipelines.md`. Tato stránka je
-strojově-čitelná referenece pro integrátory a contributory.
+This document describes the internal pipeline architecture: how SKILL.md files are
+decomposed into steps, how override resolution works, the mode flag framework (`--yolo` / default /
+`--step-mode`), and how Pipeline Profiles map stage names. For high-level pipeline
+diagrams (flow chart, stage tables) see `docs/reference/pipelines.md`. This page is a
+machine-readable reference for integrators and contributors.
 
 ---
 
 ## Pipeline Overview
 
-ceos-agents provides three pipelines. Each is invoked by one or more skills and uses a common
+agent-flow provides three pipelines. Each is invoked by one or more skills and uses a common
 steps decomposition layout.
 
 | Pipeline | Entry skill(s) | Purpose | When to use |
 |----------|---------------|---------|-------------|
-| `fix-bugs` | `/ceos-agents:fix-bugs` | Triage, analyze, fix, review, test, and publish N bugs from the issue tracker | Existing bugs in the tracker; batch or single issue |
-| `implement-feature` | `/ceos-agents:implement-feature` | Spec, architect, optionally decompose, fix, review, test, and publish a feature from the tracker | Feature issues; supports decomposition into subtasks |
-| `scaffold` | `/ceos-agents:scaffold` | Create a new project from scratch: spec, stack selection, skeleton, implement all epics, test, verify, report | New project bootstrapping |
+| `fix-bugs` | `/agent-flow:fix-bugs` | Triage, analyze, fix, review, test, and publish N bugs from the issue tracker | Existing bugs in the tracker; batch or single issue |
+| `implement-feature` | `/agent-flow:implement-feature` | Spec, architect, optionally decompose, fix, review, test, and publish a feature from the tracker | Feature issues; supports decomposition into subtasks |
+| `scaffold` | `/agent-flow:scaffold` | Create a new project from scratch: spec, stack selection, skeleton, implement all epics, test, verify, report | New project bootstrapping |
 
 All three pipelines share:
 - Mode flag framework (`--yolo` / default / `--step-mode`) — see [Mode flag dispatch](#mode-flag-dispatch)
@@ -132,7 +132,7 @@ fi
 **Rules:**
 
 1. Override is **replace-only**: the project override file fully replaces the plugin default step.
-   No partial patching, no before/after insertion in v8.0.0.
+   No partial patching, no before/after insertion.
 2. Filename match is **exact**: `{NN-name}.md` (case-sensitive, hyphen-separated). A mismatched
    filename silently falls through to the plugin default.
 3. Near-miss detection emits a `[WARN]` log for common normalization errors (uppercase, underscore
@@ -202,7 +202,7 @@ Continue / Skip remaining gates / Abort? [c/s/a]:
 | any other | Re-prompt with "Invalid input; expected c, s, or a" |
 
 A step-mode abort is resumable by re-invoking the original entry-point skill with the issue ID
-(e.g. `/ceos-agents:fix-bugs {ID}`). The inline auto-resume contract (`core/resume-detection.md`)
+(e.g. `/agent-flow:fix-bugs {ID}`). The inline auto-resume contract (`core/resume-detection.md`)
 reads `pause_reason=step_mode_abort` and resumes from `last_completed_step + 1`.
 
 ---
@@ -315,18 +315,18 @@ spec before architect work begins. These checkpoints are omitted in `--yolo` mod
 ## State management
 
 Pipeline state is persisted to `.ceos-agents/{RUN-ID}/state.json` via `core/state-manager.md`.
-See `state/schema.md` for the full schema. Key v8.0.0 additions:
+See `state/schema.md` for the full schema.
 
-### New top-level keys (additive, `schema_version` stays `"1.0"`)
+### State top-level keys (`schema_version` stays `"1.0"`)
 
-| v8 key | Type | Description |
-|--------|------|-------------|
-| `analyst_triage_completed_at` | ISO 8601 string or null | When `analyst --phase triage` completed (v7 alias: `triage_completed_at`) |
-| `analyst_impact_completed_at` | ISO 8601 string or null | When `analyst --phase impact` completed (v7 alias: `code_analyst_completed_at`) |
+| Key | Type | Description |
+|-----|------|-------------|
+| `analyst_triage_completed_at` | ISO 8601 string or null | When `analyst --phase triage` completed |
+| `analyst_impact_completed_at` | ISO 8601 string or null | When `analyst --phase impact` completed |
 | `test_engineer_e2e_invoked` | boolean | `true` when `test-engineer --e2e=true` was dispatched |
-| `test_engineer_e2e_completed_at` | ISO 8601 string or null | When `test-engineer --e2e=true` completed (v7 alias: `e2e_test_completed_at`) |
-| `browser_agent_reproduce_completed_at` | ISO 8601 string or null | When `browser-agent --phase reproduce` completed (v7 alias: `reproducer_completed_at`) |
-| `browser_agent_verify_completed_at` | ISO 8601 string or null | When `browser-agent --phase verify` completed (v7 alias: `browser_verifier_completed_at`) |
+| `test_engineer_e2e_completed_at` | ISO 8601 string or null | When `test-engineer --e2e=true` completed |
+| `browser_agent_reproduce_completed_at` | ISO 8601 string or null | When `browser-agent --phase reproduce` completed |
+| `browser_agent_verify_completed_at` | ISO 8601 string or null | When `browser-agent --phase verify` completed |
 
 ### Step-mode abort state
 
@@ -341,8 +341,8 @@ When user aborts with `a` in `--step-mode`, the following fields are written:
 }
 ```
 
-Re-invoking the original entry-point skill (`/ceos-agents:fix-bugs {ID}`,
-`/ceos-agents:implement-feature {ID}`, or `/ceos-agents:scaffold {ID}`) triggers inline
+Re-invoking the original entry-point skill (`/agent-flow:fix-bugs {ID}`,
+`/agent-flow:implement-feature {ID}`, or `/agent-flow:scaffold {ID}`) triggers inline
 auto-resume detection (`core/resume-detection.md`) which reads
 `pause_reason == "step_mode_abort"` and continues from `last_completed_step + 1` with the mode
 flag provided at resume time (default / `--yolo` / `--step-mode`).

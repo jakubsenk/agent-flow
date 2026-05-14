@@ -12,7 +12,7 @@ You want to customize ONE step in the `fix-bugs` pipeline without modifying the 
 2. Create the override at: `customization/steps/fix-bugs/04-fixer-reviewer-loop.md`
 3. Copy plugin content as starting point, then modify
 4. The plugin will detect your override at dispatch time and use yours instead of the default
-5. The plugin emits `[INFO] Step override active: customization/steps/fix-bugs/04-fixer-reviewer-loop.md` to .ceos-agents/pipeline.log
+5. The plugin emits `[INFO] Step override active: customization/steps/fix-bugs/04-fixer-reviewer-loop.md` to .agent-flow/pipeline.log
 
 ## Naming convention
 

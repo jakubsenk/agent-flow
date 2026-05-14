@@ -58,7 +58,7 @@ Read Automation Config from CLAUDE.md section `## Automation Config`:
 Before any pipeline operation, verify MCP tool availability:
 - Read Type from Automation Config (Issue Tracker section)
 - Check that at least one `mcp__*` tool matching the tracker type is accessible
-- If not accessible → STOP with: "Cannot connect to your {Type} issue tracker. Is the {Type} integration configured? Run `/ceos-agents:check-setup` for diagnostics."
+- If not accessible → STOP with: "Cannot connect to your {Type} issue tracker. Is the {Type} integration configured? Run `/agent-flow:check-setup` for diagnostics."
 
 ## Orchestration
 
@@ -66,18 +66,18 @@ Before any pipeline operation, verify MCP tool availability:
 
 Via MCP server (per Issue Tracker → Type), fetch all issues matching Bug query + Feature query (if it exists). For each issue: ID, title, state, comments, created date.
 
-### 2. Parse [ceos-agents] comments
+### 2. Parse [agent-flow] comments
 
 For each issue, go through comments. Extract:
 
 **Triage checkpoint:**
-Regex: `^\[ceos-agents\] Triage completed\. Severity: (.+)\. Area: (.+)\.$`
+Regex: `^\[agent-flow\] Triage completed\. Severity: (.+)\. Area: (.+)\.$`
 
 **Spec checkpoint:**
-Regex: `^\[ceos-agents\] Spec analysis completed\. Area: (.+)\. Criteria: (.+)\.$`
+Regex: `^\[agent-flow\] Spec analysis completed\. Area: (.+)\. Criteria: (.+)\.$`
 
 **Block comment:**
-Regex (multiline): `^\[ceos-agents\] 🔴 Pipeline Block`
+Regex (multiline): `^\[agent-flow\] 🔴 Pipeline Block`
 Following lines: `Agent: (.+)`, `Step: (.+)`, `Reason: (.+)`, `Detail: (.+)`, `Recommendation: (.+)`
 
 **PR link:**
@@ -89,11 +89,11 @@ Regex: `PR: (https?://\S+)` or `#(\d+)`
 
 ### 4. Compute pipeline metrics
 
-- `total_attempted` = issues with a `[ceos-agents]` comment in the given period
+- `total_attempted` = issues with a `[agent-flow]` comment in the given period
 - `total_fixed` = issues with PR merged (or in a state from State transitions → For Review/Done)
-- `total_blocked` = issues with a `[ceos-agents] 🔴 Pipeline Block` comment and still in Blocked state
+- `total_blocked` = issues with a `[agent-flow] 🔴 Pipeline Block` comment and still in Blocked state
 - `success_rate` = total_fixed / total_attempted (percentage)
-- `avg_time_to_fix` = average time from the first `[ceos-agents]` comment to merged PR (if data available)
+- `avg_time_to_fix` = average time from the first `[agent-flow]` comment to merged PR (if data available)
 - `block_by_stage` = count of blocks per pipeline stage (triage, analysis, fix, review, test, publish)
 - `top_block_reasons` = top 5 most frequent "Reason:" values from block comments
 
@@ -111,7 +111,7 @@ Total estimate for the period.
 
 ### 6a. Read state.json per issue (measured data — preferred over heuristics)
 
-For each issue identified in Step 4, glob `.ceos-agents/*/state.json` to locate per-run state files. Classify each pipeline run:
+For each issue identified in Step 4, glob `.agent-flow/*/state.json` to locate per-run state files. Classify each pipeline run:
 
 - **MEASURED**: `pipeline.total_tokens` is present in state.json → use `pipeline.total_tokens` directly; do NOT apply heuristic constants.
 - **ESTIMATED**: `pipeline.total_tokens` is absent (pre-v6.8.0 run or incomplete pipeline) → apply heuristic constants from Step 6.
@@ -257,7 +257,7 @@ Data source: measured={X} pipelines (state.json.pipeline.total_tokens present), 
 {If Y > 0}: Pipelines run before v6.8.0 upgrade lack per-stage usage fields and are reported as estimated.
 Estimated pipelines: {comma-separated list of estimated issue IDs and run dates}.
 
-Generated: {timestamp} | ceos-agents v{version}
+Generated: {timestamp} | agent-flow v{version}
 ```
 
 If `--output` specified: write to file, otherwise stdout.
@@ -295,7 +295,7 @@ All 5 user-controlled / tracker-sourced fields MUST be passed through `html_esca
 - Pipeline Overview: 3 cards (Active blue #3B82F6, Blocked red #EF4444, Completed green #22C55E)
 - Issue Table: sortable table (ID, Title, State, Stage, Agent, Tokens, Duration, PR) — Tokens and Duration columns show `—` when `pipeline.total_tokens` is absent from state.json
 - Blocked Issues Panel: blocked issue details (agent, reason, recommendation)
-- Recent Activity Timeline: last 20 events with colored dots (sort all `[ceos-agents]` comments by timestamp desc)
+- Recent Activity Timeline: last 20 events with colored dots (sort all `[agent-flow]` comments by timestamp desc)
 - Statistics: success rate (progress bar), throughput, block distribution
 - Recommendations: from Step 6
 - Footer: generated timestamp, plugin version

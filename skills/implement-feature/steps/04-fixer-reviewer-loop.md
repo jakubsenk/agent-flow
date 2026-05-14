@@ -25,9 +25,9 @@ Both fixer and reviewer bind to canonical stage `fixer_reviewer` per design.md �
 ```bash
 . core/lib/stage-invariant.sh
 PROMPT_HEAD_128="$(printf '%s' "$FIXER_PROMPT_TEMPLATE" | head -c 128)"
-DISPATCH_WITNESS="$(compute_dispatch_witness fixer_reviewer ceos-agents:fixer opus "$PROMPT_HEAD_128")"
+DISPATCH_WITNESS="$(compute_dispatch_witness fixer_reviewer agent-flow:fixer opus "$PROMPT_HEAD_128")"
 DISPATCHED_AT="$(date -u +%FT%TZ)"
-EXPECTED_AGENT_NAME="ceos-agents:fixer"   # ceos-agents:reviewer for the reviewer dispatch
+EXPECTED_AGENT_NAME="agent-flow:fixer"   # agent-flow:reviewer for the reviewer dispatch
 EXPECTED_STAGE_NAME="fixer_reviewer"
 # Merge: state.json[stages.fixer_reviewer] = { dispatched_at, dispatch_witness,
 #   agent_name, stage_name, status="in_progress" } atomically.
@@ -39,7 +39,7 @@ EXPECTED_STAGE_NAME="fixer_reviewer"
 Before dispatch, check Agent Overrides: follow `../../../core/agent-override-injector.md`.
 If `{Agent Overrides path}/fixer.toml` exists, append its rendered Markdown content to the agent's context as `## Project-Specific Instructions`.
 
-You MUST invoke Task(subagent_type='ceos-agents:fixer', model='opus'). DO NOT inline-execute.
+You MUST invoke Task(subagent_type='agent-flow:fixer', model='opus'). DO NOT inline-execute.
 - Context: `Mode: feature. Pipeline: implement-feature.` + architectural design + subtask scope + acceptance criteria
 - After completion: run Build command
 
@@ -63,7 +63,7 @@ follow the full NEEDS_CLARIFICATION protocol in `../../../core/agent-states.md` 
 - Persist clarification object to `state.json` with `status: "paused"`
 - Include `asked_at` ISO 8601 UTC timestamp (autopilot reads this for pause age)
 - Fire `pipeline-paused` webhook if configured
-- Exit 0 with message "[INFO] Pipeline paused — re-invoke /ceos-agents:implement-feature <ISSUE-ID> --clarification \"<answer>\" to resume."
+- Exit 0 with message "[INFO] Pipeline paused — re-invoke /agent-flow:implement-feature <ISSUE-ID> --clarification \"<answer>\" to resume."
 
 If build fails → fixer fixes it (max Build retries attempts). If build still fails → proceed to step X.
 
@@ -79,7 +79,7 @@ If Custom Agents → Post-fix agent exists: run via Task tool.
 Before dispatch, check Agent Overrides: follow `../../../core/agent-override-injector.md`.
 If `{Agent Overrides path}/reviewer.toml` exists, append its rendered Markdown content to the agent's context as `## Project-Specific Instructions`.
 
-You MUST invoke Task(subagent_type='ceos-agents:reviewer', model='opus'). DO NOT inline-execute.
+You MUST invoke Task(subagent_type='agent-flow:reviewer', model='opus'). DO NOT inline-execute.
 - Context: `Mode: feature. Pipeline: implement-feature.` + diff from fixer + acceptance criteria from spec-analyst
 
 Follow `../../../core/fixer-reviewer-loop.md`:

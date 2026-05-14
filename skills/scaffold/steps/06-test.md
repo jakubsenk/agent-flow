@@ -11,7 +11,7 @@ and once more as a full-suite sweep after all batches complete.
 
 Check Agent Overrides for `test-engineer.md`.
 
-You MUST invoke Task(subagent_type='ceos-agents:test-engineer', model='sonnet'). DO NOT inline-execute.
+You MUST invoke Task(subagent_type='agent-flow:test-engineer', model='sonnet'). DO NOT inline-execute.
 Context: changed files + acceptance_criteria + `Max test attempts = {Test attempts from CLAUDE.md, default 3}`.
 
 After completion: run Test command from generated CLAUDE.md.
@@ -41,9 +41,9 @@ On failure: log `[WARN] Webhook delivery failed`, continue.
 
 Check Agent Overrides for `deployment-verifier.md`.
 
-You MUST invoke Task(subagent_type='ceos-agents:deployment-verifier', model='sonnet'). DO NOT inline-execute.
+You MUST invoke Task(subagent_type='agent-flow:deployment-verifier', model='sonnet'). DO NOT inline-execute.
 Context: `Action: start. Local Deployment config: Type={Type}, Start={Start command}, Stop={Stop command},
-Health check URL={URL}, Timeout={timeout}, Ports={Ports}. Run directory: .ceos-agents/scaffold/`
+Health check URL={URL}, Timeout={timeout}, Ports={Ports}. Run directory: .agent-flow/scaffold/`
 
 **Post-dispatch:** Defensive-read `result.usage`. Write `deployment.completed_at`, tokens, duration, tool_uses. Set `deployment.status = "completed"`.
 
@@ -59,7 +59,7 @@ If Local Deployment section absent: `[WARN] Local Deployment not configured. Ski
 
 Check Agent Overrides for `test-engineer.md` (test-engineer handles `--e2e` flag).
 
-You MUST invoke Task(subagent_type='ceos-agents:test-engineer', model='sonnet'). DO NOT inline-execute.
+You MUST invoke Task(subagent_type='agent-flow:test-engineer', model='sonnet'). DO NOT inline-execute.
 Pass `--e2e` flag. Context: `spec/verification.md` test strategy + list of implemented features + AC.
 
 **Post-dispatch:** Defensive-read `result.usage`. Write `e2e_test.completed_at`, tokens, duration, tool_uses. Set `e2e_test.status = "completed"`.

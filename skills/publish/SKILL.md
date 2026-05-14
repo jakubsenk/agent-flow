@@ -11,7 +11,7 @@ Publish current work: PR + (conditional) issue tracker state change. Read Automa
 
 As of v7.0.0, `/publish` auto-detects the publishing **mode** from the current branch name and the Automation Config `Source Control → Branch naming` template. There are three success modes (`full-publish`, `pr-only-no-id`, `pr-only-404`) and one failure mode (`FAIL`). No flags. No new config keys. The old `/create-pr` skill was removed; its "PR-only with valid tracker reference" use case is now expressed by renaming the branch to one that does not match the configured `Branch naming` prefix (e.g., `chore/refactor-foo` instead of `fix/PROJ-123-foo`).
 
-> **Operator note (interactive-only):** `/publish is interactive-only` — it requires user confirmation flows in agent prose and may FAIL in environments without an MCP server configured (CI / cron). For headless / batch publishing, use `/ceos-agents:autopilot`.
+> **Operator note (interactive-only):** `/publish is interactive-only` — it requires user confirmation flows in agent prose and may FAIL in environments without an MCP server configured (CI / cron). For headless / batch publishing, use `/agent-flow:autopilot`.
 
 ## Steps
 
@@ -28,10 +28,10 @@ branch_name=$(git branch --show-current)
 If `branch_name` is empty, the working tree is in a **detached HEAD** state. There is no active branch to push or to use as the PR source, so `/publish` cannot proceed. FAIL with a single-line INFO message and EXIT non-zero:
 
 ```
-[ceos-agents][INFO] Cannot determine branch (detached HEAD). /publish requires an active branch.
+[agent-flow][INFO] Cannot determine branch (detached HEAD). /publish requires an active branch.
 ```
 
-This is a pre-flight environment check — NOT a tracker-down failure — so it does NOT use the `[ceos-agents] 🔴 Pipeline Block` template. No tracker comment is posted. No webhook event is fired. (Detached HEAD is treated as FAIL — exit non-zero — NOT as `pr-only-no-id`, because there is no branch to push or use as PR source.)
+This is a pre-flight environment check — NOT a tracker-down failure — so it does NOT use the `[agent-flow] 🔴 Pipeline Block` template. No tracker comment is posted. No webhook event is fired. (Detached HEAD is treated as FAIL — exit non-zero — NOT as `pr-only-no-id`, because there is no branch to push or use as PR source.)
 
 **0b. Read `Source Control → Branch naming` from Automation Config.**
 
@@ -44,7 +44,7 @@ If the `Branch naming` key is **ABSENT** from Automation Config:
 - Emit a single logical line (single `echo` invocation):
 
   ```
-  [ceos-agents][INFO] No Branch naming pattern configured; PR-only mode.
+  [agent-flow][INFO] No Branch naming pattern configured; PR-only mode.
   ```
 
 - Jump directly to **Step 3** (skip Steps 0c, 0d, 1, 2). The pipeline continues with `mode = "pr-only-no-id"`.
@@ -152,7 +152,7 @@ If `tracker_needed == false`:
 - Emit a single logical line (single `echo` invocation, single `\n`):
 
   ```
-  [ceos-agents][INFO] Branch '{branch_name}' does not match the configured Branch naming pattern. Creating PR without tracker contact.
+  [agent-flow][INFO] Branch '{branch_name}' does not match the configured Branch naming pattern. Creating PR without tracker contact.
   ```
 
 - Skip directly to **Step 3** (skip Steps 1, 2). A non-matching branch is probably intentional (the user named it `chore/refactor-foo`); the message is INFO-level so it does not look alarming.
@@ -181,7 +181,7 @@ d. Classify the outcome per the closed 5-bucket enum at `../../core/mcp-detectio
 
 | Outcome | `mode` | UX channel | Continue? |
 |---|---|---|---|
-| Issue returned with valid summary | `"full-publish"` | INFO log: `[ceos-agents][INFO] Issue {issue_id} found in {tracker_type}. Publishing PR + tracker update.` | yes → Step 3 |
+| Issue returned with valid summary | `"full-publish"` | INFO log: `[agent-flow][INFO] Issue {issue_id} found in {tracker_type}. Publishing PR + tracker update.` | yes → Step 3 |
 | `error_type == "not_found"` | `"pr-only-404"` | **404 WARN tier** (single line, NOT block channel) | yes → Step 3 |
 | `error_type ∈ {"timeout", "auth", "tls", "unknown"}` | FAIL | **FAIL tier** block | no — EXIT non-zero |
 
@@ -205,7 +205,7 @@ Read `Type` from Automation Config → `Issue Tracker` (default: `youtrack`).
 
 ### Step 5 — Dispatch publisher agent (haiku, Task)
 
-You MUST invoke `Task(subagent_type='ceos-agents:publisher', model='haiku')`. DO NOT inline-execute. The agent will commit, push, and create the PR.
+You MUST invoke `Task(subagent_type='agent-flow:publisher', model='haiku')`. DO NOT inline-execute. The agent will commit, push, and create the PR.
 
 Context (the `mode` and `issue_id` fields are added in v7.0.0):
 
@@ -221,7 +221,7 @@ issue_id = {issue_id or 'none'}.
   - Issue tracker: set state per Automation Config (`Issue Tracker → State transitions → For Review`).
   - Post a comment in the issue tracker with the PR link.
 - ELSE (mode in `{"pr-only-no-id", "pr-only-404"}`):
-  - Skip both. Log: `[ceos-agents][INFO] PR-only mode ({mode}); tracker not updated.`
+  - Skip both. Log: `[agent-flow][INFO] PR-only mode ({mode}); tracker not updated.`
 
 ### Step 7 — Webhook (UNCHANGED shape; `issue_id` empty in PR-only modes)
 
@@ -256,13 +256,13 @@ Display the result (PR URL + issue tracker state, per the publisher agent's Publ
 This template matches the `CLAUDE.md` "Block Comment Template" format. The `Skill:` field (not `Agent:`) is used for skill-level blocks. The format is machine-parseable by webhook consumers.
 
 ```
-[ceos-agents] 🔴 Pipeline Block
-Skill: /ceos-agents:publish
+[agent-flow] 🔴 Pipeline Block
+Skill: /agent-flow:publish
 Step: Tracker auto-detect (Step 2)
 Reason: Cannot connect to your {tracker_type} issue tracker — cannot verify whether '{issue_id}' exists.
 Detail: {error_type} error from {tracker_type} MCP: {error_message}
 Recommendation:
-  1. Run `/ceos-agents:check-setup` to diagnose tracker connectivity.
+  1. Run `/agent-flow:check-setup` to diagnose tracker connectivity.
   2. If you intentionally want a PR with no tracker update, rename your
      branch to one that does NOT start with the configured Branch naming
      prefix (e.g., from "fix/PROJ-123-foo" to "chore/PROJ-123-foo"),
@@ -270,17 +270,17 @@ Recommendation:
   3. If the tracker is intentionally offline, create the PR manually:
      git push -u origin {branch} && gh pr create
      (or your tracker UI's equivalent)
-  4. Once the tracker is reachable, re-run `/ceos-agents:publish`.
+  4. Once the tracker is reachable, re-run `/agent-flow:publish`.
 ```
 
-After emitting this block, EXIT non-zero. (For users coming from v6.x: `/ceos-agents:check-setup` is the diagnostic skill; `/ceos-agents:setup-mcp` is the configuration wizard — renamed from init in v7.0.0.)
+After emitting this block, EXIT non-zero. (For users coming from v6.x: `/agent-flow:check-setup` is the diagnostic skill; `/agent-flow:setup-mcp` is the configuration wizard — renamed from init in v7.0.0.)
 
 ### 404 WARN tier (`error_type == "not_found"`)
 
 Emit as a **single `echo` invocation** (one logical line, single trailing `\n`). Stdout, NOT the block channel. Pipeline continues with `mode = "pr-only-404"`:
 
 ```
-[ceos-agents][WARN] Branch '{branch}' contains issue ID pattern '{issue_id}' but no matching ticket was found in {tracker_type}. Creating PR without tracker update.
+[agent-flow][WARN] Branch '{branch}' contains issue ID pattern '{issue_id}' but no matching ticket was found in {tracker_type}. Creating PR without tracker update.
 ```
 
 The displayed wrapping above is a Markdown rendering artifact only — the implementation MUST emit this as ONE logical line (one `echo` call, no mid-line newlines).
@@ -290,7 +290,7 @@ The displayed wrapping above is a Markdown rendering artifact only — the imple
 Single logical line, single `echo` call. INFO level. A non-matching branch is probably intentional (user named it `chore/refactor-foo`); the message must not look alarming. Pipeline continues with `mode = "pr-only-no-id"`:
 
 ```
-[ceos-agents][INFO] Branch '{branch}' does not match the configured Branch naming pattern. Creating PR without tracker contact.
+[agent-flow][INFO] Branch '{branch}' does not match the configured Branch naming pattern. Creating PR without tracker contact.
 ```
 
 ### Missing Branch naming INFO tier (already emitted in Step 0b)
@@ -298,7 +298,7 @@ Single logical line, single `echo` call. INFO level. A non-matching branch is pr
 Single logical line. Pipeline continues with `mode = "pr-only-no-id"`. Skips MCP pre-flight entirely:
 
 ```
-[ceos-agents][INFO] No Branch naming pattern configured; PR-only mode.
+[agent-flow][INFO] No Branch naming pattern configured; PR-only mode.
 ```
 
 ### Detached HEAD FAIL tier (already emitted in Step 0a)
@@ -306,7 +306,7 @@ Single logical line. Pipeline continues with `mode = "pr-only-no-id"`. Skips MCP
 Single logical line. Exits non-zero. NOT a Block Comment Template message — this is a pre-flight environment check, not a tracker-down failure. No tracker comment, no webhook event:
 
 ```
-[ceos-agents][INFO] Cannot determine branch (detached HEAD). /publish requires an active branch.
+[agent-flow][INFO] Cannot determine branch (detached HEAD). /publish requires an active branch.
 ```
 
 ---
@@ -322,4 +322,4 @@ Single logical line. Exits non-zero. NOT a Block Comment Template message — th
 
 ## Headless / batch publishing
 
-`/publish` is interactive-only. For headless / batch publishing (cron, CI, Task Scheduler), use `/ceos-agents:autopilot` instead — it dispatches `/fix-bugs` or `/implement-feature` for each tracker-discovered issue, and those pipelines invoke `publisher` non-interactively from a known-tracker-backed context.
+`/publish` is interactive-only. For headless / batch publishing (cron, CI, Task Scheduler), use `/agent-flow:autopilot` instead — it dispatches `/fix-bugs` or `/implement-feature` for each tracker-discovered issue, and those pipelines invoke `publisher` non-interactively from a known-tracker-backed context.

@@ -28,20 +28,20 @@ Follow `core/mcp-detection.md` with `service_type: "tracker"`, `check_write: fal
 
 - **No matching MCP tool found:** BLOCK pipeline with:
   ```
-  [ceos-agents] 🔴 Pipeline Block
+  [agent-flow] 🔴 Pipeline Block
   Agent: mcp-preflight
   Step: MCP pre-flight check
   Reason: Cannot connect to your {tracker_type} issue tracker. No integration found.
   Detail: Expected tool prefix: mcp__{tracker_type}__*. No matching tool is registered in this session.
-  Recommendation: Run /ceos-agents:check-setup for diagnostics, or /ceos-agents:setup-mcp to configure the {tracker_type} integration. Verify that the integration is listed in your Claude Code MCP config and that the server process is running.
+  Recommendation: Run /agent-flow:check-setup for diagnostics, or /agent-flow:setup-mcp to configure the {tracker_type} integration. Verify that the integration is listed in your Claude Code MCP config and that the server process is running.
   ```
 - **MCP tool found but connectivity test fails** (auth error, network error, timeout): BLOCK pipeline with:
   ```
-  [ceos-agents] 🔴 Pipeline Block
+  [agent-flow] 🔴 Pipeline Block
   Agent: mcp-preflight
   Step: MCP pre-flight check
   Reason: Your {tracker_type} issue tracker integration is registered but not responding.
   Detail: {error message from the failed test call}
-  Recommendation: Check that your API token is valid and has the required permissions. Check that the {tracker_type} instance is reachable. Run /ceos-agents:check-setup for diagnostics.
+  Recommendation: Check that your API token is valid and has the required permissions. Check that the {tracker_type} instance is reachable. Run /agent-flow:check-setup for diagnostics.
   ```
 - **Never block on an unknown tracker type alone** — attempt the check with the derived prefix and fail only if the tool is actually missing or unresponsive.

@@ -18,7 +18,7 @@ Handle pipeline blocks: rollback git state, set issue state, post block comment,
 
 ## Process
 
-1. **Rollback:** If the blocking agent is `fixer`, `reviewer`, or `test-engineer`, or the blocking step is `smoke-check` → dispatch `ceos-agents:rollback-agent` (Task tool, model: haiku). Context: `Agent: {agent_name}. Step: {step_name}. Reason: {reason}. Detail: {detail}. Recommendation: {recommendation}. Execution context: CWD (no worktree).`
+1. **Rollback:** If the blocking agent is `fixer`, `reviewer`, or `test-engineer`, or the blocking step is `smoke-check` → dispatch `agent-flow:rollback-agent` (Task tool, model: haiku). Context: `Agent: {agent_name}. Step: {step_name}. Reason: {reason}. Detail: {detail}. Recommendation: {recommendation}. Execution context: CWD (no worktree).`
    Do NOT rollback on block from `analyst` — no git changes to revert.
 2. **Set issue state:** Transition the issue to the Blocked state (from config → State transitions → Blocked) via the issue tracker MCP server.
    After the status-set MCP call, follow `core/status-verification.md` to verify the transition succeeded.
@@ -28,7 +28,7 @@ Handle pipeline blocks: rollback git state, set issue state, post block comment,
    - Other value: interpret as a custom action; always post a block comment.
 4. **Post block comment** to the issue tracker:
    ```
-   [ceos-agents] 🔴 Pipeline Block
+   [agent-flow] 🔴 Pipeline Block
    Agent: {agent_name}
    Step: {step_name}
    Reason: {reason}
@@ -46,7 +46,7 @@ Handle pipeline blocks: rollback git state, set issue state, post block comment,
    # Build the entire JSON payload structurally via jq — each variable is passed as --arg so jq
    # performs all string escaping. No inline interpolation into a quoted JSON literal.
    payload=$(jq -nc \
-     --arg event "ceos-agents-block" \
+     --arg event "agent-flow-block" \
      --arg issue_id "${issue_id}" \
      --arg agent "${agent_name}" \
      --arg reason "${reason}" \

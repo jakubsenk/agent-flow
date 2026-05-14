@@ -1,13 +1,15 @@
-# ceos-agents
+# agent-flow
 
-A Claude Code plugin that automates the full development lifecycle — from bug triage through fix, review, test, and publish. 17 specialized AI agents, 18 orchestration skills, 17 core contracts, zero dependencies.
+> **v1.0.0** — Initial public release. [View on GitHub](https://github.com/asysta-act/agent-flow)
+
+A Claude Code plugin that automates the full development lifecycle — from bug triage through fix, review, test, and publish. 17 specialized AI agents, 17 orchestration skills, 17 core contracts, zero dependencies.
 
 ```mermaid
 graph LR
     User["User<br/><code>/fix-bugs</code> · <code>/implement-feature</code> · <code>/scaffold</code>"]
 
-    subgraph Plugin["ceos-agents Plugin"]
-        Skills["<b>Skills</b> (18)<br/>Orchestration — WHAT to do"]
+    subgraph Plugin["agent-flow Plugin"]
+        Skills["<b>Skills</b> (17)<br/>Orchestration — WHAT to do"]
         Agents["<b>Agents</b> (17)<br/>Specialists — HOW to do it"]
         Skills -->|dispatches| Agents
     end
@@ -50,26 +52,26 @@ graph LR
 
 ```bash
 # 1. Add the marketplace
-claude plugin marketplace add <path-to-repo>  # e.g. C:/gitea_ceos-agents
+/plugin marketplace add asysta-act/agent-flow
 
 # 2. Install the plugin
-claude plugin install ceos-agents@ceos-agents
+/plugin install agent-flow@agent-flow
 
 # 3. Run the interactive setup wizard
-/ceos-agents:onboard
+/agent-flow:onboard
 
 # 4. Validate your configuration
-/ceos-agents:check-setup
+/agent-flow:check-setup
 
 # 5. Fix your first bug
-/ceos-agents:fix-bugs ISSUE-123
+/agent-flow:fix-bugs ISSUE-123
 ```
 
 The `/onboard` wizard will guide you through setting up your issue tracker, source control, PR rules, and build commands. No manual copy-paste needed.
 
-> **New to ceos-agents?** See the [Getting Started tutorial](docs/getting-started.md) for a complete walkthrough.
+> **New to agent-flow?** See the [Getting Started tutorial](docs/getting-started.md) for a complete walkthrough.
 
-> **Migrating from v7?** See [migration guide](docs/guides/migration-v7-to-v8.md) for full details. Note: the `/migrate-config` skill was removed in v9.5.0; follow the manual steps in the migration guide.
+> **Upgrading?** Check the [CHANGELOG](CHANGELOG.md) for breaking changes between versions and update your `## Automation Config` to match the current format documented in `docs/reference/automation-config.md`.
 
 ---
 
@@ -148,7 +150,6 @@ Hook integration points (pre-fix, post-fix, pre-publish, post-publish) and pipel
 | `/check-setup` | Validate Automation Config, MCP servers, and tokens |
 | `/onboard` | Interactive wizard for generating Automation Config |
 | `/changelog` | Generate changelog from merged PRs |
-| `/version-bump [patch\|minor\|major]` | Bump plugin version in plugin.json and marketplace.json |
 | `/version-check` | Compare installed plugin version against latest available |
 | `/metrics` | Pipeline analytics report — success rates, per-agent effectiveness |
 | `/prioritize` | AI backlog prioritization — impact, risk, effort scoring |
@@ -159,19 +160,19 @@ Hook integration points (pre-fix, post-fix, pre-publish, post-publish) and pipel
 | `/setup-agents` | Project scanner — generates smart TOML customization defaults for all agents |
 | `/autopilot` | Headless dispatcher for cron / batch / CI — reads Bug/Feature queries, dispatches fix-bugs / implement-feature |
 
-All skills are namespaced: `/ceos-agents:<skill>`. Most support additional flags (`--dry-run`, `--profile <name>`, `--decompose`).
+All skills are namespaced: `/agent-flow:<skill>`. Most support additional flags (`--dry-run`, `--profile <name>`, `--decompose`).
 
 Full syntax, flags, and examples: [Skills Reference](docs/reference/skills.md)
 
 ### Slash command collision with Claude Code builtins
 
-> **Warning:** The short form `/init` collides with Claude Code's built-in slash command. Always use the namespaced form when invoking ceos-agents skills:
+> **Warning:** The short form `/init` collides with Claude Code's built-in slash command. Always use the namespaced form when invoking agent-flow skills:
 
 | You want this skill | Use this exact command | NOT this (Claude Code builtin) |
 |---|---|---|
-| Configure MCP servers | `/ceos-agents:setup-mcp` | `/init` |
+| Configure MCP servers | `/agent-flow:setup-mcp` | `/init` |
 
-The namespaced form `/ceos-agents:*` is always unambiguous. See CHANGELOG.md for historical rename/removal migration notes.
+The namespaced form `/agent-flow:*` is always unambiguous. See CHANGELOG.md for historical rename/removal migration notes.
 
 ---
 
@@ -203,7 +204,7 @@ Agent details, inputs, outputs, and example output: [Agents Reference](docs/refe
 
 ## Configuration
 
-Projects using this plugin need `## Automation Config` in their CLAUDE.md. Use `/ceos-agents:onboard` to generate it interactively.
+Projects using this plugin need `## Automation Config` in their CLAUDE.md. Use `/agent-flow:onboard` to generate it interactively.
 
 ### Required Sections
 
@@ -256,7 +257,7 @@ Full specification with examples: [Automation Config Reference](docs/reference/a
 | [Custom Agents](docs/guides/custom-agents.md) | How to write and integrate custom agents |
 | [Troubleshooting](docs/guides/troubleshooting.md) | Common issues and solutions |
 | **Reference** | |
-| [Skills](docs/reference/skills.md) | All 18 skills — syntax, flags, examples |
+| [Skills](docs/reference/skills.md) | All 17 skills — syntax, flags, examples |
 | [Agents](docs/reference/agents.md) | All 17 agents — role, model, inputs, outputs |
 | [Pipelines](docs/reference/pipelines.md) | Pipeline diagrams, hooks, profiles, error handling |
 | [Automation Config](docs/reference/automation-config.md) | Config specification with examples and validation rules |
@@ -266,7 +267,7 @@ Full specification with examples: [Automation Config Reference](docs/reference/a
 
 ## Roadmap
 
-See the [Roadmap](docs/plans/roadmap.md) for current priorities and future direction.
+See the [Roadmap](docs/roadmap.md) for current priorities and future direction.
 
 ---
 
@@ -281,3 +282,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on writing custom agents, 
 **Filip Sabacky** — [MIT License](LICENSE)
 
 For security vulnerability reports, see [SECURITY.md](SECURITY.md).
+
+---
+
+Built by [Filip Sabacky](mailto:filip.sabacky@ceosdata.com) · [CEOS Data](https://ceosdata.com)

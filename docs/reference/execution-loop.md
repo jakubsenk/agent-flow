@@ -40,7 +40,7 @@ On block from fixer, reviewer, or test-engineer:
 2. Set issue state to Blocked (if issue tracker context exists)
 3. Add Block comment (issue tracker or stdout):
    ```
-   [ceos-agents] 🔴 Pipeline Block
+   [agent-flow] 🔴 Pipeline Block
    Agent: {agent name}
    Step: {pipeline step}
    Reason: {max 2 sentences}

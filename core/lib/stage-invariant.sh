@@ -100,7 +100,7 @@ check_dispatch_witness() {
 # -----------------------------------------------------------------------------
 # emit_witness_audit STAGE VERDICT AUDIT_LOG_PATH
 #   Append "<ISO-TS> <STAGE> <VERDICT>" line to the audit log (top-level
-#   .ceos-agents/dispatch-audit.log per QB1 resolution). Best-effort - never
+#   .agent-flow/dispatch-audit.log per QB1 resolution). Best-effort - never
 #   fails the caller even if the path is unwritable.
 # -----------------------------------------------------------------------------
 emit_witness_audit() {
@@ -122,7 +122,7 @@ emit_witness_audit() {
 # Exits 0 if all three functions work end-to-end on a tiny synthetic input.
 # -----------------------------------------------------------------------------
 if [ "${1:-}" = "--self-test" ]; then
-  w=$(compute_dispatch_witness "triage" "ceos-agents:analyst" "sonnet" "ABC") || { echo "self-test: compute failed"; exit 1; }
+  w=$(compute_dispatch_witness "triage" "agent-flow:analyst" "sonnet" "ABC") || { echo "self-test: compute failed"; exit 1; }
   printf '%s' "$w" | grep -qE '^[0-9a-f]{64}$' || { echo "self-test: bad shape: $w"; exit 1; }
   tmp_state=$(mktemp 2>/dev/null || echo /tmp/st_$$)
   trap 'rm -f "$tmp_state"' EXIT

@@ -1,9 +1,0 @@
-{
-  "task_id": "T-06",
-  "status": "DONE",
-  "files_modified": ["docs/guides/installation.md", "tests/mock-project/CLAUDE.md", "skills/onboard/SKILL.md"],
-  "revision_cycle": null,
-  "concerns": [],
-  "test_results": "AC-011/012/013: zero internal hostname leaks across 3 files",
-  "completed_at": "2026-04-20T13:00:30Z"
-}

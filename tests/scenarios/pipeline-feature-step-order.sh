@@ -41,7 +41,7 @@ done
 get_step_for_agent() {
   local agent="$1"
   for sf in "${STEP_FILES[@]}"; do
-    if grep -qiE "ceos-agents:${agent}\b|Run the ${agent} agent|the ${agent} agent|subagent_type[^a-zA-Z]+${agent}" "$sf"; then
+    if grep -qiE "agent-flow:${agent}\b|Run the ${agent} agent|the ${agent} agent|subagent_type[^a-zA-Z]+${agent}" "$sf"; then
       basename "$sf"
       return
     fi

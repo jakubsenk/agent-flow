@@ -24,15 +24,15 @@ If Custom Agents → Pre-publish agent exists:
 ## Pre-dispatch state write (REQ-B-2 v1.2)
 
 Before dispatching, atomically write per-stage pre-dispatch fields to
-`.ceos-agents/{ISSUE-ID}/state.json`:
+`.agent-flow/{ISSUE-ID}/state.json`:
 
 - `acceptance_gate.started_at`      = current ISO-8601 UTC timestamp
 - `acceptance_gate.model`           = `"sonnet"` (from `agents/acceptance-gate.md` frontmatter)
 - `acceptance_gate.status`          = `"in_progress"`
-- `acceptance_gate.agent_name`      = `"ceos-agents:acceptance-gate"`
+- `acceptance_gate.agent_name`      = `"agent-flow:acceptance-gate"`
 - `acceptance_gate.stage_name`      = `"acceptance_gate"`
 - `acceptance_gate.dispatched_at`   = current ISO-8601 UTC timestamp
-- `acceptance_gate.dispatch_witness` = sha256("ceos-agents:acceptance-gate|sonnet|<prompt_head_128>")
+- `acceptance_gate.dispatch_witness` = sha256("agent-flow:acceptance-gate|sonnet|<prompt_head_128>")
   (compute via `core/lib/stage-invariant.sh::compute_dispatch_witness`)
 - `acceptance_gate.tokens_used` = 0, `acceptance_gate.duration_ms` = 0, `acceptance_gate.tool_uses` = 0
 
@@ -46,15 +46,15 @@ If `{Agent Overrides path}/acceptance-gate.toml` exists, append its rendered Mar
 
 ## Dispatch
 
-You MUST invoke `Task(subagent_type='ceos-agents:acceptance-gate', model='sonnet')`.
+You MUST invoke `Task(subagent_type='agent-flow:acceptance-gate', model='sonnet')`.
 DO NOT inline-execute. Inline execution is a CONTRACT VIOLATION detected by the PostToolUse validator.
 
-Inject Tier-1 variables: `EXPECTED_AGENT_NAME = "ceos-agents:acceptance-gate"`,
+Inject Tier-1 variables: `EXPECTED_AGENT_NAME = "agent-flow:acceptance-gate"`,
 `EXPECTED_STAGE_NAME = "acceptance_gate"`.
 
 Context for the agent:
 ```
-EXPECTED_AGENT_NAME = ceos-agents:acceptance-gate
+EXPECTED_AGENT_NAME = agent-flow:acceptance-gate
 EXPECTED_STAGE_NAME = acceptance_gate
 Acceptance criteria: {AC from triage}.
 Changed files: {list of files modified by fixer}.
@@ -68,7 +68,7 @@ Test report: {test-engineer output from step 06}.
 
 ## Post-dispatch state write
 
-After dispatch, write per-stage post-dispatch fields to `.ceos-agents/{ISSUE-ID}/state.json`:
+After dispatch, write per-stage post-dispatch fields to `.agent-flow/{ISSUE-ID}/state.json`:
 - `acceptance_gate.completed_at` = current ISO-8601 UTC timestamp
 - `acceptance_gate.tokens_used` = `result.usage.total_tokens` (or 0 if absent)
 - `acceptance_gate.duration_ms` = `acceptance_gate.completed_at` epoch ms − `acceptance_gate.started_at` epoch ms

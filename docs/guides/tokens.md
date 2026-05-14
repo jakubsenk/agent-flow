@@ -1,6 +1,6 @@
-# Tokens for ceos-agents
+# Tokens for agent-flow
 
-ceos-agents communicates with the issue tracker and source control via MCP servers. Each MCP server requires an API token.
+agent-flow communicates with the issue tracker and source control via MCP servers. Each MCP server requires an API token.
 
 ## Overview
 
@@ -20,7 +20,7 @@ One token = one service. Tokens are stored in `.mcp.json` (never in CLAUDE.md).
 1. Open YouTrack → click on your profile (top right)
 2. **Hub → Authentication → New token...**
 3. Scope: `YouTrack` (or specifically `Issue tracker read/write`)
-4. Token name: recommended `ceos-agents-<PROJECT>` (e.g. `ceos-agents-BIFITO`)
+4. Token name: recommended `agent-flow-<PROJECT>` (e.g. `agent-flow-BIFITO`)
 5. Click **Create** — the token is shown **only once**, copy it immediately
 6. Expiration: recommended no expiration or 1 year
 
@@ -28,7 +28,7 @@ One token = one service. Tokens are stored in `.mcp.json` (never in CLAUDE.md).
 
 1. Open Gitea → **Settings → Applications**
 2. **Generate New Token**
-3. Name: `ceos-agents-<PROJECT>`
+3. Name: `agent-flow-<PROJECT>`
 4. Scope: `repository:read`, `repository:write`, `issue:write`
 5. Click **Generate Token** — copy immediately
 
@@ -36,7 +36,7 @@ One token = one service. Tokens are stored in `.mcp.json` (never in CLAUDE.md).
 
 1. Open GitHub → **Settings → Developer settings → Personal access tokens → Fine-grained tokens**
 2. **Generate new token**
-3. Name: `ceos-agents-<PROJECT>`
+3. Name: `agent-flow-<PROJECT>`
 4. Scope: `repo` (read/write), `issues` (read/write)
 5. Click **Generate token** — copy immediately
 
@@ -46,7 +46,7 @@ The default `examples/mcp-configs/github.json` template uses the official remote
 
 1. Open [id.atlassian.com/manage-profile/security/api-tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
 2. **Create API token**
-3. Label: `ceos-agents-<PROJECT>`
+3. Label: `agent-flow-<PROJECT>`
 4. Click **Create** — copy immediately
 5. The official Atlassian Cloud MCP endpoint (`mcp.atlassian.com/v1/mcp`) uses OAuth via Claude Code — no `ATLASSIAN_EMAIL` or `ATLASSIAN_API_TOKEN` env vars are needed in `.mcp.json` for this transport.
 
@@ -54,7 +54,7 @@ The default `examples/mcp-configs/github.json` template uses the official remote
 
 1. Open Linear → **Settings → API → Personal API keys**
 2. **Create key**
-3. Label: `ceos-agents`
+3. Label: `agent-flow`
 4. Copy the key immediately
 
 The default `examples/mcp-configs/linear.json` template uses Linear's official remote endpoint with OAuth via Claude Code — no `LINEAR_API_KEY` env var is needed. Bearer token authentication is supported as an alternative; in that case, add `--header "Authorization: Bearer <token>"` to the `claude mcp add` command.

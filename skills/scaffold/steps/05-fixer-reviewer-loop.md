@@ -25,7 +25,7 @@ For each batch in order:
 
     Check Agent Overrides for `fixer.md`.
 
-    You MUST invoke Task(subagent_type='ceos-agents:fixer', model='opus'). DO NOT inline-execute.
+    You MUST invoke Task(subagent_type='agent-flow:fixer', model='opus'). DO NOT inline-execute.
     Context: subtask scope + acceptance_criteria + architecture design + `Max build retries = {Build retries from CLAUDE.md, default 3}`.
 
     After completion: run Build command from generated CLAUDE.md.
@@ -56,7 +56,7 @@ For each batch in order:
        clarifications_consumed: ((.clarification.clarifications_consumed // 0) + 1),
        last_clarification_iteration: $iter}' \
       state.json > state.json.tmp && mv state.json.tmp state.json
-    echo "[INFO] Pipeline paused — re-invoke /ceos-agents:scaffold --clarification \"<answer>\" to resume."
+    echo "[INFO] Pipeline paused — re-invoke /agent-flow:scaffold --clarification \"<answer>\" to resume."
     exit 0
     ```
     Fire `pipeline-paused` webhook if configured (per `../../../core/agent-states.md` Section 2 firing site).
@@ -65,7 +65,7 @@ For each batch in order:
 
     Check Agent Overrides for `reviewer.md`.
 
-    You MUST invoke Task(subagent_type='ceos-agents:reviewer', model='opus'). DO NOT inline-execute.
+    You MUST invoke Task(subagent_type='agent-flow:reviewer', model='opus'). DO NOT inline-execute.
     Context: diff from fixer + acceptance_criteria + `Max fixer iterations = {Fixer iterations from CLAUDE.md, default 5}`.
     Follow `../../../core/fixer-reviewer-loop.md`.
 
@@ -98,7 +98,7 @@ For each batch in order:
     ### Block Handler (from 05a, 05b)
 
     Follow `../../../core/block-handler.md`.
-    1. You MUST invoke Task(subagent_type='ceos-agents:rollback-agent', model='haiku'). Context: "No issue tracker context — skip issue tracker updates." Revert to last successful commit.
+    1. You MUST invoke Task(subagent_type='agent-flow:rollback-agent', model='haiku'). Context: "No issue tracker context — skip issue tracker updates." Revert to last successful commit.
     2. Report block to stdout (Block Comment Template format).
     3. Update state.json: set `status = "blocked"`, write `block` object. Atomic write.
     4. If fail-fast → write pipeline accumulator (COST-R6), fire `pipeline-completed` with `outcome: "blocked"`, STOP → jump to Step 08.

@@ -66,12 +66,12 @@ ambiguity detection, feature decomposition into testable outcomes, epic vs story
    If not, infer testable acceptance criteria from the description, comments, and any technical details provided.
 
 6. Post checkpoint comment to issue tracker:
-   `[ceos-agents] Spec analysis completed. Area: {area}. Criteria: {count}.`
+   `[agent-flow] Spec analysis completed. Area: {area}. Criteria: {count}.`
    This comment serves as a checkpoint for pipeline observability and potential future resume mechanisms.
 
    Additionally, post the full acceptance criteria as a separate comment:
    ```
-   [ceos-agents] Acceptance Criteria:
+   [agent-flow] Acceptance Criteria:
    1. {AC text}
    2. {AC text}
    ...
@@ -94,15 +94,15 @@ ambiguity detection, feature decomposition into testable outcomes, epic vs story
 | `## Feature Specification` | always | Summary; Type (single feature / epic with sub-features count); Area; Acceptance Criteria; Scope (IN/OUT); Dependencies; Constraints |
 | `Quality gate: PASS` literal | on complete issue | (sentinel in spec output) |
 | `Quality gate: incomplete` literal | on incomplete issue | (sentinel + per-question feedback) |
-| `[ceos-agents] Spec analysis completed. Area: {a}. Criteria: {n}.` checkpoint | on PASS | area; criteria count |
-| `[ceos-agents] Acceptance Criteria:` separate tracker comment | on PASS | numbered AC list |
-| `[ceos-agents] 🔴 Pipeline Block` | on Block | Agent: spec-analyst; Step: Spec Analysis; Reason; Detail; Recommendation |
+| `[agent-flow] Spec analysis completed. Area: {a}. Criteria: {n}.` checkpoint | on PASS | area; criteria count |
+| `[agent-flow] Acceptance Criteria:` separate tracker comment | on PASS | numbered AC list |
+| `[agent-flow] 🔴 Pipeline Block` | on Block | Agent: spec-analyst; Step: Spec Analysis; Reason; Detail; Recommendation |
 
 ## Step Completion Invariants
 
 Invariant fields checked: `dispatched_at`, `dispatch_witness`, `status`, `stage_name`, `agent_name`. Tokens: `EXPECTED_AGENT_NAME`, `EXPECTED_STAGE_NAME`.
 
-Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.ceos-agents/{ISSUE_ID}/state.json`:
+Before returning to the orchestrator, you SHALL verify the following 5 invariants by reading `.agent-flow/{ISSUE_ID}/state.json`:
 
 1. **`dispatched_at`** — Field is present and non-empty for stage `{EXPECTED_STAGE_NAME}` (here: `spec_analysis`). Orchestrator wrote this pre-dispatch as a timestamp; absence proves the dispatch flow was bypassed.
 
@@ -125,7 +125,7 @@ If ANY invariant fails: Block with `Reason: Step completion invariant violated: 
 - If the feature request is actually a bug report, flag it and recommend using the bug-fix pipeline instead
 - On failure: Block using the Block Comment Template:
   ```
-  [ceos-agents] 🔴 Pipeline Block
+  [agent-flow] 🔴 Pipeline Block
   Agent: spec-analyst
   Step: Spec Analysis
   Reason: {reason}

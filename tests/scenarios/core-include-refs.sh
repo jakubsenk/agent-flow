@@ -56,7 +56,7 @@ check_refs() {
   fi
 }
 
-# All 3 pipeline commands reference core (fix-ticket removed in v9.3.0)
+# All 3 pipeline commands reference core (fix-ticket removed)
 check_refs "fix-bugs" 7
 check_refs "implement-feature" 6
 check_refs "scaffold" 3

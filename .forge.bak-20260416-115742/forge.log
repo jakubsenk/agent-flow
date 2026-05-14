@@ -1,3 +1,0 @@
-[2026-04-16T07:13:00Z] FORGE_START input="v6.7.2 — Pipeline Consistency & Dedup (fresh retry from aborted forge-2026-04-16-002)" config=defaults
-[2026-04-16T07:14:00Z] ORCHESTRATOR_BLOCKED reason="Task and AskUserQuestion tools not available in this runtime — cannot dispatch subagents or present approval gates as required by forge pipeline protocol" phase=0
-[2026-04-16T07:20:00Z] FORGE_END status=aborted_by_user reason="halted_pending_orchestrator_fix — will resume after forge-orchestrator agent is patched to work in Windows Claude Code runtime with deferred tools"

@@ -23,7 +23,7 @@ else
 fi
 
 # Check B: All 4 files that previously held inline NEVER instructions now reference the contract
-# (fix-ticket removed in v9.3.0 — its logic merged into fix-bugs)
+# (fix-ticket removed — its logic merged into fix-bugs)
 REFERENCE_FILES=(
   "agents/publisher.md"
   "core/block-handler.md"
