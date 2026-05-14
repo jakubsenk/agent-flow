@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# AC-25: Notifications On events enumeration lists three new tokens
-# Traces: WEBHOOK-R2, WEBHOOK-R3, WEBHOOK-R4
+# Notifications On events enumeration lists three new tokens
 # Description: Verifies CLAUDE.md and docs/reference/config.md enumerate the 3 new webhook events
 
 # Depends on Phase 7 implementation
@@ -36,11 +35,11 @@ if [ -f "$CONFIG_REF" ]; then
   done
 fi
 
-# AC-25 verify command: all 3 tokens on one line in either file
+# Verify all 3 tokens on one line in either file
 if ! grep -nE 'pipeline-started.*step-completed.*pipeline-completed' CLAUDE.md "$CONFIG_REF" 2>/dev/null | grep -q .; then
   echo "FAIL: Neither CLAUDE.md nor config.md has all 3 event tokens on a single line" >&2
   FAIL=1
 fi
 
-[ "$FAIL" -eq 0 ] && echo "PASS: AC-25 — CLAUDE.md and config.md enumerate pipeline-started, step-completed, pipeline-completed"
+[ "$FAIL" -eq 0 ] && echo "PASS: CLAUDE.md and config.md enumerate pipeline-started, step-completed, pipeline-completed"
 exit "$FAIL"

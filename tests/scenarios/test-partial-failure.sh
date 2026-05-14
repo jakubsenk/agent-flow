@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test: FC-12 — Partial failure accumulator pattern and pipeline-never-blocks guarantee in all 3 skills
+# Test: Partial failure accumulator pattern and pipeline-never-blocks guarantee in all 3 skills
 # Tracker subtask creation logic lives in core/tracker-subtask-creator.md.
 # Each skill delegates via "Follow core/tracker-subtask-creator.md". This test searches
 # both the skill file and the core contract file so delegation is accepted.
@@ -39,46 +39,41 @@ for i in "${!SKILL_FILES[@]}"; do
   fi
 
   # -----------------------------------------------------------------------
-  # FC-12: Pipeline NEVER blocks on tracker creation failure
-  # REQ-6.4: the step must explicitly state pipeline continues regardless
+  # Pipeline NEVER blocks on tracker creation failure
   # -----------------------------------------------------------------------
   if ! grep -qE 'NEVER block|never block|Pipeline continues|pipeline continues|pipeline.*never.*block' "${SEARCH_FILES[@]}" 2>/dev/null; then
-    fail "FC-12 ($name): missing 'NEVER block' or 'Pipeline continues' guarantee for tracker creation failure (REQ-6.4)"
+    fail "$name: missing 'NEVER block' or 'Pipeline continues' guarantee for tracker creation failure"
   fi
 
   # -----------------------------------------------------------------------
-  # FC-12: Result display format: "Created {N}/{M} tracker sub-issues"
-  # REQ-6.2: after loop, display Created N/M tracker sub-issues ({F} failures)
+  # Result display format: "Created {N}/{M} tracker sub-issues"
   # -----------------------------------------------------------------------
   if ! grep -qE 'Created.*tracker sub-issues|tracker sub-issues.*Created' "${SEARCH_FILES[@]}" 2>/dev/null; then
-    fail "FC-12 ($name): missing result display 'Created {N}/{M} tracker sub-issues' after creation loop (REQ-6.2)"
+    fail "$name: missing result display 'Created {N}/{M} tracker sub-issues' after creation loop"
   fi
 
   # -----------------------------------------------------------------------
-  # FC-12: Per-subtask WARN on failure (accumulator pattern)
-  # REQ-6.1: on individual failure, WARN and continue (not block)
+  # Per-subtask WARN on failure (accumulator pattern)
   # -----------------------------------------------------------------------
   if ! grep -qE 'WARN.*Could not create|Could not create.*WARN|Could not create tracker sub-issue' "${SEARCH_FILES[@]}" 2>/dev/null; then
-    fail "FC-12 ($name): missing per-subtask WARN for individual tracker creation failure (REQ-6.1)"
+    fail "$name: missing per-subtask WARN for individual tracker creation failure"
   fi
 
   # -----------------------------------------------------------------------
-  # FC-12: 100% failure escalation WARN
-  # REQ-6.3: if all fail (N==0), elevated WARN about MCP connectivity
+  # 100% failure escalation WARN
   # -----------------------------------------------------------------------
   if ! grep -qE 'All.*tracker.*sub-issue.*fail|all.*tracker.*fail|Check MCP|tracker.*connectivity|MCP.*connect' "${SEARCH_FILES[@]}" 2>/dev/null; then
-    fail "FC-12 ($name): missing 100% failure escalation WARN mentioning connectivity or MCP (REQ-6.3)"
+    fail "$name: missing 100% failure escalation WARN mentioning connectivity or MCP"
   fi
 
   # -----------------------------------------------------------------------
-  # FC-12: GitHub/Gitea parent body update failure handling
-  # REQ-6.5: if checklist append fails, WARN and continue
+  # GitHub/Gitea parent body update failure handling
   # -----------------------------------------------------------------------
   if ! grep -qE 'Could not update.*parent issue body|parent issue body.*fail|checklist.*fail.*continue|Could not update.*checklist' "${SEARCH_FILES[@]}" 2>/dev/null; then
-    fail "FC-12 ($name): missing GitHub/Gitea parent body update failure WARN (REQ-6.5)"
+    fail "$name: missing GitHub/Gitea parent body update failure WARN"
   fi
 
 done
 
-[ "$FAIL" -eq 0 ] && echo "PASS: Partial failure accumulator pattern (per-subtask WARN, result display, 100% failure escalation, pipeline-never-blocks, checklist failure handling) in all 3 skills (FC-12)"
+[ "$FAIL" -eq 0 ] && echo "PASS: Partial failure accumulator pattern (per-subtask WARN, result display, 100% failure escalation, pipeline-never-blocks, checklist failure handling) in all 3 skills"
 exit "$FAIL"

@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# AC-11: Webhook failure is advisory (WARN + continue, pipeline not blocked)
-# Traces: WEBHOOK-R5
+# Webhook failure is advisory (WARN + continue, pipeline not blocked)
 # Description: Verifies core/post-publish-hook.md documents advisory failure semantics
 #              for new pipeline events
 
@@ -31,11 +30,11 @@ if ! grep -qiE 'advisory|not block|pipeline.*continue|continue.*pipeline' "$FILE
   FAIL=1
 fi
 
-# AC-26: Forward-compat guarantee paragraph in CLAUDE.md
+# Forward-compat guarantee paragraph in CLAUDE.md
 if ! grep -qF 'Webhook payloads are forward-compatible' CLAUDE.md; then
   echo "FAIL: CLAUDE.md missing 'Webhook payloads are forward-compatible' paragraph" >&2
   FAIL=1
 fi
 
-[ "$FAIL" -eq 0 ] && echo "PASS: AC-11/AC-26 — Webhook advisory failure semantics documented"
+[ "$FAIL" -eq 0 ] && echo "PASS: Webhook advisory failure semantics documented"
 exit "$FAIL"

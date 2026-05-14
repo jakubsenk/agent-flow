@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# AC-10: Three new webhook events have correct payloads and run_id format
-# Traces: WEBHOOK-R2, WEBHOOK-R3, WEBHOOK-R4
+# Three new webhook events have correct payloads and run_id format
 # Description: Verifies core/post-publish-hook.md Section 4 documents all three
 #              event payload fields including run_id and outcome
 
@@ -50,5 +49,5 @@ if ! grep -qE 'YYYYMMDD|[0-9]{8}T[0-9]{6}Z|compact.*ISO|run_id.*format' "$FILE";
   FAIL=1
 fi
 
-[ "$FAIL" -eq 0 ] && echo "PASS: AC-10 — core/post-publish-hook.md Section 4 documents all payload fields"
+[ "$FAIL" -eq 0 ] && echo "PASS: core/post-publish-hook.md Section 4 documents all payload fields"
 exit "$FAIL"

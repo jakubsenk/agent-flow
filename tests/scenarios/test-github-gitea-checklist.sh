@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test: FC-13 — GitHub/Gitea checklist format and sentinel comment in all 3 skills
+# Test: GitHub/Gitea checklist format and sentinel comment in all 3 skills
 # Tracker subtask creation logic lives in core/tracker-subtask-creator.md.
 # Each skill delegates via "Follow core/tracker-subtask-creator.md". This test searches
 # both the skill file and the core contract file so delegation is accepted.
@@ -39,55 +39,49 @@ for i in "${!SKILL_FILES[@]}"; do
   fi
 
   # -----------------------------------------------------------------------
-  # FC-13: Sentinel comment format must be present
-  # REQ-7.2: <!-- agent-flow:decomposition-checklist:{PARENT-ISSUE-ID} -->
+  # Sentinel comment format must be present
   # -----------------------------------------------------------------------
   if ! grep -q 'agent-flow:decomposition-checklist' "${SEARCH_FILES[@]}" 2>/dev/null; then
-    fail "FC-13 ($name): missing sentinel comment 'agent-flow:decomposition-checklist' for GitHub/Gitea idempotency guard"
+    fail "$name: missing sentinel comment 'agent-flow:decomposition-checklist' for GitHub/Gitea idempotency guard"
   fi
 
   # -----------------------------------------------------------------------
-  # FC-13: Checklist format uses - [ ] checkboxes
-  # REQ-7.1: checklist format with - [ ] items
+  # Checklist format uses - [ ] checkboxes
   # -----------------------------------------------------------------------
   if ! grep -qE '\- \[ \]' "${SEARCH_FILES[@]}" 2>/dev/null; then
-    fail "FC-13 ($name): missing checklist format '- [ ]' for GitHub/Gitea decomposition checklist (REQ-7.1)"
+    fail "$name: missing checklist format '- [ ]' for GitHub/Gitea decomposition checklist"
   fi
 
   # -----------------------------------------------------------------------
-  # FC-13: Parent issue update (read-modify-write) is described
-  # REQ-7.3: checklist is appended to parent issue body
+  # Parent issue update (read-modify-write) is described
   # -----------------------------------------------------------------------
   if ! grep -qE 'parent issue body|append.*checklist|checklist.*append|update.*parent.*body|body.*update' "${SEARCH_FILES[@]}" 2>/dev/null; then
-    fail "FC-13 ($name): missing parent issue body update instruction (read-modify-write for checklist, REQ-7.3)"
+    fail "$name: missing parent issue body update instruction (read-modify-write for checklist)"
   fi
 
   # -----------------------------------------------------------------------
-  # FC-13: Sentinel check before appending (idempotency)
-  # REQ-7.2: skip checklist append if sentinel already present in parent body
+  # Sentinel check before appending (idempotency)
   # -----------------------------------------------------------------------
   if ! grep -qE 'sentinel.*(present|exists|found|skip)|skip.*sentinel|already.*checklist|checklist.*already|if.*sentinel' "${SEARCH_FILES[@]}" 2>/dev/null; then
-    fail "FC-13 ($name): missing sentinel-presence check before appending checklist (REQ-7.2)"
+    fail "$name: missing sentinel-presence check before appending checklist"
   fi
 
   # -----------------------------------------------------------------------
-  # FC-13: Only successful subtasks included in checklist
-  # REQ-7.4: failed creations are omitted from checklist
+  # Only successful subtasks included in checklist
   # -----------------------------------------------------------------------
   if ! grep -qE '(only|successfully).*(created|non-null)|failed.*omit|omit.*failed|non-null.*tracker_issue_id|tracker_issue_id.*non-null|tracker_issue_id != null|WHERE.*tracker_issue_id' "${SEARCH_FILES[@]}" 2>/dev/null; then
-    fail "FC-13 ($name): missing clause that only includes successfully created subtasks in checklist (REQ-7.4)"
+    fail "$name: missing clause that only includes successfully created subtasks in checklist"
   fi
 
   # -----------------------------------------------------------------------
-  # FC-13: GitHub/Gitea standalone title prefix [PARENT-ISSUE-ID]
-  # REQ-7.5: standalone issue titled [{PARENT-ISSUE-ID}] {subtask-title}
+  # GitHub/Gitea standalone title prefix [PARENT-ISSUE-ID]
   # Accepts both uppercase ({PARENT-ISSUE-ID}, {ISSUE_ID}) and lowercase ({issue_id}) variants
   # -----------------------------------------------------------------------
   if ! grep -qE '\[.*PARENT.ISSUE.ID\]|\[.*ISSUE_ID\]|\[.*ISSUE.ID\]|\[\{ISSUE_ID\}\]|\[\{issue_id\}\]' "${SEARCH_FILES[@]}" 2>/dev/null; then
-    fail "FC-13 ($name): missing standalone issue title prefix for GitHub/Gitea (REQ-7.5)"
+    fail "$name: missing standalone issue title prefix for GitHub/Gitea"
   fi
 
 done
 
-[ "$FAIL" -eq 0 ] && echo "PASS: GitHub/Gitea checklist format with sentinel comment, parent body update, idempotency guard, and standalone title prefix present in all 3 skills (FC-13)"
+[ "$FAIL" -eq 0 ] && echo "PASS: GitHub/Gitea checklist format with sentinel comment, parent body update, idempotency guard, and standalone title prefix present in all 3 skills"
 exit "$FAIL"

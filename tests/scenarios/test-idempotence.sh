@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test: FC-8, FC-11, FC-17, FC-18 — Idempotence guard clause and dual-store write order in all 3 skills
+# Test: Idempotence guard clause and dual-store write order in all 3 skills
 # Tracker subtask creation logic lives in core/tracker-subtask-creator.md.
 # Each skill delegates via "Follow core/tracker-subtask-creator.md". This test searches
 # both the skill file and the core contract file so delegation is accepted.
@@ -39,46 +39,42 @@ for i in "${!SKILL_FILES[@]}"; do
   fi
 
   # -----------------------------------------------------------------------
-  # FC-8: tracker_issue_id: null in YAML write instructions
-  # REQ-4.2: decomposition YAML subtask objects must include tracker_issue_id: null
+  # tracker_issue_id: null in YAML write instructions
   # -----------------------------------------------------------------------
   if ! grep -q 'tracker_issue_id' "${SEARCH_FILES[@]}" 2>/dev/null; then
-    fail "FC-8 ($name): missing 'tracker_issue_id' field (should appear as 'tracker_issue_id: null' in YAML init)"
+    fail "$name: missing 'tracker_issue_id' field (should appear as 'tracker_issue_id: null' in YAML init)"
   fi
 
   # -----------------------------------------------------------------------
-  # FC-11: Idempotency algorithm — YAML-first, state.json fallback
-  # REQ-3.1 + REQ-3.2: must mention YAML and state.json and fallback/recover
+  # Idempotency algorithm — YAML-first, state.json fallback
   # -----------------------------------------------------------------------
   if ! grep -qE 'YAML.*state\.json|state\.json.*YAML' "${SEARCH_FILES[@]}" 2>/dev/null; then
-    fail "FC-11 ($name): idempotency check does not reference both YAML and state.json together"
+    fail "$name: idempotency check does not reference both YAML and state.json together"
   fi
 
   if ! grep -qE 'state\.json.*(fallback|recover)|fallback.*state\.json|recover.*state\.json' "${SEARCH_FILES[@]}" 2>/dev/null; then
-    fail "FC-11 ($name): idempotency check missing fallback/recover from state.json (REQ-3.2)"
+    fail "$name: idempotency check missing fallback/recover from state.json"
   fi
 
   # -----------------------------------------------------------------------
-  # FC-17: No bare tracker_id field — must use tracker_issue_id
-  # REQ-4.3: the field must NEVER be introduced as tracker_id (without _issue suffix)
+  # No bare tracker_id field — must use tracker_issue_id
   # Allowed: tracker_id as Redmine issue TYPE parameter (in docs/reference/ files only)
   # Not allowed: a new "tracker_id" field that refers to the tracker issue identity
   # Strategy: find "tracker_id" NOT preceded by "issue" and NOT followed by "_issue"
   # -----------------------------------------------------------------------
   bare_lines=$(grep -nE '\btracker_id\b' "$f" 2>/dev/null | grep -v 'tracker_issue_id' || true)
   if [ -n "$bare_lines" ]; then
-    fail "FC-17 ($name): found bare 'tracker_id' usage (should be 'tracker_issue_id'): $(echo "$bare_lines" | head -3)"
+    fail "$name: found bare 'tracker_id' usage (should be 'tracker_issue_id'): $(echo "$bare_lines" | head -3)"
   fi
 
   # -----------------------------------------------------------------------
-  # FC-18: Dual-store write order — state.json immediately/atomic, YAML committed after loop
-  # REQ-3.3: must specify state.json immediately after each creation, YAML once after loop
+  # Dual-store write order — state.json immediately/atomic, YAML committed after loop
   # -----------------------------------------------------------------------
   if ! grep -qE 'state\.json.*(immediately|atomic)|atomic.*state\.json|atomic write' "${SEARCH_FILES[@]}" 2>/dev/null; then
-    fail "FC-18 ($name): missing atomic/immediate state.json write after each subtask creation (REQ-3.3)"
+    fail "$name: missing atomic/immediate state.json write after each subtask creation"
   fi
 
 done
 
-[ "$FAIL" -eq 0 ] && echo "PASS: Idempotency guard (YAML+state.json fallback), tracker_issue_id field, no bare tracker_id, and atomic write order verified in all 3 skills (FC-8, FC-11, FC-17, FC-18)"
+[ "$FAIL" -eq 0 ] && echo "PASS: Idempotency guard (YAML+state.json fallback), tracker_issue_id field, no bare tracker_id, and atomic write order verified in all 3 skills"
 exit "$FAIL"

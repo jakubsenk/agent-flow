@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Test: core/external-input-sanitizer.md has step 1b with marker escape logic
-# AC-26 through AC-31
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
@@ -15,27 +14,27 @@ if [ ! -f "$SANITIZER" ]; then
   exit "$FAIL"
 fi
 
-# AC-26: Step 1b exists (marker escape logic step)
+# Step 1b exists (marker escape logic step)
 if ! grep -q '1b\.' "$SANITIZER"; then
   fail "core/external-input-sanitizer.md missing step 1b"
 fi
 
-# AC-27: Step 1b specifies [ESCAPED: EXTERNAL INPUT START] replacement format
+# Step 1b specifies [ESCAPED: EXTERNAL INPUT START] replacement format
 if ! grep -q '\[ESCAPED: EXTERNAL INPUT START\]' "$SANITIZER"; then
   fail "core/external-input-sanitizer.md Step 1b missing replacement format '[ESCAPED: EXTERNAL INPUT START]'"
 fi
 
-# AC-28: Step 1b specifies [ESCAPED: EXTERNAL INPUT END] replacement format
+# Step 1b specifies [ESCAPED: EXTERNAL INPUT END] replacement format
 if ! grep -q '\[ESCAPED: EXTERNAL INPUT END\]' "$SANITIZER"; then
   fail "core/external-input-sanitizer.md Step 1b missing replacement format '[ESCAPED: EXTERNAL INPUT END]'"
 fi
 
-# AC-29: Step 1b mentions idempotency
+# Step 1b mentions idempotency
 if ! grep -A 10 '1b\.' "$SANITIZER" | grep -qi 'idempotent'; then
   fail "core/external-input-sanitizer.md Step 1b does not mention idempotency"
 fi
 
-# AC-30: Step 1b appears before step 2 (wrapping) in file order
+# Step 1b appears before step 2 (wrapping) in file order
 step1b_line=$(grep -n '1b\.' "$SANITIZER" | head -1 | cut -d: -f1)
 step2_line=$(grep -n '^2\. Wrap each piece' "$SANITIZER" | head -1 | cut -d: -f1)
 
@@ -47,10 +46,10 @@ else
   fi
 fi
 
-# AC-31: Step 1b says "Before wrapping" to clarify ordering
+# Step 1b says "Before wrapping" to clarify ordering
 if ! grep '1b\.' "$SANITIZER" | grep -qi 'before wrapping'; then
   fail "core/external-input-sanitizer.md Step 1b does not say 'Before wrapping' (ordering clarification missing)"
 fi
 
-[ "$FAIL" -eq 0 ] && echo "PASS: core/external-input-sanitizer.md Step 1b marker escape logic is present and correctly structured (AC-26 to AC-31)"
+[ "$FAIL" -eq 0 ] && echo "PASS: core/external-input-sanitizer.md Step 1b marker escape logic is present and correctly structured"
 exit "$FAIL"

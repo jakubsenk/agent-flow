@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# AC-13: Existing pr-created and issue-blocked payloads unchanged
-# Traces: WEBHOOK-R8
+# Existing pr-created and issue-blocked payloads unchanged
 # Description: Verifies pr-created payload has {event, issue_id, pr_url, timestamp}
 #              and issue-blocked payload has {event, issue_id, agent, reason, timestamp}
 
@@ -44,5 +43,5 @@ else
   done
 fi
 
-[ "$FAIL" -eq 0 ] && echo "PASS: AC-13 — pr-created and issue-blocked payload fields verified (regression guard)"
+[ "$FAIL" -eq 0 ] && echo "PASS: pr-created and issue-blocked payload fields verified (regression guard)"
 exit "$FAIL"

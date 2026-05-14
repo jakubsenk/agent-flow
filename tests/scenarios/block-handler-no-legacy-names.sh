@@ -1,5 +1,5 @@
 #!/bin/bash
-# Covers: AC-12 (core/block-handler.md line 22 does not reference v7 names triage-analyst or code-analyst)
+# Covers: core/block-handler.md line 22 does not reference legacy names triage-analyst or code-analyst
 set -e
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -7,12 +7,12 @@ REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 FILE="$REPO_ROOT/core/block-handler.md"
 
 if [ ! -f "$FILE" ]; then
-  echo "FAIL: v9-5-block-handler-no-v7-names — core/block-handler.md not found"
+  echo "FAIL: core/block-handler.md not found"
   exit 1
 fi
 
 FAIL=0
-fail() { echo "FAIL: v9-5-block-handler-no-v7-names — $1"; FAIL=1; }
+fail() { echo "FAIL: $1"; FAIL=1; }
 
 LINE22=$(sed -n '22p' "$FILE")
 
@@ -31,6 +31,6 @@ else
 fi
 
 if [ "$FAIL" -eq 0 ]; then
-  echo "PASS: v9-5-block-handler-no-v7-names — block-handler.md line 22 uses canonical names only"
+  echo "PASS: block-handler.md line 22 uses canonical names only"
 fi
 exit "$FAIL"

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Test: state/schema.md contains spec_iterations and root_cause_iterations retry limit fields
-# AC-10 through AC-15
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
@@ -15,17 +14,17 @@ if [ ! -f "$SCHEMA" ]; then
   exit "$FAIL"
 fi
 
-# AC-10: Field table contains config.retry_limits.spec_iterations with default 5
+# Field table contains config.retry_limits.spec_iterations with default 5
 if ! grep 'config.retry_limits.spec_iterations' "$SCHEMA" | grep -q '5'; then
   fail "state/schema.md missing field config.retry_limits.spec_iterations with default 5"
 fi
 
-# AC-11: Field table contains config.retry_limits.root_cause_iterations with default 3
+# Field table contains config.retry_limits.root_cause_iterations with default 3
 if ! grep 'config.retry_limits.root_cause_iterations' "$SCHEMA" | grep -q '3'; then
   fail "state/schema.md missing field config.retry_limits.root_cause_iterations with default 3"
 fi
 
-# AC-12: spec_iterations row appears after build_retries row and before infrastructure row
+# spec_iterations row appears after build_retries row and before infrastructure row
 build_line=$(grep -n 'build_retries' "$SCHEMA" | grep '|' | tail -1 | cut -d: -f1)
 spec_line=$(grep -n 'spec_iterations' "$SCHEMA" | grep '|' | head -1 | cut -d: -f1)
 infra_line=$(grep -n '| `infrastructure`' "$SCHEMA" | head -1 | cut -d: -f1)
@@ -41,7 +40,7 @@ else
   fi
 fi
 
-# AC-13: JSON example block contains both spec_iterations and root_cause_iterations fields
+# JSON example block contains both spec_iterations and root_cause_iterations fields
 if ! grep -q '"spec_iterations"' "$SCHEMA"; then
   fail "state/schema.md: JSON example block missing \"spec_iterations\" field"
 fi
@@ -49,15 +48,15 @@ if ! grep -q '"root_cause_iterations"' "$SCHEMA"; then
   fail "state/schema.md: JSON example block missing \"root_cause_iterations\" field"
 fi
 
-# AC-14: build_retries line in JSON block ends with comma (trailing comma fix)
+# build_retries line in JSON block ends with comma (trailing comma fix)
 if ! grep '"build_retries"' "$SCHEMA" | grep -v '|' | grep -q ','; then
   fail "state/schema.md: JSON example 'build_retries' line does not end with comma (trailing comma required before spec_iterations)"
 fi
 
-# AC-15: spec_iterations description uses the ↔ separator (spec-writer↔spec-reviewer)
+# spec_iterations description uses the ↔ separator (spec-writer↔spec-reviewer)
 if ! grep 'spec_iterations' "$SCHEMA" | grep -q '↔'; then
   fail "state/schema.md: spec_iterations description missing ↔ separator (expected: spec-writer↔spec-reviewer)"
 fi
 
-[ "$FAIL" -eq 0 ] && echo "PASS: state/schema.md retry limit fields spec_iterations and root_cause_iterations are present and correctly structured (AC-10 to AC-15)"
+[ "$FAIL" -eq 0 ] && echo "PASS: state/schema.md retry limit fields spec_iterations and root_cause_iterations are present and correctly structured"
 exit "$FAIL"

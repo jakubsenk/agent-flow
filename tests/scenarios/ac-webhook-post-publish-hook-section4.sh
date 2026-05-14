@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# AC-9: core/post-publish-hook.md Purpose line updated and Section 4 added
-# Traces: WEBHOOK-R1
+# core/post-publish-hook.md Purpose line updated and Section 4 added
 # Description: Verifies post-publish-hook.md has updated Purpose and Section 4 for pipeline events
 
 # Depends on Phase 7 implementation
@@ -28,5 +27,5 @@ if ! grep -nE '^## (4|Section 4)\b.*Pipeline lifecycle events' "$FILE" | grep -q
   exit 1
 fi
 
-echo "PASS: AC-9 — core/post-publish-hook.md has updated Purpose and Section 4"
+echo "PASS: core/post-publish-hook.md has updated Purpose and Section 4"
 exit 0
