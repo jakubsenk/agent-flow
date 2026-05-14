@@ -17,12 +17,12 @@ For the agent definition format and editing guidelines, see the [Agent Definitio
 | rollback-agent | haiku | Swift, safety-first, minimal | Bug-fix, Feature (triggered on block) | -- |
 | spec-analyst | sonnet | Requirements-focused, clarity-driven, structured | Feature | -- |
 | architect | opus | Strategic, systems-thinking, trade-off aware | Feature, Bug-fix (decomposition) | -- |
-| scaffolder | sonnet | Efficient, convention-following, minimal | Scaffold, Scaffold v2 | -- |
+| scaffolder | sonnet | Efficient, convention-following, minimal | Scaffold | -- |
 | priority-engine | opus | Data-driven, impact-focused, objective | Standalone (/prioritize) | -- |
-| spec-writer | opus | Visionary, comprehensive, user-centric | Scaffold v2 | -- |
-| spec-reviewer | opus | Critical, feasibility-focused, consistency-checking | Scaffold v2 | -- |
+| spec-writer | opus | Visionary, comprehensive, user-centric | Scaffold | -- |
+| spec-reviewer | opus | Critical, feasibility-focused, consistency-checking | Scaffold | -- |
 | browser-agent | sonnet | Pragmatic browser-driver | Bug-fix (optional, browser verification) | `--phase reproduce` / `--phase verify` |
-| deployment-verifier | sonnet | Diagnostic, port-aware, non-destructive | (removed in v9.2.0; invoke deployment-verifier directly) | -- |
+| deployment-verifier | sonnet | Diagnostic, port-aware, non-destructive | Local Deployment (optional) | -- |
 | backlog-creator | sonnet | Requirements-focused, structured, specification-driven | Standalone (/prioritize, feature planning) | -- |
 | sprint-planner | sonnet | Capacity-focused, data-driven, constraint-aware | Standalone (/prioritize, sprint planning) | -- |
 
@@ -32,15 +32,9 @@ For the agent definition format and editing guidelines, see the [Agent Definitio
 - **sonnet** is used for analysis, testing, triage, scaffolding, browser automation, and deployment verification (analyst, test-engineer, spec-analyst, scaffolder, browser-agent, deployment-verifier, backlog-creator, sprint-planner, acceptance-gate). These agents need strong reasoning but do not write production code.
 - **haiku** is used for mechanical, template-driven tasks with minimal judgment (publisher, rollback-agent).
 
-## v8.0.0 Agent Changes
-
-Three agent pairs from v7.0.0 were merged into three consolidated agents in v8.0.0 (21 → 18 agents). v9.0.0 further reduces this to 17 agents by deleting the orphaned tech-stack selection agent — its function is subsumed by the scaffolder, which reads tech stack directly from `spec/README.md` in scaffold v2 mode or from skill-supplied flags in `--no-implement` mode:
-
-The legacy pre-consolidation agent names (`triage-analyst`, `code-analyst`, `e2e-test-engineer`, `reproducer`, `browser-verifier`) were removed. Use `analyst`, `test-engineer`, and `browser-agent` with the appropriate phase flags.
-
 ## Mode Flag Dispatch
 
-v8.0.0 introduces a three-mode flag framework applied across all pipelines:
+agent-flow uses a three-mode flag framework applied across all pipelines:
 
 | Mode | Flag | Behavior |
 |------|------|----------|
@@ -441,7 +435,7 @@ Takes a prioritized backlog and a capacity constraint, then produces a concrete 
 | Model | opus |
 | Style | Critical, feasibility-focused, consistency-checking |
 | Type | Read-only |
-| Pipeline(s) | Scaffold v2 |
+| Pipeline(s) | Scaffold |
 | Inputs | Complete spec/ folder (README.md, architecture.md, verification.md, epics/*.md) |
 | Outputs | Spec review (verdict: APPROVE / REVISE, issues list with BLOCK/WARN severity) |
 | Constraints | Never modifies the specification. Never approves missing REQUIRED sections. Never approves vague acceptance criteria. Flags overengineered requirements (YAGNI). |
@@ -637,7 +631,7 @@ The publisher is a mechanical agent that follows a rigid procedure: push the bra
 ## Publish Report
 - **Branch:** fix/PROJ-123-login-plus-sign
 - **Commits:** 2 commits
-- **PR:** https://gitea.internal.example.com/org/app/pulls/87
+- **PR:** https://github.com/org/app/pull/87
 - **Issue updated:** PROJ-123 → For Review
 ```
 
@@ -652,7 +646,7 @@ The publisher is a mechanical agent that follows a rigid procedure: push the bra
 | Model | sonnet |
 | Style | Efficient, convention-following, minimal |
 | Type | Execution |
-| Pipeline(s) | Scaffold, Scaffold v2 |
+| Pipeline(s) | Scaffold |
 | Inputs | Tech Stack from spec/README.md (scaffold v2 mode) or skill-supplied stack flags (--no-implement mode) |
 | Outputs | Scaffold report (stack, files generated, Automation Config status, verification results) |
 | Constraints | Never generates business logic. Always pins dependency versions. Must include at least 1 passing smoke test. All required Automation Config sections must be present. Generated skeleton must build, pass tests, and pass linter. |
@@ -695,7 +689,7 @@ The publisher is a mechanical agent that follows a rigid procedure: push the bra
 | Model | opus |
 | Style | Visionary, comprehensive, user-centric |
 | Type | Execution |
-| Pipeline(s) | Scaffold v2 |
+| Pipeline(s) | Scaffold |
 | Inputs | Project description (direct text, issue tracker card, or custom template), mode (interactive/yolo-checkpoint/yolo), tech stack flags |
 | Outputs | Spec writer report (mode, input source, files generated, tech stack, acceptance criteria count) |
 | Constraints | Never skips REQUIRED sections. Never writes vague acceptance criteria. Max 7 epics. In interactive mode: max 10 questions, one at a time. Must generate rationale for every tech stack choice. |
@@ -758,7 +752,7 @@ The rollback-agent is triggered automatically by the block handler in pipeline s
 | Model | sonnet |
 | Style | Diagnostic, port-aware, non-destructive |
 | Type | Execution |
-| Pipeline(s) | (removed in v9.2.0) |
+| Pipeline(s) | Local Deployment (optional) |
 | Condition | `Local Deployment` config present OR explicit invocation |
 | Outputs | Deployment health report (port status, health endpoint verdict, container state) |
 | Constraints | Never modifies application code. |
@@ -769,4 +763,4 @@ Verifies local deployment health — checks that configured ports are open, opti
 
 ## Deprecated Agent Names
 
-The legacy pre-consolidation agent names `triage-analyst`, `code-analyst`, `e2e-test-engineer`, `reproducer`, and `browser-verifier` have been removed. Use `analyst`, `test-engineer`, and `browser-agent` with the appropriate phase flags.
+The agent names `triage-analyst`, `code-analyst`, `e2e-test-engineer`, `reproducer`, and `browser-verifier` have been removed. Use `analyst`, `test-engineer`, and `browser-agent` with the appropriate phase flags.
