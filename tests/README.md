@@ -1,6 +1,6 @@
 # Testing agent-flow
 
-Test suite for verifying pipeline logic. Contains a mock MCP server, test runner, and 13 automated scenarios.
+Test suite for verifying pipeline logic. Contains a mock MCP server, test runner, and 230 automated scenarios.
 
 ## Structure
 
@@ -10,7 +10,7 @@ tests/
 │   ├── CLAUDE.md          ← Complete Automation Config
 │   ├── app.py             ← Python code with two intentional bugs
 │   └── tests/test_app.py  ← Tests for mock code
-├── scenarios/             ← 13 test scenarios (bash scripts)
+├── scenarios/             ← 230 test scenarios (bash scripts)
 │   ├── happy-path.sh      ← Full pipeline end-to-end
 │   ├── triage-block.sh    ← Triage-analyst detects duplicate → Block
 │   ├── fixer-retry.sh     ← Fixer exhausts retry limit → Block + rollback
@@ -40,8 +40,10 @@ tests/
 
 ## Test scenarios
 
-| Scenario | File | Verifies |
-|----------|------|----------|
+The table below shows a representative sample of scenarios — it is **not** an exhaustive list. The full suite contains 230 scenarios in `tests/scenarios/`.
+
+| Scenario (examples) | File | Verifies |
+|---------------------|------|----------|
 | Happy path | `happy-path.sh` | Full pipeline: triage → code-analyst → fixer → reviewer → test-engineer → publisher |
 | Triage block | `triage-block.sh` | Triage-analyst detects duplicate → Block |
 | Fixer retry | `fixer-retry.sh` | Fixer exhausts retry limit → Block + rollback |
@@ -70,4 +72,4 @@ tests/
 
 - Tests use a mock MCP server — no real instances required
 - Mock MCP returns pre-prepared responses for each scenario
-- CI: Gitea Actions workflow runs tests on push
+- CI: GitHub Actions workflow runs tests on push

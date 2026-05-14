@@ -31,12 +31,14 @@ model: sonnet | opus | haiku
 ---
 ```
 
-Followed by markdown sections in this exact order:
+Every agent file in `agents/` MUST contain these six sections in this order:
 
-1. **Goal** — What the agent achieves
-2. **Expertise** — Domain knowledge areas
-3. **Process** — Numbered, actionable steps
-4. **Constraints** — Rules starting with NEVER or defining hard limits
+1. `## Goal`
+2. `## Expertise`
+3. `## Process` — numbered, actionable steps
+4. `## Output Contract` — structured output schema the agent returns to the orchestrator
+5. `## Step Completion Invariants` — fields the orchestrator MUST verify in state.json before advancing. Runtime helpers: [`core/lib/stage-invariant.sh`](core/lib/stage-invariant.sh)
+6. `## Constraints` — NEVER rules, hard limits, failure handling
 
 ### Best Practices
 
@@ -82,7 +84,7 @@ Add new templates to `examples/configs/`:
 
 Add to `examples/custom-agents/`:
 
-1. Follow the standard agent format (frontmatter + 4 sections)
+1. Follow the standard agent format (frontmatter + 6 sections)
 2. Must be read-only (analysis only, no code modifications)
 3. Include example output format in the Process section
 
@@ -105,6 +107,10 @@ New test scenarios added under `tests/scenarios/` are reviewed against the follo
 5. `set -uo pipefail` mandatory at scenario start — catches unbound variables and pipeline failures that would otherwise silently mask test errors.
 6. All filesystem operations (paths, filenames, directory references) must be double-quoted to handle spaces and special characters correctly.
 7. Scratch directory hygiene — use `mktemp -d` (never `$TMPDIR` or `$HOME`) and register `trap 'rm -rf "$SCRATCH"' EXIT` to guarantee cleanup on any exit path.
+
+### Reusable snippets
+
+Before writing a new shared prose block or Bash helper, check [`core/snippets/README.md`](core/snippets/README.md) for an existing snippet. Snippets are cited via `<!-- @snippet:<name> -->` markers and kept as a single source of truth.
 
 ## Reporting Issues
 

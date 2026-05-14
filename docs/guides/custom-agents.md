@@ -220,3 +220,7 @@ For more custom agent examples, see the `examples/custom-agents/` directory in t
 - **Keep agents focused on a single responsibility.** A security scanner should not also check code style. Split responsibilities into separate agents if needed.
 - **Use the appropriate model tier.** Most custom agents should use `sonnet` for analysis or `haiku` for mechanical tasks. Reserve `opus` for agents that need to make complex quality judgments.
 - **Document the BLOCK criteria.** In the Constraints section, clearly define what triggers a BLOCK vs a warning. This makes the agent's behavior predictable and debuggable.
+
+## See also
+
+For reusable Bash patterns (webhook curl, issue-id validation, etc.) see [`core/snippets/README.md`](../../core/snippets/README.md).

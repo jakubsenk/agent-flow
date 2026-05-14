@@ -102,7 +102,7 @@ You are a [Role] specializing in [domain].
 ## Constraints (NEVER rules, limits, failure handling)
 ```
 
-> **Reliability contract:** `## Step Completion Invariants` is a mandatory structured section in every `agents/*.md`. Custom agents that lack it will fail the harness scenario `tests/scenarios/v10-step-completion-invariants-completeness.sh`. See `core/lib/stage-invariant.sh` for the runtime helper functions (`compute_dispatch_witness`, `check_dispatch_witness`, `emit_witness_audit`).
+> **Reliability contract:** `## Step Completion Invariants` is a mandatory structured section in every `agents/*.md`. Custom agents that lack it will fail the harness scenario `tests/scenarios/step-completion-invariants-completeness.sh`. See `core/lib/stage-invariant.sh` for the runtime helper functions (`compute_dispatch_witness`, `check_dispatch_witness`, `emit_witness_audit`).
 
 ### Model Selection
 
@@ -313,7 +313,7 @@ The following invariants MUST hold across release commits. Phase 8 verification 
 
 1. **License SPDX consistency** — `.claude-plugin/plugin.json:license`, `.claude-plugin/marketplace.json:plugins[0].license`, and the first heading of `LICENSE` MUST all reference the exact string `"MIT"` (canonical SPDX form, case-sensitive).
 2. **Maintainer email consistency** — `SECURITY.md`, `CODE_OF_CONDUCT.md`, and `CONTRIBUTING.md` MUST all reference `filip.sabacky@ceosdata.com` as the maintainer contact (no other emails for this role).
-3. **Issue/PR template parity** — corresponding files under `.gitea/issue_template/`, `.gitea/pull_request_template.md`, `.github/ISSUE_TEMPLATE/`, `.github/PULL_REQUEST_TEMPLATE.md` MUST be byte-identical pairs (verify via `diff -q`).
+3. **Issue/PR template parity** — `.github/ISSUE_TEMPLATE/bug_report.md`, `.github/ISSUE_TEMPLATE/feature_request.md`, and `.github/PULL_REQUEST_TEMPLATE.md` MUST follow the canonical template structure. The public release supports GitHub only; `.gitea/` mirrors are not maintained.
 
 Doc-count drift discipline: when adding or removing a skill, agent, optional config section, or core contract, the corresponding count fields in CLAUDE.md, README.md, docs/reference/automation-config.md, docs/reference/skills.md, and docs/architecture.md must be updated together in the same commit.
 

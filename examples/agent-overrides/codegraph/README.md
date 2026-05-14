@@ -16,14 +16,14 @@ customization/spec-analyst.md
 customization/codegraph/architect.md
 ```
 
-> **Note:** The override file for the analyst agent is `analyst.md` (canonical v9 name). The file in this directory is still named `code-analyst.md` for historical reference — rename it to `analyst.md` when copying to your project.
+> **Note:** The override file for the analyst agent is `analyst.md` (canonical name). `code-analyst.md` is a legacy name — **rename it to `analyst.md` before use**. The agent override injector matches filenames against agent names, and the agent is named `analyst`.
 
 ## Included Agents
 
 | File | Agent | What codegraph adds |
 |------|-------|---------------------|
 | `architect.md` | architect | Structured dependency/inheritance analysis for design decisions, blast radius assessment |
-| `code-analyst.md` | analyst (rename to `analyst.md` when copying) | Call graph tracing for root cause analysis, usage counting for risk assessment |
+| `code-analyst.md` | analyst (**legacy name — rename to `analyst.md` before use**) | Call graph tracing for root cause analysis, usage counting for risk assessment |
 | `spec-analyst.md` | spec-analyst | Architecture overview for feature size estimation, dependency mapping for spec extraction |
 
 ## Codegraph Tools Used
