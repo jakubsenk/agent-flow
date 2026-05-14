@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# v9-overlay-injection-before-task.sh
+# overlay-injection-before-task.sh
 # Verifies: AC-MODE-005, AC-MODE-021, AC-WIRE-004
 #
 # STRUCTURAL test: for each of the 13 dispatch step files that contains Task(,
@@ -23,7 +23,7 @@ FAIL=0
 fail() { printf '[FAIL] %s\n' "$1" >&2; FAIL=1; }
 pass() { printf '[PASS] %s\n' "$1"; }
 
-# v10 thin-controller layout: dispatch sites discovered dynamically across both
+# Thin-controller layout: dispatch sites discovered dynamically across both
 # pipeline skill trees. Any step file containing a Task( call is a dispatch site.
 DISPATCH_FILES=()
 for skill in fix-bugs implement-feature; do
@@ -81,6 +81,6 @@ done
 
 echo ""
 if [ "$FAIL" -eq 0 ]; then
-  echo "[PASS] v9-overlay-injection-before-task: all 13 dispatch sites have correct BEFORE-Task() ordering"
+  echo "[PASS] overlay-injection-before-task: all 13 dispatch sites have correct BEFORE-Task() ordering"
 fi
 exit "$FAIL"

@@ -1,11 +1,11 @@
-# v9-overlay Test Fixtures
+# overlay Test Fixtures
 
 Fixture directory for the 3 replacement overlay runtime coverage scenarios.
 
 ## Directory Layout
 
 ```
-v9-overlay/
+overlay/
 ├── README.md           — this file
 ├── toml/
 │   └── analyst.toml   — R1: TOML overlay payload (triggers OVERLAY_SOURCE="toml")

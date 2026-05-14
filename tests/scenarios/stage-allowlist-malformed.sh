@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # ===========================================================================
-# Test:        v10-stage-allowlist-malformed.sh
+# Test:        stage-allowlist-malformed.sh
 # Falsifies:,
 # FC mapped:   FC-REL-4 (a/b/c/d/e/f/g/h)
 # What it checks:
-#   ASSERT-1) 3 malformed fixture files exist in tests/fixtures/v10-stage-allowlist/
+#   ASSERT-1) 3 malformed fixture files exist in tests/fixtures/stage-allowlist/
 #   ASSERT-2) Both step files contain "[WARN] malformed" prose
 #   ASSERT-3) Both step files contain "allow-all-stages" fallback prose
 #   ASSERT-4) Neither step file contains forbidden silent-skip prose
@@ -24,7 +24,7 @@ cd "$REPO_ROOT" || { echo "FAIL: cannot cd to REPO_ROOT=$REPO_ROOT" >&2; exit 1;
 FAIL=0
 fail() { echo "FAIL: $1" >&2; FAIL=1; }
 
-FIX_DIR="tests/fixtures/v10-stage-allowlist"
+FIX_DIR="tests/fixtures/stage-allowlist"
 STEP_FB="skills/fix-bugs/steps/12-result.md"
 STEP_IF="skills/implement-feature/steps/08-publish.md"
 
@@ -93,7 +93,7 @@ if [ -f "$FIX_DIR/malformed-extra-tags.md" ]; then
 fi
 
 if [ "$FAIL" -eq 0 ]; then
-  echo "PASS: v10-stage-allowlist-malformed — 3 fixtures; WARN+allow-all-stages prose in step files; awk parser behaviors for empty/truncated/extra-tags confirmed"
+  echo "PASS: stage-allowlist-malformed — 3 fixtures; WARN+allow-all-stages prose in step files; awk parser behaviors for empty/truncated/extra-tags confirmed"
   exit 0
 fi
 exit 1

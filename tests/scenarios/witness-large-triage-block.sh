@@ -13,9 +13,9 @@ set -uo pipefail
 
 REPO_ROOT="${CEOS_REPO_ROOT:-$(cd "$(dirname "$0")/../.." && pwd)}"
 LIB="$REPO_ROOT/core/lib/stage-invariant.sh"
-FIXTURE="$REPO_ROOT/tests/fixtures/v10-witness/triage-5ac.json"
+FIXTURE="$REPO_ROOT/tests/fixtures/witness/triage-5ac.json"
 
-fail() { echo "FAIL: v10-witness-large-triage-block — $1"; exit 1; }
+fail() { echo "FAIL: witness-large-triage-block — $1"; exit 1; }
 
 [ -f "$LIB" ] || fail "stage-invariant.sh missing at $LIB"
 [ -f "$FIXTURE" ] || fail "fixture missing at $FIXTURE"
@@ -57,5 +57,5 @@ if grep -qE 'grep[[:space:]]+-A[[:space:]]+8[^0-9]' "$LIB"; then
     fail "ASSERT-4: $LIB still contains 'grep -A 8' — regression: window narrowed below safe threshold"
 fi
 
-echo "PASS: v10-witness-large-triage-block — 5-AC triage block (delta=${DELTA} lines) → WITNESS_OK rc=0; grep -A window >= 30 confirmed structurally"
+echo "PASS: witness-large-triage-block — 5-AC triage block (delta=${DELTA} lines) → WITNESS_OK rc=0; grep -A window >= 30 confirmed structurally"
 exit 0
