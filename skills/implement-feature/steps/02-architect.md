@@ -5,7 +5,7 @@ Before dispatching architect: read `model:` frontmatter from `agents/architect.m
 `architect.tokens_used: 0`, `architect.duration_ms: 0`, `architect.tool_uses: 0`. Follow atomic write
 protocol from `../../../core/state-manager.md`.
 
-### v10.0.0 pre-dispatch witness write (REQ-B-2 v1.2)
+### Pre-dispatch witness write
 
 The architect binds to canonical stage `code_analysis` per design.md §4.2 (feature/scaffold mode). Source `core/lib/stage-invariant.sh` and write the witness fields atomically before Task dispatch. Inject `EXPECTED_AGENT_NAME` and `EXPECTED_STAGE_NAME` as Tier-1 prompt variables.
 

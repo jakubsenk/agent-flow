@@ -216,8 +216,8 @@ any unknown-key violation.
 
 ### `.md` + `.toml` coexistence (REQ-OVR-005)
 
-WHEN both `customization/{agent}.md` AND `customization/{agent}.toml` exist (v9.0.0 — hard error
-per REQ-H-100; pre-announced removal of legacy `.md` overlay):
+WHEN both `customization/{agent}.md` AND `customization/{agent}.toml` exist (v9.0.0 — hard error;
+pre-announced removal of legacy `.md` overlay):
 - Refuse the dispatch path.
 - Emit: `[ERROR] Legacy .md overlay format is not supported; remove customization/{agent}.md (TOML takes precedence). See docs/guides/toml-overlay-syntax.md for manual conversion steps.` (to
   `pipeline.log` and stderr) and exit non-zero.
@@ -225,7 +225,7 @@ per REQ-H-100; pre-announced removal of legacy `.md` overlay):
 ### Legacy `.md`-only fallback (REQ-OVR-006) — REMOVED in v9.0.0
 
 WHEN only `customization/{agent}.md` exists (no `.toml`) in v9.0.0:
-- Refuse the dispatch path (the `.md` legacy fallback is hard-removed per REQ-H-100).
+- Refuse the dispatch path (the `.md` legacy fallback is hard-removed).
 - Emit: `[ERROR] Legacy .md overlay format is not supported; convert .md to .toml manually (see docs/guides/toml-overlay-syntax.md).` and exit non-zero.
 
 v8.0.0 preserved v7 backward compatibility via `[WARN]` here. v9.0.0 ships the pre-announced

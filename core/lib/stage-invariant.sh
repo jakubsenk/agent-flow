@@ -21,7 +21,7 @@ set -uo pipefail
 #
 #   Canonical input: "${SUBAGENT_TYPE}|${MODEL}|${PROMPT_HEAD_128}"
 #
-#   CRITICAL (REQ-B-2 v1.2): PROMPT_HEAD_128 must be the first 128 UTF-8-safe
+#   CRITICAL: PROMPT_HEAD_128 must be the first 128 UTF-8-safe
 #   bytes of the prompt template BEFORE Tier-1 variable expansion. The caller
 #   is responsible for performing the 128-byte truncation on the RAW prompt
 #   string (with ${VAR} placeholders un-expanded). This function does NOT

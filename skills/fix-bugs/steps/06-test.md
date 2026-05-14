@@ -6,7 +6,7 @@ Dispatch `test-engineer` to write new tests covering the fix and run the full su
 
 If stage `test-engineer` is in the profile's Skip stages → skip, record `[SKIP] test-engineer (profile: {name})`.
 
-## Pre-dispatch state write (REQ-B-2 v1.2)
+## Pre-dispatch state write
 
 Before dispatching, atomically write per-stage pre-dispatch fields to
 `.agent-flow/{ISSUE-ID}/state.json`:

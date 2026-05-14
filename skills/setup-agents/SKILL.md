@@ -149,7 +149,7 @@ This sentinel enables idempotent regen detection (Step 4).
 For each agent in `PlannedOverlays`:
 
 1. Determine target path: `${CUSTOMIZATION_DIR}/{agent}.toml`
-2. **Symlink escape guard** (REQ-SETUP-006): resolve real path before writing:
+2. **Symlink escape guard**: resolve real path before writing:
    ```bash
    # Portable realpath (GNU readlink -f not available on macOS bash 3.2)
    RESOLVED=$(python3 -c "import os,sys; print(os.path.realpath(sys.argv[1]))" "${CUSTOMIZATION_DIR}/${agent}.toml" 2>/dev/null)
@@ -198,7 +198,7 @@ All writes are restricted to `${CUSTOMIZATION_DIR}/`.
 ### Legacy `.md` overlay coexistence
 
 When scanning `customization/`, `/setup-agents` may encounter legacy v7 `.md` overlay files
-(REMOVED in v9.0.0 — hard error per REQ-H-100):
+(REMOVED in v9.0.0 — hard error):
 
 - **Only legacy `.md` exists**: emit `[ERROR] Legacy .md overlay format is not supported for {agent}; manual conversion required — see docs/guides/toml-overlay-syntax.md for TOML overlay format examples.` and refuse to proceed.
 - **Both legacy `.md` and `.toml` exist**: emit `[ERROR] Legacy .md overlay found alongside {agent}.toml; remove the .md file (TOML takes precedence). See docs/guides/toml-overlay-syntax.md.` and refuse to proceed.
@@ -319,7 +319,7 @@ Print count: `{N} files written, {M} skipped.`
 - Use `python3 os.path.realpath()` for symlink resolution (macOS portability; `readlink -f`
   is GNU-only and unavailable on macOS bash 3.2 without GNU coreutils).
 - Reference `skills/setup-agents/lib/toml-merge.sh` for TOML write utilities.
-- Skills count increases from 28 → 29 after this skill is added (REQ-SETUP-001, AC-CT-002).
+- Skills count increases from 28 → 29 after this skill is added (AC-CT-002).
 
 ## Block Comment
 

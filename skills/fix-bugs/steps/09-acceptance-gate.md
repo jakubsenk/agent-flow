@@ -21,7 +21,7 @@ If Hooks → Pre-publish exists in Automation Config:
 If Custom Agents → Pre-publish agent exists:
 - Run as Task. BLOCK → Block handler (step X).
 
-## Pre-dispatch state write (REQ-B-2 v1.2)
+## Pre-dispatch state write
 
 Before dispatching, atomically write per-stage pre-dispatch fields to
 `.agent-flow/{ISSUE-ID}/state.json`:

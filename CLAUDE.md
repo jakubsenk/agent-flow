@@ -76,7 +76,7 @@ Pipeline mode is selected via a flag at invocation time:
 - **`--yolo`** — automated run, all checkpoints skipped, pipeline runs to completion without pausing
 - **`--step-mode`** — pause before every individual agent step for fine-grained control
 
-With `--no-implement`: `[0-INFRA] → [0-MCP] → STACK-SELECTOR (sonnet) → SCAFFOLDER (sonnet) → Validate → Git init → [push if SC ready]` (v3.x behavior).
+With `--no-implement`: `[0-INFRA] → [0-MCP] → STACK-SELECTOR (sonnet) → SCAFFOLDER (sonnet) → Validate → Git init → [push if SC ready]` (skeleton only, no implementation).
 
 In scaffold v2 mode, the specification is saved as a `spec/` folder in the project root (spec/README.md, spec/architecture.md, spec/verification.md, spec/epics/*.md). This folder is the single source of truth for all downstream agents.
 

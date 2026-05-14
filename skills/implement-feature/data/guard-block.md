@@ -23,7 +23,7 @@ fi
 
 If the probe fails, ABORT the pipeline with exit code 2 and the canonical
 message above. DO NOT silently fall back to "I'll work from SKILL.md + step
-files directly." Silent degradation is the BIFITO-4293 failure mode this guard
+files directly." Silent degradation is the failure mode this guard
 exists to prevent.
 
 **Path-format note (B3 documentary clarifier -- informational, not executable):**

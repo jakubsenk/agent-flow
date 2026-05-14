@@ -21,7 +21,7 @@ Before dispatching publisher: read `model:` frontmatter from `agents/publisher.m
 `publisher.tokens_used: 0`, `publisher.duration_ms: 0`, `publisher.tool_uses: 0`. Follow atomic write
 protocol from `../../../core/state-manager.md`.
 
-### v10.0.0 pre-dispatch witness write (REQ-B-2 v1.2)
+### Pre-dispatch witness write
 
 publisher binds to canonical stage `publisher` per design.md §4.2.
 
@@ -90,7 +90,7 @@ where `<SKILL_PATH>` is the resolved path to the SKILL.md file (e.g., `skills/im
 
 If ANOMALY count > 0, render:
 ```
-[agent-flow] Dispatch audit anomalies detected (v10.0.0):
+[agent-flow] Dispatch audit anomalies detected:
   Stage: {stage_name}  Status: WITNESS_MISSING  Severity: REQUIRED
   ...
 For investigation: cat .agent-flow/dispatch-audit.log

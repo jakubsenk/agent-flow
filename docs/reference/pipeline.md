@@ -314,7 +314,7 @@ spec before architect work begins. These checkpoints are omitted in `--yolo` mod
 
 ## State management
 
-Pipeline state is persisted to `.ceos-agents/{RUN-ID}/state.json` via `core/state-manager.md`.
+Pipeline state is persisted to `.agent-flow/{RUN-ID}/state.json` via `core/state-manager.md`.
 See `state/schema.md` for the full schema.
 
 ### State top-level keys (`schema_version` stays `"1.0"`)

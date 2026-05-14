@@ -184,7 +184,7 @@ step file. Before invoking Task, you SHALL write atomically to `state.json` unde
 - `status`          = `"in_progress"`
 
 You SHALL also inject `EXPECTED_AGENT_NAME` and `EXPECTED_STAGE_NAME` as Tier-1 variables in the
-agent prompt (REQ-B-2 v1.2).
+agent prompt.
 
 ## Step override resolution (Agent Overrides)
 

@@ -25,7 +25,7 @@ fi
 
 If the probe fails, ABORT the pipeline with exit code 2 and the canonical
 message above. DO NOT silently fall back to "I'll work from SKILL.md + step
-files directly." Silent degradation is the BIFITO-4293 failure mode this guard
+files directly." Silent degradation is the failure mode this guard
 exists to prevent.
 
 **Path-format note (B3 documentary clarifier -- informational, not executable):**
@@ -73,7 +73,7 @@ BEFORE Tier-1 variable substitution. Compute via
 
 You SHALL also inject `EXPECTED_AGENT_NAME=<value>` and
 `EXPECTED_STAGE_NAME=<value>` as Tier-1 variables in the agent prompt so the
-subagent can self-verify its dispatch invariants (REQ-B-2 v1.2).
+subagent can self-verify its dispatch invariants.
 
 The PostToolUse hook reads these fields and emits WITNESS_OK | WITNESS_MISSING
 | WITNESS_MISMATCH audit lines to `.agent-flow/dispatch-audit.log`. If a stage

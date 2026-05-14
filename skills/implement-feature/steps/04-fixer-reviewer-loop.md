@@ -18,7 +18,7 @@ Before the first fixer dispatch: read `model:` frontmatter from `agents/fixer.md
 initialize `fixer_reviewer.tokens_used: 0`, `fixer_reviewer.duration_ms: 0`, `fixer_reviewer.tool_uses: 0`.
 Follow atomic write protocol from `../../../core/state-manager.md`.
 
-### v10.0.0 pre-dispatch witness write (REQ-B-2 v1.2)
+### Pre-dispatch witness write
 
 Both fixer and reviewer bind to canonical stage `fixer_reviewer` per design.md §4.2 (shared in the iteration loop). Source `core/lib/stage-invariant.sh` and recompute the witness for EACH fixer or reviewer dispatch (each iteration has its own prompt — therefore its own witness). Inject `EXPECTED_AGENT_NAME` and `EXPECTED_STAGE_NAME` as Tier-1 prompt variables.
 

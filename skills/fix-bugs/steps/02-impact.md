@@ -7,7 +7,7 @@ Dispatch `analyst --phase impact` for each bug that passed triage (OK status).
 If stage `analyst-impact` is in the profile's Skip stages → skip for each bug, record
 `[SKIP] analyst-impact (profile: {name})`.
 
-## Pre-dispatch state write (REQ-B-2 v1.2)
+## Pre-dispatch state write
 
 Before dispatching, atomically write per-stage pre-dispatch fields to
 `.agent-flow/{ISSUE-ID}/state.json`:

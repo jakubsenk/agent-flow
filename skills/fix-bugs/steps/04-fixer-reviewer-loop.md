@@ -3,7 +3,7 @@
 Run the fixer ↔ reviewer iteration loop. Follow `../../../core/fixer-reviewer-loop.md` for the iteration
 protocol.
 
-## Pre-loop state initialization (REQ-B-2 v1.2)
+## Pre-loop state initialization
 
 Before the first fixer dispatch, atomically write per-stage pre-dispatch fields to
 `.agent-flow/{ISSUE-ID}/state.json`:

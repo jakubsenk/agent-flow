@@ -63,7 +63,7 @@ Update `state.json`: set `decomposition.status` to `"completed"`, `decomposition
 `"SINGLE_PASS"`, `decomposition.strategy` to `null`. Follow atomic write protocol from
 `../../../core/state-manager.md`.
 
-### v10.0.0 pre-dispatch witness write (REQ-B-2 v1.2)
+### Pre-dispatch witness write
 
 Step 03 has no required agent dispatch — the decomposition decision is a heuristic evaluation (no Task call). Write to `state.json[stages.decomposition]` directly:
 

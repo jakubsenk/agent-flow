@@ -33,7 +33,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Sentinel for interactive-prompt path (REQ-V902-032)
+# Sentinel for interactive-prompt path
 NO_FORMAT_FLAG=0
 if [ -z "$FORMAT" ]; then
   NO_FORMAT_FLAG=1
@@ -326,7 +326,7 @@ When `$NO_FORMAT_FLAG == 1`:
 
 After the markdown report is displayed on stdout, present the following Czech prompt to the user as a question requiring a response:
 
-> Výstup uložit? [1] Ne [2] JSON → stdout [3] HTML → ./metrics.html
+> Save output? [1] No [2] JSON → stdout [3] HTML → ./metrics.html
 
 Handle the response:
 - `1` → exit (no save)

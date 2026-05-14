@@ -20,7 +20,7 @@ One token = one service. Tokens are stored in `.mcp.json` (never in CLAUDE.md).
 1. Open YouTrack → click on your profile (top right)
 2. **Hub → Authentication → New token...**
 3. Scope: `YouTrack` (or specifically `Issue tracker read/write`)
-4. Token name: recommended `agent-flow-<PROJECT>` (e.g. `agent-flow-BIFITO`)
+4. Token name: recommended `agent-flow-<PROJECT>` (e.g. `agent-flow-MYPROJECT`)
 5. Click **Create** — the token is shown **only once**, copy it immediately
 6. Expiration: recommended no expiration or 1 year
 

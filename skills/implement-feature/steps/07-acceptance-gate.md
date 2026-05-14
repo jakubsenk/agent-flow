@@ -12,7 +12,7 @@ Before dispatching acceptance-gate: read `model:` frontmatter from `agents/accep
 and initialize `acceptance_gate.tokens_used: 0`, `acceptance_gate.duration_ms: 0`, `acceptance_gate.tool_uses: 0`.
 Follow atomic write protocol from `../../../core/state-manager.md`.
 
-### v10.0.0 pre-dispatch witness write (REQ-B-2 v1.2)
+### Pre-dispatch witness write
 
 acceptance-gate binds to canonical stage `acceptance_gate` per design.md §4.2.
 

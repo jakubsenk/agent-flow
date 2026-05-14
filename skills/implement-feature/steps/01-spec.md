@@ -9,7 +9,7 @@ Before dispatching spec-analyst: read `model:` frontmatter from `agents/spec-ana
 `spec_analysis.tokens_used: 0`, `spec_analysis.duration_ms: 0`, `spec_analysis.tool_uses: 0`. Follow atomic write
 protocol from `../../../core/state-manager.md`.
 
-### v10.0.0 pre-dispatch witness write (REQ-B-2 v1.2)
+### Pre-dispatch witness write
 
 Source `core/lib/stage-invariant.sh` and write the dispatch witness atomically to `state.json[stages.spec_analysis]` before invoking Task. Inject `EXPECTED_AGENT_NAME` and `EXPECTED_STAGE_NAME` as Tier-1 prompt variables so the agent self-check can cross-verify.
 
@@ -66,7 +66,7 @@ Before dispatching analyst: read `model:` frontmatter from `agents/analyst.md`. 
 `code_analysis.tokens_used: 0`, `code_analysis.duration_ms: 0`, `code_analysis.tool_uses: 0`. Follow atomic
 write protocol from `../../../core/state-manager.md`.
 
-### v10.0.0 pre-dispatch witness write (REQ-B-2 v1.2)
+### Pre-dispatch witness write
 
 ```bash
 . core/lib/stage-invariant.sh

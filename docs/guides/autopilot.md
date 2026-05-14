@@ -206,7 +206,7 @@ Other disjoint axes to consider:
 On every successful lock acquisition, Autopilot logs:
 
 ```
-[autopilot][INFO] Running on host ceos-builder-01. If another host is also running Autopilot against the same tracker, it MUST use a disjoint bug/feature query. See docs/guides/autopilot.md#single-host-operation.
+[autopilot][INFO] Running on host build-server-01. If another host is also running Autopilot against the same tracker, it MUST use a disjoint bug/feature query. See docs/guides/autopilot.md#single-host-operation.
 ```
 
 This line is informational. It does **not** detect cross-host contention — it aids log correlation only. The authoritative mitigation is operator-side disjoint-query configuration.
@@ -347,7 +347,7 @@ No lock is acquired, no state is written. The next cron cycle will retry.
 If another Autopilot process holds the lock (and the lock is not stale), Autopilot exits with code 2:
 
 ```
-[autopilot][ERROR] Another Autopilot run in progress (pid=12345, host=ceos-builder-01, since=2026-04-17T14:30:00Z).
+[autopilot][ERROR] Another Autopilot run in progress (pid=12345, host=build-server-01, since=2026-04-17T14:30:00Z).
 ```
 
 ### Exit code matrix

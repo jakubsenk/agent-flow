@@ -23,7 +23,7 @@ Before dispatching test-engineer: read `model:` frontmatter from `agents/test-en
 `test.started_at`, `test.model`, `test.status: "in_progress"`, and initialize `test.tokens_used: 0`,
 `test.duration_ms: 0`, `test.tool_uses: 0`. Follow atomic write protocol from `../../../core/state-manager.md`.
 
-### v10.0.0 pre-dispatch witness write (REQ-B-2 v1.2)
+### Pre-dispatch witness write
 
 test-engineer binds to canonical stage `test` per design.md §4.2 (default; `e2e_test` when `--e2e` flag).
 
@@ -70,7 +70,7 @@ Write to `state.json`: `deployment.started_at`, `deployment.model`, `deployment.
 and initialize `deployment.tokens_used: 0`, `deployment.duration_ms: 0`, `deployment.tool_uses: 0`.
 Follow atomic write protocol from `../../../core/state-manager.md`.
 
-### v10.0.0 pre-dispatch witness write (REQ-B-2 v1.2)
+### Pre-dispatch witness write
 
 deployment-verifier binds to canonical stage `deployment` per design.md §4.2.
 
@@ -113,7 +113,7 @@ Before dispatching test-engineer with --e2e flag: write `e2e_test.started_at`, `
 `e2e_test.status: "in_progress"`, and initialize `e2e_test.tokens_used: 0`, `e2e_test.duration_ms: 0`,
 `e2e_test.tool_uses: 0`. Follow atomic write protocol from `../../../core/state-manager.md`.
 
-### v10.0.0 pre-dispatch witness write (REQ-B-2 v1.2)
+### Pre-dispatch witness write
 
 ```bash
 . core/lib/stage-invariant.sh

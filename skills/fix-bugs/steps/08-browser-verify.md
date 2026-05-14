@@ -13,7 +13,7 @@ Skip this entire step if ANY of the following is true:
 When skipping: log `[SKIP] browser verification ({reason})`, set
 `browser_verification.status = "skipped"` in state.json (NEVER leave at `"pending"`), continue to step 09.
 
-## Pre-dispatch state write (REQ-B-2 v1.2)
+## Pre-dispatch state write
 
 Before dispatching, atomically write per-stage pre-dispatch fields to
 `.agent-flow/{ISSUE-ID}/state.json`:

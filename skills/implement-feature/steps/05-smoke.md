@@ -12,7 +12,7 @@ If neither `Build command` nor `Test command` is configured in Automation Config
 - Skip the `step-completed` webhook (WEBHOOK-R7).
 - Proceed to step 06.
 
-## v10.0.0 pre-dispatch witness write (REQ-B-2 v1.2)
+## Pre-dispatch witness write
 
 `smoke_check` is a controller-driven stage with NO agent dispatch — the controller runs Bash commands directly. The witness fields are written for audit-log parity (the hook still emits a line per stage; a `null` witness paired with `status = "completed"` is the canonical "ran-without-agent" pattern).
 

@@ -8,7 +8,7 @@ Step by step: from a clean slate to a working pipeline.
 |------|---------------|
 | Claude Code CLI | `claude --version` |
 | Git | `git --version` + `git config --global user.email` |
-| Access to internal Gitea | See section below |
+| Access to your Git server (SSH or HTTPS) | See section below |
 
 ## 1. Gitea Access
 

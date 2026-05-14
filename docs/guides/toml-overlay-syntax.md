@@ -286,7 +286,7 @@ rule = "All acceptance criteria MUST follow the EARS format (WHEN/THEN/WHILE) wi
 max_spec_iterations = 7
 
 [meta]
-priority_label   = "ceos-priority"
+priority_label   = "priority"
 team_owner       = "architecture-team"
 cost_center      = "PROJ-42"
 jira_component   = "Backend-Core"
@@ -302,7 +302,7 @@ The `[meta]` table is **free-form**: the plugin accepts it without any sub-key v
 
 ```toml
 [meta]
-priority_label = "ceos-priority"   # example key — entirely up to the project
+priority_label = "priority"   # example key — entirely up to the project
 team_owner     = "backend-team"    # example key
 cost_center    = "PROJ-42"         # example key
 any_key        = "any value"       # arbitrary; NOT subject to unknown-key validation
@@ -484,7 +484,7 @@ max_root_cause_iterations = 3   # default: 3
 # --- [meta]: free-form table — NOT subject to unknown-key validation ---
 # All sub-keys accepted; NOT consumed by plugin dispatch logic.
 [meta]
-priority_label = "ceos-priority"
+priority_label = "priority"
 team_owner     = "backend-team"
 cost_center    = "PROJ-42"
 ```
