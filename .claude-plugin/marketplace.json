@@ -1,27 +1,23 @@
 {
   "name": "agent-flow",
   "owner": {
-    "name": "Filip Sabacky"
+    "name": "Filip Sabacky",
+    "email": "filip.sabacky@ceosdata.com"
+  },
+  "metadata": {
+    "description": "Automated bug-fix, feature, and scaffold workflows for Claude Code",
+    "version": "1.0.0"
   },
   "plugins": [
     {
       "name": "agent-flow",
       "source": {
-        "source": "github",
-        "repo": "asysta-act/agent-flow"
+        "source": "url",
+        "url": "https://github.com/asysta-act/agent-flow.git"
       },
       "description": "agent-flow — Claude Code plugin for automated bug-fix, feature, and scaffold workflows. Issue tracker to merged PR via a pipeline of specialized AI agents.",
       "version": "1.0.0",
-      "license": "MIT",
-      "keywords": ["claude-code", "plugin", "agent-orchestration", "pipeline", "automation", "bug-fix", "scaffolding", "ci"],
-      "homepage": "https://github.com/asysta-act/agent-flow",
-      "repository": {
-        "type": "git",
-        "url": "https://github.com/asysta-act/agent-flow.git"
-      },
-      "bugs": {
-        "url": "https://github.com/asysta-act/agent-flow/issues"
-      }
+      "strict": true
     }
   ]
 }
