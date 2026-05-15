@@ -21,6 +21,8 @@ jobs:
         id: harness
         run: bash tests/harness/run-tests.sh
         shell: bash
+        env:
+          HARNESS_JOBS: 2
 
       - name: Upload logs on failure
         if: failure()
