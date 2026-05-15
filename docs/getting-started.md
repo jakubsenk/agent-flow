@@ -172,9 +172,9 @@ Choose an open bug from your tracker and run the fix-bugs command:
 
 Replace `PROJ-42` with your actual issue ID. The pipeline progresses through these stages:
 
-1. **Triage** — The triage-analyst reads the bug report, checks for duplicates, and produces a structured analysis. If the bug is unclear or a duplicate, it blocks early.
+1. **Triage** — The analyst (--phase triage) reads the bug report, checks for duplicates, and produces a structured analysis. If the bug is unclear or a duplicate, it blocks early.
 
-2. **Code Analysis** — The analyst-impact maps the impact zone: root cause location, affected files (max 5), callers at risk, test coverage, and risk level.
+2. **Code Analysis** — The analyst (--phase impact) maps the impact zone: root cause location, affected files (max 5), callers at risk, test coverage, and risk level.
 
 3. **Fix** — The fixer agent implements the fix (diff limited to 100 lines). It runs the build command to verify the fix compiles.
 
@@ -219,7 +219,7 @@ You now have a working agent-flow setup. Here are the recommended next steps:
 - **[Skills Reference](reference/skills.md)** — Explore all **17** skills with syntax, flags, and usage examples. Key skills to try next:
   - `/agent-flow:fix-bugs 3` — Fix multiple bugs in batch
   - `/agent-flow:prioritize` — AI-powered backlog prioritization
-  - `/agent-flow:dashboard` — Visual overview of pipeline activity
+  - `/agent-flow:metrics` — Visual overview of pipeline activity
 
 - **[Custom Agents](guides/custom-agents.md)** — Extend the pipeline with your own agents for security scanning, compliance checks, or documentation generation.
 
