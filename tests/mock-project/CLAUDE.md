@@ -86,8 +86,8 @@ Fixes {issue_link}
 ### Pipeline Profiles (optional)
 | Profile | Skip stages | Extra stages |
 |--------|-------------|--------------|
-| fast | triage, e2e-test-engineer | — |
-| ci | analyst-impact, e2e-test-engineer | — |
+| fast | triage, test-engineer-e2e | — |
+| ci | analyst-impact, test-engineer-e2e | — |
 
 ### Metrics (optional)
 | Key | Value |

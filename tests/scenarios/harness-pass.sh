@@ -8,7 +8,7 @@
 set -e
 
 if [ "${CEOS_HARNESS_RECURSIVE:-0}" = "1" ]; then
-  echo "SKIP: v9-5-harness-pass — recursive invocation detected (parent harness already running)"
+  echo "SKIP: harness-pass — recursive invocation detected (parent harness already running)"
   exit 77
 fi
 
@@ -17,15 +17,15 @@ REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 HARNESS="$REPO_ROOT/tests/harness/run-tests.sh"
 
 if [ ! -f "$HARNESS" ]; then
-  echo "FAIL: v9-5-harness-pass — tests/harness/run-tests.sh not found"
+  echo "FAIL: harness-pass — tests/harness/run-tests.sh not found"
   exit 1
 fi
 
 echo "Running full test harness..."
 if CEOS_HARNESS_RECURSIVE=1 bash "$HARNESS"; then
-  echo "PASS: v9-5-harness-pass — full harness passed with 0 FAIL"
+  echo "PASS: harness-pass — full harness passed with 0 FAIL"
   exit 0
 else
-  echo "FAIL: v9-5-harness-pass — harness reported failures (see above)"
+  echo "FAIL: harness-pass — harness reported failures (see above)"
   exit 1
 fi
