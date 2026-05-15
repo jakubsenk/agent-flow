@@ -41,7 +41,6 @@ are agent-specific.
 | `rollback-agent` | `model`, `style` | `[[process_additions]]`, `[[constraints]]` | (none agent-specific) |
 | `spec-analyst` | `model`, `style` | `[[process_additions]]`, `[[constraints]]` | `max_root_cause_iterations` |
 | `architect` | `model`, `style` | `[[process_additions]]`, `[[constraints]]` | `max_decomposition_depth` |
-| `stack-selector` | `model`, `style` | `[[process_additions]]`, `[[constraints]]` | (none agent-specific) |
 | `scaffolder` | `model`, `style` | `[[process_additions]]`, `[[constraints]]` | `max_spec_iterations` |
 | `priority-engine` | `model`, `style` | `[[process_additions]]`, `[[constraints]]` | (none agent-specific) |
 | `spec-writer` | `model`, `style` | `[[process_additions]]`, `[[constraints]]` | `max_spec_iterations` |

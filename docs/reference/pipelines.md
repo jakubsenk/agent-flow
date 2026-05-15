@@ -296,12 +296,12 @@ flowchart TD
 
 ### Legacy Mode (--no-implement)
 
-With `--no-implement`, the scaffold pipeline falls back to v3.x behavior: stack-selector → scaffolder → validate → git init → report. No specification phase, no feature implementation.
+With `--no-implement`, the scaffold pipeline falls back to v3.x behavior: scaffold (internal tech-stack selection step) → scaffolder → validate → git init → report. No specification phase, no feature implementation.
 
 | Stage | Agent | Model | Notes |
 |-------|-------|-------|-------|
 | Directory Detection | (skill) | N/A | Guards against overwriting existing projects |
-| Stack Selection | stack-selector | sonnet | Picks one option per category; respects `--lang`, `--framework`, `--db`, `--ci` flags |
+| Stack Selection | (scaffold internal step) | N/A | Picks one option per category from skill-supplied flags (`--lang`, `--framework`, `--db`, `--ci`); no separate agent dispatch |
 | Skeleton Generation | scaffolder | sonnet | Writes to temp directory; includes CLAUDE.md with Automation Config |
 | Validation | (skill) | N/A | Build + test + lint + CLAUDE.md structure check; max 3 retries |
 | Copy to Target | (skill) | N/A | Copies validated skeleton to target directory |

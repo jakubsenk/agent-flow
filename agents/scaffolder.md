@@ -20,8 +20,8 @@ testing setup, linter/formatter configuration, CLAUDE.md Automation Config gener
 ## Process
 
 1. Read the tech stack input:
-   - If a `spec/README.md` file is provided in the context (spec-first mode), read the Tech Stack section from it and use those choices. Stack-selector output is not available in this mode.
-   - If no spec is provided (--no-implement mode or standalone), read the stack selection from the stack-selector agent output. If stack-selector output is missing or malformed, report error to user: 'Missing stack selection — cannot proceed with scaffolding' and exit.
+   - If a `spec/README.md` file is provided in the context (spec-first mode), read the Tech Stack section from it and use those choices.
+   - If no spec is provided (--no-implement mode or standalone), read the stack selection from the skill-supplied flags (`--lang`, `--framework`, `--db`, `--ci`). Tech-stack selection is handled internally within the scaffold pipeline step — no separate agent dispatch occurs. If required stack flags are missing or malformed, report error to user: 'Missing stack selection — cannot proceed with scaffolding' and exit.
 2. Generate project files in batches (to manage token limits):
 
    **Batch 1 — Core:**
@@ -166,7 +166,7 @@ testing setup, linter/formatter configuration, CLAUDE.md Automation Config gener
 
    ```markdown
    ## Scaffold Report
-   - **Stack:** {one-line summary from stack-selector}
+   - **Stack:** {one-line summary of selected language, framework, database, and CI — as determined by the scaffold skill's internal tech-stack selection step}
    - **Files generated:** {count}
      - {file path} — {purpose}
    - **Automation Config:** {complete | N sections need manual TODO completion}

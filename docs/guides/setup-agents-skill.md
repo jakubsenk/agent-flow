@@ -89,13 +89,13 @@ writes. Multiple heuristics may fire in the same run; their outputs are merged i
 | **.NET** | `*.csproj` OR `*.sln` (glob at project root) | `fixer.toml` |
 | **Monorepo** | `pnpm-workspace.yaml`, `turbo.json`, `lerna.json`, `nx.json`, `rush.json`, OR ≥ 2 `package.json` at depth > 1, OR ≥ 2 `pyproject.toml` at depth > 1 | `analyst.toml` (multi-package guidance) |
 
-### All 18 Agent Names (eligible for overlay generation)
+### All 17 Agent Names (eligible for overlay generation)
 
 The following canonical agent names may appear as generated `{agent}.toml`
 filenames in `customization/`:
 
 `analyst`, `fixer`, `reviewer`, `test-engineer`, `acceptance-gate`, `publisher`,
-`rollback-agent`, `spec-analyst`, `architect`, `stack-selector`, `scaffolder`,
+`rollback-agent`, `spec-analyst`, `architect`, `scaffolder`,
 `priority-engine`, `spec-writer`, `spec-reviewer`, `browser-agent`, `deployment-verifier`,
 `backlog-creator`, `sprint-planner`
 

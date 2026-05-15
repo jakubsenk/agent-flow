@@ -30,7 +30,7 @@ per-step instruction compliance. The agent-flow plugin adopts this pattern for t
 - **3 pipeline skills decomposed**: `fix-bugs`, `implement-feature`, `scaffold`
 - **Non-pipeline skills** (`analyze-bug`, `autopilot`, `changelog`, `check-setup`, `create-backlog`,
   `discuss`, `metrics`, `onboard`, `prioritize`, `publish`, `setup-agents`, `setup-mcp`, `sprint-plan`,
-  `version-bump`, `version-check`) retain their monolithic `SKILL.md` structure —
+  `version-check`) retain their monolithic `SKILL.md` structure —
   decomposition is explicitly limited to the three pipeline skills above.
 - **Step override mechanism**: consuming projects may replace any individual step file
   via `customization/steps/{skill}/{step-name}.md` (see Section 4).

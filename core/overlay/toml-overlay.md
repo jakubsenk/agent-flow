@@ -36,9 +36,9 @@ not once per pipeline run.
 `{project_root}` is the directory containing `CLAUDE.md`, or the git repository root when
 `CLAUDE.md` is absent.
 
-`{agent-name}` MUST be one of the 18 canonical agent names:
+`{agent-name}` MUST be one of the 17 canonical agent names:
 `analyst`, `fixer`, `reviewer`, `test-engineer`, `acceptance-gate`, `publisher`,
-`rollback-agent`, `spec-analyst`, `architect`, `stack-selector`, `scaffolder`,
+`rollback-agent`, `spec-analyst`, `architect`, `scaffolder`,
 `priority-engine`, `spec-writer`, `spec-reviewer`, `browser-agent`, `deployment-verifier`,
 `backlog-creator`, `sprint-planner`.
 
@@ -122,7 +122,6 @@ cost_center    = "PROJ-42"
 | `scaffolder` | `model`, `style` | `[[process_additions]]`, `[[constraints]]` | `max_spec_iterations` |
 | `browser-agent` | `model`, `style` | `[[process_additions]]`, `[[constraints]]` | `max_pages`, `exploration_max_clicks` |
 | `rollback-agent` | `model`, `style` | `[[process_additions]]`, `[[constraints]]` | (none agent-specific) |
-| `stack-selector` | `model`, `style` | `[[process_additions]]`, `[[constraints]]` | (none agent-specific) |
 | `priority-engine` | `model`, `style` | `[[process_additions]]`, `[[constraints]]` | (none agent-specific) |
 | `spec-writer` | `model`, `style` | `[[process_additions]]`, `[[constraints]]` | `max_spec_iterations` |
 | `spec-reviewer` | `model`, `style` | `[[process_additions]]`, `[[constraints]]` | (none agent-specific) |
