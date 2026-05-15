@@ -30,10 +30,9 @@ REQUIRED_AGENTS=(
 )
 
 for agent in "${REQUIRED_AGENTS[@]}"; do
-  # Search aggregate (SKILL.md + steps/*.md) for the agent name near "Task tool"
-  if ! printf '%s' "$IF_AGGREGATE" | grep -qiE "$agent.*(Task tool|subagent_type)|(Task tool|subagent_type).*$agent"; then
-    # Also allow the pattern "Run the {agent} agent (Task tool..." or agent-flow:{agent}
-    if ! printf '%s' "$IF_AGGREGATE" | grep -qiE "(agent-flow:$agent|the $agent agent|Run $agent)"; then
+  # Search files directly (avoids large-variable printf issues on Linux)
+  if ! grep -rqiE "$agent.*(Task tool|subagent_type)|(Task tool|subagent_type).*$agent" "$IF" "$IF_STEPS_DIR/" 2>/dev/null; then
+    if ! grep -rqiE "(agent-flow:$agent|the $agent agent|Run $agent)" "$IF" "$IF_STEPS_DIR/" 2>/dev/null; then
       fail "implement-feature.md does not dispatch agent: $agent"
     fi
   fi
@@ -41,8 +40,8 @@ done
 
 # 2. Verify rollback-agent is referenced — either in the skill aggregate or in core/block-handler.md
 BLOCK_HANDLER="$REPO_ROOT/core/block-handler.md"
-if ! printf '%s' "$IF_AGGREGATE" | grep -q "rollback-agent"; then
-  if ! printf '%s' "$IF_AGGREGATE" | grep -q "core/block-handler"; then
+if ! grep -rq "rollback-agent" "$IF" "$IF_STEPS_DIR/" 2>/dev/null; then
+  if ! grep -rq "core/block-handler" "$IF" "$IF_STEPS_DIR/" 2>/dev/null; then
     fail "implement-feature.md does not reference rollback-agent or core/block-handler.md"
   elif [ ! -f "$BLOCK_HANDLER" ]; then
     fail "implement-feature.md delegates to core/block-handler.md but that file does not exist"
