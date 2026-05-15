@@ -260,7 +260,7 @@ Override directory: `customization/steps/fix-bugs/` *(planned for v1.2 — not a
 | `03-reproduce.md` | browser-agent-reproduce | `browser-agent --phase reproduce` | Conditional (Browser Verification config required) |
 | `04-fixer-reviewer-loop.md` | fixer / reviewer | `fixer`, `reviewer` | NOT skippable |
 | `05-test.md` | test-engineer | `test-engineer` (+ `--e2e` if configured) | E2E sub-step skippable |
-| `06-acceptance-gate.md` | acceptance-gate | `acceptance-gate` | Conditional (AC ≥ 3 OR complexity ≥ M) |
+| `09-acceptance-gate.md` | acceptance-gate | `acceptance-gate` | Conditional (AC ≥ 3 OR complexity ≥ M) |
 | `07-publish.md` | publisher | `publisher` | NOT skippable |
 
 ### implement-feature (7 steps)
@@ -278,7 +278,7 @@ Override directory: `customization/steps/implement-feature/` *(planned for v1.2 
 | `03-decomposition.md` | decomposition | Internal decision logic | Depends on `--decompose` flag |
 | `04-fixer-reviewer-loop.md` | fixer / reviewer | `fixer`, `reviewer` | NOT skippable |
 | `05-test.md` | test-engineer | `test-engineer` (+ `--e2e` if configured) | E2E sub-step skippable |
-| `06-acceptance-gate.md` | acceptance-gate | `acceptance-gate` | Always in decomposition; skipped in single-pass |
+| `09-acceptance-gate.md` | acceptance-gate | `acceptance-gate` | Always in decomposition; skipped in single-pass |
 | `07-publish.md` | publisher | `publisher` | NOT skippable |
 
 ### scaffold (8 steps)
@@ -291,7 +291,7 @@ Override directory: `customization/steps/scaffold/` *(planned for v1.2 — not a
 
 | Step file | Stage name | Agent dispatched | Notes |
 |-----------|-----------|-----------------|-------|
-| `01-mode-resolve.md` | mode-resolve | Internal + `stack-selector` | Resolves mode, infra, brainstorm trigger |
+| `01-mode-resolve.md` | mode-resolve | Internal | Resolves mode, infra, brainstorm trigger |
 | `02-spec-write-review.md` | spec-write-review | `spec-writer`, `spec-reviewer` | Spec checkpoint in default mode |
 | `03-scaffold.md` | scaffold | `scaffolder` | Generates skeleton + git init |
 | `04-architect.md` | architect | `architect` | Feature plan checkpoint in default mode |
@@ -303,10 +303,10 @@ Override directory: `customization/steps/scaffold/` *(planned for v1.2 — not a
 ### fix-bugs default mode — conditional gate notes
 
 In fix-bugs default mode (no `--yolo`, no `--step-mode`), the pipeline is autonomous to PR but
-includes conditional gates. The `fix-bugs` default mode acceptance gate (`06-acceptance-gate.md`)
+includes conditional gates. The `fix-bugs` default mode acceptance gate (`09-acceptance-gate.md`)
 is conditional: it triggers when `AC >= 3 OR complexity >= M`. Below that threshold the acceptance
 gate is skipped and the pipeline proceeds directly to publish. The `conditional gate` threshold
-is encoded in `skills/fix-bugs/steps/06-acceptance-gate.md`.
+is encoded in `skills/fix-bugs/steps/09-acceptance-gate.md`.
 
 ### implement-feature default mode — checkpoints
 

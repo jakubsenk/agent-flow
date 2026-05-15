@@ -150,7 +150,7 @@ See also: [`core/agent-states.md`](../../core/agent-states.md) for the full NEED
 4. If the webhook endpoint is intentionally removed, delete the `Webhook URL` row from your config
 5. The circuit breaker resets automatically at the start of the next pipeline run — no manual intervention required
 
-See also: [Architecture — Webhook Reliability](../architecture.md#webhook-reliability-and-circuit-breaker-v690) for circuit breaker design details.
+See also: [Architecture — Webhook Reliability](../architecture.md#webhook-reliability-and-circuit-breaker) for circuit breaker design details.
 
 ### Fixer Exceeds 100-Line Diff Limit
 

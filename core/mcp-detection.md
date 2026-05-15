@@ -4,7 +4,7 @@
 
 Determine the expected MCP package and tool prefix for a given tracker or SC type, then verify accessibility and connectivity. Single source of truth for MCP detection logic — prevents duplication between commands that need MCP verification.
 
-Referenced by: `skills/scaffold/SKILL.md` (Step 0-MCP), `skills/init/SKILL.md` (Steps 3, 7).
+Referenced by: `skills/scaffold/SKILL.md` (Step 0-MCP).
 
 ## Input Contract
 

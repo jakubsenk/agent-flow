@@ -53,7 +53,7 @@ A config object with all parsed values and defaults applied. Commands reference 
   Step: config parsing
   Reason: No "## Automation Config" section found in CLAUDE.md.
   Detail: The project's CLAUDE.md must contain "## Automation Config" with all required sections.
-  Recommendation: Add the Automation Config section. See docs/reference/config-reference.md or run /agent-flow:setup-mcp.
+  Recommendation: Add the Automation Config section. See docs/reference/config.md or run /agent-flow:setup-mcp.
   ```
 - **One or more required sections missing:** BLOCK pipeline with the same template, listing the missing section names in Detail.
 - **Optional section present but malformed** (e.g., table has wrong columns): log a warning with the section name and use the default value. Never block on an optional section.

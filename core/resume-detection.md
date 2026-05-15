@@ -341,7 +341,6 @@ from this contract. A paused resume transitions through `running` before reachin
 - NEVER hardcode the `customization/` path — resume detection has no overlay logic.
 - NEVER increment `clarification.clarifications_consumed` here — the increment-side-of-truth
   lives in the orchestrator at the NEEDS_CLARIFICATION detection site, BEFORE the
-  transition to paused (preserved from the legacy `skills/resume-ticket/SKILL.md` Priority 0 step 4
-  invariant).
+  transition to paused.
 - NEVER duplicate the `.md`-only short-circuit logic from `core/agent-override-injector.md`
   — resume detection has nothing to do with overrides.
