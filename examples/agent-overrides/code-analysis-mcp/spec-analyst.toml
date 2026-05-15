@@ -1,0 +1,19 @@
+# Code Analysis MCP — spec-analyst overlay
+# Apply: copy to customization/spec-analyst.toml
+# Replace "mcp__codegraph__" with your MCP server's tool prefix throughout.
+
+[[constraints]]
+rule = "If mcp__codegraph__ tools are available, prefer them over Grep/Glob for codebase navigation. Fall back to Grep/Glob only when MCP tools return errors or are unavailable."
+
+[[process_additions]]
+step = "before_scope_assessment"
+instruction = "Use mcp__codegraph__get_architecture_overview to understand module structure and mcp__codegraph__list_modules to map the codebase. Use this to estimate feature scope and identify affected areas before writing the specification."
+
+[[process_additions]]
+step = "during_dependency_extraction"
+instruction = "Use mcp__codegraph__search_by_name and mcp__codegraph__get_dependencies to identify existing services, APIs, and data stores the feature will interact with. List these as constraints in the specification."
+
+[meta]
+mcp_tool_prefix = "mcp__codegraph__"
+mcp_server = "codegraph"
+applies_to = ["codebases with a code analysis MCP server"]

@@ -1,0 +1,31 @@
+# Code Analysis MCP — analyst overlay
+# Apply: copy to customization/analyst.toml
+# Replace "mcp__codegraph__" with your MCP server's tool prefix throughout.
+
+[[constraints]]
+rule = "If mcp__codegraph__ tools are available, prefer them over Grep/Glob for codebase navigation. Fall back to Grep/Glob only when MCP tools return errors or are unavailable."
+
+[[process_additions]]
+step = "after_codebase_scan"
+instruction = "Use mcp__codegraph__search_by_name to locate the reported symbol by name or pattern. Use mcp__codegraph__get_file_structure to enumerate all symbols in the affected file."
+
+[[process_additions]]
+step = "after_call_hierarchy"
+instruction = "Use mcp__codegraph__get_call_graph with direction='inbound' to find all callers of the affected function. Use mcp__codegraph__get_dependents to discover which modules depend on the affected code."
+
+[[process_additions]]
+step = "during_root_cause_analysis"
+instruction = "Use mcp__codegraph__get_dependencies to map outbound dependencies (database entities, services, APIs). Use mcp__codegraph__get_inheritance to understand class hierarchies in the affected area."
+
+[[process_additions]]
+step = "during_risk_assessment"
+instruction = "Use mcp__codegraph__find_usages to count all references to the suspected root cause location. Report the usage count in the impact section — higher count means higher risk."
+
+[[process_additions]]
+step = "during_reproduction_walkthrough"
+instruction = "Use mcp__codegraph__get_call_graph with direction='outbound' to trace the execution path from user action to the suspected method. Verify the code path at each reproduction step."
+
+[meta]
+mcp_tool_prefix = "mcp__codegraph__"
+mcp_server = "codegraph"
+applies_to = ["codebases with a code analysis MCP server"]

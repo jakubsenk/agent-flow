@@ -224,7 +224,7 @@ Optional. Keys + defaults: Output (stdout), Period (30 days).
 
 ### Agent Overrides
 
-Optional. Keys + default: Path (customization/). For each agent (e.g., `reviewer`, `fixer`, `test-engineer`), create a file `{path}/{agent-name}.md` with additional instructions. Contents are appended to the agent's prompt as `## Project-Specific Instructions`. Example: `customization/reviewer.md` with content "Always check for SQL injection in all database queries" will add this instruction to every reviewer invocation. Files that don't match any agent name are ignored.
+Optional. Keys + default: Path (customization/). For each agent (e.g., `reviewer`, `fixer`, `test-engineer`), create a TOML file `{path}/{agent-name}.toml` with structured overlay configuration. Supports model/style scalar overrides, `[[process_additions]]` (step-specific instructions), `[[constraints]]` (additional rules), `[limits]` (numeric limits), and free-form `[meta]`. Contents are rendered and appended to the agent's prompt as `## Project-Specific Instructions`. Files that don't match any agent name are ignored. See `docs/guides/toml-overlay-syntax.md` for the full schema and `examples/agent-overrides/` for ready-to-use templates.
 
 ### Local Deployment
 

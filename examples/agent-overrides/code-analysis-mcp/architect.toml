@@ -1,0 +1,31 @@
+# Code Analysis MCP — architect overlay
+# Apply: copy to customization/architect.toml
+# Replace "mcp__codegraph__" with your MCP server's tool prefix throughout.
+
+[[constraints]]
+rule = "If mcp__codegraph__ tools are available, prefer them over Grep/Glob for codebase navigation. Fall back to Grep/Glob only when MCP tools return errors or are unavailable."
+
+[[process_additions]]
+step = "before_approach_design"
+instruction = "Use mcp__codegraph__get_architecture_overview to understand module layout and symbol counts. Use mcp__codegraph__list_modules to map the directory structure before proposing any approach."
+
+[[process_additions]]
+step = "during_approach_design"
+instruction = "Use mcp__codegraph__get_dependencies and mcp__codegraph__get_dependents to assess the blast radius of each candidate approach. Use mcp__codegraph__get_inheritance to understand class hierarchies before choosing an implementation strategy."
+
+[[process_additions]]
+step = "before_task_decomposition"
+instruction = "Use mcp__codegraph__get_file_structure to enumerate all symbols in files you plan to modify. Use mcp__codegraph__find_usages to verify which interfaces and contracts are in use and where — this determines safe decomposition boundaries."
+
+[[process_additions]]
+step = "during_scope_estimation"
+instruction = "Use mcp__codegraph__get_call_graph with direction='inbound' to count callers of affected functions. More callers = higher risk = finer-grained subtask decomposition."
+
+[[process_additions]]
+step = "before_finalising_design"
+instruction = "Use mcp__codegraph__list_conventions to discover project naming and structural patterns. Ensure the proposed architecture aligns with existing conventions before writing the task tree."
+
+[meta]
+mcp_tool_prefix = "mcp__codegraph__"
+mcp_server = "codegraph"
+applies_to = ["codebases with a code analysis MCP server"]
