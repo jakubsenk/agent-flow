@@ -23,21 +23,11 @@ Full schema reference: [`docs/guides/toml-overlay-syntax.md`](../../docs/guides/
 
 ---
 
-## 2. Step Overrides — `customization/steps/{skill}/{NN}-{name}.md`
+## 2. Step Overrides — planned for v1.2
 
-Replace an entire pipeline step with your own version. The plugin detects the file at
-dispatch time and uses yours instead of the default, emitting:
-```
-[INFO] Step override active: fix-bugs/04-fixer-reviewer-loop from project customization
-```
+Step-level overrides (`customization/steps/{skill}/{NN}-{name}.md`) are designed but
+not yet active in v1.0. See [docs/guides/steps-decomposition.md](../../docs/guides/steps-decomposition.md)
+for the planned interface.
 
-| File | Overrides | What it does |
-|------|-----------|--------------|
-| `steps/fix-bugs/04-fixer-reviewer-loop.md` | `fix-bugs` step 04 | Example: adds a mandatory Czech-language review rule |
-
-**Rules:**
-- Filename MUST exactly match the plugin step filename (case-sensitive, zero-padded)
-- Override **replaces** the entire step — there is no insert/before/after
-- Near-miss detection: a wrong name like `4-fixer-reviewer-loop.md` emits `[WARN]` and falls through to the default
-
-Full guide: [`docs/guides/steps-decomposition.md`](../../docs/guides/steps-decomposition.md)
+Use [TOML agent overlays](#1-agent-toml-overlays--customizationagenttoml) for current
+per-agent customization.

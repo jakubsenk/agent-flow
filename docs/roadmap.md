@@ -17,6 +17,15 @@ with a clear "missing X, install with Y" message instead of a mid-run failure.
 
 ---
 
+## v1.2.0 — Planned
+
+### Step File Overrides
+Replace any individual pipeline step with a project-specific version by placing a file at
+`customization/steps/{skill}/{NN}-{name}.md`. The plugin will use your version instead of
+the default, enabling deep pipeline customization without forking the plugin.
+
+---
+
 ## Backlog (designed, not yet scheduled)
 
 | Feature | What it enables |
@@ -25,7 +34,6 @@ with a clear "missing X, install with Y" message instead of a mid-run failure.
 | **Automated changelog** | Rich changelogs generated from pipeline execution data |
 | **Dependency vulnerability scanning** | npm audit / pip-audit / trivy as an optional pipeline stage |
 | **Performance regression testing** | Benchmark before/after a fix, surface regressions automatically |
-| **Replace https://example.invalid/agent-flow.git placeholder** | Swap the canonical placeholder URL in `.claude-plugin/plugin.json` for the final public repository URL once it is provisioned |
 
 ---
 

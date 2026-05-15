@@ -191,8 +191,7 @@ agent prompt.
 Before each Task dispatch, apply Agent Overrides per `../../core/agent-override-injector.md` (.toml
 primary). Applies to both single and batch mode.
 
-**Near-miss WARN:** if a file exists at `customization/steps/fix-bugs/{NN}-*.md` that does NOT
-match any canonical step name, log `[WARN] Unrecognized step override file: {filename}`.
+**Step file override (planned v1.2):** replacing individual step files via `customization/steps/fix-bugs/{NN}-{name}.md` is not yet implemented. See TOML overlay documentation for current customization options.
 
 ## `--step-mode` prompt
 

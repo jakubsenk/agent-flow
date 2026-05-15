@@ -21,7 +21,7 @@ steps decomposition layout.
 
 All three pipelines share:
 - Mode flag framework (`--yolo` / default / `--step-mode`) — see [Mode flag dispatch](#mode-flag-dispatch)
-- Step override resolution via `customization/steps/{skill}/` — see [Step override resolution](#step-override-resolution)
+- Step override resolution via `customization/steps/{skill}/` — see [Step override resolution](#step-override-resolution) *(planned for v1.2)*
 - Pipeline Profiles named-phase `Skip stages` syntax — see [Named-phase Skip stages syntax](#named-phase-skip-stages-syntax)
 - Hooks at fixed points (pre-fix, post-fix, pre-publish, post-publish) — see [Hooks](#hooks)
 - `state.json` persistence per run via `core/state-manager.md`
@@ -96,6 +96,8 @@ customization/steps/fix-bugs/04-fixer-reviewer-loop.md
 ---
 
 ## Step override resolution
+
+> **Step file override: planned for v1.2.** Not active in v1.0.
 
 **Resolution algorithm (per step, per pipeline run):**
 
@@ -247,7 +249,9 @@ Skip stages: 03-reproduce, 06-acceptance-gate
 
 Entry: `skills/fix-bugs/SKILL.md`  
 Steps directory: `skills/fix-bugs/steps/`  
-Override directory: `customization/steps/fix-bugs/`
+Override directory: `customization/steps/fix-bugs/` *(planned for v1.2 — not active in v1.0)*
+
+> **Step file override: planned for v1.2.** Not active in v1.0.
 
 | Step file | Stage name | Agent dispatched | Conditional? |
 |-----------|-----------|-----------------|-------------|
@@ -263,7 +267,9 @@ Override directory: `customization/steps/fix-bugs/`
 
 Entry: `skills/implement-feature/SKILL.md`  
 Steps directory: `skills/implement-feature/steps/`  
-Override directory: `customization/steps/implement-feature/`
+Override directory: `customization/steps/implement-feature/` *(planned for v1.2 — not active in v1.0)*
+
+> **Step file override: planned for v1.2.** Not active in v1.0.
 
 | Step file | Stage name | Agent dispatched | Conditional? |
 |-----------|-----------|-----------------|-------------|
@@ -279,7 +285,9 @@ Override directory: `customization/steps/implement-feature/`
 
 Entry: `skills/scaffold/SKILL.md`  
 Steps directory: `skills/scaffold/steps/`  
-Override directory: `customization/steps/scaffold/`
+Override directory: `customization/steps/scaffold/` *(planned for v1.2 — not active in v1.0)*
+
+> **Step file override: planned for v1.2.** Not active in v1.0.
 
 | Step file | Stage name | Agent dispatched | Notes |
 |-----------|-----------|-----------------|-------|

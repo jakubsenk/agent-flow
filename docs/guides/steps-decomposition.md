@@ -110,6 +110,10 @@ prompts — the step counter advances non-monotonically when a conditional step 
 
 ## 4. Step Override Mechanism
 
+> **Status: planned for v1.2 — not yet implemented.** The step override mechanism is
+> designed and documented here for reference. It is not active in v1.0. Use
+> [TOML agent overlays](toml-overlay-syntax.md) for current customization options.
+
 ### Overview
 
 Consuming projects can replace any individual pipeline step by placing a file at:
@@ -172,6 +176,8 @@ This log line appears in `.agent-flow/pipeline.log` and can be grepped for debug
 ---
 
 ## 5. Near-Miss Filename Detection
+
+> **Status: planned for v1.2.** See Section 4 notice.
 
 If a file exists under `customization/steps/{skill}/` whose name does **not** exactly match
 any plugin-default step filename, but **would** match after one of these normalizations:
@@ -317,6 +323,10 @@ grep '\[WARN\]' .agent-flow/pipeline.log | grep -i "skip stages"
 ---
 
 ## 9. Step Override Examples
+
+> **Status: planned for v1.2.** These examples are for reference only — the feature
+> is not yet active. See [TOML overlay examples](../../examples/customization/) for
+> working customization.
 
 ### Example 1: fix-bugs — custom fixer-reviewer loop (project-specific review rules)
 

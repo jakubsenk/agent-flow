@@ -43,6 +43,8 @@ Source-of-truth substance: `skills/scaffold/SKILL.md:72-74` —
 
 ## Override body REPLACES default step (replace-only semantics)
 
+> **Status: planned for v1.2 — not yet implemented in v1.0.**
+
 WHEN `customization/steps/fix-bugs/04-fixer-reviewer-loop.md` exists with content "OVERRIDE BODY MARKER 12345",
 THEN the dispatched fixer-reviewer prompt SHALL contain ONLY the OVERRIDE BODY content.
 The plugin-default step body SHALL NOT be present — the override replaces the default step
