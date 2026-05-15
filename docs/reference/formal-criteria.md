@@ -6,7 +6,7 @@ behaviors. Each AC is referenced by harness scenarios in `tests/scenarios/`.
 
 ---
 
-## AC-MODE-005: Step-mode escape switch
+## Step-mode escape switch
 
 WHEN a pipeline running in `--step-mode` receives an escape command (user enters
 `y` or `yolo` at any step prompt),

@@ -103,22 +103,17 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Assertion 5: AC-MODE-005 in formal-criteria.md specifies the exact log message
+# Assertion 5: formal-criteria.md specifies the exact log message for step-mode escape
 #   "[INFO] step-mode escape: switched to yolo for remaining steps"
 # ---------------------------------------------------------------------------
-echo "--- Assertion 5: formal-criteria.md AC-MODE-005 specifies exact escape log message ---"
+echo "--- Assertion 5: formal-criteria.md documents step-mode escape log message ---"
 FORMAL_CRITERIA="$REPO_ROOT/docs/reference/formal-criteria.md"
 if [ ! -f "$FORMAL_CRITERIA" ]; then
   fail "docs/reference/formal-criteria.md not found"
-elif grep -qiE 'AC-MODE-005' "$FORMAL_CRITERIA"; then
-  # Verify the AC documents the exact log string
-  if grep -A10 'AC-MODE-005' "$FORMAL_CRITERIA" | grep -qiE 'step-mode escape|switched.*yolo|yolo.*remaining'; then
-    echo "OK: formal-criteria.md AC-MODE-005 documents step-mode escape / switched to yolo"
-  else
-    fail "formal-criteria.md AC-MODE-005 present but missing step-mode escape / switched to yolo specification"
-  fi
+elif grep -qiE 'step-mode escape|switched.*yolo for remaining|yolo.*remaining steps' "$FORMAL_CRITERIA"; then
+  echo "OK: formal-criteria.md documents step-mode escape / switched to yolo"
 else
-  fail "formal-criteria.md missing AC-MODE-005 entry"
+  fail "formal-criteria.md missing step-mode escape / switched to yolo specification"
 fi
 
 # ---------------------------------------------------------------------------
