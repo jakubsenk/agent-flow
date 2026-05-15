@@ -370,10 +370,7 @@ DoS caps enforced by skill orchestrators (see `core/agent-states.md` Section 2):
 | `state.json` on disk (`.agent-flow/{run-id}/state.json`) | INCLUDE — full text, operator-controlled location | Operator-controlled local file; not transmitted. Operators in multi-user environments SHOULD treat `.agent-flow/` as sensitive (advisory). |
 | Future analytics/export skills | EXCLUDE — default | Any new consumer MUST update this table when introduced. Default posture is EXCLUDE unless explicitly justified. |
 
-Violations are caught by hidden test scenarios:
-- `v690-metrics-format-json.sh` injects `password=secret` into `block.detail` and asserts it does NOT appear in JSON output.
-- `v690-pipeline-history-append.sh` does the same for pipeline-history.md.
-- `v690-block-comment-redaction.sh` injects `password=secret_xyz123` into `block.detail`, runs the block-handler comment-post path, and asserts the posted comment contains NEITHER the literal `secret_xyz123` NOR more than 100 characters of detail.
+Violations are caught by test scenarios in `tests/scenarios/` that inject sensitive values into `block.detail` and assert they do NOT appear in JSON output, pipeline-history.md, or block-handler comment posts.
 
 ### Pipeline Accumulator Fields
 
