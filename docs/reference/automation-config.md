@@ -469,7 +469,7 @@ END COUNTER-EXAMPLE -->
 | Set permission mode | Project-level `.claude/settings.json` `permissionMode` key |
 | Add agent-specific instructions | `customization/{agent}.toml` via `### Agent Overrides` |
 
-Existing project-level `### Hooks` config sections continue to work unchanged — no migration required. See [hooks documentation](../guides/hooks.md) for available hook points.
+Existing project-level `### Hooks` config sections continue to work unchanged — no migration required. See [hooks documentation](hooks.md) for available hook points.
 
 ## Mode Flags
 

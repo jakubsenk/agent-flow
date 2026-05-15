@@ -44,7 +44,7 @@ The table below shows a representative sample of scenarios — it is **not** an 
 
 | Scenario (examples) | File | Verifies |
 |---------------------|------|----------|
-| Happy path | `happy-path.sh` | Full pipeline: triage → code-analyst → fixer → reviewer → test-engineer → publisher |
+| Happy path | `happy-path.sh` | Full pipeline: triage → analyst (impact) → fixer → reviewer → test-engineer → publisher |
 | Triage block | `triage-block.sh` | Triage-analyst detects duplicate → Block |
 | Fixer retry | `fixer-retry.sh` | Fixer exhausts retry limit → Block + rollback |
 | Reviewer reject | `reviewer-reject.sh` | Reviewer rejects fix → fixer iterates |
