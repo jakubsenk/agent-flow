@@ -1,6 +1,6 @@
 # Codegraph Agent Overrides
 
-Agent override files for projects using a [codegraph MCP server](../mcp-configs/codegraph.json).
+Agent override files for projects using a [codegraph MCP server](../../mcp-configs/codegraph.json).
 
 ## Usage
 
