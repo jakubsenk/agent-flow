@@ -30,13 +30,14 @@ fail() { echo "FAIL: $1" >&2; FAIL=1; }
 
 # ---------------------------------------------------------------------------
 # Directory list and expected counts (parallel-indexed arrays)
-# M2 acknowledgement: count 4 is intentionally hardcoded here (dual-anchor
-# with FC-COUNTS-8). Dual anchor is defense-in-depth: a 5th custom-agent
+# M2 acknowledgement: count 5 is intentionally hardcoded here (dual-anchor
+# with FC-COUNTS-8). Dual anchor is defense-in-depth: a 6th custom-agent
 # added without updating BOTH sites will be caught.
+# Count is 5: 4 agent example files + 1 README.md
 # ---------------------------------------------------------------------------
 # [ASSERT-1] DIRS contains both agents and examples/custom-agents
 DIRS=("agents" "examples/custom-agents")
-EXPECTED_COUNTS=([0]=17 [1]=4)
+EXPECTED_COUNTS=([0]=17 [1]=5)
 
 INVARIANTS=(dispatched_at dispatch_witness status stage_name agent_name)
 ALL_FILES=()
@@ -78,6 +79,8 @@ for agent_file in "${ALL_FILES[@]}"; do
   # Skip glob non-matches (safety guard)
   [ -f "$agent_file" ] || continue
   base=$(basename "$agent_file")
+  # Skip README.md — it is documentation, not an agent definition
+  [ "$base" = "README.md" ] && continue
 
   # ---- ASSERT-5a: Section header presence (exactly once) ----
   hdr_count=$(grep -cE '^## Step Completion Invariants$' "$agent_file" || true)

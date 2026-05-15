@@ -35,7 +35,7 @@ REQUIRED_FILES=(
   "reviewer-strict-security.toml"
   "fixer-no-tests.toml"
   "analyst-monorepo.toml"
-  "step-override-example.md"
+  "README.md"
 )
 
 for f in "${REQUIRED_FILES[@]}"; do

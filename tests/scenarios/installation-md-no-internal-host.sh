@@ -65,15 +65,14 @@ if [ -f "$MOCK_CLAUDE" ]; then
   fi
 fi
 
-# Assertion 5: roadmap.md entry for canonical URL replacement
-echo "--- Assertion 5: roadmap.md entry for example.invalid placeholder ---"
-if [ -f "$ROADMAP" ]; then
-  if grep -qF 'Replace https://example.invalid/agent-flow.git placeholder' "$ROADMAP"; then
-    echo "OK: roadmap.md has canonical URL replacement entry"
-  elif grep -qF 'example.invalid' "$ROADMAP"; then
-    echo "OK: roadmap.md mentions example.invalid"
+# Assertion 5: plugin.json does not contain example.invalid URL (was a placeholder, now resolved)
+echo "--- Assertion 5: plugin.json has no example.invalid placeholder URL ---"
+PLUGIN_JSON="$REPO_ROOT/.claude-plugin/plugin.json"
+if [ -f "$PLUGIN_JSON" ]; then
+  if grep -qF 'example.invalid' "$PLUGIN_JSON"; then
+    fail "plugin.json still contains example.invalid placeholder URL — replace with the real repository URL"
   else
-    fail "roadmap.md missing 'Replace https://example.invalid/agent-flow.git placeholder' entry"
+    echo "OK: plugin.json has no example.invalid placeholder (URL is set)"
   fi
 fi
 
