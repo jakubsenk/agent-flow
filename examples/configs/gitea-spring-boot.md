@@ -4,8 +4,6 @@
 
 ## Automation Config
 
-> **Note:** Per-agent TOML overlay files in `customization/` (e.g., `customization/*.toml`) enable fine-grained customization without forking the plugin. See `docs/guides/toml-overlay-syntax.md` and example overlays in `examples/customization/`. Agent names: `triage-analyst`/`code-analyst` → `analyst`; `e2e-test-engineer` → `test-engineer --e2e`; `reproducer`/`browser-verifier` → `browser-agent`. Update any Pipeline Profiles `Skip stages` values accordingly. See the [CHANGELOG](../../CHANGELOG.md) for the full list of changes.
-
 ### Issue Tracker
 | Key | Value |
 |------|---------|

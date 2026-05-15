@@ -12,6 +12,22 @@ Include: a description of the vulnerability, steps to reproduce, and potential i
 
 **Response SLA:** We aim to acknowledge reports within 5 business days and provide a fix, public mitigation guidance, or a coordinated-disclosure timeline extension by mutual agreement.
 
+## Known Limitations
+
+### Webhook URL — operator trust required
+
+The `Webhook URL` value in `### Notifications` (Automation Config) is dispatched via `curl`
+without scheme or host validation beyond `--proto "=http,https"`. A malicious PR that injects
+a slow-responding `Webhook URL` could trigger the circuit-breaker (3 consecutive failures,
+then suppression for the run).
+
+**Operator guidance:**
+- Treat `Webhook URL` changes in PRs as security-relevant and review them carefully.
+- Prefer setting `Webhook URL` only in trusted, controlled environments.
+- Cross-run circuit persistence and URL allowlist enforcement are planned for a future release.
+
+For the full technical description, see `CLAUDE.md` under "Webhook Payloads".
+
 ## Supported Versions
 
 | Version | Supported |
