@@ -6,5 +6,7 @@
     "name": "Filip Sabacky"
   },
   "repository": "https://github.com/asysta-act/agent-flow",
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": ["claude-code", "plugin", "agent-orchestration", "pipeline", "automation", "bug-fix", "scaffolding", "ci"],
+  "homepage": "https://github.com/asysta-act/agent-flow"
 }

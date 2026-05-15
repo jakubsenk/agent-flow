@@ -45,6 +45,6 @@ Fixes #{issue_number}
 ### Pipeline Profiles
 | Profile | Skip stages | Extra stages |
 |--------|-------------|-------------|
-| fast | triage, code-analyst, test-engineer | |
-| strict | | e2e-test-engineer |
-| minimal | triage, code-analyst, test-engineer, e2e-test-engineer | |
+| fast | triage, analyst-impact, test-engineer | |
+| strict | | test-engineer-e2e |
+| minimal | triage, analyst-impact, test-engineer, test-engineer-e2e | |
