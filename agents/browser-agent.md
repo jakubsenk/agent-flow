@@ -26,7 +26,7 @@ If `--phase` is not supplied, default to `reproduce`.
 
 ## Process: Phase reproduce (`--phase reproduce`)
 
-1. Read context: bug description, triage output (including `reproduction_steps` if present), analyst-impact report, and Browser Verification config (Base URL, Start command, Timeout).
+1. Read context: bug description, triage output (including `reproduction_steps` if present), analyst-impact report, and Browser Verification config (Base URL, Start command, Timeout). All config values are the override-resolved effective config (`CLAUDE.local.md` merged over `CLAUDE.md` per `../core/config-reader.md`) — the dispatching step injects the merged values.
 
 2. Check prerequisites:
    - Is Playwright installed? Run: `npx playwright --version` (or `node -e "require('playwright')"`)
@@ -263,7 +263,7 @@ Do NOT attempt to write `tool_uses`, `completed_at`, or `status="completed"` —
 - NEVER run Sub-phase B if Sub-phase A verdict is FAILED — pointless and wastes tokens
 - NEVER leave a background dev server running after completion — stop any server started via `Start command` before returning
 - NEVER commit `.agent-flow/` artifact files (reproduction-script.js, reproduction-result.json, verification-result.json, verifier-script.js)
-- NEVER run if `Browser Verification` section is absent from Automation Config
+- NEVER run if `browser_verification_enabled = false` — i.e. the `Browser Verification` section is absent from the (override-resolved) Automation Config, OR its `Enabled` key is `false` (a developer disables it via `CLAUDE.local.md`). The dispatching step normally skips you in this case; refuse defensively if dispatched anyway.
 - NEVER run the verify phase if `On events` in config does not include `verify` (check in Process step 1; output verdict SKIPPED if condition is met after section is present)
 - FAILED verdict from Sub-phase A in the verify phase returns control to the fixer (pipeline blocks on FAILED)
 - Truncate accessibility snapshot to 8000 characters max; console errors to top 5; network failures to top 3

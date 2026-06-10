@@ -7,8 +7,21 @@ Parse `## Automation Config` from the project's CLAUDE.md. Extract all required 
 ## Input Contract
 
 - **claude_md_content** (string, required): Full contents of the project's CLAUDE.md file
+- **claude_local_md_content** (string, optional): Full contents of `CLAUDE.local.md` located adjacent to the project's CLAUDE.md, when that file exists. Absent (file not present) means no developer overrides — parse CLAUDE.md alone.
 
 ## Process
+
+0. **Local override merge (precedence: `CLAUDE.local.md` > `CLAUDE.md`).** Before parsing, resolve the effective config block:
+   - If no `CLAUDE.local.md` exists next to the project CLAUDE.md → use the CLAUDE.md `## Automation Config` block unchanged (pure defaults). Skip the rest of this step.
+   - If `CLAUDE.local.md` exists → locate its `## Automation Config` block (same heading; if absent, treat as no overrides). Parse it into the same `section → {key → value}` shape as the base, then **merge it over** the base block with these rules:
+     - **Sparse, per-section, per-key.** The local block contains only the sections/keys a developer wants to change.
+     - Key present in both base and local → **local value replaces** the base value.
+     - Section present in local with keys absent from the base section → those keys are **added** to the section.
+     - Section present only in base → **kept unchanged**.
+     - Section present only in local → **added** to the effective config.
+     - Multi-line `### PR Description Template` → if present in local, the **whole block replaces** the base template (not a per-line merge).
+     - Local section present but empty/malformed → log `[WARN] Ignoring malformed local override: {section}` and keep the base section. Never block on a local override.
+   - The remainder of this contract (steps 1–4, defaults, validation) operates on the **merged** result, so every skill and agent that reads config per this document inherits the override transparently. Required-section validation (step 4) runs against the merged config.
 
 1. Locate the `## Automation Config` heading. Everything from that heading to the next `##`-level heading (or end of file) is the config block.
 
@@ -26,7 +39,7 @@ Parse `## Automation Config` from the project's CLAUDE.md. Extract all required 
    - `### Custom Agents` → `custom_agents.post_fix_agent`, `custom_agents.pre_publish_agent` (default: none)
    - `### Worktrees` → `worktrees.batch_size`, `worktrees.base_path`, `worktrees.cleanup` (default: none)
    - `### E2E Test` → `e2e.framework`, `e2e.command` (default: none)
-   - `### Browser Verification` → `browser.base_url`, `browser.start_command`, `browser.on_events`, `browser.timeout` (default: 60), `browser.max_pages` (default: 5), `browser.screenshot_storage` (default: `.agent-flow/{ISSUE-ID}/screenshots`), `browser.exploration` (default: disabled), `browser.exploration_max_clicks` (default: 20)
+   - `### Browser Verification` → `browser.enabled` (default: `true`), `browser.base_url`, `browser.start_command`, `browser.on_events`, `browser.timeout` (default: 60), `browser.max_pages` (default: 5), `browser.screenshot_storage` (default: `.agent-flow/{ISSUE-ID}/screenshots`), `browser.exploration` (default: disabled), `browser.exploration_max_clicks` (default: 20). Derived gate consumed by `skills/fix-bugs/steps/03-reproduce.md` and `08-browser-verify.md`: `browser_verification_enabled = false` when the `### Browser Verification` section is **absent** from the merged config **OR** `browser.enabled` is `false` (a developer typically sets `| Enabled | false |` in `CLAUDE.local.md` to disable verification on their machine without removing the shared section). When the section is present and `Enabled` is unset, it defaults to `true`.
    - `### Error Handling` → `error_handling.on_block` (default: `comment`), `error_handling.max_blocked_per_run` (default: unlimited)
    - `### Feature Workflow` → `feature.query`, `feature.on_start_set` (default: none)
    - `### Decomposition` → `decomposition.max_subtasks` (default: 7), `decomposition.fail_strategy` (default: `fail-fast`), `decomposition.commit_strategy` (default: `squash`), `decomposition.create_tracker_subtasks` (default: `enabled`)

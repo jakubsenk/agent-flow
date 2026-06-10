@@ -68,7 +68,9 @@ done
 if $GOT_YOLO && $GOT_STEP_MODE; then echo "[ERROR] --yolo and --step-mode are mutually exclusive" >&2; exit 1; fi
 if $GOT_DECOMPOSE && $GOT_NO_DECOMPOSE; then echo "[ERROR] --decompose and --no-decompose are mutually exclusive" >&2; exit 1; fi
 
-# Tracker-type-aware disambiguation: read Type from CLAUDE.md Issue Tracker section.
+# Tracker-type-aware disambiguation: read Type from the effective Issue Tracker config.
+# CLAUDE.local.md (gitignored, optional) overrides CLAUDE.md per ../../core/config-reader.md, so
+# prefer a Type defined there and fall back to CLAUDE.md.
 # String trackers (youtrack|jira|linear): bare integer = batch count. Numeric trackers
 # (github|gitea|redmine): bare integer = single ISSUE_ID.
 if $GOT_BATCH; then
@@ -77,7 +79,7 @@ if $GOT_BATCH; then
 elif [ -z "$POSITIONAL" ]; then
   echo "[ERROR] Usage: /agent-flow:fix-bugs <ISSUE-ID> | --batch <N>" >&2; exit 1
 else
-  TRACKER_TYPE="$(grep -oE '^\| Type \| [A-Za-z][A-Za-z0-9_-]+' CLAUDE.md | head -1 | awk -F'| ' '{print $3}' | tr -d ' ' | tr '[:upper:]' '[:lower:]')"
+  TRACKER_TYPE="$( { [ -f CLAUDE.local.md ] && grep -oE '^\| Type \| [A-Za-z][A-Za-z0-9_-]+' CLAUDE.local.md; grep -oE '^\| Type \| [A-Za-z][A-Za-z0-9_-]+' CLAUDE.md; } | head -1 | awk -F'| ' '{print $3}' | tr -d ' ' | tr '[:upper:]' '[:lower:]')"
   if [ -z "$TRACKER_TYPE" ]; then
     echo "[WARN] Tracker type not detected; assuming string-tracker semantics (youtrack)" >&2
     TRACKER_TYPE="youtrack"
@@ -121,7 +123,9 @@ loop, so the outer batch run does not skip ahead.
 
 ## Configuration
 
-Read from `## Automation Config` in CLAUDE.md per `../../core/config-reader.md`. Required sections:
+Read from `## Automation Config` per `../../core/config-reader.md`. The effective config is
+`CLAUDE.local.md` (gitignored, optional, per-developer) merged over `CLAUDE.md` (local wins) — see
+config-reader.md Step 0. All sections and keys below resolve from that merged result. Required sections:
 Issue Tracker, Source Control, PR Rules, Build & Test, PR Description Template. Optional:
 Retry Limits, Module Docs, Hooks, Custom Agents, Notifications, Worktrees, Decomposition,
 Error Handling, Agent Overrides, Local Deployment, Browser Verification, Pipeline Profiles,

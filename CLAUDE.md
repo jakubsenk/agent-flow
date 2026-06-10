@@ -133,6 +133,8 @@ You are a [Role] specializing in [domain].
 
 Projects using this plugin must have `## Automation Config` in their CLAUDE.md with **18 optional config sections in total** (plus the required sections). All sections use table format (`| Key | Value |`); no bullet-point lists.
 
+**Local overrides (`CLAUDE.local.md`):** A consumer project may place a gitignored `CLAUDE.local.md` next to its `CLAUDE.md`. Before any pipeline runs, the effective config is resolved as **`CLAUDE.local.md` merged over `CLAUDE.md`** (local wins), per `core/config-reader.md` Step 0. The local file mirrors the same `### Section` → `| Key | Value |` layout and overrides sparsely (per-section, per-key); absent sections/keys inherit the committed defaults. This is the same ergonomics as `appsettings.Local.json` and lets each developer change values (e.g. Browser Verification `Base URL`, or `Enabled: false` to disable it) without producing tracked changes. See `docs/reference/automation-config.md` → "Local Overrides".
+
 **Required sections** (must be present in every consumer CLAUDE.md):
 
 | Section | Keys |
@@ -154,7 +156,7 @@ Projects using this plugin must have `## Automation Config` in their CLAUDE.md w
 | Notifications | Webhook URL, On events (`pr-created`, `issue-blocked`, `pipeline-started`, `step-completed`, `pipeline-completed`) | (none) |
 | Worktrees | Batch size, Base path, Cleanup | (none) |
 | E2E Test | Framework, Command | (none) |
-| Browser Verification | Base URL, Start command, On events, Timeout, Max pages, Screenshot storage, Exploration, Exploration max clicks | (none) |
+| Browser Verification | Enabled (default true), Base URL, Start command, On events, Timeout, Max pages, Screenshot storage, Exploration, Exploration max clicks | (none) |
 | Error Handling | On block, Max blocked per run | comment, unlimited |
 | Feature Workflow | Feature query, On start set | (none) |
 | Decomposition | Max subtasks, Fail strategy, Commit strategy, Create tracker subtasks | 7, fail-fast, squash, enabled |
@@ -200,7 +202,7 @@ Optional. Keys: Framework, Command. Default (none).
 
 ### Browser Verification
 
-Optional. Keys: Base URL, Start command, On events, Timeout, Max pages, Screenshot storage, Exploration, Exploration max clicks. Default (none).
+Optional. Keys: Enabled (default true), Base URL, Start command, On events, Timeout, Max pages, Screenshot storage, Exploration, Exploration max clicks. Default (none). Derived gate `browser_verification_enabled = false` when the section is absent OR `Enabled` is `false` (the latter is the `CLAUDE.local.md` disable path).
 
 ### Error Handling
 

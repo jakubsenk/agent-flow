@@ -6,7 +6,7 @@ code and confirm the bug is resolved at the UI level. This step is CONDITIONAL.
 ## Skip conditions
 
 Skip this entire step if ANY of the following is true:
-- `browser_verification_enabled = false` (Browser Verification section absent from Automation Config)
+- `browser_verification_enabled = false` (Browser Verification section absent from the override-resolved Automation Config, OR its `Enabled` key is `false` — e.g. disabled in `CLAUDE.local.md`)
 - `browser_verify = false` (`On events` in Browser Verification config does NOT contain `verify`)
 - Stage `browser-agent-verify` is in the profile's Skip stages
 

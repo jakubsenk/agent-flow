@@ -253,6 +253,10 @@ Next steps:
 1. Run /agent-flow:check-setup to validate your configuration
 2. Run /agent-flow:setup-mcp to configure MCP servers and permissions
 3. Try /agent-flow:analyze-bug <issue-id> to test the bug pipeline
+
+Tip: The Automation Config above is shared/committed. For per-developer tweaks (e.g. a local
+Browser Verification Base URL, or Enabled: false to disable it), create a gitignored CLAUDE.local.md
+next to CLAUDE.md instead of editing this file — it overrides CLAUDE.md sparsely (local wins). Add CLAUDE.local.md to .gitignore.
 ```
 
 If Feature query was configured, add:

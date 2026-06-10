@@ -17,8 +17,8 @@ Port conflict detection, Docker Compose management, health check polling pattern
 
 ## Process
 
-1. Read context: Local Deployment config (Type, Ports, Health check URL, Health check timeout, commands for lifecycle), requested action (check/start/stop).
-   - If Local Deployment section is absent from Automation Config → output verdict `SKIPPED`, stop.
+1. Read context: Local Deployment config (Type, Ports, Health check URL, Health check timeout, commands for lifecycle), requested action (check/start/stop). Config values are the override-resolved effective config (`CLAUDE.local.md` merged over `CLAUDE.md` per `../core/config-reader.md`) — the dispatching skill injects the merged values.
+   - If Local Deployment section is absent from the (merged) Automation Config → output verdict `SKIPPED`, stop.
 
 2. **Port validation and scan:** For each port in the `Ports` list:
    - **Validate port value first:** confirm it matches digits-only and is in range 1–65535. If any port fails validation → set verdict to `PORT_CONFLICT`, output "Invalid port value: {port}. Ports must be numeric (1-65535).", and STOP — do not proceed to port scan or start.

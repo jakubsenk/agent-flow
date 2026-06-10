@@ -5,7 +5,7 @@ Dispatch `browser-agent --phase reproduce`. This step is CONDITIONAL — evaluat
 ## Skip conditions
 
 Skip this entire step if ANY of the following is true:
-- `browser_verification_enabled = false` (Browser Verification section absent from Automation Config)
+- `browser_verification_enabled = false` (Browser Verification section absent from the override-resolved Automation Config, OR its `Enabled` key is `false` — e.g. disabled in `CLAUDE.local.md`)
 - `browser_reproduce = false` (`On events` in Browser Verification config does NOT contain `reproduce`)
 - Stage `browser-agent-reproduce` is in the profile's Skip stages
 

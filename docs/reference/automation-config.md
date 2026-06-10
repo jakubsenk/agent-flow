@@ -38,6 +38,40 @@ All skills read Automation Config at the start of execution. Skills contain zero
 | Autopilot | No | /autopilot |
 | Pause Limits | No | /fix-bugs, /implement-feature, /scaffold, /autopilot |
 
+## Local Overrides (`CLAUDE.local.md`)
+
+The `## Automation Config` in `CLAUDE.md` holds **shared, committed defaults**. Individual developers
+often need different values — a different Browser Verification `Base URL`, verification disabled
+entirely, a personal bug query — without producing tracked git changes they must remember not to
+commit.
+
+agent-flow supports a gitignored **`CLAUDE.local.md`** placed next to the project's `CLAUDE.md`, with
+the same ergonomics as `appsettings.Local.json`:
+
+| File | Tracked? | Role |
+|------|----------|------|
+| `CLAUDE.md` | yes | Shared Automation Config defaults |
+| `CLAUDE.local.md` | no (gitignored) | Per-developer overrides — **wins over `CLAUDE.md`** |
+| `CLAUDE.local.example.md` | yes (recommended) | Copy-to-`CLAUDE.local.md` template |
+
+**Resolution.** Before any pipeline runs, the config is resolved as **`CLAUDE.local.md` merged over
+`CLAUDE.md`** (local wins) per [`core/config-reader.md`](../../core/config-reader.md) Step 0. Every
+skill and agent reads this merged result, so overrides apply uniformly across all sections.
+
+**Format & merge.** `CLAUDE.local.md` mirrors `CLAUDE.md`'s layout — a `## Automation Config` block
+with the same `### Section` → `| Key | Value |` tables. The override is **sparse and per-key**:
+include only the sections/keys you want to change. A local key replaces the committed value; absent
+keys fall through to the default; an absent section is inherited unchanged. The multi-line
+`### PR Description Template` is replaced as a whole block if present locally.
+
+**Disabling a section.** Because an absent section means "inherit" (not "disable"), sections that can
+be turned off expose an explicit flag. For Browser Verification, set `| Enabled | false |` under
+`### Browser Verification` in `CLAUDE.local.md` to skip browser reproduce/verify on your machine while
+leaving the shared section intact.
+
+**`.gitignore`.** Add `CLAUDE.local.md` to the consuming project's `.gitignore`. Keep
+`CLAUDE.local.example.md` tracked.
+
 ## Required Sections
 
 ### Issue Tracker
@@ -254,6 +288,7 @@ Optional. Enables browser-based bug reproduction (before fixer) and verification
 
 | Key | Description | Default |
 |-----|-------------|---------|
+| Enabled | `false` disables browser reproduce/verify on this machine without removing the section (intended for `CLAUDE.local.md`) | `true` |
 | Base URL | The URL of the running application | (required) |
 | Start command | Command to start the dev server, if not already running | (none) |
 | On events | Comma-separated: `reproduce`, `verify`, or `reproduce, verify` | reproduce, verify |
@@ -281,7 +316,7 @@ Optional. Enables browser-based bug reproduction (before fixer) and verification
 
 **Interaction with `E2E Test`:** `E2E Test` generates scripted test code artifacts (test files checked into the repo). `Browser Verification` interacts with the live browser at runtime (no test files generated). Both can be configured independently.
 
-**Graceful degradation:** If Playwright is not installed, the app is not running and no `Start command` is set, or the section is absent — both phases are silently skipped. The pipeline never blocks due to browser infrastructure being unavailable.
+**Graceful degradation:** If Playwright is not installed, the app is not running and no `Start command` is set, the section is absent, or `Enabled` is `false` — both phases are silently skipped. The pipeline never blocks due to browser infrastructure being unavailable.
 
 **Recommended `.gitignore` entries for consuming projects:**
 ```
@@ -614,7 +649,7 @@ Keys: Framework, Command. Default (none).
 
 ### Browser Verification
 
-Keys: Base URL, Start command, On events, Timeout, Max pages, Screenshot storage, Exploration, Exploration max clicks. Default (none).
+Keys: Enabled (default `true`), Base URL, Start command, On events, Timeout, Max pages, Screenshot storage, Exploration, Exploration max clicks. Default (none). `Enabled: false` disables both phases without removing the section (used from `CLAUDE.local.md`).
 
 ### Error Handling
 

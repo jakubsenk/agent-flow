@@ -15,9 +15,12 @@ If $ARGUMENTS contains `--skip-build`, skip running build/test commands.
 
 ### Block 1: Automation Config (structural check)
 
-1. Read the current project's CLAUDE.md
+1. Read the current project's CLAUDE.md. Then, if a `CLAUDE.local.md` exists adjacent to it, read that
+   too and resolve the **effective config** as `CLAUDE.local.md` merged over `CLAUDE.md` (local wins)
+   per `../../core/config-reader.md` Step 0. All checks below validate the **merged** config. If
+   `CLAUDE.local.md` is present, emit `[INFO] Local overrides active (CLAUDE.local.md): {sections it overrides}`.
 2. Verify the existence of the `## Automation Config` section → [OK] or [FAIL]
-3. Verify required sections and keys:
+3. Verify required sections and keys (in the merged config):
 
 | Section | Required keys |
 |---------|--------------|
