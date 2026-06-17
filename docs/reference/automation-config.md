@@ -107,15 +107,34 @@ Configures git branch management and remote repository.
 | Base branch | `main` |
 | Branch naming | `fix/{issue-id}-{description}` |
 
-The `{issue-id}` and `{description}` placeholders are replaced at runtime. Description is derived from the issue title (lowercased, spaces replaced with hyphens).
+The `{issue-id}` and `{description}` placeholders are replaced at runtime. Description is derived from the issue title (lowercased, spaces replaced with hyphens). The description MUST be **English, ASCII-only, no diacritics** — if the issue title is in another language, translate it to English first and transliterate any diacritics to ASCII (`é`→`e`, `č`→`c`, …).
 
 ### PR Rules
 
-Configures labels applied to pull requests.
+Configures labels applied to pull requests and the format of the PR title.
 
 | Key | Value (example) |
 |-----|-------|
 | Labels | `bug, automated` |
+| Title format | `{issue-id}-{mode}-{summary}` |
+
+**Title format** controls how the publisher builds the PR title. Placeholders:
+
+| Placeholder | Replaced with |
+|-------------|---------------|
+| `{issue-id}` | The issue tracker ID (e.g. `PROJ-123`) |
+| `{mode}` | The pipeline mode keyword — a fixed value the publisher substitutes, not operator-defined: `Fix` (bug-fix), `Feat` (feature), `Scaffold` (scaffold) |
+| `{summary}` | The issue summary |
+
+Normalization rules applied to the rendered title:
+
+- **No spaces** — every space is replaced with a hyphen (`-`).
+- **No square brackets** around the issue ID, **no colons**.
+- **English only, no diacritics** — the title MUST be in English using plain ASCII letters. If the issue summary is in another language (e.g. Czech), translate it to English first, then transliterate any remaining diacritics to ASCII (`é`→`e`, `č`→`c`, `ř`→`r`, `ů`→`u`, …). Diacritics must NEVER appear in the title.
+
+Example: issue `PROJ-123` (feature) with the Czech summary "vylepšit zobrazení celé akce v Log Importu" → translate to English first ("improve the whole-action view in Log Import"), then render → `PROJ-123-Feat-improve-the-whole-action-view-in-Log-Import`.
+
+If `Title format` is omitted, the publisher falls back to `{issue-id} {Mode}: {summary}` (issue ID, mode keyword, and summary) — the same English/ASCII-only summary rules apply, but the brackets-and-colon shape of this fallback is the one exception to the "no colons" normalization above.
 
 ### PR Description Template
 
@@ -440,6 +459,18 @@ author = "security-team"
 added = "2026-04-27"
 ```
 
+**Encoding project coding conventions (e.g. comment / identifier language).** Project-specific rules about *how code is written* — most commonly the natural language used for code comments and identifiers — belong in these per-agent overlays (and/or as a project-convention note in your CLAUDE.md), NOT hardcoded in the plugin's agent definitions. The code-generating agents (`fixer`, `test-engineer`, `scaffolder`) read their overlay before writing code, and the `reviewer` enforces it as a convention check (and rejects violations).
+
+Worked example — a project whose UI is Czech but whose code must stay English (English comments + identifiers; Czech only in user-facing strings):
+
+```toml
+# customization/fixer.toml  — repeat in test-engineer.toml, scaffolder.toml, and reviewer.toml
+[[constraints]]
+rule = "Write all code comments and identifiers in English. Czech (or any national language) is allowed ONLY in user-facing string literals and resource files — never in comments or identifier names."
+```
+
+Because there is no single global overlay, repeat the rule in each code-generating agent's overlay (so it is never produced) **and** in `reviewer.toml` (so any violation is flagged). Alternatively, state it once as a project-convention note in your CLAUDE.md — every agent reads CLAUDE.md, and the reviewer enforces the code-language convention as part of its standard `Conventions` review item. (This is free-form project prose, not a dedicated Automation Config section.)
+
 ## Plugin Permission Architecture
 
 agent-flow plugin agents do **NOT** support `hooks:`, `mcpServers:`, or `permissionMode:` keys in YAML frontmatter — the Claude Code platform ignores these fields for security reasons when set at agent level. **Hooks are skill-orchestrated, not agent-frontmatter** (hooks are skill-orchestrated, not agent-frontmatter) — pipeline hooks are configured at **PROJECT level** via the `### Hooks` section in your project's CLAUDE.md, NOT in any agent's YAML frontmatter.
@@ -687,6 +718,7 @@ A full Automation Config for a GitHub + Node.js project:
 | Key | Value |
 |-----|-------|
 | Labels | `bug, automated` |
+| Title format | `{issue-id}-{mode}-{summary}` |
 
 ### PR Description Template
 

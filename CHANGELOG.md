@@ -2,6 +2,20 @@
 
 All notable changes to agent-flow will be documented in this file.
 
+## [1.1.0] — 2026-06-17
+
+### Added
+
+- **PR Rules: `Title format` optional key** — operators can now control the PR title shape via Automation Config using the placeholders `{issue-id}`, `{mode}`, and `{summary}`, with English/ASCII-only normalization (no spaces, no brackets, no colons, diacritics transliterated). When the key is omitted, the publisher falls back to `{issue-id} {Mode}: {summary}`. Parsed by `core/config-reader.md` as `pr_rules.title_format`, prompted by `/onboard`, documented in `docs/reference/automation-config.md`, and surfaced in all `examples/configs/*` templates.
+- **publisher: PR-ownership defenses (Steps 6a/6b)** — the publisher now reads the new PR's `number`/`url` only from the create call's own response (Step 6a; a missing/`null`/error payload is a FAILED create that Blocks — never `previous + 1` guessing), and before any post-create mutation it verifies `pr.head.ref == current_branch` AND `pr.base.ref == base_branch`, treating a missing field as a mismatch and Blocking fail-closed (Step 6b). Two matching `NEVER` constraints were added. Prevents the publisher from PATCHing/DELETEing an unrelated PR after a malformed create-response.
+- **Meaningful-test gate** — `test-engineer`, `fixer`, `reviewer`, and `acceptance-gate` (plus the review/test checklists) now reject "useless" tests: a test that would still pass if the change were reverted, re-implements the production logic, exercises an unchanged collaborator, or asserts nothing. When the changed code has no testable seam, the gate requires documenting the seam + manual/E2E verification rather than writing a hollow test.
+- **Code-language convention** — `fixer`, `test-engineer`, `scaffolder`, and `reviewer` now keep code comments and identifiers in the project's established code language (national-language text only in user-facing strings), configurable via per-agent overlays or project CLAUDE.md prose.
+
+### Changed
+
+- **publisher: PR title is now config-driven** — the hardcoded mode-dependent title (`[PROJ-123] Fix: …`) is replaced by the `Title format` rule plus the `{issue-id} {Mode}: {summary}` fallback. The bracketed `[ISSUE-ID]` form remains only in git commit messages (Step 4), which are explicitly scoped as independent of the PR title. Consumers parsing the old `^\[ISSUE-ID\]` PR-title shape should update.
+- **Source Control / PR Rules: English + ASCII-only identifiers** — branch descriptions and PR titles MUST be English and ASCII-only; non-English source text is translated first and any remaining diacritics transliterated.
+
 ## [1.0.3] — 2026-05-26
 
 ### Fixed

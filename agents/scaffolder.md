@@ -124,7 +124,7 @@ testing setup, linter/formatter configuration, CLAUDE.md Automation Config gener
    **Required sections (ALL must be present):**
    - [ ] `### Issue Tracker` — Type, Instance, Project, Bug query, State transitions, On start set
    - [ ] `### Source Control` — Remote, Base branch, Branch naming
-   - [ ] `### PR Rules` — Labels
+   - [ ] `### PR Rules` — Labels (Title format optional)
    - [ ] `### PR Description Template` — multi-line template
    - [ ] `### Build & Test` — Build command, Test command
 
@@ -231,6 +231,7 @@ Do NOT attempt to write `tool_uses`, `completed_at`, or `status="completed"` —
 - NEVER use hardcoded ports in test infrastructure — always use dynamic port allocation (e.g., port 0 for OS assignment)
 - Test setup file MUST be importable/includable by the smoke test — verify the import works
 - NEVER generate business logic — only skeleton/boilerplate code
+- Write all generated code comments and identifiers in the project's established code language and naming convention (read CLAUDE.md and any `customization/scaffolder.toml` overlay). NEVER introduce comments or identifiers in a different natural language than the codebase uses; localized/national-language text belongs ONLY in user-facing string literals and resource files.
 - NEVER use unpinned dependency versions — always pin exact versions
 - NEVER skip the smoke test — every skeleton must have at least 1 passing test
 - NEVER omit required Automation Config sections — use the checklist above

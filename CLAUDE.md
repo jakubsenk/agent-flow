@@ -139,7 +139,7 @@ Projects using this plugin must have `## Automation Config` in their CLAUDE.md w
 |---------|------|
 | Issue Tracker | Type (youtrack/github/jira/linear/gitea/redmine, default: youtrack), Instance, Project, Bug query, State transitions, On start set |
 | Source Control | Remote (owner/repo), Base branch, Branch naming |
-| PR Rules | Labels |
+| PR Rules | Labels, Title format (optional) |
 | PR Description Template | Multi-line template (separate subsection) |
 | Build & Test | Build command, Test command, Verify command (optional — runs after PR merge). Verify command runs after PR merge. If it fails, the issue is re-opened. |
 
@@ -306,6 +306,32 @@ Both use `[agent-flow]` prefix for machine-parseable detection by entry-point sk
 Key rule: Adding a **required** key to Automation Config = MAJOR. Adding an **optional** section = MINOR.
 
 Adding new static declaration sections to agent definition files (`## Output Contract`, `## Inputs`, `## Outputs`, or similar metadata blocks) that are not enforced at runtime classifies as MINOR when the section is OPTIONAL (consuming-project agent files without it remain valid against the harness) and MAJOR when the section is MANDATORY (agent files without it fail at least one harness scenario). The override injector at `core/agent-override-injector.md` is structure-blind and is not "external tooling that parses" agent body sections — its append-only behavior does not fire the MAJOR clause on its own.
+
+### Release Process
+
+Releases are **PR-only**. NEVER commit a version bump, tag, or CHANGELOG edit directly to `main` — branch protection on `main` requires a PR with green CI.
+
+**Version bump location.** A release bumps the `version` field in `.claude-plugin/plugin.json` AND both `version` fields in `.claude-plugin/marketplace.json` (`metadata.version` and `plugins[0].version`), plus a dated `CHANGELOG.md` entry. These three move together in the same release.
+
+**Single PR → release.** The feature/fix PR carries the bump + its CHANGELOG entry. After it merges to `main` with green CI, cut the release **on `main`**:
+
+```bash
+gh release create vX.Y.Z --target main --title "vX.Y.Z" --notes-file <notes>
+```
+
+`gh release create` creates the git tag AND the GitHub Release in one step — pushing a bare tag does NOT create a Release.
+
+**Multiple PRs → one release.** When several open PRs should ship together, do NOT merge them to `main` one-by-one and do NOT integrate on `main`. Use a short-lived integration branch and **re-target the source PRs onto it** so each still records as merged:
+
+1. Branch `release/vX.Y.Z` off `main` and push it to the base repo.
+2. Re-point each source PR's base from `main` to `release/vX.Y.Z` (`gh pr edit <N> --base release/vX.Y.Z`), then squash-merge each into the integration branch through GitHub (`gh pr merge <N> --squash`). Each source PR then shows **merged** (not closed) and keeps its review/commit record. Fork PRs work the same way — the base branch lives in the base repo, so the maintainer merges them in. Resolve conflicts via the normal per-PR update against the integration branch.
+3. On the integration branch, set the single version bump and a `CHANGELOG.md` `[X.Y.Z]` entry that covers **all** bundled PRs.
+4. Open ONE PR: `release/vX.Y.Z` → `main` — the only PR that targets `main`. Green CI + review, then merge.
+5. Cut the release on `main` as above.
+
+`release/vX.Y.Z` is unprotected, so source PRs merge into it without the `main` status-check gate; that gate applies once, at step 4. (A bare local `git merge --squash` of a PR's content also works but leaves the source PR showing "closed" rather than "merged" — prefer the re-target flow so the merge history stays explicit.)
+
+**Bundled version = the highest individual classification.** Classify each bundled PR against the Versioning Policy table, then the release takes the max: any MAJOR → MAJOR; else any MINOR → MINOR; else PATCH. Prefer keeping individual source PRs version-neutral (no `plugin.json` / `marketplace.json` / `CHANGELOG` edits) so bumps never compete or conflict; finalize the single bump + the combined CHANGELOG entry on the integration branch. If one source PR already carries the bump, ensure the others do not and reconcile the CHANGELOG on the integration branch.
 
 ## Cross-File Invariants
 
