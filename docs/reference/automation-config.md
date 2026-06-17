@@ -459,6 +459,18 @@ author = "security-team"
 added = "2026-04-27"
 ```
 
+**Encoding project coding conventions (e.g. comment / identifier language).** Project-specific rules about *how code is written* — most commonly the natural language used for code comments and identifiers — belong in these per-agent overlays (and/or as a project-convention note in your CLAUDE.md), NOT hardcoded in the plugin's agent definitions. The code-generating agents (`fixer`, `test-engineer`, `scaffolder`) read their overlay before writing code, and the `reviewer` enforces it as a convention check (and rejects violations).
+
+Worked example — a project whose UI is Czech but whose code must stay English (English comments + identifiers; Czech only in user-facing strings):
+
+```toml
+# customization/fixer.toml  — repeat in test-engineer.toml, scaffolder.toml, and reviewer.toml
+[[constraints]]
+rule = "Write all code comments and identifiers in English. Czech (or any national language) is allowed ONLY in user-facing string literals and resource files — never in comments or identifier names."
+```
+
+Because there is no single global overlay, repeat the rule in each code-generating agent's overlay (so it is never produced) **and** in `reviewer.toml` (so any violation is flagged). Alternatively, state it once as a project-convention note in your CLAUDE.md — every agent reads CLAUDE.md, and the reviewer enforces the code-language convention as part of its standard `Conventions` review item. (This is free-form project prose, not a dedicated Automation Config section.)
+
 ## Plugin Permission Architecture
 
 agent-flow plugin agents do **NOT** support `hooks:`, `mcpServers:`, or `permissionMode:` keys in YAML frontmatter — the Claude Code platform ignores these fields for security reasons when set at agent level. **Hooks are skill-orchestrated, not agent-frontmatter** (hooks are skill-orchestrated, not agent-frontmatter) — pipeline hooks are configured at **PROJECT level** via the `### Hooks` section in your project's CLAUDE.md, NOT in any agent's YAML frontmatter.
