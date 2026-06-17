@@ -79,7 +79,7 @@ if $GOT_BATCH; then
 elif [ -z "$POSITIONAL" ]; then
   echo "[ERROR] Usage: /agent-flow:fix-bugs <ISSUE-ID> | --batch <N>" >&2; exit 1
 else
-  TRACKER_TYPE="$( { [ -f CLAUDE.local.md ] && grep -oE '^\| Type \| [A-Za-z][A-Za-z0-9_-]+' CLAUDE.local.md; grep -oE '^\| Type \| [A-Za-z][A-Za-z0-9_-]+' CLAUDE.md; } | head -1 | awk -F'| ' '{print $3}' | tr -d ' ' | tr '[:upper:]' '[:lower:]')"
+  TRACKER_TYPE="$( { [ -f CLAUDE.local.md ] && grep -oE '^\| Type \| [A-Za-z][A-Za-z0-9_-]+' CLAUDE.local.md; grep -oE '^\| Type \| [A-Za-z][A-Za-z0-9_-]+' CLAUDE.md; } | head -1 | awk '{print $4}' | tr -d ' ' | tr '[:upper:]' '[:lower:]')"
   if [ -z "$TRACKER_TYPE" ]; then
     echo "[WARN] Tracker type not detected; assuming string-tracker semantics (youtrack)" >&2
     TRACKER_TYPE="youtrack"

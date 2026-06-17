@@ -16,12 +16,14 @@ Parse `## Automation Config` from the project's CLAUDE.md. Extract all required 
    - If `CLAUDE.local.md` exists → locate its `## Automation Config` block (same heading; if absent, treat as no overrides). Parse it into the same `section → {key → value}` shape as the base, then **merge it over** the base block with these rules:
      - **Sparse, per-section, per-key.** The local block contains only the sections/keys a developer wants to change.
      - Key present in both base and local → **local value replaces** the base value.
+     - A local key present with an **empty value** clears the base value (resolves to unset/default); to merely inherit the base value, omit the key entirely.
+     - Multi-value keys (e.g. `On events`, `Labels`, `Ports`) and key→value-map values (e.g. `State transitions`) are replaced as a **whole unit** — per-key merge applies only at the section-key level, never inside an individual key's value.
      - Section present in local with keys absent from the base section → those keys are **added** to the section.
      - Section present only in base → **kept unchanged**.
      - Section present only in local → **added** to the effective config.
      - Multi-line `### PR Description Template` → if present in local, the **whole block replaces** the base template (not a per-line merge).
      - Local section present but empty/malformed → log `[WARN] Ignoring malformed local override: {section}` and keep the base section. Never block on a local override.
-   - The remainder of this contract (steps 1–4, defaults, validation) operates on the **merged** result, so every skill and agent that reads config per this document inherits the override transparently. Required-section validation (step 4) runs against the merged config.
+   - The remainder of this contract (steps 1–4, defaults, validation) operates on the **merged** result, so every skill and agent that reads config per this document inherits the override transparently. Required-section validation (step 4) runs against the merged config. Because malformed local overrides are dropped during this Step 0 merge (the base section is retained), a malformed local override of a required section never causes a spurious Step-4 failure — Step 4 only ever sees the retained base section.
 
 1. Locate the `## Automation Config` heading. Everything from that heading to the next `##`-level heading (or end of file) is the config block.
 

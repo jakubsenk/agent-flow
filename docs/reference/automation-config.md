@@ -69,8 +69,18 @@ be turned off expose an explicit flag. For Browser Verification, set `| Enabled 
 `### Browser Verification` in `CLAUDE.local.md` to skip browser reproduce/verify on your machine while
 leaving the shared section intact.
 
-**`.gitignore`.** Add `CLAUDE.local.md` to the consuming project's `.gitignore`. Keep
-`CLAUDE.local.example.md` tracked.
+**`.gitignore`.** Add `CLAUDE.local.md` to the consuming project's `.gitignore` (keep
+`CLAUDE.local.example.md` tracked):
+
+```gitignore
+CLAUDE.local.md
+!CLAUDE.local.example.md
+```
+
+**Security note.** A local override can change *any* key — including security-relevant ones such as
+`Webhook URL`, Source Control `Remote`, or `Base branch`. This is by design: because `CLAUDE.local.md`
+is gitignored and machine-local, it only ever affects the runs of the developer who owns that file and
+is never shared with other contributors.
 
 ## Required Sections
 

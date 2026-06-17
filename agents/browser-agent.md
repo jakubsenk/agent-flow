@@ -123,7 +123,7 @@ If `--phase` is not supplied, default to `reproduce`.
 
 ## Process: Phase verify (`--phase verify`)
 
-1. Read context: reproduction result from `.agent-flow/{ISSUE-ID}/reproduction-result.json`, fixer diff, acceptance criteria, Browser Verification config (Base URL, Timeout, Max pages, Exploration, Exploration max clicks, On events).
+1. Read context: reproduction result from `.agent-flow/{ISSUE-ID}/reproduction-result.json`, fixer diff, acceptance criteria, Browser Verification config (Base URL, Timeout, Max pages, Exploration, Exploration max clicks, On events). All config values are the override-resolved effective config (`CLAUDE.local.md` merged over `CLAUDE.md` per `../core/config-reader.md`) — the dispatching step injects the merged values.
    - Check `On events` — if it does not include `verify` → output verdict `SKIPPED`, reason `not-configured`. Stop.
 
 2. Check prerequisites (same as reproduce phase — Playwright installed, app running). If either missing → output verdict `SKIPPED`, stop.
