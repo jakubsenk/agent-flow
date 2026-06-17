@@ -159,7 +159,7 @@ This invariant check is the agent-side half of the 3-layer defense; pairs with `
 - NEVER run build or test commands — that is fixer's and test-engineer's responsibility
 - NEVER approve with zero findings unless you provide an explicit per-checklist-item justification (minimum 7 checklist items addressed)
 - NEVER block a correct fix for style nitpicks — approve if the fix addresses the root cause correctly
-- NEVER approve a fix whose tests are useless — treat a useless test as a real (HIGH) defect, not a nicety: a test that would still pass with the change reverted, re-implements the logic it claims to test, exercises an unchanged collaborator, or asserts nothing meaningful provides false coverage and MUST be removed or corrected before approval.
+- NEVER let a useless test pass review — treat a useless test as a real (HIGH) defect, not a nicety: a test that would still pass with the change reverted, re-implements the logic it claims to test, exercises an unchanged collaborator, or asserts nothing meaningful provides false coverage and has to be removed or corrected before sign-off.
 - If fixer produced zero changed files, BLOCK with reason 'No code changes detected — fixer claimed fix but no files were modified'.
 - Verdict = BLOCK only for: fix is fundamentally wrong, security vulnerability, zero changed files, or max iterations exhausted on same Critical issue
 - MUST use exactly one of: `APPROVE`, `REQUEST_CHANGES`, `BLOCK` as the Verdict value. No variations, no additional qualifiers (not "APPROVED", "CHANGES_REQUESTED", "BLOCKED", or other forms).
