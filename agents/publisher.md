@@ -23,7 +23,7 @@ Follow these steps exactly, in order:
 
    Read project Automation Config from CLAUDE.md. You need these values:
 - **Source Control:** Remote (owner/repo), Base branch, Branch naming pattern
-- **PR Rules:** Labels
+- **PR Rules:** Labels, Title format
 - **PR Description Template:** the full template text
 - **Issue Tracker:** Type (determines which MCP server to use, default: youtrack), State transitions
 
@@ -36,7 +36,7 @@ Follow these steps exactly, in order:
 
 3. **Create or Switch to Feature Branch**
 
-   - Generate branch name using naming pattern from Automation Config (e.g., `fix/{issue-id}-short-description`)
+   - Generate branch name using naming pattern from Automation Config (e.g., `fix/{issue-id}-short-description`). Derive the `short-description` per the Branch naming rules in Automation Config (Source Control section).
 - If branch already exists (e.g., created by fixer), switch to it: `git checkout {branch}`
 - If branch does not exist, create it: `git checkout -b {branch}`
 
@@ -48,6 +48,7 @@ Follow these steps exactly, in order:
   - Bug-fix: `fix(auth): prevent token expiration on refresh [PROJ-123]`
   - Feature: `feat(auth): add OAuth2 provider support [PROJ-456]`
   - Scaffold: `scaffold(project): initialize API server with health endpoint [PROJ-789]`
+- These are git **commit** conventions (Conventional Commits with a trailing `[ISSUE-ID]`) and are independent of the PR **Title format** (Step 6). The bracketed `[ISSUE-ID]` belongs in commit messages; it is NOT carried into the normalized PR title.
 
 5. **Push Branch**
 
@@ -57,10 +58,7 @@ Follow these steps exactly, in order:
 
 6. **Create Pull Request**
 
-   - **Title:** Use issue summary (from issue tracker), NOT the branch name. Format is mode-dependent:
-     - Bug-fix mode: `[PROJ-123] Fix: {concise description}`
-     - Feature mode: `[PROJ-123] Feat: {concise description}`
-     - Scaffold mode: `[PROJ-123] Scaffold: {concise description}`
+   - **Title:** Build the PR title per the **Title format** rule from PR Rules (Automation Config), using the issue ID, mode keyword, and issue summary (from issue tracker) — NOT the branch name. If PR Rules does not define a Title format, fall back to `{issue-id} {Mode}: {summary}` — the issue ID, the mode keyword (`Fix` / `Feat` / `Scaffold`), and the issue summary (so the mode is always present even with no configured format).
 - **Description:** Use PR Description Template from Automation Config (always English). Fill in ALL template sections:
   - Build the PR body as a multi-line string with real line breaks between sections — follow `../core/mcp-body-formatting.md`.
   - Summary, Changes, Testing, Issue link
@@ -70,6 +68,25 @@ Follow these steps exactly, in order:
   - **Label ID resolution:** Some MCP servers (e.g., Gitea) require numeric label IDs for PR creation but may not return IDs from the label listing tool. If the MCP label listing tool does not return IDs, retrieve them via a direct API call: `GET /api/v1/repos/{owner}/{repo}/labels` — each label object includes an `id` field. Use the Instance URL from Automation Config as the API base.
 - **Base branch:** From Automation Config (Source Control section)
 - Use the source control MCP server corresponding to the Remote format (e.g., Gitea API for gitea instances, GitHub API for github.com) for PR creation.
+
+   **6a. Capture PR identity from the create response — never guess.**
+
+   The "create PR" call returns an object that contains the new PR's `number` (or platform equivalent) and full URL. You MUST:
+
+   - Read `pr_number` and `pr_url` directly from the object the create call returned — not from a separate listing, search, or arithmetic. The rule is "use the id the create response handed back"; it is not a same-turn timing constraint.
+   - If the create-response payload is missing, truncated, returns an error status, parses as `null`, or your code path produced `pr_number = None / empty / unset`, treat the create as **FAILED** — Block with the standard template; do NOT continue and do NOT guess.
+   - NEVER compute the new PR number by "last known PR + 1" or by counting open PRs. Issue/PR numbering in Gitea/GitHub/Jira is shared across multiple object kinds (PRs, issues, sometimes both) and is not contiguous from your local viewpoint — any guess can land on an unrelated PR or issue owned by another author.
+
+   **6b. Verify PR ownership before any follow-up mutation on it.**
+
+   The base publish flow applies labels *during* the create call (Step 6) and does not re-touch the PR afterward — so on the happy path Step 6a alone is the guard. Step 6b governs ANY path that mutates a PR by id *after* create: a label-ID retry-after-create, a pre-publish/post-publish hook or custom agent, or any future step that patches the title (e.g. adding a `WIP:` prefix), patches/removes labels, posts comments, marks ready-for-review, or closes. Before any such mutation:
+
+   - Fetch the PR by `pr_number` from the source control server.
+   - Assert `pr.head.ref == {current_branch}` AND `pr.base.ref == {base_branch}`.
+   - If `head.ref` or `base.ref` is absent or unreadable in the fetched object (e.g. a trimmed MCP response), treat that as a mismatch — never assume ownership from a missing field.
+   - If either assertion fails (or a required field is missing) → **Block immediately** with a Pipeline Block. Reason: `PR identity mismatch: {pr_number} points to head '{actual_head}' / base '{actual_base}', expected head '{current_branch}' / base '{base_branch}'.` Do not patch, do not delete labels, do not comment.
+
+   This ownership check exists because a previous incident saw a publish attempt parse a `None` PR number out of a malformed create-response, then guess `pr_number = previous_max + 1`, and proceed to PATCH the title and DELETE labels on a stranger's open PR. The authoritative ownership signal is the create-returned id from Step 6a; this head/base re-check is the fail-closed corroboration that makes a guessed or recycled id detectable instead of silently mutating an unrelated PR.
 
 7. **Update Issue Tracker**
 
@@ -143,6 +160,8 @@ This invariant check is the agent-side half of the 3-layer defense; pairs with `
 - NEVER include "Generated with Claude Code" footer in PR description — if the tool auto-appends it, that is acceptable, but do NOT add it manually
 - NEVER use `\n` as a line separator in MCP tool parameters -- use actual newlines. See `../core/mcp-body-formatting.md` for the full formatting rule.
 - PR description always in English
+- NEVER guess, compute, or assume a PR number (e.g. "previous + 1", "next id after the last open PR"). The PR `number` MUST come from the create call's own response; if it is unreadable, the create FAILED — Block. See Step 6a.
+- NEVER perform a mutating call (PATCH / DELETE / POST comment) against a PR or issue id without first verifying `head.ref` == current branch AND `base.ref` == configured base (a missing field counts as a mismatch). See Step 6b.
 - On failure: Block using the Block Comment Template:
   ```
   [agent-flow] 🔴 Pipeline Block
