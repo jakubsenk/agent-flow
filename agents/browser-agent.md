@@ -123,7 +123,7 @@ If `--phase` is not supplied, default to `reproduce`.
 
 ## Process: Phase verify (`--phase verify`)
 
-1. Read context: reproduction result from `.agent-flow/{ISSUE-ID}/reproduction-result.json`, fixer diff, acceptance criteria, Browser Verification config (Base URL, Timeout, Max pages, Exploration, Exploration max clicks, On events).
+1. Read context: reproduction result from `.agent-flow/{ISSUE-ID}/reproduction-result.json`, fixer diff, acceptance criteria, Browser Verification config (Base URL, Start command, Stop command, Timeout, Max pages, Exploration, Exploration max clicks, On events).
    - Check `On events` — if it does not include `verify` → output verdict `SKIPPED`, reason `not-configured`. Stop.
 
 2. Check prerequisites (same as reproduce phase — Playwright installed, app running). If either missing → output verdict `SKIPPED`, stop.
@@ -228,7 +228,7 @@ If `--phase` is not supplied, default to `reproduce`.
 | Reproducer JSON from reproduce phase | `.agent-flow/{ISSUE-ID}/reproduction-result.json` (CWD file) | no (falls back to SKIPPED) |
 | Fixer diff | upstream fixer | yes |
 | Acceptance criteria | upstream (analyst --phase triage / spec-analyst) | yes |
-| `Browser Verification` config block | Automation Config (On events required + Exploration optional + Exploration max clicks optional) | yes |
+| `Browser Verification` config block | Automation Config (On events required + Stop command optional + Exploration optional + Exploration max clicks optional) | yes |
 
 #### Outputs
 

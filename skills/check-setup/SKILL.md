@@ -48,11 +48,12 @@ Find the row matching the configured Type in the Validation Rules table.
    - Empty or placeholder → [FAIL]
 
 5. Verify optional sections (if they exist, check the format):
-   - Retry Limits, Hooks, Custom Agents, Notifications, Worktrees, E2E Test, Error Handling, Decomposition, Pipeline Profiles, Metrics, Feature Workflow, Local Deployment, Agent Overrides
+   - Retry Limits, Hooks, Custom Agents, Notifications, Worktrees, E2E Test, Browser Verification, Error Handling, Decomposition, Pipeline Profiles, Metrics, Feature Workflow, Local Deployment, Agent Overrides
    - Exists and correct format → [OK]
    - Does not exist → [SKIP] (optional)
    - Exists but incorrect format → [WARN]
    - Local Deployment (if present): Type must be `docker` or `native` → [WARN] if neither; Start command and Stop command must be non-empty → [WARN] if missing
+   - Browser Verification (if present): On events must be `reproduce`, `verify`, or `reproduce, verify` → [WARN] if other; Stop command (optional) must be non-empty if present → [WARN] if empty
 
 ### Block 2: MCP servers (presence and connectivity)
 

@@ -101,8 +101,9 @@ means the overlay was not injected.
 **Solution:**
 1. Verify a TOML parser is importable:
    ```bash
-   python3 -c "import tomllib" 2>/dev/null && echo "tomllib OK (3.11+)" || \
-   python3 -c "import tomli"   2>/dev/null && echo "tomli OK"          || echo "NO PARSER"
+   if python3 -c "import tomllib" 2>/dev/null; then echo "tomllib OK (3.11+)";
+   elif python3 -c "import tomli" 2>/dev/null; then echo "tomli OK";
+   else echo "NO PARSER"; fi
    ```
 2. If `NO PARSER`: install Python 3.11+, or on Python 3.10 run `python3 -m pip install tomli`.
 3. Run `/agent-flow:check-setup` — it reports `[FAIL]` when a `.toml` overlay exists but no parser is
