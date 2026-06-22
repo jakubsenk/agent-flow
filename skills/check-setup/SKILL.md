@@ -258,7 +258,7 @@ else
     pyver=$(python3 -c "import sys; print('%d.%d' % sys.version_info[:2])" 2>/dev/null)
     echo "[OK] Agent overrides - TOML parser available (python3 ${pyver}); $(echo "$toml_files" | grep -c .) overlay file(s) found"
   else
-    files=$(echo "$toml_files" | tr '\n' ' ')
+    files=$(echo "$toml_files" | tr '\n' ',' | sed 's/,$//; s/,/, /g')
     echo "[FAIL] Agent overrides - .toml overlays present (${files}) but neither tomllib (Python 3.11+) nor the tomli backport is importable by python3. The injector will SILENTLY DROP these overlays — configured per-agent customizations are NOT applied. Fix: install Python 3.11+, or run 'python3 -m pip install tomli'."
   fi
 fi
@@ -269,9 +269,13 @@ fi
     silently — are caught. Locate the parser library with Glob: pattern
     `.claude/plugins/**/skills/setup-agents/lib/toml-merge.sh` first, then
     `**/skills/setup-agents/lib/toml-merge.sh`, then `skills/setup-agents/lib/toml-merge.sh`
-    relative to CWD. If located, source it; for each `customization/{agent}.toml` file run
-    `parse_toml_overlay "$f"` and then `validate_overlay_keys "$json" "{agent}" "$f"`
-    (where `{agent}` is the filename without the `.toml` extension):
+    relative to CWD. If located, source it. **Note:** `toml-merge.sh` runs `set -euo pipefail`,
+    which propagates into the check-setup shell, so call its functions in guarded form — capture
+    stdout into a variable and branch on the exit status — otherwise a parse/validation failure
+    would abort the whole probe instead of being reported as a per-file `[FAIL]`. For each
+    `customization/{agent}.toml` file (where `{agent}` is the filename without the `.toml`
+    extension) run `if json=$(parse_toml_overlay "$f") && validate_overlay_keys "$json" "{agent}" "$f"; then`
+    … `else` … `fi` and emit:
     - Parses and validates → [OK] "Agent overrides - {agent}.toml parses and validates"
     - Fails → [FAIL] "Agent overrides - {agent}.toml is present but fails to parse/validate; the
       injector will drop it silently. Detail: {stderr from the lib}"

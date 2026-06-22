@@ -304,7 +304,7 @@ Optional. Enables browser-based bug reproduction (before fixer) and verification
 
 **Graceful degradation:** If Playwright is not installed, the app is not running and no `Start command` is set, or the section is absent — both phases are silently skipped. The pipeline never blocks due to browser infrastructure being unavailable.
 
-**Stopping the app:** When the agent starts the app itself (via `Start command`), it stops it again after reproduction. It runs `Stop command` if configured; otherwise it falls back to `pkill -f` on the `Start command` pattern. Set `Stop command` when running on a non-POSIX host (no `pkill`) or when the `Start command` is a launcher that exits before the app it spawned (so the pattern would no longer match the running process). If the app is already running when the agent checks `Base URL`, the agent neither starts nor stops it.
+**Stopping the app:** When the agent starts the app itself (via `Start command`), it stops it again when it finishes (after reproduction or verification). It runs `Stop command` if configured; otherwise it falls back to `pkill -f` on the `Start command` pattern. Set `Stop command` when running on a non-POSIX host (no `pkill`) or when the `Start command` is a launcher that exits before the app it spawned (so the pattern would no longer match the running process). If the app is already running when the agent checks `Base URL`, the agent neither starts nor stops it.
 
 **Recommended `.gitignore` entries for consuming projects:**
 ```

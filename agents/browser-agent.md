@@ -183,7 +183,9 @@ If `--phase` is not supplied, default to `reproduce`.
    }
    ```
 
-6. Output:
+6. **Cleanup:** If you started the app in step 2 via `Start command`, stop it before returning (same as reproduce phase step 5): run the configured `Stop command` if set, otherwise fall back to `pkill -f "{Start command pattern}"`. Prefer `Stop command` — it is the reliable option on non-POSIX hosts where `pkill` is unavailable, or when the `Start command` is a launcher that exits before the app it spawned. If the app was already running when you checked `Base URL`, leave it running.
+
+7. Output:
 
    ```markdown
    ## Browser Verification Report
