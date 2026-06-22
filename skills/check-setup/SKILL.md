@@ -228,7 +228,7 @@ Verdict:
 
 ### Block 7: Agent Overrides (TOML overlay parsing)
 
-The override injector (`core/agent-override-injector.md`) parses `customization/{agent}.toml`
+The override injector (`../../core/agent-override-injector.md`) parses `customization/{agent}.toml`
 overlays via `python3` — `tomllib` (Python 3.11+ stdlib) or the `tomli` backport on older Pythons.
 If that parser is unavailable, `parse_toml_overlay` returns non-zero, `resolve_overlay` fails, and
 the injector's mandatory guarded assignment (`|| additional_instructions=""`) absorbs the error and
