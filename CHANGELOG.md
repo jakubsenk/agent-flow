@@ -2,6 +2,17 @@
 
 All notable changes to agent-flow will be documented in this file.
 
+## [1.2.0] — 2026-06-24
+
+### Added
+
+- **Browser Verification: `Stop command` optional key** — the `browser-agent` now stops the app it started via `Start command` once reproduction/verification finishes: it runs the configured `Stop command` if set, otherwise falls back to `pkill -f` on the `Start command` pattern (POSIX-only). Set `Stop command` on non-POSIX hosts where `pkill` is unavailable, or when `Start command` is a launcher that exits before the app it spawned (so the pattern no longer matches the running process). If the app was already running when the agent checked `Base URL`, it is left running. Parsed by `core/config-reader.md` as `browser.stop_command`, prompted by `/onboard`, documented in `docs/reference/automation-config.md`, and wired into a new verify-phase cleanup step in `agents/browser-agent.md`. New optional key — no Automation Config contract break.
+- **check-setup: Agent Overrides TOML-overlay validation (Block 7)** — `/check-setup` now detects the silent-drop failure mode where `customization/*.toml` overlays are present but no TOML parser is importable (`python3` missing, or neither `tomllib` (Python 3.11+) nor the `tomli` backport available) — the override injector absorbs the parse error and dispatches agents with the bare prompt, so configured per-agent customizations never apply and nothing surfaces it. When a parser IS available, each overlay is validated end-to-end (syntax + unknown-key) by sourcing `setup-agents/lib/toml-merge.sh` in guarded form. A present-but-unparseable overlay is a `[FAIL]` (counts toward the verdict); a clean project with no overlays is `[SKIP]`. `Browser Verification` and `Agent Overrides` were also added to the Block 1 optional-section format checks. Documented in `docs/guides/toml-overlay-syntax.md`, `installation.md`, and `troubleshooting.md`, and covered by new harness scenarios `tests/scenarios/check-setup-block7-overlay-parser.sh` and `tests/scenarios/guard-block-overlay-source-parity.sh`.
+
+### Fixed
+
+- **Test harness: SIGPIPE-flaky assertions hardened** — every `producer | grep -q` idiom across `tests/scenarios/` (162 occurrences in 88 scenario files) was converted to the new SIGPIPE-safe helpers in `tests/lib/assert.sh` (`contains` / `contains_i` / `matches_re`), or to a here-string `grep -q[iE] … <<< "$var"` for multi-line and line-anchored patterns (which preserves grep's line-oriented semantics). This eliminates the intermittent CI failures where `grep -q` closed the pipe on first match and the upstream producer died with SIGPIPE (141) under `set -o pipefail`. The convention is documented as CONTRIBUTING.md rule 8 and in `tests/README.md` (Windows `HARNESS_JOBS=1` sequential-run notes). No runtime or Automation Config contract change — test infrastructure only.
+
 ## [1.1.0] — 2026-06-17
 
 ### Added
