@@ -98,7 +98,7 @@ You are a [Role] specializing in [domain].
 ## Expertise
 ## Process (numbered steps)
 ## Output Contract (mandatory — structured output schema agents return)
-## Step Completion Invariants (mandatory — fields the orchestrator MUST verify in state.json before considering the stage complete: `dispatched_at` non-null ISO 8601, `dispatch_witness` non-null 64-hex sha256, `tool_uses` ≥ 1, `status="completed"`. Failure → orchestrator returns BLOCKED with reason `completion_invariant_violated:<missing-field>`. Witness verified via `core/lib/stage-invariant.sh::check_dispatch_witness`.)
+## Step Completion Invariants (mandatory — fields the orchestrator MUST verify in state.json before considering the stage complete: `dispatched_at` non-null ISO 8601, `dispatch_witness` non-null 64-hex sha256, `tool_uses` ≥ 1, `status="completed"`. Failure → orchestrator returns BLOCKED with reason `completion_invariant_violated:<missing-field>`. The witness is `sha256("<subagent_type>|<model>|<prompt_head_128>|<overlay_source>|<overlay_digest>")`, so the TOML overlay is bound into the receipt. Witness verified via `core/lib/stage-invariant.sh::check_dispatch_witness` (V1 recompute-and-compare + V2 overlay-presence); strict-by-default — `AGENT_FLOW_STRICT_DISPATCH` is strict unless `== "0"`, and a true mismatch fails the dispatch hook with exit 2.)
 ## Constraints (NEVER rules, limits, failure handling)
 ```
 

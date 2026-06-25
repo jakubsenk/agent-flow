@@ -349,7 +349,11 @@ Additive keys in `state.json`:
 | `analyst_triage.*` | analyst agent (`--phase triage`) | Triage output — severity, area, complexity, AC count, reproduction steps |
 | `analyst_impact.*` | analyst agent (`--phase impact`) | Impact output — affected files list (max 5), root cause area |
 | `mode_flag` | pipeline skill | Active mode: `yolo`, `default`, or `step-mode` |
-| `overlay_source` | skill (pre-dispatch) | `toml`, `md` (legacy), or `none` — provenance of agent customization |
+| `overlay_source` | skill (pre-dispatch) | `toml`, `none`, or `md_rejected` — provenance of agent customization |
+| `overlay_digest` | skill (pre-dispatch) | sha256 of the rendered overlay block when `overlay_source=toml`; the literal `none` or `md_rejected` otherwise |
+| `prompt_head_128` | skill (pre-dispatch) | First 128 bytes of the raw prompt template (pre-substitution); stored so the hook can recompute the witness |
+
+**Overlay-bound dispatch witness.** The `dispatch_witness` is `sha256("<subagent_type>|<model>|<prompt_head_128>|<overlay_source>|<overlay_digest>")`, so the resolved TOML overlay is bound into the receipt — dropping an overlay flips `overlay_source` `toml→none` and `overlay_digest→none`, changing the witness. The dispatch hook (`hooks/validate-dispatch.sh` via `core/lib/stage-invariant.sh::check_dispatch_witness`) verifies in two layers: **V1** recomputes the witness from the stored fields and compares; **V2** checks overlay presence — if `customization/{agent}.toml` exists on disk but `overlay_source != toml`, that is a mismatch (the dropped-overlay gap). Verification is **strict by default**: `AGENT_FLOW_STRICT_DISPATCH` is strict unless explicitly `"0"`, and a true `WITNESS_MISMATCH` exits the hook with code 2 (failing the dispatch).
 
 The dedup logic in `core/state-manager.md` identifies in-progress pipelines by reading `state.json.status`. The analyst agent writes to `state.analyst_triage` and `state.analyst_impact` sub-objects, providing a natural split of triage+impact data.
 

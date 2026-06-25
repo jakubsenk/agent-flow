@@ -133,6 +133,8 @@ With `--no-implement`: Infrastructure Declaration → Scaffolder (with stack fla
 
 Hook integration points (pre-fix, post-fix, pre-publish, post-publish) and pipeline profiles are supported. See [Pipeline Reference](docs/reference/pipelines.md) for full details.
 
+> **Optional dispatch-enforcement hook.** Separately from the pipeline integration-point hooks above, agent-flow ships an opt-in PostToolUse audit hook (`hooks/validate-dispatch.sh`) that records a per-stage dispatch audit to `.agent-flow/dispatch-audit.log`. It is **not** auto-installed — you wire it into `settings.json` manually. This is a different feature from the pre-fix/post-fix/pre-publish/post-publish hooks. See [Dispatch Enforcement](docs/guides/dispatch-enforcement.md) for installation and usage.
+
 ---
 
 ## Skills

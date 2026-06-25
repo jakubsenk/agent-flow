@@ -11,7 +11,7 @@
 # Repo-root resolution works when invoked from tests/scenarios/.
 set -uo pipefail
 
-REPO_ROOT="${CEOS_REPO_ROOT:-$(cd "$(dirname "$0")/../.." && pwd)}"
+REPO_ROOT="${AGENT_FLOW_REPO_ROOT:-$(cd "$(dirname "$0")/../.." && pwd)}"
 LIB="$REPO_ROOT/core/lib/stage-invariant.sh"
 FIXTURE="$REPO_ROOT/tests/fixtures/witness/triage-5ac.json"
 

@@ -65,10 +65,15 @@ detects this and notes it in the audit log.
 | **2** | Non-blocking error. **CANNOT block** — tool already executed. Same handling as exit 1. |
 | **Other** | Non-blocking error. Same handling as exit 1. |
 
-**Advisory mode:** `hooks/validate-dispatch.sh` always exits 0.
-PostToolUse hooks cannot enforce blocking regardless. Future versions
-may graduate to exit 2 to signal advisory violations back to Claude via
-stdout decision control output, but this remains non-blocking at the tool level.
+**Advisory vs strict:** In `hooks/validate-dispatch.sh` the `dispatched_at`
+**presence audit** is always advisory (exit 0). The **dispatch-witness audit**
+is strict by default — it exits 2 when any stage produces `WITNESS_MISMATCH`
+during the pass, unless `AGENT_FLOW_STRICT_DISPATCH=0` makes it advisory too
+(`WITNESS_MISSING` is never exit-2-worthy). Because this is a PostToolUse hook,
+even the strict exit 2 cannot block the tool that already ran (see the table
+above) — it surfaces the mismatch as a transcript signal rather than rolling
+anything back. See `docs/guides/dispatch-enforcement.md` for the audit passes
+and the `AGENT_FLOW_*` environment variables.
 
 ---
 
@@ -77,8 +82,14 @@ stdout decision control output, but this remains non-blocking at the tool level.
 The hook checks exactly these stages (hardcoded, never discovered dynamically):
 
 ```
-triage  code_analysis  fixer_reviewer  test  publisher
+triage  code_analysis  reproduce_browser  fixer_reviewer  smoke_check
+test  e2e_test  browser_verification  acceptance_gate  publisher
 ```
+
+This 10-stage list is the canonical `STAGES` array in
+`hooks/validate-dispatch.sh` and is kept in sync with the skill
+`<stage_allowlist>` blocks and `state/schema.md` → "Applicable stages" by the
+`tests/scenarios/stage-list-consistency.sh` parity check.
 
 ---
 
@@ -98,11 +109,14 @@ current dispatch path.
 
 File: `.agent-flow/dispatch-audit.log` (append-only, plain text)
 
-Each line has exactly three space-separated fields:
+Each stage audit line has exactly three space-separated fields:
 
 ```
-<ISO-8601-timestamp> <stage> <OK|MISSING>
+<ISO-8601-timestamp> <stage> <verdict>
 ```
+
+`<verdict>` is one of the **presence-audit** verdicts (`OK`, `MISSING`) or the
+**witness-audit** verdicts (`WITNESS_OK`, `WITNESS_MISSING`, `WITNESS_MISMATCH`).
 
 Example:
 ```
@@ -111,14 +125,26 @@ Example:
 2026-04-25T14:32:07Z fixer_reviewer MISSING
 2026-04-25T14:32:07Z test OK
 2026-04-25T14:32:07Z publisher OK
+2026-04-25T14:32:07Z triage WITNESS_OK
+2026-04-25T14:32:07Z fixer_reviewer WITNESS_MISMATCH
 ```
 
 `OK` — `dispatched_at` was present in the stage object.
 `MISSING` — `dispatched_at` absent (advisory; pipeline continues).
+`WITNESS_OK` / `WITNESS_MISSING` / `WITNESS_MISMATCH` — dispatch-witness audit
+result (see `docs/guides/dispatch-enforcement.md` for the V1/V2 semantics and
+the strict-by-default exit-2 gate).
 
-Future log readers parse via: `awk '{print $1, $2, $3}'`. This three-field
-format is a stable contract — any future JSON promotion will be an
-additive adapter, not a format replacement.
+In `bypassPermissions` mode the hook also appends a non-stage informational line
+that does **not** follow the three-field shape:
+
+```
+<ISO-8601-timestamp> [INFO] bypassPermissions mode detected -- audit proceeds normally
+```
+
+Future log readers parse stage lines via: `awk '{print $1, $2, $3}'`. This
+three-field format is a stable contract for stage lines — any future JSON
+promotion will be an additive adapter, not a format replacement.
 
 ---
 

@@ -146,6 +146,40 @@ empty (no overlay, or overlay failure absorbed), the base prompt is used unchang
 
 ---
 
+### Step 5 — Compute `overlay_digest` and fold the overlay into the dispatch witness
+
+The overlay is now an INPUT to the per-stage `dispatch_witness` (see `state/schema.md`
+canonicalization — the 5-tuple `<subagent_type>|<model>|<prompt_head_128>|<overlay_source>|
+<overlay_digest>`). Because of that, the injector runs UPSTREAM of witness computation, and
+the orchestrator follows this exact ordering per stage:
+
+1. **Run the Agent Override Injector** (Steps 1–4) → resolves the overlay, yielding
+   `overlay_source` (`toml` | `none` | `md_rejected`) and the rendered Markdown block.
+2. **Compute `overlay_digest`** from the result via
+   `core/lib/stage-invariant.sh::compute_overlay_digest`:
+   - `overlay_source=toml` → `compute_overlay_digest toml "$rendered_block"` → sha256 hex
+     (64 lowercase) of the VERBATIM rendered block (the exact text appended in Step 4).
+   - `overlay_source=none` → literal string `none`.
+   - `overlay_source=md_rejected` → literal string `md_rejected`.
+   `compute_overlay_digest` reuses the same sha256 tool selection as
+   `compute_dispatch_witness` (sha256sum, shasum -a 256 fallback).
+3. **Compute `dispatch_witness`** via
+   `compute_dispatch_witness STAGE SUBAGENT_TYPE MODEL PROMPT_HEAD_128 OVERLAY_SOURCE OVERLAY_DIGEST`
+   — i.e., WITH the `overlay_source` and `overlay_digest` from steps 1–2.
+4. **ONE atomic state.json write** for the stage block: `dispatched_at`,
+   `status:"in_progress"`, `agent_name`, `stage_name`, `prompt_head_128`, `overlay_source`,
+   `overlay_digest`, and `dispatch_witness`.
+5. **Append the rendered overlay block** to the prompt (Step 4 concatenation), then invoke
+   `Task(...)`.
+
+This ordering is a change from the prior design, where the witness was computed before /
+independently of the overlay. The overlay is now strictly upstream: dropping a TOML overlay
+flips `overlay_source` `toml`→`none` AND `overlay_digest`→`none`, which changes the witness so
+the drop is detectable by the hook's V1 recompute (and by V2 overlay-presence when the `.toml`
+is still on disk).
+
+---
+
 ## Output Contract
 
 On every dispatch the injector emits exactly ONE provenance log line via
@@ -170,6 +204,22 @@ once for the `toml`/`md`/`none` branches. The injector adds one explicit
 `log_overlay_provenance` call ONLY on the `md_rejected` short-circuit (where
 `resolve_overlay()` was not called). DO NOT add a second `log_overlay_provenance` call after
 `resolve_overlay()` returns — this would produce duplicate lines.
+
+### `overlay_digest` is emitted and folded into the witness
+
+Beyond the provenance log line, the injector's resolution result feeds two state.json fields
+that the dispatch witness binds:
+
+- **`overlay_source`** — `toml` | `none` | `md_rejected` (unchanged meaning).
+- **`overlay_digest`** (NEW) — produced by
+  `core/lib/stage-invariant.sh::compute_overlay_digest` from the rendered block (see Step 5):
+  64-hex sha256 of the verbatim rendered Markdown for `toml`, else the literal `none` /
+  `md_rejected`.
+
+Both are positional inputs 4 and 5 of the 5-tuple `dispatch_witness`
+(`<subagent_type>|<model>|<prompt_head_128>|<overlay_source>|<overlay_digest>`). The witness
+therefore attests WHICH overlay (by content digest) was applied at dispatch, not merely that
+one was present. See `state/schema.md` for field definitions and the threat-model update.
 
 ---
 

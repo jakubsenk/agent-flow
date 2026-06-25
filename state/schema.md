@@ -398,15 +398,49 @@ Applies to all stages in the hardcoded `STAGES` whitelist (10 entries): `triage`
 
 - **Type:** string (lowercase hex sha256, exactly 64 characters; pattern `^[0-9a-f]{64}$`)
 - **Purpose:** Cryptographic receipt of the Task() dispatch parameters, computed before Task tool invocation. Consumed by PostToolUse hook `hooks/validate-dispatch.sh` via `core/lib/stage-invariant.sh::check_dispatch_witness` for runtime dispatch enforcement audit.
-- **Absence:** field MAY be absent for stages completed in older pipeline runs or for stages legitimately skipped (legitimate skips write `status: "skipped"` separately). The PostToolUse hook treats absence as `WITNESS_MISSING` (audit-log line), NEVER as a pipeline failure unless `CEOS_STRICT_DISPATCH=1` is set (in which case `WITNESS_MISMATCH` - not MISSING - causes exit 2).
-- **Added by:** orchestrator, immediately before Task tool dispatch, in the same atomic state.json write as `dispatched_at`, `agent_name`, `stage_name`, and `status = "in_progress"`.
-- **Canonicalization:** `sha256("<subagent_type>|<model>|<prompt_head_128>")` where:
-  - `subagent_type` = the Task tool's `subagent_type` argument (e.g., `agent-flow:test-engineer`).
+- **Absence:** field MAY be absent for stages completed in older pipeline runs or for stages legitimately skipped (legitimate skips write `status: "skipped"` separately). The PostToolUse hook treats absence as `WITNESS_MISSING` (audit-log line), NEVER as a pipeline failure. By contrast `WITNESS_MISMATCH` (a TRUE inconsistency) causes `exit 2` under the strict-by-default gate — see `AGENT_FLOW_STRICT_DISPATCH` below.
+- **Added by:** orchestrator, immediately before Task tool dispatch, in the same atomic state.json write as `dispatched_at`, `agent_name`, `stage_name`, `prompt_head_128`, `overlay_source`, `overlay_digest`, and `status = "in_progress"`.
+- **Canonicalization (5-tuple):** `sha256("<subagent_type>|<model>|<prompt_head_128>|<overlay_source>|<overlay_digest>")` — five pipe-separated inputs, no trailing newline — where:
+  - `subagent_type` = the Task tool's `subagent_type` argument (e.g., `agent-flow:test-engineer`); equals the stored `agent_name`.
   - `model` = the agent's `model:` frontmatter field (e.g., `sonnet`, `opus`, `haiku`).
   - `prompt_head_128` = the first 128 UTF-8-safe bytes of the prompt template string BEFORE Tier-1 variable substitution (i.e., with `${VAR}` placeholders un-expanded). UTF-8 safety means the truncation boundary aligns with the last whole codepoint within the 128-byte budget.
-- **Stability guarantee:** the witness is stable across resume cycles (the same template renders to the same witness regardless of how many times the stage is resumed).
+  - `overlay_source` = `toml` | `none` | `md_rejected` (the exact value the Agent Override Injector records).
+  - `overlay_digest` = sha256 hex (64 lowercase) of the rendered overlay Markdown block when `overlay_source=toml`, else the literal string `none` / `md_rejected` (see `overlay_digest` field below). Folding the overlay in binds it into the receipt: dropping a TOML overlay flips `overlay_source` `toml`→`none` AND `overlay_digest`→`none`, changing the witness.
+- **Computed by:** `core/lib/stage-invariant.sh::compute_dispatch_witness STAGE SUBAGENT_TYPE MODEL PROMPT_HEAD_128 OVERLAY_SOURCE OVERLAY_DIGEST`. The overlay digest column is produced by `compute_overlay_digest` in the same lib.
+- **Verification (hook):** `check_dispatch_witness STAGE STATE_JSON [OVERRIDE_PATH]` performs **V1** (recompute the 5-tuple sha256 from the STORED stage fields and compare to the stored `dispatch_witness` — mismatch ⇒ `WITNESS_MISMATCH`) AND **V2** (overlay-presence: if `<OVERRIDE_PATH>/<agent-short>.toml` exists on disk but the stage's `overlay_source != toml` ⇒ `WITNESS_MISMATCH`). `OVERRIDE_PATH` defaults to `customization/`.
+- **Stability guarantee:** the witness is stable across resume cycles (the same template + same overlay renders to the same witness regardless of how many times the stage is resumed).
 - **Applicable stages:** `triage`, `code_analysis`, `reproduce_browser`, `fixer_reviewer`, `smoke_check`, `test`, `e2e_test`, `browser_verification`, `acceptance_gate`, `publisher` (the 10-stage STAGES whitelist in `hooks/validate-dispatch.sh:22`).
 - **Schema version impact:** `schema_version` REMAINS `"1.0"`. This field is additive — additive fields do NOT bump schema_version.
+
+#### `stages.{stage}.prompt_head_128`
+
+- **Type:** string (≤128 UTF-8 bytes; verbatim head of the RAW prompt template)
+- **Purpose:** The first 128 UTF-8-safe bytes of the prompt template BEFORE Tier-1 variable substitution. Stored so the PostToolUse hook can RECOMPUTE the witness (V1) jq-free without re-reading the agent prompt files.
+- **Sensitivity:** SAFE TO SERIALIZE — contains NO secrets. Because Tier-1 variables (`ISSUE_ID`, `BRANCH_NAME`, `TICKET_ID`, `EXPECTED_AGENT_NAME`, etc.) are UN-EXPANDED (`${VAR}` placeholders left literal), no secret value can leak into this field. It is the public base-template head, identical to what `compute_dispatch_witness` hashes. (See the Sensitive field exclusion contract reasoning — this field is INCLUDE/public.)
+- **Absence:** field MAY be absent for older runs or legitimately skipped stages. The hook treats a missing required witness input as `WITNESS_MISSING`, NEVER a pipeline failure.
+- **Added by:** orchestrator, in the same atomic state.json write as `dispatch_witness`, immediately before Task() dispatch.
+- **Schema version impact:** `schema_version` REMAINS `"1.0"`. Additive.
+
+#### `stages.{stage}.overlay_source`
+
+- **Type:** string enum — `toml` | `none` | `md_rejected`
+- **Purpose:** The exact overlay-resolution outcome recorded by the Agent Override Injector (`core/agent-override-injector.md`). The 4th input of the `dispatch_witness` 5-tuple.
+- **Values:** `toml` (a `.toml` overlay loaded and merged), `none` (no overlay file for this agent), `md_rejected` (legacy `.md` present but no `.toml` — unsupported, rejected).
+- **Added by:** orchestrator, in the same atomic write as `dispatch_witness`.
+- **Schema version impact:** `schema_version` REMAINS `"1.0"`. Additive.
+
+#### `stages.{stage}.overlay_digest`
+
+- **Type:** string — either a 64-char lowercase sha256 hex (`^[0-9a-f]{64}$`) or the literal `none` / `md_rejected`.
+- **Purpose:** The content digest of the applied overlay; the 5th input of the `dispatch_witness` 5-tuple. Binds WHICH overlay (by content) was applied, not merely that one was present.
+- **Value rules:**
+  - `overlay_source=toml` → sha256 hex (64 lowercase) of the VERBATIM rendered overlay Markdown block (the exact text the injector appends to the prompt).
+  - `overlay_source=none` → literal string `none`.
+  - `overlay_source=md_rejected` → literal string `md_rejected`.
+- **Computed by:** `core/lib/stage-invariant.sh::compute_overlay_digest OVERLAY_SOURCE [RENDERED_BLOCK]` (reuses the same sha256 tool selection as `compute_dispatch_witness`).
+- **Sensitivity:** SAFE TO SERIALIZE — a digest or a fixed literal; no secrets.
+- **Added by:** orchestrator, in the same atomic write as `dispatch_witness`.
+- **Schema version impact:** `schema_version` REMAINS `"1.0"`. Additive.
 
 #### `stages.{stage}.agent_name`
 
@@ -443,13 +477,26 @@ Applies to all stages in the hardcoded `STAGES` whitelist (10 entries): `triage`
 
 #### Threat model (dispatch witness - honest acknowledgment)
 
-The `dispatch_witness` field is a **dispatch RECEIPT, not a cryptographic ATTESTATION**. The threat model is explicit about three properties:
+The `dispatch_witness` field is a **dispatch RECEIPT, not a cryptographic ATTESTATION**. The threat model is explicit about the following properties:
 
-1. **Witness attests "orchestrator WROTE the witness," not "subagent RAN."** All three witness inputs (`subagent_type`, `model`, `prompt_head_128`) are public - anyone with read access to the repo can compute the expected witness. An orchestrator that silently skips Task() can ALSO write the correct witness to state.json with no Task() invocation, producing WITNESS_OK indistinguishable from a real dispatch.
-2. **Defense relies on COMBINATION** of L2 (witness presence) + L1 (thin-controller prose forces the orchestrator's mental model toward the dispatch table) + L4 (terminal surface for residual anomalies). No single layer is sufficient against an adversarial or hallucinating orchestrator.
-3. **Pre-dispatch write + crash window:** if the orchestrator writes both `dispatched_at` and `dispatch_witness` atomically then crashes before Task(), the witness is present but the subagent never ran. Hook reports WITNESS_OK. Resume detection treats `dispatched_at` + `status="in_progress"` as "agent was dispatched but didn't complete" and may resume from the next stage. This is a known limitation; mitigation relies on L1 (thin-controller minimizes the window) and L4 (resumed run will surface the inconsistency in the audit log).
+1. **Witness attests "orchestrator WROTE the witness," not "subagent RAN."** All five witness inputs (`subagent_type`, `model`, `prompt_head_128`, `overlay_source`, `overlay_digest`) are public - anyone with read access to the repo can compute the expected witness. An orchestrator that silently skips Task() can ALSO write the correct witness to state.json with no Task() invocation, producing WITNESS_OK indistinguishable from a real dispatch.
+2. **Witness now BINDS the overlay (closes the documented "overlay invisible to witness" gap).** The 5-tuple folds `overlay_source` + `overlay_digest` into the hash, so the receipt records WHICH overlay (by content digest) was applied. **V1** (recompute-and-compare against the stored inputs) catches witness-field tampering/corruption and any inconsistency between the stored overlay fields and the stored witness.
+3. **V2 closes the dropped-overlay case WHEN the `.toml` is present on disk.** The hook derives the agent short name from `agent_name` and checks `<override_path>/<short>.toml`. If that overlay file EXISTS but the stage recorded `overlay_source != toml`, the hook returns `WITNESS_MISMATCH` — catching an available overlay that was silently not applied/recorded. The hook reads the DEFAULT override path (`customization/`, or `AGENT_FLOW_OVERRIDE_PATH`) only — overlays under a non-default configured path are not re-checked (documented limitation).
+4. **Defense relies on COMBINATION** of L2 (V1 recompute + V2 overlay-presence) + L1 (thin-controller prose forces the orchestrator's mental model toward the dispatch table) + L4 (terminal surface for residual anomalies). No single layer is sufficient against an adversarial or hallucinating orchestrator.
+5. **Residual honest limitation — a consistent liar still passes V1.** An orchestrator that drops the overlay AND records `overlay_source=none` + `overlay_digest=none` AND recomputes the matching witness still passes V1. V2 catches this ONLY if the `.toml` file exists at the default override path; if the overlay file is absent (or under a non-default path), the lie is undetectable. This is the **receipt-not-attestation** residual: the witness proves consistency of recorded inputs, not faithful execution.
+6. **Pre-dispatch write + crash window:** if the orchestrator writes the atomic state.json block (including `dispatch_witness`) then crashes before Task(), the witness is present but the subagent never ran. Hook reports WITNESS_OK. Resume detection treats `dispatched_at` + `status="in_progress"` as "agent was dispatched but didn't complete" and may resume from the next stage. This is a known limitation; mitigation relies on L1 (thin-controller minimizes the window) and L4 (resumed run will surface the inconsistency in the audit log).
 
 Future hardening (deferred): a post-dispatch witness-confirmation written by the subagent (rather than by the orchestrator) would attest subagent execution. The current design explicitly accepts the receipt-not-attestation tradeoff.
+
+#### Strict-by-default enforcement (`AGENT_FLOW_STRICT_DISPATCH`)
+
+The PostToolUse hook `hooks/validate-dispatch.sh` enforces the witness audit **strict by default**:
+
+- **Strict ON (default):** `AGENT_FLOW_STRICT_DISPATCH` is unset OR set to any value other than `"0"`. Any stage producing `WITNESS_MISMATCH` (a TRUE V1 or V2 inconsistency) causes the hook to `exit 2`.
+- **Advisory:** `AGENT_FLOW_STRICT_DISPATCH="0"` (explicit opt-out). The hook always `exit 0`; mismatches are recorded to the audit log only.
+- `WITNESS_MISSING` NEVER triggers `exit 2` in either mode — legitimately skipped stages (`status:"skipped"`) and older runs lacking witness inputs produce MISSING, which must not fail the pipeline.
+
+This replaces the prior opt-IN `CEOS_STRICT_DISPATCH=1` semantics (clean break — no backward-compatible fallback). Related renamed env vars: `AGENT_FLOW_AUDIT_LOG`, `AGENT_FLOW_STATE_JSON`, `AGENT_FLOW_OVERRIDE_PATH`.
 
 **Witness compatibility on prompt edits:** witness changes are EXPECTED on prompt template edits and are NOT a contract violation. Harness fixtures (`tests/fixtures/witness/state-*.json`) MUST be refreshed alongside any prompt-template change.
 

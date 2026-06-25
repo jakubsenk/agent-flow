@@ -1,137 +1,117 @@
 #!/usr/bin/env bash
 # hooks/validate-dispatch.sh
-# PostToolUse advisory hook: dispatched_at presence audit.
+# PostToolUse hook: dispatched_at presence audit + dispatch-witness audit
+# (V1 recompute-and-compare + V2 overlay-presence).
 #
-# Invoked automatically by Claude Code after each tool use.
-# Reads state.json, checks whether each pipeline stage has a dispatched_at
-# timestamp, and appends one audit-log line per stage to dispatch-audit.log.
+# Invoked automatically by Claude Code after a tool use. Reads state.json once,
+# audits every pipeline stage, and appends one audit line per stage per audit to
+# .agent-flow/dispatch-audit.log.
 #
-# EXIT: always 0 (advisory-only; PostToolUse cannot block tool execution).
+# Implemented as a single Python process. Python 3 is a hard requirement of
+# agent-flow, so there is no bash fallback: the legacy grep/sed/sha256sum loops
+# spawned ~400 subprocesses per invocation (~36s on Git-Bash/Windows) AND the
+# field reader truncated prompt_head_128 at the first `}` / `,` / `"`, which made
+# V1 falsely mismatch any prompt template containing a `{placeholder}` in its
+# first 128 bytes. json.load reads the field exactly (and un-escapes it), fixing
+# both problems in one pass.
+#
+# EXIT: 0 normally. STRICT-BY-DEFAULT for the witness audit: exit 2 when any
+#       stage produces WITNESS_MISMATCH, unless AGENT_FLOW_STRICT_DISPATCH="0".
+#       The dispatched_at presence audit is always advisory.
 # LOG:  .agent-flow/dispatch-audit.log (append-only, plain text).
 #
+# Env vars (clean-break AGENT_FLOW_ prefix):
+#   - AGENT_FLOW_STRICT_DISPATCH : strict ON unless == "0" (advisory)
+#   - AGENT_FLOW_AUDIT_LOG       : audit-log path override
+#   - AGENT_FLOW_STATE_JSON      : state.json path override
+#   - AGENT_FLOW_OVERRIDE_PATH   : overlay override dir for V2 (default customization/)
+#
 # Security contracts:
-#   - STAGES are hardcoded; never derived from state.json field names
-#   - All jq calls redirect stderr to /dev/null
-#   - jq -e used for boolean branching
+#   - STAGES are hardcoded; never derived from state.json field names.
+#   - state.json is parsed, never eval'd.
+set -uo pipefail
 
-set -uo pipefail   # NOT -e: script must not exit on jq miss
-
-# ---------------------------------------------------------------------------
-# Hardcoded STAGES whitelist (no dynamic discovery)
-# ---------------------------------------------------------------------------
-STAGES=(triage code_analysis reproduce_browser fixer_reviewer smoke_check test e2e_test browser_verification acceptance_gate publisher)
-
-# ---------------------------------------------------------------------------
-# Source core/lib/stage-invariant.sh for dispatch witness audit.
-# Resolves plugin-relative or repo-relative; silent no-op if not found.
-# ---------------------------------------------------------------------------
-STAGE_LIB="${CLAUDE_PLUGIN_DIR:-$(dirname "$0")/..}/core/lib/stage-invariant.sh"
-if [ -f "$STAGE_LIB" ]; then
-  # shellcheck source=/dev/null
-  source "$STAGE_LIB"  # source core/lib/stage-invariant.sh
-fi
-
-# ---------------------------------------------------------------------------
-# Resolve ISO timestamp via redirect+read (avoids command substitution).
-# ---------------------------------------------------------------------------
-_HOOK_TMPDIR="${TMPDIR:-/tmp}"
-_TS_TMP="${_HOOK_TMPDIR}/.ceos_hook_ts_$$"
-ISO_TS="unknown"
-date -u '+%Y-%m-%dT%H:%M:%SZ' > "$_TS_TMP" 2>/dev/null || true
-IFS= read -r ISO_TS < "$_TS_TMP" 2>/dev/null || true
-rm -f "$_TS_TMP" 2>/dev/null || true
-
-# ---------------------------------------------------------------------------
-# Resolve audit log and state.json paths.
-# ---------------------------------------------------------------------------
-AUDIT_LOG="${CEOS_AUDIT_LOG:-.agent-flow/dispatch-audit.log}"
-STATE_JSON="${CEOS_STATE_JSON:-}"
-
-if [ -z "$STATE_JSON" ]; then
-  latest=""
-  for candidate in .agent-flow/*/state.json; do
-    [ -f "$candidate" ] || continue
-    latest="$candidate"
-  done
-  STATE_JSON="$latest"
-fi
-
-# ---------------------------------------------------------------------------
-# Detect bypassPermissions mode from stdin JSON (non-blocking read).
-# ---------------------------------------------------------------------------
-BYPASS_MODE=0
-if [ ! -t 0 ]; then
-  stdin_json=""
-  IFS= read -r -t 1 stdin_json 2>/dev/null || true
-  if [ -n "$stdin_json" ]; then
-    _PM_TMP="${_HOOK_TMPDIR}/.ceos_hook_pm_$$"
-    printf '%s' "$stdin_json" | jq -r '.permission_mode // empty' > "$_PM_TMP" 2>/dev/null || true
-    perm_mode=""
-    IFS= read -r perm_mode < "$_PM_TMP" 2>/dev/null || true
-    rm -f "$_PM_TMP" 2>/dev/null || true
-    if [ "$perm_mode" = "bypassPermissions" ]; then
-      BYPASS_MODE=1
-    fi
-  fi
-fi
-
-# ---------------------------------------------------------------------------
-# If no state.json found, not a pipeline run -- exit cleanly.
-# ---------------------------------------------------------------------------
-if [ -z "$STATE_JSON" ] || [ ! -f "$STATE_JSON" ]; then
+PYBIN="$(command -v python3 || command -v python || true)"
+if [ -z "$PYBIN" ]; then
+  echo "validate-dispatch: python3 not found (required by agent-flow); skipping audit" >&2
   exit 0
 fi
 
-# ---------------------------------------------------------------------------
-# Ensure audit log directory exists.
-# ---------------------------------------------------------------------------
-audit_dir="${AUDIT_LOG%/*}"
-if [ "$audit_dir" != "$AUDIT_LOG" ] && [ -n "$audit_dir" ]; then
-  mkdir -p "$audit_dir" 2>/dev/null || true
-fi
+exec "$PYBIN" - <<'PY'
+import sys, os, json, glob, hashlib, datetime
 
-# ---------------------------------------------------------------------------
-# Note bypass mode in audit log.
-# ---------------------------------------------------------------------------
-if [ "$BYPASS_MODE" = "1" ]; then
-  printf '%s [INFO] bypassPermissions mode detected -- audit proceeds normally\n' "$ISO_TS" >> "$AUDIT_LOG" 2>/dev/null || true
-fi
+# Hardcoded stage whitelist (no dynamic discovery from state.json).
+STAGES = ["triage", "code_analysis", "reproduce_browser", "fixer_reviewer",
+          "smoke_check", "test", "e2e_test", "browser_verification",
+          "acceptance_gate", "publisher"]
+WITNESS_FIELDS = ("agent_name", "model", "prompt_head_128", "overlay_source", "overlay_digest")
+HEX = set("0123456789abcdef")
 
-# ---------------------------------------------------------------------------
-# Check each stage for dispatched_at presence.
-# STAGES array is hardcoded; stage names are never user-controlled.
-# Bash-only grep probe (DP1): strict regex rejects null literal AND
-# stringified-null ("null") — only matches when value starts with a digit
-# (i.e., a valid ISO timestamp like "2026-04-30T12:00:00Z").
-# Assumes pretty-printed (2-space indent) state.json per A-5.
-# ---------------------------------------------------------------------------
-for stage in "${STAGES[@]}"; do
-  verdict="MISSING"
-  if grep -A 4 "\"${stage}\"" "$STATE_JSON" 2>/dev/null | grep -qE '"dispatched_at"[[:space:]]*:[[:space:]]*"[0-9]'; then
-    verdict="OK"
-  fi
-  printf '%s %s %s\n' "$ISO_TS" "$stage" "$verdict" >> "$AUDIT_LOG" 2>/dev/null || true
-done
+# --- resolve state.json (explicit override, else latest .agent-flow/*/state.json) ---
+state_json = os.environ.get("AGENT_FLOW_STATE_JSON") or ""
+if not state_json:
+    cands = sorted(glob.glob(os.path.join(".agent-flow", "*", "state.json")))
+    state_json = cands[-1] if cands else ""
+if not state_json or not os.path.isfile(state_json):
+    sys.exit(0)  # not a pipeline run
 
-# ---------------------------------------------------------------------------
-# Dispatch-witness audit loop.
-# Emits one WITNESS_OK / WITNESS_MISSING / WITNESS_MISMATCH line per stage.
-# Strict mode: CEOS_STRICT_DISPATCH=1 causes exit 2 on MISMATCH.
-# MISSING is NEVER exit-2-worthy (legitimate skips produce MISSING).
-# ---------------------------------------------------------------------------
-if declare -F check_dispatch_witness >/dev/null 2>&1; then
-  for stage in "${STAGES[@]}"; do
-    w_verdict="$(check_dispatch_witness "$stage" "$STATE_JSON" 2>/dev/null || true)"
-    [ -n "$w_verdict" ] || w_verdict="WITNESS_MISSING"
-    emit_witness_audit "$stage" "$w_verdict" "$AUDIT_LOG"
-  done
+try:
+    with open(state_json, encoding="utf-8") as f:
+        stages = (json.load(f) or {}).get("stages", {}) or {}
+except Exception:
+    sys.exit(0)  # unreadable / invalid JSON -> behave like "no run", never block
 
-  if [ "${CEOS_STRICT_DISPATCH:-0}" = "1" ]; then
-    if grep -qE ' WITNESS_MISMATCH$' "$AUDIT_LOG" 2>/dev/null; then
-      exit 2
-    fi
-  fi
-fi
+audit_log     = os.environ.get("AGENT_FLOW_AUDIT_LOG", os.path.join(".agent-flow", "dispatch-audit.log"))
+override_path = os.environ.get("AGENT_FLOW_OVERRIDE_PATH", "customization/")
+strict        = os.environ.get("AGENT_FLOW_STRICT_DISPATCH", "") != "0"
+ts            = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+lines         = []
 
-# Exit 0 ALWAYS -- advisory mode.
-exit 0
+# --- Sweep 1: dispatched_at presence (value must start with a digit = ISO ts) ---
+for st in STAGES:
+    da = str((stages.get(st) or {}).get("dispatched_at") or "")
+    lines.append(f"{ts} {st} {'OK' if da[:1].isdigit() else 'MISSING'}")
+
+# --- Sweep 2: dispatch-witness audit (V1 recompute + V2 overlay-presence) ---
+# Precedence mirrors core/lib/stage-invariant.sh::check_dispatch_witness:
+#   skipped stage / missing required input -> WITNESS_MISSING (never a mismatch)
+#   malformed stored witness, V1 mismatch, or V2 overlay-not-applied -> WITNESS_MISMATCH
+saw_mismatch = False
+for st in STAGES:
+    s = stages.get(st) or {}
+    verdict = "WITNESS_MISSING"
+    if s.get("status") != "skipped":
+        vals = {k: s.get(k) for k in ("dispatch_witness",) + WITNESS_FIELDS}
+        if all(vals[k] not in (None, "") for k in vals):
+            stored = str(vals["dispatch_witness"])
+            if len(stored) == 64 and set(stored) <= HEX:
+                # V1: recompute sha256 over the stored 5-tuple and compare.
+                canon = "|".join(str(vals[k]) for k in WITNESS_FIELDS)
+                if hashlib.sha256(canon.encode("utf-8")).hexdigest() == stored:
+                    # V2: an available overlay must have been applied/recorded.
+                    short = str(vals["agent_name"]).rsplit(":", 1)[-1]
+                    toml  = os.path.join(override_path, short + ".toml")
+                    if os.path.isfile(toml) and vals["overlay_source"] != "toml":
+                        verdict = "WITNESS_MISMATCH"
+                    else:
+                        verdict = "WITNESS_OK"
+                else:
+                    verdict = "WITNESS_MISMATCH"
+            else:
+                verdict = "WITNESS_MISMATCH"  # malformed stored witness
+    if verdict == "WITNESS_MISMATCH":
+        saw_mismatch = True
+    lines.append(f"{ts} {st} {verdict}")
+
+# --- append audit lines (best-effort; never fail the tool on a log write error) ---
+try:
+    d = os.path.dirname(audit_log)
+    if d:
+        os.makedirs(d, exist_ok=True)
+    with open(audit_log, "a", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
+except Exception:
+    pass
+
+sys.exit(2 if (strict and saw_mismatch) else 0)
+PY

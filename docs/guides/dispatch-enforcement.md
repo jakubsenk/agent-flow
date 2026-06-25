@@ -19,16 +19,31 @@ Concretely, the hook:
 
 1. Fires on every PostToolUse event (after any tool completes).
 2. Locates the current pipeline's `state.json` under `.agent-flow/`.
-3. Checks each stage in the hardcoded `STAGES` whitelist
-   (`triage`, `code_analysis`, `fixer_reviewer`, `test`, `publisher`)
-   for presence of `dispatched_at`.
-4. Appends one audit-log line per stage to `.agent-flow/dispatch-audit.log`.
-5. Always exits 0 — **advisory-only, never blocking**.
+3. Runs two audit passes over the hardcoded `STAGES` whitelist —
+   `triage`, `code_analysis`, `reproduce_browser`, `fixer_reviewer`,
+   `smoke_check`, `test`, `e2e_test`, `browser_verification`,
+   `acceptance_gate`, `publisher` (10 stages):
+   - **Presence audit** — checks each stage for a `dispatched_at` timestamp and
+     emits one `OK` / `MISSING` line per stage.
+   - **Dispatch-witness audit** — when `core/lib/stage-invariant.sh` is sourced
+     (plugin-relative or repo-relative), runs `check_dispatch_witness` per stage
+     and emits one `WITNESS_OK` / `WITNESS_MISSING` / `WITNESS_MISMATCH` line per
+     stage. V1 recomputes `sha256(agent_name|model|prompt_head_128|overlay_source|overlay_digest)`
+     from the stored stage fields and compares it to the stored `dispatch_witness`;
+     V2 checks overlay-presence (an available `<override>/<agent>.toml` that the
+     stage did not record as `overlay_source: toml`).
+4. Appends those audit lines to `.agent-flow/dispatch-audit.log`.
+5. Exit code: the **presence audit is always advisory (exit 0)**. The
+   **witness audit is strict by default** — it exits 2 when any stage produces
+   `WITNESS_MISMATCH` during the pass, unless `AGENT_FLOW_STRICT_DISPATCH=0`
+   makes it advisory too.
 
-The hook is intentionally non-blocking. PostToolUse hooks cannot undo a tool
-that already executed, and exit 2 has no special semantics here (see
-`docs/reference/hooks.md`). Blocking mode (exit 2 enforcement) is deferred to
-a future release.
+Even under strict mode the exit 2 is non-blocking in practice: PostToolUse hooks
+fire *after* the tool has already executed, so exit 2 cannot undo it (see
+`docs/reference/hooks.md` → Exit code semantics). The strict gate surfaces the
+mismatch as a signal in the transcript; it does not roll back the pipeline.
+`WITNESS_MISSING` is never strict-fatal — legitimately skipped stages and stages
+with absent witness inputs produce `MISSING`, not `MISMATCH`.
 
 ---
 
@@ -59,8 +74,34 @@ to `~/.claude/settings.json`.
 ```
 
 Replace `/path/to/agent-flow/` with the absolute path to your plugin
-installation directory. On most systems this is something like:
-`~/.claude/plugins/agent-flow/hooks/validate-dispatch.sh`.
+installation directory.
+
+> **⚠️ The plugin path is version-pinned — do not hardcode it blindly.**
+> Installed plugins live under a version-stamped cache directory, e.g.:
+>
+> ```
+> ~/.claude/plugins/cache/agent-flow/agent-flow/<version>/hooks/validate-dispatch.sh
+> ```
+>
+> The `<version>` segment changes on every plugin upgrade, so an absolute path
+> pinned to one version **silently stops resolving** after an update — the file
+> at the old path no longer exists.
+>
+> **Find the current path** before pasting it into `settings.json`:
+>
+> ```bash
+> # list every installed version's hook…
+> ls -d ~/.claude/plugins/cache/agent-flow/agent-flow/*/hooks/validate-dispatch.sh
+> # …or resolve the newest one:
+> ls -d ~/.claude/plugins/cache/agent-flow/agent-flow/*/hooks/validate-dispatch.sh | sort | tail -1
+> ```
+>
+> **A wrong path produces no error signal.** The hook fails open: PostToolUse
+> hooks are non-blocking, so Claude Code treats an unresolvable hook command as
+> a silent no-op — the audit never runs and `.agent-flow/dispatch-audit.log` is
+> never written, with nothing reported. Re-check the path after every plugin
+> upgrade, and run `/agent-flow:check-setup` to confirm the wiring is still
+> detected.
 
 ### Recommended scope
 
@@ -73,7 +114,8 @@ project root.
 
 ## Expected output
 
-A passing audit run produces lines like:
+Each invocation appends two groups of lines. The **presence audit** emits one
+`OK` / `MISSING` line per stage:
 
 ```
 2026-04-25T14:32:07Z triage OK
@@ -92,6 +134,44 @@ version, or the dispatching step was skipped.
 ```
 
 `MISSING` is advisory — pipelines continue normally regardless.
+
+The **witness audit** then emits one `WITNESS_*` line per stage:
+
+```
+2026-04-25T14:32:07Z triage WITNESS_OK
+2026-04-25T14:32:07Z code_analysis WITNESS_MISSING
+2026-04-25T14:32:07Z fixer_reviewer WITNESS_MISMATCH
+```
+
+- `WITNESS_OK` — V1 recompute matches the stored `dispatch_witness` **and** V2
+  finds no unapplied overlay.
+- `WITNESS_MISSING` — a required witness input is absent/null, the stage was
+  legitimately skipped (`status: "skipped"`), or no sha256 tool is available.
+  Never strict-fatal.
+- `WITNESS_MISMATCH` — V1 recompute ≠ stored witness, the stored witness is
+  malformed, or V2 detects an available `<override>/<agent>.toml` overlay that
+  the stage did not record (`overlay_source != toml`). Under strict mode
+  (the default) a single `WITNESS_MISMATCH` makes the hook exit 2.
+
+When `bypassPermissions` mode is detected (autopilot child subprocesses), an
+extra informational line is also appended:
+
+```
+2026-04-25T14:32:07Z [INFO] bypassPermissions mode detected -- audit proceeds normally
+```
+
+---
+
+## Environment variables
+
+The hook reads these (clean-break `AGENT_FLOW_` prefix):
+
+| Variable | Effect |
+|----------|--------|
+| `AGENT_FLOW_STRICT_DISPATCH` | Witness audit is strict (exit 2 on `WITNESS_MISMATCH`) unless set to `0` (advisory). The presence audit is always advisory regardless. |
+| `AGENT_FLOW_AUDIT_LOG` | Override the audit-log path (default `.agent-flow/dispatch-audit.log`). |
+| `AGENT_FLOW_STATE_JSON` | Override the `state.json` path (default: newest `.agent-flow/*/state.json`). |
+| `AGENT_FLOW_OVERRIDE_PATH` | Overlay override dir used by the V2 overlay-presence check (default `customization/`). The hook reads the default location only — a documented limitation. |
 
 ---
 
