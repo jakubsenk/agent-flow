@@ -308,7 +308,9 @@ def main():
         return 0
     if decision == wk.DECISION_UNVERIFIABLE:
         return deny("WITNESS_UNVERIFIABLE: key absent on a progressed run "
-                    "(>=1 completed stage or non-empty ledger; never regenerate)")
+                    "(>=1 completed stage or non-empty ledger; never regenerate). "
+                    "Recovery: see the key-loss runbook in state/schema.md "
+                    "(operator-explicit reset, NOT auto-regen).")
     if decision == wk.DECISION_GENERATE:
         try:
             keyhex = wk.generate_key(key_path)   # genuine first intercept (row i)
@@ -326,7 +328,10 @@ def main():
     claim_subagent = str(claim.get("subagent_type") or claim.get("agent_name") or "")
     claim_model    = str(claim.get("model") or "")
     overlay_source = str(claim.get("overlay_source") or "")
-    overlay_digest = str(claim.get("overlay_digest") or "")
+    # overlay_digest is NOT a claim field on keyed runs (S2 fix): the gate
+    # computes it from the on-disk .toml and SIGNS it as ground truth (same model
+    # as prompt_head_128). There is NO producer-claim-vs-gate digest compare —
+    # that compare was a Windows/CRLF false-DENY surface (REQ-031/A5).
 
     # subagent_type: full namespace-prefixed identity, compared byte-for-byte.
     if observed_subagent != claim_subagent:
@@ -357,23 +362,25 @@ def main():
         return deny("WITNESS_MISMATCH: tool_input.model (%s) != resolved model (%s)"
                     % (ti_model, resolved_model))
 
-    # overlay digest: when overlay_source == toml, recompute from the RAW
-    # LF-normalized override_path/<short>.toml bytes (read once) and COMPARE to
-    # the committed digest (REQ-031/A5). A forged override_path escaping the
-    # allowlist, an absent .toml, or a one-byte body edit -> DENY (the gate signs
-    # its own recomputed digest, so the witness binds the on-disk overlay).
-    overlay_digest_for_canon = overlay_digest
+    # overlay digest: GATE-COMPUTED GROUND TRUTH (S2 fix, REQ-031/A5). When
+    # overlay_source == toml the gate recomputes the digest from the RAW
+    # LF-normalized override_path/<short>.toml bytes (read once) and SIGNS that
+    # value as ground truth — it is NEVER compared against an orchestrator claim
+    # (the producer no longer commits overlay_digest, so an LF/CRLF-naive producer
+    # digest can no longer false-DENY every overlay dispatch on Windows). The only
+    # pre-dispatch overlay check is STRUCTURAL: a forged override_path escaping the
+    # allowlist, or overlay_source=toml with the .toml absent/unreadable -> DENY. A
+    # post-dispatch edit of the .toml is caught by the PostToolUse audit, which
+    # re-verifies the SIGNED ledger digest against the on-disk file. For
+    # none/md_rejected the signed value is the literal source token.
     if overlay_source == "toml":
         ov_status, ov_val = wo.recompute_overlay_digest(
             override_path, short, project_root=proot)
-        if ov_status == wo.OVERLAY_DENY:
+        if ov_status in (wo.OVERLAY_DENY, wo.OVERLAY_MISMATCH):
             return deny("WITNESS_MISMATCH: " + ov_val)
-        if ov_status == wo.OVERLAY_MISMATCH:
-            return deny("WITNESS_MISMATCH: " + ov_val)
-        if ov_val != overlay_digest:
-            return deny("WITNESS_MISMATCH: overlay_digest recomputed (%s) != claim (%s)"
-                        % (ov_val, overlay_digest))
         overlay_digest_for_canon = ov_val
+    else:
+        overlay_digest_for_canon = overlay_source
 
     # 3d. Observe-and-sign the prompt head as GROUND TRUTH (REQ-003/REQ-051):
     #     NOT compared against any orchestrator claim.

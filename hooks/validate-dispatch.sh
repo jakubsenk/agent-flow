@@ -211,9 +211,20 @@ def keyed_verdict(s, st):
         str(e.get("run_id") or ""), str(e.get("claim_nonce") or ""))
     # Key-file presence is the authority: a legacy-shape / stripped-alg tag fails
     # the HMAC recompute -> MISMATCH (never a silent legacy-sha256 downgrade).
-    if str(e.get("tag") or "") == wc.tag(keyhex, c):
-        return "WITNESS_OK"
-    return "WITNESS_MISMATCH"
+    if str(e.get("tag") or "") != wc.tag(keyhex, c):
+        return "WITNESS_MISMATCH"
+    # A5 ground-truth re-verify (S2 fix, REQ-031): the gate-SIGNED overlay_digest
+    # (from the ledger) vs the on-disk .toml at PostToolUse, LF-normalized. A .toml
+    # edited AFTER the gate read+signed it -> recompute != signed digest ->
+    # WITNESS_MISMATCH. NO producer claim digest is involved; the signed ledger
+    # value is the only ground truth compared against the live file.
+    if str(e.get("overlay_source") or "") == "toml":
+        eshort = str(e.get("subagent_type") or "").rsplit(":", 1)[-1]
+        ovp = str(s.get("override_path") or "") or override_path
+        ov_status, ov_val = wo.recompute_overlay_digest(ovp, eshort, project_root=os.getcwd())
+        if ov_status != wo.OVERLAY_OK or ov_val != str(e.get("overlay_digest") or ""):
+            return "WITNESS_MISMATCH"
+    return "WITNESS_OK"
 
 
 # --- Sweep 1: dispatched_at presence (value must start with a digit = ISO ts) ---

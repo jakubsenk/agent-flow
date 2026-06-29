@@ -79,16 +79,16 @@ compute_dispatch_witness() {
 }
 
 # -----------------------------------------------------------------------------
-# compute_overlay_digest OVERLAY_SOURCE [RENDERED_BLOCK]
-#   Produce the overlay_digest column value used as the 5th witness input.
-#     - OVERLAY_SOURCE=toml         -> sha256 hex (64 lc) of RENDERED_BLOCK
-#                                      (the verbatim Markdown the injector
-#                                      appends to the prompt). RENDERED_BLOCK
-#                                      is hashed exactly as given, no trailing
-#                                      newline added.
+# compute_overlay_digest OVERLAY_SOURCE [RENDERED_BLOCK]   (LEGACY v1.0 ONLY)
+#   Produce the LEGACY v1.0 overlay_digest column (5th sha256 witness input).
+#   NOT the keyed-witness authority: on keyed (schema 2.0) runs the gate computes
+#   and SIGNS the overlay digest from the RAW LF-normalized .toml bytes via
+#   hooks/lib/witness_overlay.py::recompute_overlay_digest (the ONE LF-normalizing
+#   authority). This helper hashes the RENDERED_BLOCK as-given (no LF-normalize),
+#   so it is never on any keyed producer-vs-gate compared path (S2 fix).
+#     - OVERLAY_SOURCE=toml         -> sha256 hex (64 lc) of RENDERED_BLOCK.
 #     - OVERLAY_SOURCE=none         -> literal string `none`.
 #     - OVERLAY_SOURCE=md_rejected  -> literal string `md_rejected`.
-#   Reuses the same sha256 tool selection as compute_dispatch_witness.
 #   Returns 0 on success, non-zero on no sha256 tool (toml path only).
 # -----------------------------------------------------------------------------
 compute_overlay_digest() {

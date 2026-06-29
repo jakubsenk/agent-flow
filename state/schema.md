@@ -455,16 +455,24 @@ Applies to all stages in the hardcoded `STAGES` whitelist (10 entries): `triage`
 
 #### `stages.{stage}.overlay_digest`
 
+> **v2.0 (keyed runs):** `overlay_digest` is **NOT** an orchestrator-committed/compared CLAIM
+> field — it is **gate-observed ground truth** (the same model as `prompt_head_128`). The
+> PreToolUse gate recomputes the digest from the on-disk `.toml` (LF-normalized) and SIGNS it into
+> the ledger; the orchestrator never writes it, so an LF/CRLF-naive producer digest cannot
+> false-DENY an overlay dispatch on Windows. There is **no producer-claim-vs-gate digest compare**;
+> a `.toml` edited after the gate signs is caught by the PostToolUse audit re-verifying the SIGNED
+> ledger digest against the live file (REQ-031/A5). The v1.0 stored value below is keyless-only.
+
 - **Type:** string — either a 64-char lowercase sha256 hex (`^[0-9a-f]{64}$`) or the literal `none` / `md_rejected`.
-- **Purpose:** The content digest of the applied overlay; the 5th input of the `dispatch_witness` 5-tuple. Binds WHICH overlay (by content) was applied, not merely that one was present.
+- **Purpose:** The content digest of the applied overlay. Records WHICH overlay (by content) was applied, not merely that one was present. On v2.0 it is signed by the gate into the ledger; on v1.0 it is the 5th input of the stored `dispatch_witness` 5-tuple.
 - **Value rules:**
   - `overlay_source=toml` → **v2.0:** sha256 hex (64 lowercase) of the **RAW, LF-normalized `.toml` file bytes** at `override_path/<short>.toml` (read once, hashed from the held bytes — no renderer coupling), REQ-031. **v1.0 (legacy):** sha256 of the VERBATIM rendered overlay Markdown block.
   - `overlay_source=none` → literal string `none`.
   - `overlay_source=md_rejected` → literal string `md_rejected`.
-- **Computed by:** v2.0 — the gate via `hooks/lib/witness_overlay.py::recompute_overlay_digest` (RAW `.toml` bytes); v1.0 — `core/lib/stage-invariant.sh::compute_overlay_digest OVERLAY_SOURCE [RENDERED_BLOCK]`.
+- **Computed by:** v2.0 — the gate via `hooks/lib/witness_overlay.py::recompute_overlay_digest` (RAW `.toml` bytes), signed into the ledger; v1.0 — `core/lib/stage-invariant.sh::compute_overlay_digest OVERLAY_SOURCE [RENDERED_BLOCK]` (LEGACY helper only).
 - **Sensitivity:** SAFE TO SERIALIZE — a digest or a fixed literal; no secrets.
-- **Added by:** orchestrator, in the same atomic write as the CLAIM.
-- **Schema version impact:** `"2.0"` on keyed runs; legacy keyless runs remain `"1.0"`.
+- **Added by:** v2.0 — the gate (signed into the ledger, NOT state.json); v1.0 — orchestrator, in the same atomic write as the legacy witness.
+- **Schema version impact:** `"2.0"` keyed runs sign it in the ledger; legacy keyless runs remain `"1.0"` and store it in state.json.
 
 #### `stages.{stage}.override_path` (v2.0)
 
@@ -544,6 +552,17 @@ The keyed dispatch witness is a signed RECEIPT of a dispatch's reproducible inpu
 **Role separation.** The gate is a **separate verifier role, same trust domain** — a genuinely distinct process and code path, but the same OS principal reading the same secret. The witness is therefore a checkable receipt, not a cross-domain proof.
 
 **Audit log.** The PostToolUse audit (`hooks/validate-dispatch.sh`) writes a **best-effort append-only audit log** at `.agent-flow/dispatch-audit.log` (override `AGENT_FLOW_AUDIT_LOG`); it records `<ISO-ts> <stage> <verdict>` lines only — never the key, an HMAC tag, or a preimage. A plain append is **NOT tamper-evident** against the same-OS-user actor above (a co-signed hash-chained ledger is deferred to a follow-up MINOR). The audit re-verifies the gate's signature and **cannot block** (it runs after the tool — finding A8); only the PreToolUse gate blocks.
+
+#### Key-loss recovery (operator runbook)
+
+A keyed run binds its ledger to the per-run secret `.agent-flow/{RUN-ID}/dispatch.key`. If that key disappears on a **progressed** run (≥1 completed stage OR a non-empty ledger) — whether by a benign `rm -rf .agent-flow` between CI steps, a clean checkout, a `TMPDIR` reaper, a partial stash, or an adversarial disarm attempt — the gate and audit are **fail-closed by design**: every subsequent `Task` resolves to `WITNESS_UNVERIFIABLE` (the gate DENYs + `exit 2` under strict). This is intentional: **the gate NEVER silently regenerates the key on a progressed run** — auto-regen would re-open the `f-c570b4` ledger-truncation forge, because a fresh key would re-sign an attacker-supplied state. A benign loss and a disarm attack are indistinguishable from inside the run, so both are treated as the worst case.
+
+Recovery is therefore an **explicit operator action**, never automatic. An operator who knows the loss is benign chooses one of:
+
+1. **Rebaseline with a fresh keyed run (recommended).** Archive or remove the affected run directory (`.agent-flow/{RUN-ID}/`) and re-run the pipeline for the issue. A genuinely fresh run — key absent + **zero** completed stages + empty ledger — hits the forge-resistant bootstrap (`hooks/lib/witness_key.py::decide` → `GENERATE`): the gate mints a new `0600 dispatch.key` once and signs from a clean baseline. This **rebaselines** the witness (the archived run's prior signatures are discarded), which is safe precisely because it is a conscious operator reset, not a silent in-place regen an attacker could trigger.
+2. **Unblock advisory-only meanwhile.** Set `AGENT_FLOW_STRICT_DISPATCH=0` (or drop a `STRICT_DISPATCH_OFF` flag file) to downgrade the gate/audit to advisory so work can continue; the `WITNESS_UNVERIFIABLE` verdict is still recorded to the audit log. This **disarms the witness** for the run and is a temporary measure only.
+
+What recovery is **NOT**: it is never an in-place key regeneration on a progressed run. An attacker gains nothing from option 1 — rebaselining requires discarding the progressed run's state, so it cannot mint a passing witness for the EXISTING ledger. The gate's `WITNESS_UNVERIFIABLE` deny reason names this runbook, and `/agent-flow:check-setup` Block 8 echoes it.
 
 #### Strict-by-default enforcement (`AGENT_FLOW_STRICT_DISPATCH`)
 

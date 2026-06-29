@@ -365,6 +365,17 @@ bash HMAC fallback is ever added — Python stdlib is a hard requirement.
 All `[FAIL]` results in Block 8 **count toward the final FAIL verdict** — a missing Python stdlib
 or a `< 2.1.90` client means the keyed gate cannot enforce. `[WARN]` results are advisory.
 
+19. **Key-loss recovery (advisory note).** If a keyed run reports `WITNESS_UNVERIFIABLE` because
+    its per-run `.agent-flow/{RUN-ID}/dispatch.key` was lost on a progressed run (≥1 completed
+    stage or a non-empty ledger), this is **fail-closed by design** — the gate NEVER
+    auto-regenerates the key on a progressed run (that would re-open the `f-c570b4` forge).
+    Recovery is an **explicit operator choice**, not automatic: either archive/remove the affected
+    run directory `.agent-flow/{RUN-ID}/` to rebaseline with a fresh keyed run (the bootstrap
+    mints a new key only on a genuinely fresh run — zero completed stages + empty ledger), OR set
+    `AGENT_FLOW_STRICT_DISPATCH=0` to continue advisory-only meanwhile. Full procedure: the
+    **Key-loss recovery (operator runbook)** in `state/schema.md`. Emit `[ADVISORY]` and print the
+    one-line summary; this note **never** contributes to the FAIL count.
+
 ## Deprecated config detection
 
 After all primary checks complete, scan for deprecated config sections and emit advisories. These do NOT change the exit code — they're warnings only.

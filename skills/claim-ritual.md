@@ -34,11 +34,14 @@ Legacy pre-key runs stay `"1.0"`. (REQ-013, REQ-024.)
    which uses `skills/setup-agents/lib/toml-merge.sh resolve_overlay`) and record:
    - `overlay_source` — exactly one of `toml | none | md_rejected` (the value is
      never `md`);
-   - `overlay_digest` — when `overlay_source == toml`, the **sha256 of the RAW,
-     LF-normalized `.toml` file bytes** (NOT the rendered Markdown block); else the
-     literal `none` / `md_rejected` (REQ-031);
    - `override_path` — the **resolved** overlay directory (e.g. `customization/`),
      persisted so the gate/audit read it from `state.json` rather than env (REQ-032).
+
+   The CLAIM does **NOT** commit `overlay_digest` (S2 fix). The gate computes the
+   `.toml` digest from disk (LF-normalized) and **signs it as ground truth** — the
+   same gate-observed model as `prompt_head_128`. The orchestrator never computes
+   or normalizes the digest, so an LF/CRLF-naive producer digest can never
+   false-DENY an overlay dispatch on Windows (REQ-031/A5).
 2. **Resolve `model`** by the deterministic precedence (REQ-048), identical to the
    gate so it can never false-DENY: overlay TOML `model =` scalar (via the shared
    parser — never a naive `grep '^model ='`) → else the dispatched agent
@@ -56,19 +59,21 @@ Legacy pre-key runs stay `"1.0"`. (REQ-013, REQ-024.)
      `agent-flow:fixer`); `agent_name` is an alias of the same string;
    - `model`
    - `overlay_source`
-   - `overlay_digest`
    - `override_path`
    - `claim_nonce`
    - `dispatch_seq`
    - `status` (`in_progress`)
    - `dispatched_at` (ISO-8601 UTC)
 
-   The CLAIM deliberately **omits the prompt head**. The gate OBSERVES
-   `head128(tool_input.prompt)` from the real intercepted dispatch and signs that
-   observation as ground truth (REQ-003 / REQ-051); the orchestrator does not
-   write it, so an LLM's inability to byte-reproduce its own prompt is not a
-   false-DENY source. (The legacy `prompt_head_128` claim field is removed as an
-   orchestrator-written witness input.)
+   The CLAIM deliberately **omits the prompt head AND the overlay digest** — both
+   are GATE-OBSERVED ground truth, not orchestrator-committed/compared fields. The
+   gate OBSERVES `head128(tool_input.prompt)` from the real intercepted dispatch
+   and signs that observation (REQ-003 / REQ-051), and it recomputes the
+   LF-normalized `.toml` digest from disk and signs THAT (REQ-031/A5). The
+   orchestrator writes neither, so an LLM's inability to byte-reproduce its own
+   prompt — and an LF/CRLF-naive digest computation — are not false-DENY sources.
+   (The legacy `prompt_head_128` and `overlay_digest` claim fields are removed as
+   orchestrator-written witness inputs.)
 5. **Write the per-dispatch marker atomically.** Write the single well-known
    top-level pointer file `.agent-flow/pending-dispatch.json` (top-level so the
    gate finds it without first knowing the run dir) via **temp file + `os.replace`**
