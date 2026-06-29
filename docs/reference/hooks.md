@@ -8,9 +8,21 @@
 
 ## Overview
 
-agent-flow ships one PostToolUse hook: `hooks/validate-dispatch.sh`.
-It performs an advisory dispatch-enforcement audit. See
-`docs/guides/dispatch-enforcement.md` for installation and operator guidance.
+agent-flow ships two dispatch-witness hooks:
+
+- **`hooks/validate-dispatch-pre.sh`** — a **PreToolUse `Task` gate** (the
+  gate-as-signer). It is the sole holder of the per-run key and the only
+  component that can **block** a dispatch (deny-JSON + `exit 2`, which blocks
+  `Task` on Claude Code ≥ 2.1.90). It resolves the in-flight dispatch from the
+  top-level marker `.agent-flow/pending-dispatch.json`, applies
+  match-or-pass-through, signs the HMAC witness into the gate-owned ledger, and
+  ALLOWs — or DENYs.
+- **`hooks/validate-dispatch.sh`** — a **PostToolUse audit** (second layer). It
+  re-verifies the gate signature but **cannot block** (it runs after the tool).
+
+See `docs/guides/dispatch-enforcement.md` for installation and operator guidance.
+A one-time `Task` `tool_input`-shape probe (`hooks/probe-task-shape.sh`) records
+the local build's `Task` payload shape and never blocks.
 
 ---
 
@@ -171,6 +183,49 @@ Add to `~/.claude/settings.json`:
 ```
 
 See `docs/guides/dispatch-enforcement.md` for full installation instructions.
+
+### PreToolUse `Task` gate registration
+
+Register the blocking gate against the `Task` tool (this is the matcher that
+makes the witness a *true* pre-dispatch block). Add to `~/.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/path/to/agent-flow/hooks/validate-dispatch-pre.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "env": {
+    "AGENT_FLOW_STRICT_DISPATCH": "1"
+  }
+}
+```
+
+Notes:
+- The `matcher` MUST be the exact string `"Task"` — the gate fires only on
+  `Task` dispatches and **passes through** (allows, never signs) any `Task` it
+  cannot match to a fresh agent-flow marker, so parallel/non-agent-flow `Task`
+  usage is never blocked.
+- The `env` block is how the rollback toggle **reaches** the
+  Claude-Code-spawned hook: set `AGENT_FLOW_STRICT_DISPATCH` to `"0"` here to run
+  advisory (Lever 1). An in-run kill switch is the top-level flag file
+  `.agent-flow/STRICT_DISPATCH_OFF` (checked before any marker/run resolution).
+  Removing this matcher entirely is the hard fallback (Lever 2).
+- Requires **Claude Code ≥ 2.1.90** (issue #26923: a `Task` `exit 2` was a no-op
+  before v2.1.90). `/check-setup` and the first-keyed-run deny-canary assert this.
+
+The optional one-time shape probe is registered the same way (PreToolUse or
+PostToolUse, `matcher: "Task"`, command `hooks/probe-task-shape.sh`); it never
+blocks.
 
 ---
 

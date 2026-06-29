@@ -1,49 +1,91 @@
 #!/usr/bin/env bash
 # hooks/validate-dispatch.sh
-# PostToolUse hook: dispatched_at presence audit + dispatch-witness audit
-# (V1 recompute-and-compare + V2 overlay-presence).
+# PostToolUse audit (2nd layer; CANNOT block — runs after the tool, finding A8).
 #
-# Invoked automatically by Claude Code after a tool use. Reads state.json once,
-# audits every pipeline stage, and appends one audit line per stage per audit to
-# .agent-flow/dispatch-audit.log.
+# Sweep 1 — dispatched_at presence (always advisory).
+# Sweep 2 — dispatch-witness audit, DUAL-MODE keyed by KEY-FILE PRESENCE (REQ-022):
+#   * keyed run (0600 dispatch.key present, schema_version "2.0"): re-verify the
+#     gate-owned ledger. Every ledger line's HMAC tag is recomputed via the
+#     shared Python core (hooks/lib/witness_core.py); the per-stage verdict uses
+#     the latest ledger entry matching the current CLAIM. A key-present,
+#     non-skipped, CLAIMED stage with no matching ledger line is row f
+#     (WITNESS_UNVERIFIABLE). A legacy-shape / stripped-`alg` tag fails the HMAC
+#     recompute -> WITNESS_MISMATCH (key-file presence is the downgrade
+#     authority — REQ-013, never a silent skip).
+#   * keyed-CLAIMED but key absent on a PROGRESSED run (>=1 completed stage OR
+#     non-empty ledger) -> WITNESS_UNVERIFIABLE (row d; the "delete the key to
+#     skip the gate" disarm is LOUD, never silent).
+#   * legacy keyless run (no key, schema "1.0"/unset): the existing V1 sha256
+#     recompute + V2 overlay-presence dual-mode — NEVER a false WITNESS_MISMATCH
+#     on a valid v1.0 state (REQ-023).
 #
-# Implemented as a single Python process. Python 3 is a hard requirement of
-# agent-flow, so there is no bash fallback: the legacy grep/sed/sha256sum loops
-# spawned ~400 subprocesses per invocation (~36s on Git-Bash/Windows) AND the
-# field reader truncated prompt_head_128 at the first `}` / `,` / `"`, which made
-# V1 falsely mismatch any prompt template containing a `{placeholder}` in its
-# first 128 bytes. json.load reads the field exactly (and un-escapes it), fixing
-# both problems in one pass.
+# This hook re-verifies; it never signs and never blocks (only the PreToolUse
+# gate hooks/validate-dispatch-pre.sh blocks). The keyed compute/verify lives
+# ONLY in Python (witness_core.py) — bash holds NO keyed path (REQ-010).
 #
 # EXIT: 0 normally. STRICT-BY-DEFAULT for the witness audit: exit 2 when any
-#       stage produces WITNESS_MISMATCH, unless AGENT_FLOW_STRICT_DISPATCH="0".
-#       The dispatched_at presence audit is always advisory.
-# LOG:  .agent-flow/dispatch-audit.log (append-only, plain text).
+#       stage produces WITNESS_MISMATCH or WITNESS_UNVERIFIABLE, unless advisory
+#       (AGENT_FLOW_STRICT_DISPATCH="0" OR a STRICT_DISPATCH_OFF flag file).
+#       WITNESS_MISSING NEVER exits 2. The dispatched_at presence audit is always
+#       advisory. (PostToolUse exit 2 cannot block — it is a forensic signal.)
+# LOG:  .agent-flow/dispatch-audit.log (best-effort append-only; records ONLY
+#       "<ISO-ts> <stage> <verdict>" — NO key, NO tag, NO preimage — REQ-028).
 #
 # Env vars (clean-break AGENT_FLOW_ prefix):
 #   - AGENT_FLOW_STRICT_DISPATCH : strict ON unless == "0" (advisory)
 #   - AGENT_FLOW_AUDIT_LOG       : audit-log path override
 #   - AGENT_FLOW_STATE_JSON      : state.json path override
-#   - AGENT_FLOW_OVERRIDE_PATH   : overlay override dir for V2 (default customization/)
+#   - AGENT_FLOW_DISPATCH_KEY_FILE : key-file PATH override (never the value)
+#   - AGENT_FLOW_LEDGER          : gate ledger path override
+#   - AGENT_FLOW_OVERRIDE_PATH   : overlay override dir for legacy V2 (default customization/)
 #
 # Security contracts:
 #   - STAGES are hardcoded; never derived from state.json field names.
-#   - state.json is parsed, never eval'd.
+#   - state.json / ledger are parsed, never eval'd.
 set -uo pipefail
 
-PYBIN="$(command -v python3 || command -v python || true)"
+# --- strict determination (env + TOP-LEVEL flag) for the no-Python fail path ---
+strict=1
+[ "${AGENT_FLOW_STRICT_DISPATCH:-}" = "0" ] && strict=0
+[ -f ".agent-flow/STRICT_DISPATCH_OFF" ] && strict=0
+
+# --- runnability probe (A4 / REQ-018): probe `-c 'import sys'`, NOT command -v.
+#     A Windows-Store python.exe stub is ON PATH but exits non-zero on -c; the
+#     old silent `exit 0` was a one-line disarm of the security audit.
+PYBIN=""
+for cand in python3 python; do
+  if command -v "$cand" >/dev/null 2>&1 && "$cand" -c 'import sys' >/dev/null 2>&1; then
+    PYBIN="$cand"
+    break
+  fi
+done
 if [ -z "$PYBIN" ]; then
-  echo "validate-dispatch: python3 not found (required by agent-flow); skipping audit" >&2
+  echo "validate-dispatch: no runnable Python 3 (required by agent-flow; no bash fallback)" >&2
+  # LOUD-not-silent: fail closed under strict (exit 2), advisory downgrades to 0.
+  [ "$strict" -eq 1 ] && exit 2
   exit 0
 fi
 
-exec "$PYBIN" - <<'PY'
+# --- resolve the shared Python lib dir (sibling of this hook) ------------------
+SELF="${BASH_SOURCE[0]:-$0}"
+HOOKDIR="$(cd "$(dirname "$SELF")" 2>/dev/null && pwd)"
+[ -n "$HOOKDIR" ] || HOOKDIR="$(dirname "$SELF")"
+LIBDIR="$HOOKDIR/lib"
+
+exec "$PYBIN" - "$LIBDIR" <<'PY'
 import sys, os, json, glob, hashlib, datetime
+
+LIBDIR = sys.argv[1] if len(sys.argv) > 1 else ""
+if LIBDIR:
+    sys.path.insert(0, LIBDIR)
+import witness_core as wc      # canon / tag (HMAC) — single keyed authority
+import witness_key as wk       # read_key / ledger_is_nonempty
 
 # Hardcoded stage whitelist (no dynamic discovery from state.json).
 STAGES = ["triage", "code_analysis", "reproduce_browser", "fixer_reviewer",
           "smoke_check", "test", "e2e_test", "browser_verification",
           "acceptance_gate", "publisher"]
+# Legacy V1 sub-tuple (sha256 dual-mode for keyless "1.0" runs).
 WITNESS_FIELDS = ("agent_name", "model", "prompt_head_128", "overlay_source", "overlay_digest")
 HEX = set("0123456789abcdef")
 
@@ -57,50 +99,141 @@ if not state_json or not os.path.isfile(state_json):
 
 try:
     with open(state_json, encoding="utf-8") as f:
-        stages = (json.load(f) or {}).get("stages", {}) or {}
+        doc = json.load(f) or {}
 except Exception:
     sys.exit(0)  # unreadable / invalid JSON -> behave like "no run", never block
+stages = doc.get("stages", {}) or {}
+if not isinstance(stages, dict):
+    stages = {}
+schema_ver = str(doc.get("schema_version") or "")
 
 audit_log     = os.environ.get("AGENT_FLOW_AUDIT_LOG", os.path.join(".agent-flow", "dispatch-audit.log"))
 override_path = os.environ.get("AGENT_FLOW_OVERRIDE_PATH", "customization/")
-strict        = os.environ.get("AGENT_FLOW_STRICT_DISPATCH", "") != "0"
-ts            = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-lines         = []
+run_dir       = os.path.dirname(state_json)
+
+# Strict honoring env + TOP-LEVEL flag + per-run flag (REQ-020/REQ-050).
+strict = os.environ.get("AGENT_FLOW_STRICT_DISPATCH", "") != "0"
+if os.path.exists(os.path.join(".agent-flow", "STRICT_DISPATCH_OFF")):
+    strict = False
+if run_dir and os.path.exists(os.path.join(run_dir, "STRICT_DISPATCH_OFF")):
+    strict = False
+
+ts    = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+lines = []
+
+# --- key-file presence is the dual-mode authority (REQ-013/REQ-022) -----------
+key_path    = os.environ.get("AGENT_FLOW_DISPATCH_KEY_FILE") or os.path.join(run_dir, "dispatch.key")
+ledger_path = os.environ.get("AGENT_FLOW_LEDGER") or os.path.join(run_dir, "dispatch-ledger.jsonl")
+keyhex      = wk.read_key(key_path)            # None if absent/empty/unreadable
+key_present = keyhex is not None
+completed   = sum(1 for s in stages.values()
+                  if isinstance(s, dict) and s.get("status") == "completed")
+ledger_nonempty = wk.ledger_is_nonempty(ledger_path)
+
+if key_present:
+    mode = "KEYED"                                   # rows a / c / e / f
+elif schema_ver == "2.0" and (completed >= 1 or ledger_nonempty):
+    mode = "ROWD"                                    # key lost on a progressed run
+elif schema_ver == "2.0":
+    mode = "FRESH"                                   # gate-bootstrap pending; nothing signed yet
+else:
+    mode = "LEGACY"                                  # keyless v1.0 sha256 dual-mode
+
+# Parse the gate-owned ledger once (keyed mode).
+ledger_entries = []
+if mode == "KEYED":
+    try:
+        with open(ledger_path, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    ledger_entries.append(json.loads(line))
+                except Exception:
+                    continue
+    except (FileNotFoundError, NotADirectoryError, IsADirectoryError, OSError):
+        ledger_entries = []
+
+
+def _safe_int(v):
+    try:
+        return int(v)
+    except (TypeError, ValueError):
+        return -1
+
+
+def is_claimed(s):
+    """A non-skipped stage the orchestrator actually dispatched (has a claim)."""
+    if not isinstance(s, dict) or s.get("status") == "skipped":
+        return False
+    return bool(s.get("claim_nonce")) or str(s.get("dispatched_at") or "")[:1].isdigit()
+
+
+def legacy_verdict(s):
+    """Existing V1 sha256 recompute + V2 overlay-presence dual-mode (REQ-023)."""
+    vals = {k: s.get(k) for k in ("dispatch_witness",) + WITNESS_FIELDS}
+    if all(vals[k] not in (None, "") for k in vals):
+        stored = str(vals["dispatch_witness"])
+        if len(stored) == 64 and set(stored) <= HEX:
+            canon = "|".join(str(vals[k]) for k in WITNESS_FIELDS)
+            if hashlib.sha256(canon.encode("utf-8")).hexdigest() == stored:
+                short = str(vals["agent_name"]).rsplit(":", 1)[-1]
+                toml  = os.path.join(override_path, short + ".toml")
+                if os.path.isfile(toml) and vals["overlay_source"] != "toml":
+                    return "WITNESS_MISMATCH"
+                return "WITNESS_OK"
+            return "WITNESS_MISMATCH"
+        return "WITNESS_MISMATCH"  # malformed stored witness
+    return "WITNESS_MISSING"
+
+
+def keyed_verdict(s, st):
+    """Re-verify the gate signature for one stage against the gate-owned ledger."""
+    if not is_claimed(s):
+        return "WITNESS_MISSING"
+    cn = str(s.get("claim_nonce") or "")
+    matches = [e for e in ledger_entries
+               if str(e.get("stage") or "") == st and str(e.get("claim_nonce") or "") == cn]
+    if not matches:
+        return "WITNESS_UNVERIFIABLE"   # row f: claimed keyed stage, no ledger entry
+    # latest entry wins (highest dispatch_seq, then signed_at).
+    matches.sort(key=lambda e: (_safe_int(e.get("dispatch_seq")), str(e.get("signed_at") or "")))
+    e = matches[-1]
+    c = wc.canon(
+        str(e.get("subagent_type") or ""), str(e.get("model") or ""),
+        str(e.get("prompt_head_128") or ""), str(e.get("overlay_source") or ""),
+        str(e.get("overlay_digest") or ""), str(e.get("stage") or ""),
+        str(e.get("run_id") or ""), str(e.get("claim_nonce") or ""))
+    # Key-file presence is the authority: a legacy-shape / stripped-alg tag fails
+    # the HMAC recompute -> MISMATCH (never a silent legacy-sha256 downgrade).
+    if str(e.get("tag") or "") == wc.tag(keyhex, c):
+        return "WITNESS_OK"
+    return "WITNESS_MISMATCH"
+
 
 # --- Sweep 1: dispatched_at presence (value must start with a digit = ISO ts) ---
 for st in STAGES:
     da = str((stages.get(st) or {}).get("dispatched_at") or "")
     lines.append(f"{ts} {st} {'OK' if da[:1].isdigit() else 'MISSING'}")
 
-# --- Sweep 2: dispatch-witness audit (V1 recompute + V2 overlay-presence) ---
-# Precedence mirrors core/lib/stage-invariant.sh::check_dispatch_witness:
-#   skipped stage / missing required input -> WITNESS_MISSING (never a mismatch)
-#   malformed stored witness, V1 mismatch, or V2 overlay-not-applied -> WITNESS_MISMATCH
-saw_mismatch = False
+# --- Sweep 2: dispatch-witness audit (dual-mode by key-file presence) ----------
+saw_block = False  # MISMATCH or UNVERIFIABLE -> strict exit 2 (MISSING never does)
 for st in STAGES:
     s = stages.get(st) or {}
-    verdict = "WITNESS_MISSING"
-    if s.get("status") != "skipped":
-        vals = {k: s.get(k) for k in ("dispatch_witness",) + WITNESS_FIELDS}
-        if all(vals[k] not in (None, "") for k in vals):
-            stored = str(vals["dispatch_witness"])
-            if len(stored) == 64 and set(stored) <= HEX:
-                # V1: recompute sha256 over the stored 5-tuple and compare.
-                canon = "|".join(str(vals[k]) for k in WITNESS_FIELDS)
-                if hashlib.sha256(canon.encode("utf-8")).hexdigest() == stored:
-                    # V2: an available overlay must have been applied/recorded.
-                    short = str(vals["agent_name"]).rsplit(":", 1)[-1]
-                    toml  = os.path.join(override_path, short + ".toml")
-                    if os.path.isfile(toml) and vals["overlay_source"] != "toml":
-                        verdict = "WITNESS_MISMATCH"
-                    else:
-                        verdict = "WITNESS_OK"
-                else:
-                    verdict = "WITNESS_MISMATCH"
-            else:
-                verdict = "WITNESS_MISMATCH"  # malformed stored witness
-    if verdict == "WITNESS_MISMATCH":
-        saw_mismatch = True
+    if s.get("status") == "skipped":
+        verdict = "WITNESS_MISSING"
+    elif mode == "LEGACY":
+        verdict = legacy_verdict(s)
+    elif mode == "KEYED":
+        verdict = keyed_verdict(s, st)
+    elif mode == "ROWD":
+        # keyed-CLAIMED but key lost on a progressed run -> UNVERIFIABLE (loud).
+        verdict = "WITNESS_UNVERIFIABLE" if is_claimed(s) else "WITNESS_MISSING"
+    else:  # FRESH: zero completed + empty ledger + key absent; nothing signed yet
+        verdict = "WITNESS_MISSING"
+    if verdict in ("WITNESS_MISMATCH", "WITNESS_UNVERIFIABLE"):
+        saw_block = True
     lines.append(f"{ts} {st} {verdict}")
 
 # --- append audit lines (best-effort; never fail the tool on a log write error) ---
@@ -113,5 +246,5 @@ try:
 except Exception:
     pass
 
-sys.exit(2 if (strict and saw_mismatch) else 0)
+sys.exit(2 if (strict and saw_block) else 0)
 PY
