@@ -168,6 +168,18 @@ def read_claim(state_json, stage):
     return s if isinstance(s, dict) else None
 
 
+def read_overrides_root(state_json):
+    """Configured Agent-Overrides allowlist root (REQ-031 step 1).
+
+    The project's `### Agent Overrides` `Path` when persisted as the top-level
+    `agent_overrides_path` in state.json; None -> witness_overlay defaults it to
+    `customization/`. The per-stage `override_path` CLAIM is confined to it.
+    """
+    doc = load_json(state_json) or {}
+    v = doc.get("agent_overrides_path")
+    return v if isinstance(v, str) and v else None
+
+
 def ledger_consumed(ledger_path, run_id):
     """Return (set_of_consumed_claim_nonces, max_dispatch_seq_or_None) for run_id."""
     consumed = set()
@@ -343,6 +355,10 @@ def main():
     override_path = str(claim.get("override_path") or "")
     if not override_path:
         override_path = os.environ.get("AGENT_FLOW_OVERRIDE_PATH") or "customization/"
+    # Configured Agent-Overrides allowlist root (REQ-031 step 1): the per-stage
+    # override_path above (a forgeable CLAIM field) is confined to it. Read from
+    # state.json (top-level agent_overrides_path), default customization/.
+    overrides_root = read_overrides_root(state_json)
     # Short name for on-disk lookups only (full subagent_type is the hash input).
     short = observed_subagent.rsplit(":", 1)[-1]
     proot = os.getcwd()
@@ -354,7 +370,7 @@ def main():
     # via the same precedence, so the resolved value matches a correct dispatch.
     resolved_model, _model_source = wo.resolve_model(
         override_path, short, frontmatter_model=None,
-        claim_model=claim_model, project_root=proot)
+        claim_model=claim_model, project_root=proot, override_root=overrides_root)
     # tool_input.model, where the runtime supplies it, is cross-checked against
     # the resolved value (mismatch -> DENY); where absent, resolved is authoritative.
     ti_model = ti.get("model")
@@ -369,13 +385,15 @@ def main():
     # (the producer no longer commits overlay_digest, so an LF/CRLF-naive producer
     # digest can no longer false-DENY every overlay dispatch on Windows). The only
     # pre-dispatch overlay check is STRUCTURAL: a forged override_path escaping the
-    # allowlist, or overlay_source=toml with the .toml absent/unreadable -> DENY. A
-    # post-dispatch edit of the .toml is caught by the PostToolUse audit, which
-    # re-verifies the SIGNED ledger digest against the on-disk file. For
-    # none/md_rejected the signed value is the literal source token.
+    # configured allowlist root (default customization/), or overlay_source=toml
+    # with the .toml absent/unreadable -> DENY. This GATE-TIME binding is the
+    # strict A5 ground truth (it can block). A *post-dispatch* edit of the .toml is
+    # NOT a dispatch-integrity failure (the dispatch already happened with this
+    # gate-time content) — the PostToolUse audit treats that on-disk drift as
+    # advisory. For none/md_rejected the signed value is the literal source token.
     if overlay_source == "toml":
         ov_status, ov_val = wo.recompute_overlay_digest(
-            override_path, short, project_root=proot)
+            override_path, short, project_root=proot, override_root=overrides_root)
         if ov_status in (wo.OVERLAY_DENY, wo.OVERLAY_MISMATCH):
             return deny("WITNESS_MISMATCH: " + ov_val)
         overlay_digest_for_canon = ov_val

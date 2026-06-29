@@ -6,16 +6,20 @@
 # (hooks/validate-dispatch-pre.sh) and read-consistently by the orchestrator
 # ritual / PostToolUse audit:
 #
-#   1. recompute_overlay_digest(override_path, short)  -- REQ-031 (A5)
+#   1. recompute_overlay_digest(override_path, short, override_root)  -- REQ-031 (A5)
 #        overlay_digest is the sha256 of the RAW, LF-normalized `.toml` file
 #        bytes (NOT the rendered Markdown block — no renderer coupling). The
 #        file is read ONCE and the held bytes are hashed (no second read, so
 #        the gate has no read-vs-hash TOCTOU). The lookup directory is the
-#        persisted `override_path` (REQ-032/A6) confined to a configured
-#        allowlist (default `customization/`) within the project root, and the
-#        `<short>` name carries the path-traversal guard (REQ-038: reject
-#        `/`, `\`, `..`). A path escaping the allowlist -> DENY (a forged
-#        override_path cannot redirect the hash target outside the repo).
+#        persisted per-stage `override_path` (REQ-032/A6) — a FORGEABLE CLAIM
+#        field — which is confined to the CONFIGURED Agent-Overrides allowlist
+#        root `override_root` (default `customization/`; the project's
+#        `### Agent Overrides` `Path` when persisted in state.json as the
+#        top-level `agent_overrides_path`). The `<short>` name carries the
+#        path-traversal guard (REQ-038: reject `/`, `\`, `..`). A resolved
+#        `.toml` path OUTSIDE the configured allowlist root -> DENY (a forged
+#        `override_path` cannot redirect the hash target to an arbitrary
+#        in-repo file, nor escape the repo). REQ-031 step 1.
 #        Boundary cases (REQ-031 step 3):
 #          * overlay_source == "toml" but the `.toml` is ABSENT at intercept
 #            -> OVERLAY_MISMATCH (NOT a crash / GATE_ERROR);
@@ -57,11 +61,15 @@ OVERLAY_OK = "OK"              # digest recomputed; value is the 64-hex digest
 OVERLAY_MISMATCH = "MISMATCH"  # toml absent/unreadable at intercept -> DENY MISMATCH
 OVERLAY_DENY = "DENY"          # traversal guard / allowlist escape -> DENY
 
-# Default configured allowlist root (REQ-031). The persisted override_path may
-# be any directory WITHIN the project root; `customization/` is the conventional
-# default location used when no override_path is persisted. The load-bearing
-# security boundary is "the resolved .toml stays inside the project root" so a
-# forged claim cannot redirect the hash target outside the repo.
+# Default configured Agent-Overrides allowlist root (REQ-031). This is the
+# CONFIGURED `### Agent Overrides` `Path` (default `customization/`), NOT the
+# per-stage `override_path` CLAIM field. The load-bearing security boundary is
+# "the resolved <override_path>/<short>.toml stays inside the configured
+# allowlist root" — so a forged per-stage `override_path` can neither escape the
+# repo NOR redirect the hash target at an arbitrary in-repo `.toml`. A project
+# that configures a non-default Path persists it as the top-level
+# `agent_overrides_path` in state.json, which the gate/audit pass as
+# `override_root`; absent that, the allowlist root is `customization/`.
 DEFAULT_OVERRIDE_PATH = "customization/"
 
 
@@ -113,22 +121,43 @@ def _toml_path(override_path, short, project_root):
     return os.path.join(project_root, ovp, short + ".toml")
 
 
-def recompute_overlay_digest(override_path, short, project_root=None):
+def _allowlist_root(override_root, project_root):
+    """Resolve the CONFIGURED Agent-Overrides allowlist root (REQ-031 step 1).
+
+    The per-stage `override_path` (a forgeable CLAIM field) is confined to this
+    root. `override_root` is the project's `### Agent Overrides` `Path` (default
+    `customization/`); a relative value resolves under `project_root`, an
+    absolute value is honored as-is. Returns the realpath of the allowlist dir.
+    """
+    base = override_root or DEFAULT_OVERRIDE_PATH
+    if os.path.isabs(base):
+        return os.path.realpath(base)
+    return os.path.realpath(os.path.join(project_root, base))
+
+
+def recompute_overlay_digest(override_path, short, project_root=None,
+                             override_root=None):
     """sha256 of the RAW LF-normalized `.toml` bytes (REQ-031).
 
     Returns (status, value):
       (OVERLAY_OK, "<64-hex>")       digest recomputed from the held bytes
       (OVERLAY_MISMATCH, "<reason>") overlay_source=toml but .toml absent/unreadable
       (OVERLAY_DENY, "<reason>")     traversal guard / allowlist escape (forged path)
-    Reads the file ONCE and hashes the held bytes (no second read; no renderer
-    coupling) -> no gate-side read-vs-hash TOCTOU.
+    The resolved `<override_path>/<short>.toml` is confined to the CONFIGURED
+    Agent-Overrides allowlist root (`override_root`, default `customization/`) —
+    NOT merely the project root (REQ-031 step 1): a forged per-stage
+    `override_path` pointing at an arbitrary in-repo directory is DENY, the same
+    as a `..` escape. Reads the file ONCE and hashes the held bytes (no second
+    read; no renderer coupling) -> no gate-side read-vs-hash TOCTOU.
     """
     root = project_root or os.getcwd()
     if not _short_is_safe(short):
         return (OVERLAY_DENY, "overlay short name failed the path-traversal guard")
     toml_path = _toml_path(override_path, short, root)
-    if not _within(root, toml_path):
-        return (OVERLAY_DENY, "override_path escapes the configured allowlist (project root)")
+    if not _within(_allowlist_root(override_root, root), toml_path):
+        return (OVERLAY_DENY,
+                "override_path escapes the configured Agent-Overrides allowlist "
+                "(default customization/)")
     try:
         with open(toml_path, "rb") as f:
             raw = f.read()
@@ -142,19 +171,22 @@ def recompute_overlay_digest(override_path, short, project_root=None):
 
 
 def resolve_model(override_path, short, frontmatter_model=None, claim_model="",
-                  project_root=None):
+                  project_root=None, override_root=None):
     """Deterministic model resolution via the SHARED TOML parser (REQ-048).
 
     Returns (model, model_source) where model_source in
     {"overlay", "frontmatter", "claim"}. Precedence: overlay TOML scalar ->
     agent-def frontmatter (caller-supplied) -> CLAIM model. Never a naive
-    `grep '^model ='` -- the overlay scalar comes from a real TOML parse.
+    `grep '^model ='` -- the overlay scalar comes from a real TOML parse. The
+    overlay `.toml` lookup is confined to the SAME configured Agent-Overrides
+    allowlist root as the digest (REQ-031); a path outside it is non-fatal here
+    (fall through to frontmatter/claim — the digest path is the DENY authority).
     """
     root = project_root or os.getcwd()
     parser = _toml_parser()
     if parser is not None and _short_is_safe(short):
         toml_path = _toml_path(override_path, short, root)
-        if _within(root, toml_path) and os.path.isfile(toml_path):
+        if _within(_allowlist_root(override_root, root), toml_path) and os.path.isfile(toml_path):
             try:
                 with open(toml_path, "rb") as f:
                     data = parser.load(f)
@@ -173,8 +205,8 @@ def resolve_model(override_path, short, frontmatter_model=None, claim_model="",
 
 if __name__ == "__main__":
     # Non-authoritative CLI / self-check helper (no keyed material here).
-    #   witness_overlay.py digest OVERRIDE_PATH SHORT [PROJECT_ROOT]
-    #   witness_overlay.py model  OVERRIDE_PATH SHORT FRONTMATTER CLAIM [PROJECT_ROOT]
+    #   witness_overlay.py digest OVERRIDE_PATH SHORT [PROJECT_ROOT] [OVERRIDE_ROOT]
+    #   witness_overlay.py model  OVERRIDE_PATH SHORT FRONTMATTER CLAIM [PROJECT_ROOT] [OVERRIDE_ROOT]
     #   witness_overlay.py --self-test
     import sys
 
@@ -182,12 +214,15 @@ if __name__ == "__main__":
     cmd = args[0] if args else ""
     if cmd == "digest" and len(args) >= 3:
         pr = args[3] if len(args) > 3 else None
-        st, val = recompute_overlay_digest(args[1], args[2], project_root=pr)
+        orr = args[4] if len(args) > 4 else None
+        st, val = recompute_overlay_digest(args[1], args[2], project_root=pr,
+                                           override_root=orr)
         sys.stdout.write("%s %s" % (st, val))
     elif cmd == "model" and len(args) >= 5:
         pr = args[5] if len(args) > 5 else None
+        orr = args[6] if len(args) > 6 else None
         m, src = resolve_model(args[1], args[2], frontmatter_model=args[3] or None,
-                               claim_model=args[4], project_root=pr)
+                               claim_model=args[4], project_root=pr, override_root=orr)
         sys.stdout.write("%s %s" % (m, src))
     elif cmd == "--self-test":
         import tempfile
@@ -204,6 +239,17 @@ if __name__ == "__main__":
         ok = ok and (st3 == OVERLAY_DENY)
         st4, _ = recompute_overlay_digest("customization/", "../escape", project_root=work)
         ok = ok and (st4 == OVERLAY_DENY)
+        # REQ-031 step 1: an IN-REPO override_path OUTSIDE the configured allowlist
+        # root (default customization/) is DENY, not merely "within project root".
+        os.makedirs(os.path.join(work, "elsewhere"), exist_ok=True)
+        with open(os.path.join(work, "elsewhere", "fixer.toml"), "wb") as f:
+            f.write(b'model = "sonnet"\n')
+        st5, _ = recompute_overlay_digest("elsewhere/", "fixer", project_root=work)
+        ok = ok and (st5 == OVERLAY_DENY)
+        # ...but honored when that dir IS the configured allowlist root.
+        st6, _ = recompute_overlay_digest("elsewhere/", "fixer", project_root=work,
+                                          override_root="elsewhere/")
+        ok = ok and (st6 == OVERLAY_OK)
         m, src = resolve_model("customization/", "fixer", claim_model="opus",
                                project_root=work)
         # tomli/tomllib present on this runtime -> overlay scalar wins.

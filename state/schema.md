@@ -459,9 +459,18 @@ Applies to all stages in the hardcoded `STAGES` whitelist (10 entries): `triage`
 > field — it is **gate-observed ground truth** (the same model as `prompt_head_128`). The
 > PreToolUse gate recomputes the digest from the on-disk `.toml` (LF-normalized) and SIGNS it into
 > the ledger; the orchestrator never writes it, so an LF/CRLF-naive producer digest cannot
-> false-DENY an overlay dispatch on Windows. There is **no producer-claim-vs-gate digest compare**;
-> a `.toml` edited after the gate signs is caught by the PostToolUse audit re-verifying the SIGNED
-> ledger digest against the live file (REQ-031/A5). The v1.0 stored value below is keyless-only.
+> false-DENY an overlay dispatch on Windows. There is **no producer-claim-vs-gate digest compare**.
+> The **gate-time binding is the strict A5 control**: at dispatch the gate signs the actual on-disk
+> `.toml` and DENYs an `overlay_source=toml` whose `.toml` is absent/unreadable, or whose resolved
+> path escapes the configured allowlist / traversal guard (REQ-031 step 1). A **later** edit of that
+> `.toml` (after the gate signed) is re-read by the PostToolUse audit, but that re-read is
+> **ADVISORY only** — it logs an `OVERLAY_DRIFT_ADVISORY` notice and never emits
+> `WITNESS_MISMATCH`/exit 2. A post-dispatch edit (an operator tuning the overlay, a fixer/scaffolder
+> whose task is to write `customization/*.toml`, a formatter, a branch switch) is **not** a
+> dispatch-integrity failure — the dispatch already happened with the gate-time content, the audit
+> cannot tell a benign edit from an attack, and PostToolUse cannot block (A8). Audit integrity rests
+> on the **ledger HMAC tag** (strict) + the **gate-time binding** (strict), not the audit re-read
+> (REQ-031/A5). The v1.0 stored value below is keyless-only.
 
 - **Type:** string — either a 64-char lowercase sha256 hex (`^[0-9a-f]{64}$`) or the literal `none` / `md_rejected`.
 - **Purpose:** The content digest of the applied overlay. Records WHICH overlay (by content) was applied, not merely that one was present. On v2.0 it is signed by the gate into the ledger; on v1.0 it is the 5th input of the stored `dispatch_witness` 5-tuple.
@@ -477,9 +486,17 @@ Applies to all stages in the hardcoded `STAGES` whitelist (10 entries): `triage`
 #### `stages.{stage}.override_path` (v2.0)
 
 - **Type:** string or null
-- **Purpose:** The *resolved* overlay lookup directory the orchestrator used for this stage (default `customization/`), persisted into the CLAIM so the gate and audit read it from `state.json` rather than the `AGENT_FLOW_OVERRIDE_PATH` env (the Claude-Code-spawned hook never inherits the skill's env — REQ-032/A6). The gate confines it to a configured allowlist and applies the `<short>`-name path-traversal guard (REQ-031/REQ-038) before forming `override_path/<short>.toml`.
+- **Purpose:** The *resolved* overlay lookup directory the orchestrator used for this stage (default `customization/`), persisted into the CLAIM so the gate and audit read it from `state.json` rather than the `AGENT_FLOW_OVERRIDE_PATH` env (the Claude-Code-spawned hook never inherits the skill's env — REQ-032/A6). This is a **forgeable CLAIM field**: the gate/audit confine the resolved `override_path/<short>.toml` to the **configured Agent-Overrides allowlist root** (`agent_overrides_path` below, default `customization/`) and apply the `<short>`-name path-traversal guard (REQ-031 step 1 / REQ-038) before forming the path. A resolved path OUTSIDE the allowlist root → DENY (gate) / `WITNESS_MISMATCH` (audit), the same as a `..` repo escape — a forged `override_path` can neither leave the repo nor redirect the digest at an arbitrary in-repo `.toml`.
 - **Added by:** orchestrator, in the same atomic write as the CLAIM. `AGENT_FLOW_OVERRIDE_PATH` remains an override of last resort.
 - **Schema version impact:** v2.0 keyed runs.
+
+#### `agent_overrides_path` (top-level, v2.0)
+
+- **Type:** string or null (top-level, NOT under `stages`)
+- **Purpose:** The project's configured `### Agent Overrides` `Path` (the **allowlist root** that confines every per-stage `override_path`, REQ-031 step 1). Default when absent: `customization/`. The gate and audit read it from `state.json` (never inherited via env) and pass it as the `override_root` to `hooks/lib/witness_overlay.py::recompute_overlay_digest` / `resolve_model`; the resolved `override_path/<short>.toml` must lie within `realpath(project_root/agent_overrides_path)` (absolute values honored as-is). A project using a **non-default** Agent-Overrides Path persists it here so its overlays are not DENY-ed by the default-`customization/` allowlist.
+- **Added by:** orchestrator at run-init (optional; absent ⇒ gate/audit default to `customization/`).
+- **Sensitivity:** SAFE TO SERIALIZE — a directory path, no secrets.
+- **Schema version impact:** additive/optional; absent on legacy and on default-path runs.
 
 #### `stages.{stage}.claim_nonce` (v2.0)
 
@@ -551,7 +568,9 @@ The keyed dispatch witness is a signed RECEIPT of a dispatch's reproducible inpu
 
 **Role separation.** The gate is a **separate verifier role, same trust domain** — a genuinely distinct process and code path, but the same OS principal reading the same secret. The witness is therefore a checkable receipt, not a cross-domain proof.
 
-**Audit log.** The PostToolUse audit (`hooks/validate-dispatch.sh`) writes a **best-effort append-only audit log** at `.agent-flow/dispatch-audit.log` (override `AGENT_FLOW_AUDIT_LOG`); it records `<ISO-ts> <stage> <verdict>` lines only — never the key, an HMAC tag, or a preimage. A plain append is **NOT tamper-evident** against the same-OS-user actor above (a co-signed hash-chained ledger is deferred to a follow-up MINOR). The audit re-verifies the gate's signature and **cannot block** (it runs after the tool — finding A8); only the PreToolUse gate blocks.
+**Audit log.** The PostToolUse audit (`hooks/validate-dispatch.sh`) writes a **best-effort append-only audit log** at `.agent-flow/dispatch-audit.log` (override `AGENT_FLOW_AUDIT_LOG`); it records `<ISO-ts> <stage> <verdict>` lines (plus best-effort `[WARN]`/`OVERLAY_DRIFT_ADVISORY` notices) — never the key, an HMAC tag, or a preimage. A plain append is **NOT tamper-evident** against the same-OS-user actor above (a co-signed hash-chained ledger is deferred to a follow-up MINOR). The audit re-verifies the gate's signature and **cannot block** (it runs after the tool — finding A8); only the PreToolUse gate blocks.
+
+**Audit overlay re-read is advisory (not a tamper alarm).** The audit re-computes a keyed stage's on-disk `.toml` digest and compares it to the gate-signed ledger digest, but a difference is logged as `OVERLAY_DRIFT_ADVISORY` only — it **never** raises `WITNESS_MISMATCH`/exit 2. A `.toml` legitimately changes after a stage completed (an operator tuning the overlay, a `fixer`/`scaffolder` whose very task is to add `customization/*.toml`, a formatter, a branch switch); the dispatch already happened with the gate-time content, the audit cannot distinguish a benign edit from an attack, and PostToolUse cannot block anyway. So the audit's two strict, fail-closed integrity controls are (1) the **ledger-line HMAC tag** recompute (a tampered/forged ledger line → `WITNESS_MISMATCH`/exit 2) and (2) the **gate-time binding** the audit re-asserts via the tag; the live-`.toml` comparison is advisory. (Were the audit re-read strict, a benign post-completion edit would re-fire a false tamper alarm on every subsequent dispatch for the rest of the run — desensitizing operators to a real mismatch.)
 
 #### Key-loss recovery (operator runbook)
 

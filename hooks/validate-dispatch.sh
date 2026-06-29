@@ -110,6 +110,12 @@ schema_ver = str(doc.get("schema_version") or "")
 
 audit_log     = os.environ.get("AGENT_FLOW_AUDIT_LOG", os.path.join(".agent-flow", "dispatch-audit.log"))
 override_path = os.environ.get("AGENT_FLOW_OVERRIDE_PATH", "customization/")
+# Configured Agent-Overrides allowlist root (REQ-031 step 1): the project's
+# `### Agent Overrides` `Path` when persisted as top-level agent_overrides_path;
+# None -> witness_overlay defaults it to customization/. The per-stage CLAIM
+# override_path is confined to it (same boundary the gate enforces).
+_aor = doc.get("agent_overrides_path")
+agent_overrides_root = _aor if isinstance(_aor, str) and _aor else None
 run_dir       = os.path.dirname(state_json)
 
 # Strict honoring env + TOP-LEVEL flag + per-run flag (REQ-020/REQ-050).
@@ -121,6 +127,10 @@ if run_dir and os.path.exists(os.path.join(run_dir, "STRICT_DISPATCH_OFF")):
 
 ts    = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 lines = []
+# Advisory notices (e.g. benign post-dispatch overlay .toml drift). Written to the
+# audit log but NEVER counted toward saw_block / exit 2 — they cannot block and the
+# audit cannot distinguish a benign edit from an attack (Robustness Scn1 fix).
+advisories = []
 
 # --- key-file presence is the dual-mode authority (REQ-013/REQ-022) -----------
 key_path    = os.environ.get("AGENT_FLOW_DISPATCH_KEY_FILE") or os.path.join(run_dir, "dispatch.key")
@@ -209,21 +219,33 @@ def keyed_verdict(s, st):
         str(e.get("prompt_head_128") or ""), str(e.get("overlay_source") or ""),
         str(e.get("overlay_digest") or ""), str(e.get("stage") or ""),
         str(e.get("run_id") or ""), str(e.get("claim_nonce") or ""))
-    # Key-file presence is the authority: a legacy-shape / stripped-alg tag fails
-    # the HMAC recompute -> MISMATCH (never a silent legacy-sha256 downgrade).
+    # STRICT — the REAL integrity control. Key-file presence is the authority: a
+    # ledger-line HMAC tag that does not recompute (a tampered/forged ledger line,
+    # a legacy-shape / stripped-alg tag) -> WITNESS_MISMATCH (fail-closed, exit 2
+    # under strict). This is the dispatch-integrity check and stays strict.
     if str(e.get("tag") or "") != wc.tag(keyhex, c):
         return "WITNESS_MISMATCH"
-    # A5 ground-truth re-verify (S2 fix, REQ-031): the gate-SIGNED overlay_digest
-    # (from the ledger) vs the on-disk .toml at PostToolUse, LF-normalized. A .toml
-    # edited AFTER the gate read+signed it -> recompute != signed digest ->
-    # WITNESS_MISMATCH. NO producer claim digest is involved; the signed ledger
-    # value is the only ground truth compared against the live file.
+    # ADVISORY — NOT a dispatch-integrity failure (Robustness Scn1 "cry wolf" fix).
+    # Re-read the live on-disk .toml and compare its LF-normalized digest to the
+    # gate-SIGNED ledger digest. A difference means the .toml was edited AFTER the
+    # gate read+signed it at dispatch — a benign operator tuning the overlay, a
+    # fixer/scaffolder whose task is to write customization/*.toml, a formatter, or
+    # a branch switch. The dispatch already happened with the gate-time content, so
+    # this is NOT an integrity failure; the audit cannot tell a benign edit from an
+    # attack and PostToolUse cannot block anyway (A8). Integrity rests on the ledger
+    # HMAC tag (above, strict) and the gate-time binding (PreToolUse DENY on
+    # absent/allowlist-escape/traversal). So: log a clear notice, never MISMATCH /
+    # exit 2. See state/schema.md (Key-loss / overlay drift section).
     if str(e.get("overlay_source") or "") == "toml":
         eshort = str(e.get("subagent_type") or "").rsplit(":", 1)[-1]
         ovp = str(s.get("override_path") or "") or override_path
-        ov_status, ov_val = wo.recompute_overlay_digest(ovp, eshort, project_root=os.getcwd())
+        ov_status, ov_val = wo.recompute_overlay_digest(
+            ovp, eshort, project_root=os.getcwd(), override_root=agent_overrides_root)
         if ov_status != wo.OVERLAY_OK or ov_val != str(e.get("overlay_digest") or ""):
-            return "WITNESS_MISMATCH"
+            advisories.append(
+                "%s %s OVERLAY_DRIFT_ADVISORY on-disk .toml != gate-signed digest "
+                "(post-dispatch edit; not a dispatch-integrity failure — integrity "
+                "rests on the ledger HMAC tag + the gate-time binding)" % (ts, st))
     return "WITNESS_OK"
 
 
@@ -250,6 +272,9 @@ for st in STAGES:
     if verdict in ("WITNESS_MISMATCH", "WITNESS_UNVERIFIABLE"):
         saw_block = True
     lines.append(f"{ts} {st} {verdict}")
+
+# Advisory notices are recorded but NEVER affect saw_block / the exit code.
+lines.extend(advisories)
 
 # --- append audit lines (best-effort; never fail the tool on a log write error) ---
 try:
