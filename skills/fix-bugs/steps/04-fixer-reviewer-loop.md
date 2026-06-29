@@ -3,6 +3,20 @@
 Run the fixer ↔ reviewer iteration loop. Follow `../../../core/fixer-reviewer-loop.md` for the iteration
 protocol.
 
+## Centralized claim-write ritual (v2.0 gate-as-signer)
+
+Immediately before **every** `Task()` dispatch in this loop (each fixer and each
+reviewer iteration), perform the centralized claim-write ritual defined once in
+`../../claim-ritual.md`. The ritual mints a fresh `claim_nonce`
+(`secrets.token_hex(16)`) + a monotonic `dispatch_seq`, atomically writes the
+**claim-only** stage record into `state.json`, and atomically writes the
+top-level per-dispatch marker `.agent-flow/pending-dispatch.json` (temp +
+`os.replace`). This is the single source of truth and **supersedes** the legacy
+per-iteration `dispatch_witness` / 6-arg `compute_dispatch_witness` fields below
+on keyed (`schema_version "2.0"`) runs: the orchestrator writes no key and no
+signed tag, and the prompt head is gate-observed ground truth, not an
+orchestrator-written field.
+
 ## Pre-loop state initialization
 
 Before the first fixer dispatch, atomically write per-stage pre-dispatch fields to

@@ -2,10 +2,13 @@
 # core/lib/stage-invariant.sh
 # Runtime dispatch invariant helpers.
 #
-# Sourced by hooks/validate-dispatch.sh. Skills do NOT source this file
-# directly; thin-controller prose instructs the orchestrator what to write
-# to state.json (witness, agent_name, stage_name, prompt_head_128,
-# overlay_source, overlay_digest) before each Task() call.
+# NOT sourced by any hook. hooks/validate-dispatch.sh (PostToolUse audit) is a
+# single pure-Python process and sources nothing; the PreToolUse gate is the
+# sole keyed signer (see hooks/lib/witness_core.py). This bash library is a
+# DEMOTED, non-authoritative parity-pinned helper retained only for `--self-test`
+# and the agents/acceptance-gate.md self-check; it carries no keyed-HMAC path.
+# Skills do NOT source this file directly; thin-controller prose instructs the
+# orchestrator what to write to state.json before each Task() call.
 #
 # POSIX-compatible. Tested on Windows Git-Bash, macOS BSD-grep, Linux GNU-grep.
 # jq-free per fix-bugs convention.
@@ -120,10 +123,18 @@ __validate_witness_format() {
 
 # -----------------------------------------------------------------------------
 # __read_stage_field STAGE STATE_JSON FIELD
-#   Read stages.<STAGE>.<FIELD> from a 2-space pretty-printed state.json
-#   (jq-free; grep/sed). Echoes the unquoted scalar value, or empty string
-#   when the field is absent/null. Assumes the stage block begins within 40
-#   lines of the stage key and the field appears inside that window.
+#   Read stages.<STAGE>.<FIELD> from state.json. Echoes the value BYTE-EXACT
+#   (no trailing newline), or empty string when the field/stage is absent or
+#   JSON null.
+#
+#   A1 FIX (REQ-029): this used to extract the field with
+#   `sed -E '...([^",}]*)...'`, which TRUNCATED any value at the first `}` / `,`
+#   / `"` -- so a prompt_head_128 containing `{ISSUE_ID}` became `triage {ISSUE_ID`
+#   and produced a FALSE WITNESS_MISMATCH. It now shells to Python json.load --
+#   the SAME canonicalization the hook uses -- so there is exactly ONE JSON
+#   reader and no truncation. The value is written as raw UTF-8 bytes
+#   (sys.stdout.buffer) so non-ASCII heads survive the Windows/MSYS2 cp1252
+#   stdout trap byte-for-byte.
 #
 #   Used by check_dispatch_witness to pull every stored witness input:
 #   agent_name, model, prompt_head_128, overlay_source, overlay_digest,
@@ -134,22 +145,18 @@ __read_stage_field() {
   local state_json="$2"
   local field="$3"
   [ -f "$state_json" ] || { printf ''; return 0; }
-  local esc
-  esc=$(__regex_escape_stage "$stage")
-  local line
-  line=$(grep -A 40 "\"${esc}\"[[:space:]]*:" "$state_json" 2>/dev/null \
-         | grep -E "\"${field}\"[[:space:]]*:" | head -n 1)
-  [ -n "$line" ] || { printf ''; return 0; }
-  local val
-  # Strip the "field": prefix, then unwrap an optional surrounding quote pair,
-  # stopping at the first closing quote / comma / brace.
-  val=$(printf '%s' "$line" \
-        | sed -E "s/.*\"${field}\"[[:space:]]*:[[:space:]]*\"?([^\",}]*)\"?.*/\1/")
-  if [ "$val" = "null" ]; then
-    printf ''
-    return 0
-  fi
-  printf '%s' "$val"
+  local pybin
+  pybin="$(command -v python3 || command -v python || true)"
+  [ -n "$pybin" ] || { printf ''; return 0; }
+  "$pybin" - "$state_json" "$stage" "$field" <<'PY'
+import json, sys
+try:
+    doc = json.load(open(sys.argv[1], encoding="utf-8"))
+    v = doc.get("stages", {}).get(sys.argv[2], {}).get(sys.argv[3])
+except Exception:
+    v = None
+sys.stdout.buffer.write(b"" if v is None else str(v).encode("utf-8"))
+PY
 }
 
 # -----------------------------------------------------------------------------

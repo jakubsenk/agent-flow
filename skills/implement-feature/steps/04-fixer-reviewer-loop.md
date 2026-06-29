@@ -1,5 +1,18 @@
 # Step 04 — Fixer-Reviewer Loop (Subtask Execution)
 
+## Centralized claim-write ritual (v2.0 gate-as-signer)
+
+Immediately before **every** `Task()` dispatch in this loop, perform the
+centralized claim-write ritual defined once in `../../claim-ritual.md`. The
+ritual mints a fresh `claim_nonce` (`secrets.token_hex(16)`) + a monotonic
+`dispatch_seq`, atomically writes the **claim-only** stage record into
+`state.json`, and atomically writes the top-level per-dispatch marker
+`.agent-flow/pending-dispatch.json` (temp + `os.replace`). This is the single
+source of truth and **supersedes** the legacy `dispatch_witness` /
+`compute_dispatch_witness` fields on keyed (`schema_version "2.0"`) runs: the
+orchestrator writes no key and no signed tag, and the prompt head is
+gate-observed ground truth, not an orchestrator-written field.
+
 **Single-pass (without decomposition):** Execute steps 04a–04e once for the entire feature.
 
 **Decomposition (sequential mode):** For each subtask in topological order:
