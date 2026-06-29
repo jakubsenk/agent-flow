@@ -2,7 +2,7 @@
 
 > **v1.0.0** — Initial public release. [View on GitHub](https://github.com/asysta-act/agent-flow)
 
-A Claude Code plugin that automates the full development lifecycle — from bug triage through fix, review, test, and publish. 17 specialized AI agents, 17 orchestration skills, 17 core contracts, zero dependencies.
+A Claude Code plugin that automates the full development lifecycle — from bug triage through fix, review, test, and publish. 17 specialized AI agents, 17 orchestration skills, 17 core contracts, zero third-party PACKAGE dependencies (requires bash + Python 3, stdlib only).
 
 ```mermaid
 graph LR
@@ -43,7 +43,7 @@ graph LR
 - **Feature pipeline** — Specification extraction, architecture design, task decomposition, implementation, review, test, and publish.
 - **Project scaffolding** — Describe a project in natural language. Get a specification, buildable skeleton, and fully implemented features with tests. Use `--yolo` for full automation or `--step-mode` for per-step debugging.
 - **17 specialized agents** — Each with a defined role, model assignment (opus/sonnet/haiku), and constraints. Read-only analysts never touch code; execution agents make changes.
-- **Zero dependencies** — Pure markdown definitions. No build system, no runtime, no package manager. Works on macOS, Linux, and Windows (Git Bash required on Windows).
+- **Zero third-party PACKAGE dependencies** — Pure markdown definitions plus shell + Python hooks. No build system, no package manager; it requires only bash + Python 3 (stdlib only) on PATH. Works on macOS, Linux, and Windows (Git Bash required on Windows).
 
 ---
 

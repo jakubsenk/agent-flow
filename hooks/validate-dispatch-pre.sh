@@ -119,7 +119,7 @@ def best_effort_append(path, text):
         d = os.path.dirname(path)
         if d:
             os.makedirs(d, exist_ok=True)
-        with open(path, "a", encoding="utf-8") as f:
+        with open(path, "a", encoding="utf-8", newline="\n") as f:
             f.write(text)
     except Exception:
         pass
@@ -224,7 +224,7 @@ def append_ledger(ledger_path, entry):
     d = os.path.dirname(ledger_path)
     if d:
         os.makedirs(d, exist_ok=True)
-    with open(ledger_path, "a", encoding="utf-8") as f:
+    with open(ledger_path, "a", encoding="utf-8", newline="\n") as f:
         f.write(json.dumps(entry, separators=(",", ":")) + "\n")
 
 

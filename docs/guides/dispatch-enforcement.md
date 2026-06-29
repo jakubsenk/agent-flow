@@ -1,21 +1,42 @@
 # Dispatch Enforcement Guide
 
-<!-- check-tags: what it does:validates|audits|tracks|dispatch 3-layer|three.layer|Layer 1|Layer 2 installation|install troubleshoot|debug|diagnose advisory|exit 0|non-blocking Autopilot limitation|limitation Autopilot -->
+<!-- check-tags: what it does:validates|audits|tracks|dispatch 3-layer|three.layer|Layer 1|Layer 2 installation|install troubleshoot|debug|diagnose advisory|exit 0|non-blocking Autopilot limitation|limitation Autopilot rollback|toggle|STRICT_DISPATCH_OFF -->
 
-**Component:** `hooks/validate-dispatch.sh`
+**Components:** `hooks/validate-dispatch-pre.sh` (PreToolUse `Task` gate),
+`hooks/validate-dispatch.sh` (PostToolUse audit)
 **Type:** Operator opt-in (NOT auto-installed)
 
 ---
 
-## What it does
+## Two hooks: a blocking gate and an advisory audit (finding A8)
 
-The dispatch enforcement hook validates that each agent-flow pipeline stage
+As of v2.0.0 dispatch enforcement is **two** hooks with clearly separated roles:
+
+- **PreToolUse `Task` gate** (`hooks/validate-dispatch-pre.sh`) — the only
+  component that holds the per-run key and the only one that can **block** a
+  dispatch. It verifies the in-flight `Task` payload against the orchestrator's
+  CLAIM, signs an HMAC-SHA256 keyed tag into the gate-owned ledger, and on a
+  verified match ALLOWs. On a mismatch it emits a deny envelope and `exit 2`,
+  which blocks the dispatch **before the tool runs** (Claude Code ≥ 2.1.90).
+- **PostToolUse audit** (`hooks/validate-dispatch.sh`) — a second layer that
+  re-verifies the gate's ledger signature and records a verdict. It runs **after**
+  the tool, so it **cannot block** (finding A8); its `exit 2` under strict mode is
+  a forensic signal, not a rollback. "Fails the dispatch" language refers only to
+  the PreToolUse gate.
+
+Both hooks are pure Python (the keyed compute/verify lives in
+`hooks/lib/witness_core.py`; the bash `core/lib/stage-invariant.sh` keyed path is
+demoted to a parity-pinned self-test and is **not** sourced by either hook).
+
+---
+
+## What the PostToolUse audit does
+
+The PostToolUse audit validates that each agent-flow pipeline stage
 populated a `dispatched_at` timestamp in `state.json` before handing off to
-its subagent via the Task tool. It audits whether the 3-layer dispatch enforcement
-architecture (Layer 1: imperative, Layer 2: hook, Layer 4: scenario gate) is
-working end-to-end.
+its subagent via the Task tool, and re-verifies the gate signature.
 
-Concretely, the hook:
+Concretely, the audit:
 
 1. Fires on every PostToolUse event (after any tool completes).
 2. Locates the current pipeline's `state.json` under `.agent-flow/`.
@@ -25,25 +46,30 @@ Concretely, the hook:
    `acceptance_gate`, `publisher` (10 stages):
    - **Presence audit** — checks each stage for a `dispatched_at` timestamp and
      emits one `OK` / `MISSING` line per stage.
-   - **Dispatch-witness audit** — when `core/lib/stage-invariant.sh` is sourced
-     (plugin-relative or repo-relative), runs `check_dispatch_witness` per stage
-     and emits one `WITNESS_OK` / `WITNESS_MISSING` / `WITNESS_MISMATCH` line per
-     stage. V1 recomputes `sha256(agent_name|model|prompt_head_128|overlay_source|overlay_digest)`
-     from the stored stage fields and compares it to the stored `dispatch_witness`;
-     V2 checks overlay-presence (an available `<override>/<agent>.toml` that the
-     stage did not record as `overlay_source: toml`).
-4. Appends those audit lines to `.agent-flow/dispatch-audit.log`.
+   - **Dispatch-witness audit** — pure Python (`hooks/lib/witness_core.py`),
+     dual-mode by **key-file presence**. On a keyed run (`0600 dispatch.key`
+     present, `schema_version "2.0"`) it re-verifies every line of the gate-owned
+     ledger `.agent-flow/{RUN-ID}/dispatch-ledger.jsonl` — recomputing the
+     HMAC-SHA256 tag over the per-field sub-hashed canonical preimage and emitting
+     `WITNESS_OK` / `WITNESS_MISSING` / `WITNESS_MISMATCH` / `WITNESS_UNVERIFIABLE`
+     per stage; a key-present claimed stage with no matching ledger line, or a key
+     lost on a progressed run, is `WITNESS_UNVERIFIABLE`. On a legacy keyless v1.0
+     run it falls back to the V1 sha256 recompute + V2 overlay-presence dual-mode
+     (never a false `WITNESS_MISMATCH`).
+4. Appends those audit lines to `.agent-flow/dispatch-audit.log` (a **best-effort
+   append-only audit log** — `<ISO-ts> <stage> <verdict>` lines only; no key, no
+   tag, no preimage).
 5. Exit code: the **presence audit is always advisory (exit 0)**. The
    **witness audit is strict by default** — it exits 2 when any stage produces
-   `WITNESS_MISMATCH` during the pass, unless `AGENT_FLOW_STRICT_DISPATCH=0`
-   makes it advisory too.
+   `WITNESS_MISMATCH` or `WITNESS_UNVERIFIABLE`, unless advisory
+   (`AGENT_FLOW_STRICT_DISPATCH=0` or a `STRICT_DISPATCH_OFF` flag file).
 
-Even under strict mode the exit 2 is non-blocking in practice: PostToolUse hooks
-fire *after* the tool has already executed, so exit 2 cannot undo it (see
-`docs/reference/hooks.md` → Exit code semantics). The strict gate surfaces the
-mismatch as a signal in the transcript; it does not roll back the pipeline.
-`WITNESS_MISSING` is never strict-fatal — legitimately skipped stages and stages
-with absent witness inputs produce `MISSING`, not `MISMATCH`.
+Even under strict mode the audit's exit 2 is non-blocking in practice: PostToolUse
+hooks fire *after* the tool has already executed, so exit 2 cannot undo it (finding
+A8; see `docs/reference/hooks.md` → Exit code semantics). The audit surfaces the
+mismatch as a forensic signal in the transcript; the real block is the PreToolUse
+gate. `WITNESS_MISSING` is never strict-fatal — legitimately skipped stages and
+stages with absent witness inputs produce `MISSING`, not `MISMATCH`.
 
 ---
 
@@ -164,14 +190,46 @@ extra informational line is also appended:
 
 ## Environment variables
 
-The hook reads these (clean-break `AGENT_FLOW_` prefix):
+Both hooks read these (clean-break `AGENT_FLOW_` prefix):
 
 | Variable | Effect |
 |----------|--------|
-| `AGENT_FLOW_STRICT_DISPATCH` | Witness audit is strict (exit 2 on `WITNESS_MISMATCH`) unless set to `0` (advisory). The presence audit is always advisory regardless. |
+| `AGENT_FLOW_STRICT_DISPATCH` | Strict (gate denies; audit exits 2 on `WITNESS_MISMATCH`/`WITNESS_UNVERIFIABLE`) unless set to `0` (advisory). The presence audit is always advisory regardless. |
+| `AGENT_FLOW_DISPATCH_KEY_FILE` | Override the per-run key-file PATH (never the value; default: `dispatch.key` sibling of `state.json`). |
+| `AGENT_FLOW_LEDGER` | Override the gate-owned ledger path (default `.agent-flow/{RUN-ID}/dispatch-ledger.jsonl`). |
+| `AGENT_FLOW_MARKER_TTL` | Gate marker freshness window in seconds (default 120). |
 | `AGENT_FLOW_AUDIT_LOG` | Override the audit-log path (default `.agent-flow/dispatch-audit.log`). |
-| `AGENT_FLOW_STATE_JSON` | Override the `state.json` path (default: newest `.agent-flow/*/state.json`). |
-| `AGENT_FLOW_OVERRIDE_PATH` | Overlay override dir used by the V2 overlay-presence check (default `customization/`). The hook reads the default location only — a documented limitation. |
+| `AGENT_FLOW_STATE_JSON` | Override the `state.json` path (audit only; default: newest `.agent-flow/*/state.json`). |
+| `AGENT_FLOW_OVERRIDE_PATH` | Overlay override dir of last resort; the gate/audit prefer the per-stage `override_path` persisted in `state.json` (the Claude-Code-spawned hook never inherits the skill's env). |
+
+---
+
+## Rollback runbook (advisory toggle)
+
+Dispatch enforcement is **strict by default**. Because the gate is spawned by
+Claude Code and inherits no skill shell env, a bare `export
+AGENT_FLOW_STRICT_DISPATCH=0` in a project file the *skills* source does NOT reach
+the hook. Use these levers instead:
+
+**Lever 1 — advisory mode (downgrade DENY → allow, both hooks keep recording):**
+
+1. **`env` block in `.claude/settings.json`** (the persistent lever) — Claude Code
+   injects it into hook process env at session start:
+   ```json
+   { "env": { "AGENT_FLOW_STRICT_DISPATCH": "0" } }
+   ```
+2. **Top-level flag file** `.agent-flow/STRICT_DISPATCH_OFF` (the reliable in-run
+   lever) — checked by the gate **first**, before any marker/run resolution, so it
+   works even when marker/run resolution is the failing component:
+   ```bash
+   touch .agent-flow/STRICT_DISPATCH_OFF
+   ```
+   A narrower per-run flag `.agent-flow/{RUN-ID}/STRICT_DISPATCH_OFF` scopes the
+   downgrade to one run (resolved from the marker run dir).
+
+**Lever 2 — hard fallback (disable the gate entirely):** remove the PreToolUse
+`Task` matcher entry from `settings.json`. With the matcher gone the gate never
+fires and no dispatch is blocked.
 
 ---
 

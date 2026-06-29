@@ -2,7 +2,9 @@
 
 This document defines the structure of `.agent-flow/{RUN-ID}/state.json`, the pipeline run state file written and updated by agent-flow commands.
 
-> **Note:** The six per-stage usage fields (`tokens_used`, `duration_ms`, `tool_uses`, `model`, `started_at`, `completed_at`) and the top-level `pipeline` accumulator are additive additions. `schema_version` remains `"1.0"`. Older readers that do not recognize these fields will ignore them — no schema version bump is needed.
+> **Note:** The six per-stage usage fields (`tokens_used`, `duration_ms`, `tool_uses`, `model`, `started_at`, `completed_at`) and the top-level `pipeline` accumulator are additive additions; they keep `schema_version` Always `"1.0"` (additive — no bump). Older readers that do not recognize these fields will ignore them.
+>
+> **Schema v2.0 (PR #15 — keyed dispatch witness).** Keyed runs set top-level `schema_version "2.0"`. This is the **first non-additive** schema change: the dispatch witness moves from an orchestrator-written `sha256` field in `state.json` to a gate-signed HMAC keyed tag recorded in the gate-owned ledger, and the CLAIM gains `claim_nonce`, `dispatch_seq`, and `override_path`. Legacy `"1.0"` runs remain valid and are verified under the legacy sha256 dual-mode (never a false `WITNESS_MISMATCH`).
 
 ## Directory Layout
 
@@ -211,7 +213,7 @@ Timestamp format: `YYYYMMDD-HHmmss` (local time of pipeline start).
 
 | Field | Type | Required | Default | Description |
 |-------|------|----------|---------|-------------|
-| `schema_version` | string | Yes | `"1.0"` | Schema version. Always `"1.0"` for this specification. Enables future schema evolution. |
+| `schema_version` | string | Yes | `"1.0"` | Schema version. `"1.0"` for legacy keyless runs; **`"2.0"`** for keyed runs (PR #15 gate-as-signer dispatch witness) — the first **non-additive** change. Written by the orchestrator at run-init. |
 | `run_id` | string | Yes | — | Unique identifier for this pipeline run. See RUN-ID Determination above. |
 | `parent_run_id` | string or null | No | `null` | Run ID of the parent pipeline that spawned this run. Set when scaffold creates sub-runs for feature implementation. |
 | `mode` | string | Yes | — | One of: `code-bugfix`, `code-feature`, `code-project`, `analysis`, `strategy`, `content`. |
@@ -396,16 +398,31 @@ Applies to all stages in the hardcoded `STAGES` whitelist (10 entries): `triage`
 
 #### `stages.{stage}.dispatch_witness`
 
-- **Type:** string (lowercase hex sha256, exactly 64 characters; pattern `^[0-9a-f]{64}$`)
-- **Purpose:** Cryptographic receipt of the Task() dispatch parameters, computed before Task tool invocation. Consumed by PostToolUse hook `hooks/validate-dispatch.sh` via `core/lib/stage-invariant.sh::check_dispatch_witness` for runtime dispatch enforcement audit.
+> **v2.0 keyed witness (PR #15 gate-as-signer).** On keyed runs (`schema_version "2.0"`)
+> the signed witness is **NOT** written into `state.json`. The PreToolUse `Task` gate
+> (`hooks/validate-dispatch-pre.sh`, the sole per-run key holder) computes an
+> **HMAC-SHA256 keyed tag** over a per-field sub-hashed canonical preimage and records it as
+> one append-only line in the **gate-owned ledger** `.agent-flow/{RUN-ID}/dispatch-ledger.jsonl`,
+> keyed by `(run_id, stage, claim_nonce)`. The preimage folds
+> `subagent_type | model | prompt_head_128 | overlay_source | overlay_digest | stage | run_id | claim_nonce`
+> (each field sha256-subhashed, joined by `|`); the HMAC key is the ASCII bytes of the 64-hex
+> per-run key (`.agent-flow/{RUN-ID}/dispatch.key`, `0600`). The PostToolUse audit re-verifies
+> every ledger tag and **cannot block** (only the PreToolUse gate blocks — finding A8). The
+> security authority for "is this run keyed" is the **presence of the `0600 dispatch.key`**, not
+> any in-file `dispatch_witness_alg`/`schema_version` hint. `state.json` carries the CLAIM
+> (no key, no tag); the ledger carries the signature; the key file is the secret. The legacy
+> v1.0 `sha256` description below remains the contract for keyless `schema_version "1.0"` runs.
+
+- **Type (v1.0 legacy):** string (lowercase hex sha256, exactly 64 characters; pattern `^[0-9a-f]{64}$`)
+- **Purpose:** Receipt of the Task() dispatch parameters. On v1.0 runs it is computed before Task tool invocation and audited by the pure-Python PostToolUse hook `hooks/validate-dispatch.sh`. (The hook is pure Python and sources nothing; the bash `core/lib/stage-invariant.sh::check_dispatch_witness` path is demoted to a parity-pinned self-test — REQ-030.)
 - **Absence:** field MAY be absent for stages completed in older pipeline runs or for stages legitimately skipped (legitimate skips write `status: "skipped"` separately). The PostToolUse hook treats absence as `WITNESS_MISSING` (audit-log line), NEVER as a pipeline failure. By contrast `WITNESS_MISMATCH` (a TRUE inconsistency) causes `exit 2` under the strict-by-default gate — see `AGENT_FLOW_STRICT_DISPATCH` below.
 - **Added by:** orchestrator, immediately before Task tool dispatch, in the same atomic state.json write as `dispatched_at`, `agent_name`, `stage_name`, `prompt_head_128`, `overlay_source`, `overlay_digest`, and `status = "in_progress"`.
-- **Canonicalization (5-tuple):** `sha256("<subagent_type>|<model>|<prompt_head_128>|<overlay_source>|<overlay_digest>")` — five pipe-separated inputs, no trailing newline — where:
+- **Canonicalization (v1.0 legacy 5-tuple):** `sha256("<subagent_type>|<model>|<prompt_head_128>|<overlay_source>|<overlay_digest>")` — five pipe-separated inputs, no trailing newline — where (v2.0 keyed runs use the gate-signed sub-hashed HMAC preimage in the banner above instead):
   - `subagent_type` = the Task tool's `subagent_type` argument (e.g., `agent-flow:test-engineer`); equals the stored `agent_name`.
   - `model` = the agent's `model:` frontmatter field (e.g., `sonnet`, `opus`, `haiku`).
   - `prompt_head_128` = the first 128 UTF-8-safe bytes of the prompt template string BEFORE Tier-1 variable substitution (i.e., with `${VAR}` placeholders un-expanded). UTF-8 safety means the truncation boundary aligns with the last whole codepoint within the 128-byte budget.
   - `overlay_source` = `toml` | `none` | `md_rejected` (the exact value the Agent Override Injector records).
-  - `overlay_digest` = sha256 hex (64 lowercase) of the rendered overlay Markdown block when `overlay_source=toml`, else the literal string `none` / `md_rejected` (see `overlay_digest` field below). Folding the overlay in binds it into the receipt: dropping a TOML overlay flips `overlay_source` `toml`→`none` AND `overlay_digest`→`none`, changing the witness.
+  - `overlay_digest` (v1.0) = sha256 hex (64 lowercase) of the rendered overlay Markdown block when `overlay_source=toml`, else the literal string `none` / `md_rejected` (see `overlay_digest` field below). **v2.0 redefines `overlay_digest` as the sha256 of the RAW, LF-normalized `.toml` file bytes** at `override_path/<short>.toml` (not the rendered block) — REQ-031. Folding the overlay in binds it into the receipt: dropping a TOML overlay flips `overlay_source` `toml`→`none` AND `overlay_digest`→`none`, changing the witness.
 - **Computed by:** `core/lib/stage-invariant.sh::compute_dispatch_witness STAGE SUBAGENT_TYPE MODEL PROMPT_HEAD_128 OVERLAY_SOURCE OVERLAY_DIGEST`. The overlay digest column is produced by `compute_overlay_digest` in the same lib.
 - **Verification (hook):** `check_dispatch_witness STAGE STATE_JSON [OVERRIDE_PATH]` performs **V1** (recompute the 5-tuple sha256 from the STORED stage fields and compare to the stored `dispatch_witness` — mismatch ⇒ `WITNESS_MISMATCH`) AND **V2** (overlay-presence: if `<OVERRIDE_PATH>/<agent-short>.toml` exists on disk but the stage's `overlay_source != toml` ⇒ `WITNESS_MISMATCH`). `OVERRIDE_PATH` defaults to `customization/`.
 - **Stability guarantee:** the witness is stable across resume cycles (the same template + same overlay renders to the same witness regardless of how many times the stage is resumed).
@@ -414,8 +431,15 @@ Applies to all stages in the hardcoded `STAGES` whitelist (10 entries): `triage`
 
 #### `stages.{stage}.prompt_head_128`
 
-- **Type:** string (≤128 UTF-8 bytes; verbatim head of the RAW prompt template)
-- **Purpose:** The first 128 UTF-8-safe bytes of the prompt template BEFORE Tier-1 variable substitution. Stored so the PostToolUse hook can RECOMPUTE the witness (V1) jq-free without re-reading the agent prompt files.
+> **v2.0:** `prompt_head_128` is **NOT** an orchestrator-committed/compared CLAIM field on keyed
+> runs. The gate OBSERVES the post-expansion dispatched head — `head128(tool_input.prompt)`
+> (LF-normalize → UTF-8 encode → first 128 bytes → drop a trailing partial codepoint) — and signs
+> it as ground truth (REQ-003/REQ-051). There is no orchestrator-vs-gate prompt-head comparison, so
+> an LLM's inability to byte-exactly pre-commit the dispatched prompt is not a false-DENY source. The
+> field below describes the v1.0 stored value only.
+
+- **Type (v1.0):** string (≤128 UTF-8 bytes; verbatim head of the RAW prompt template)
+- **Purpose:** The first 128 UTF-8-safe bytes of the prompt template BEFORE Tier-1 variable substitution. Stored so the v1.0 PostToolUse audit can recompute the legacy sha256 witness jq-free without re-reading the agent prompt files.
 - **Sensitivity:** SAFE TO SERIALIZE — contains NO secrets. Because Tier-1 variables (`ISSUE_ID`, `BRANCH_NAME`, `TICKET_ID`, `EXPECTED_AGENT_NAME`, etc.) are UN-EXPANDED (`${VAR}` placeholders left literal), no secret value can leak into this field. It is the public base-template head, identical to what `compute_dispatch_witness` hashes. (See the Sensitive field exclusion contract reasoning — this field is INCLUDE/public.)
 - **Absence:** field MAY be absent for older runs or legitimately skipped stages. The hook treats a missing required witness input as `WITNESS_MISSING`, NEVER a pipeline failure.
 - **Added by:** orchestrator, in the same atomic state.json write as `dispatch_witness`, immediately before Task() dispatch.
@@ -434,13 +458,34 @@ Applies to all stages in the hardcoded `STAGES` whitelist (10 entries): `triage`
 - **Type:** string — either a 64-char lowercase sha256 hex (`^[0-9a-f]{64}$`) or the literal `none` / `md_rejected`.
 - **Purpose:** The content digest of the applied overlay; the 5th input of the `dispatch_witness` 5-tuple. Binds WHICH overlay (by content) was applied, not merely that one was present.
 - **Value rules:**
-  - `overlay_source=toml` → sha256 hex (64 lowercase) of the VERBATIM rendered overlay Markdown block (the exact text the injector appends to the prompt).
+  - `overlay_source=toml` → **v2.0:** sha256 hex (64 lowercase) of the **RAW, LF-normalized `.toml` file bytes** at `override_path/<short>.toml` (read once, hashed from the held bytes — no renderer coupling), REQ-031. **v1.0 (legacy):** sha256 of the VERBATIM rendered overlay Markdown block.
   - `overlay_source=none` → literal string `none`.
   - `overlay_source=md_rejected` → literal string `md_rejected`.
-- **Computed by:** `core/lib/stage-invariant.sh::compute_overlay_digest OVERLAY_SOURCE [RENDERED_BLOCK]` (reuses the same sha256 tool selection as `compute_dispatch_witness`).
+- **Computed by:** v2.0 — the gate via `hooks/lib/witness_overlay.py::recompute_overlay_digest` (RAW `.toml` bytes); v1.0 — `core/lib/stage-invariant.sh::compute_overlay_digest OVERLAY_SOURCE [RENDERED_BLOCK]`.
 - **Sensitivity:** SAFE TO SERIALIZE — a digest or a fixed literal; no secrets.
-- **Added by:** orchestrator, in the same atomic write as `dispatch_witness`.
-- **Schema version impact:** `schema_version` REMAINS `"1.0"`. Additive.
+- **Added by:** orchestrator, in the same atomic write as the CLAIM.
+- **Schema version impact:** `"2.0"` on keyed runs; legacy keyless runs remain `"1.0"`.
+
+#### `stages.{stage}.override_path` (v2.0)
+
+- **Type:** string or null
+- **Purpose:** The *resolved* overlay lookup directory the orchestrator used for this stage (default `customization/`), persisted into the CLAIM so the gate and audit read it from `state.json` rather than the `AGENT_FLOW_OVERRIDE_PATH` env (the Claude-Code-spawned hook never inherits the skill's env — REQ-032/A6). The gate confines it to a configured allowlist and applies the `<short>`-name path-traversal guard (REQ-031/REQ-038) before forming `override_path/<short>.toml`.
+- **Added by:** orchestrator, in the same atomic write as the CLAIM. `AGENT_FLOW_OVERRIDE_PATH` remains an override of last resort.
+- **Schema version impact:** v2.0 keyed runs.
+
+#### `stages.{stage}.claim_nonce` (v2.0)
+
+- **Type:** string (32-hex, `secrets.token_hex(16)`)
+- **Purpose:** A per-dispatch unique token the orchestrator mints into both the CLAIM and the top-level marker. It is folded into the signed preimage and the ledger key `(run_id, stage, claim_nonce)` to defeat intra-stage / cross-dispatch replay (e.g. the ≤5× `fixer_reviewer` loop, repeated `test`/`e2e` dispatches). A repeat `claim_nonce` already present in the ledger is a replay and the gate DENYs (REQ-011/REQ-014).
+- **Added by:** orchestrator, in the same atomic write as the CLAIM. Never a secret.
+- **Schema version impact:** v2.0 keyed runs.
+
+#### `stages.{stage}.dispatch_seq` (v2.0)
+
+- **Type:** integer (per-run monotonic)
+- **Purpose:** A per-run monotonically increasing dispatch counter the orchestrator increments before each `Task()` and writes into the CLAIM and marker. The gate DENYs a marker whose `dispatch_seq ≤` the last consumed value for the run (a stale marker / replay — REQ-046 row g1). The audit uses the highest `dispatch_seq` (then `signed_at`) to pick the winning ledger entry for a stage.
+- **Added by:** orchestrator, in the same atomic write as the CLAIM.
+- **Schema version impact:** v2.0 keyed runs.
 
 #### `stages.{stage}.agent_name`
 
@@ -475,18 +520,30 @@ Applies to all stages in the hardcoded `STAGES` whitelist (10 entries): `triage`
 - **Added by:** orchestrator/override-injector, in the same atomic state.json write as `dispatched_at`, `dispatch_witness`, `agent_name`, and `stage_name`, immediately before Task() dispatch (the same pre-dispatch ritual as the witness).
 - **Schema version impact:** `schema_version` REMAINS `"1.0"`. This field is additive — backward-compatible; legacy runs without it remain valid.
 
-#### Threat model (dispatch witness - honest acknowledgment)
+#### Threat model (dispatch witness — honest delta)
 
-The `dispatch_witness` field is a **dispatch RECEIPT, not a cryptographic ATTESTATION**. The threat model is explicit about the following properties:
+> **Schema v2.0 (keyed runs).** The text below is the honest guarantee delta for the
+> gate-signed HMAC keyed witness introduced in v2.0.0 (`schema_version "2.0"`). It uses a
+> closed allowlist of qualified phrasing — it deliberately states what keying does and does
+> not buy, and avoids over-claiming a boundary the architecture cannot provide. Legacy
+> `schema_version "1.0"` runs keep the additive `sha256` receipt described above.
 
-1. **Witness attests "orchestrator WROTE the witness," not "subagent RAN."** All five witness inputs (`subagent_type`, `model`, `prompt_head_128`, `overlay_source`, `overlay_digest`) are public - anyone with read access to the repo can compute the expected witness. An orchestrator that silently skips Task() can ALSO write the correct witness to state.json with no Task() invocation, producing WITNESS_OK indistinguishable from a real dispatch.
-2. **Witness now BINDS the overlay (closes the documented "overlay invisible to witness" gap).** The 5-tuple folds `overlay_source` + `overlay_digest` into the hash, so the receipt records WHICH overlay (by content digest) was applied. **V1** (recompute-and-compare against the stored inputs) catches witness-field tampering/corruption and any inconsistency between the stored overlay fields and the stored witness.
-3. **V2 closes the dropped-overlay case WHEN the `.toml` is present on disk.** The hook derives the agent short name from `agent_name` and checks `<override_path>/<short>.toml`. If that overlay file EXISTS but the stage recorded `overlay_source != toml`, the hook returns `WITNESS_MISMATCH` — catching an available overlay that was silently not applied/recorded. The hook reads the DEFAULT override path (`customization/`, or `AGENT_FLOW_OVERRIDE_PATH`) only — overlays under a non-default configured path are not re-checked (documented limitation).
-4. **Defense relies on COMBINATION** of L2 (V1 recompute + V2 overlay-presence) + L1 (thin-controller prose forces the orchestrator's mental model toward the dispatch table) + L4 (terminal surface for residual anomalies). No single layer is sufficient against an adversarial or hallucinating orchestrator.
-5. **Residual honest limitation — a consistent liar still passes V1.** An orchestrator that drops the overlay AND records `overlay_source=none` + `overlay_digest=none` AND recomputes the matching witness still passes V1. V2 catches this ONLY if the `.toml` file exists at the default override path; if the overlay file is absent (or under a non-default path), the lie is undetectable. This is the **receipt-not-attestation** residual: the witness proves consistency of recorded inputs, not faithful execution.
-6. **Pre-dispatch write + crash window:** if the orchestrator writes the atomic state.json block (including `dispatch_witness`) then crashes before Task(), the witness is present but the subagent never ran. Hook reports WITNESS_OK. Resume detection treats `dispatched_at` + `status="in_progress"` as "agent was dispatched but didn't complete" and may resume from the next stage. This is a known limitation; mitigation relies on L1 (thin-controller minimizes the window) and L4 (resumed run will surface the inconsistency in the audit log).
+The keyed dispatch witness is a signed RECEIPT of a dispatch's reproducible inputs; it is **not an attestation** of execution.
 
-Future hardening (deferred): a post-dispatch witness-confirmation written by the subagent (rather than by the orchestrator) would attest subagent execution. The current design explicitly accepts the receipt-not-attestation tradeoff.
+**What keying buys.**
+
+1. **Detection of out-of-key tampering.** Any party WITHOUT the run's per-run key (outsiders, a malicious PR shipping a pre-baked `state.json`, at-rest or in-transit edits) can no longer mint or silently alter a passing witness; this **detection of out-of-key tampering** is the load-bearing gain.
+2. **A real pre-dispatch block.** The PreToolUse `Task` gate (`hooks/validate-dispatch-pre.sh`) denies a dispatch whose in-flight payload fails verification BEFORE the tool runs (Claude Code ≥ 2.1.90), which makes the keyless→keyed gate non-bypassable-by-omission for a governed stage.
+
+**What keying does NOT buy (residuals).**
+
+- It **does NOT prove the subagent ran**: a pre-dispatch write followed by a crash, or an orchestrator that skips `Task()` for an unmarked stage, leaves no proof of execution.
+- It does not stop a **deliberately malicious same-OS-user process**: that actor can read the gate's key file and forge, skip `Task()`, set `disableAllHooks: true`, or delete the key — **a same-user producer can still forge.** True producer-unforgeability requires a **separate OS trust domain** (different UID / sandbox / TPM / OS-keychain), which breaks the bash + Python-stdlib, Windows/MSYS2, no-daemon constraints and is **OUT OF SCOPE** here (a noted future direction).
+- **Marker-deletion DoS (availability residual).** An actor with write access to `.agent-flow/` can delete or back-date the unsigned `pending-dispatch.json` marker to brick (DENY) a dispatch — a cheap availability attack (a DoS), but it **cannot forge** a passing witness: every marker-failure path fails closed. There is **no** prompt-head-drift residual, because the gate observes-and-signs the dispatched head as ground truth rather than comparing an orchestrator claim, so `AGENT_FLOW_STRICT_DISPATCH=0` is not a mitigation for a head-drift mode that no longer exists.
+
+**Role separation.** The gate is a **separate verifier role, same trust domain** — a genuinely distinct process and code path, but the same OS principal reading the same secret. The witness is therefore a checkable receipt, not a cross-domain proof.
+
+**Audit log.** The PostToolUse audit (`hooks/validate-dispatch.sh`) writes a **best-effort append-only audit log** at `.agent-flow/dispatch-audit.log` (override `AGENT_FLOW_AUDIT_LOG`); it records `<ISO-ts> <stage> <verdict>` lines only — never the key, an HMAC tag, or a preimage. A plain append is **NOT tamper-evident** against the same-OS-user actor above (a co-signed hash-chained ledger is deferred to a follow-up MINOR). The audit re-verifies the gate's signature and **cannot block** (it runs after the tool — finding A8); only the PreToolUse gate blocks.
 
 #### Strict-by-default enforcement (`AGENT_FLOW_STRICT_DISPATCH`)
 

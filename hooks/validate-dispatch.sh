@@ -245,7 +245,7 @@ try:
     d = os.path.dirname(audit_log)
     if d:
         os.makedirs(d, exist_ok=True)
-    with open(audit_log, "a", encoding="utf-8") as f:
+    with open(audit_log, "a", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(lines) + "\n")
 except Exception:
     pass

@@ -92,8 +92,10 @@ if [ -f "$AUDIT" ] && [ -f "$FIX" ] && [ -n "$PYBIN" ]; then
   # Every non-empty line is `<iso-ts> <stage> <verdict>`.
   while IFS= read -r line || [ -n "$line" ]; do
     [ -n "$line" ] || continue
-    matches_re "$line" '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]+Z[[:space:]]+[a-z_]+[[:space:]]+WITNESS_[A-Z]+$' \
-      || matches_re "$line" '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]+Z[[:space:]]+[a-z_]+[[:space:]]+(OK|MISSING)$' \
+    # Stage-name class is [a-z0-9_]+ (not [a-z_]+): the hardcoded stage "e2e_test"
+    # contains a digit. Same house rule documented in stage-list-consistency.sh:48.
+    matches_re "$line" '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]+Z[[:space:]]+[a-z0-9_]+[[:space:]]+WITNESS_[A-Z]+$' \
+      || matches_re "$line" '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]+Z[[:space:]]+[a-z0-9_]+[[:space:]]+(OK|MISSING)$' \
       || fail "audit-log: line not in '<iso> <stage> <verdict>' form -> $line"
   done < "$alog"
 fi
