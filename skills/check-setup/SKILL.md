@@ -286,6 +286,85 @@ All `[FAIL]` results in this block **count toward the final FAIL verdict** — a
 overlay means a configured customization is silently not being applied, which is a setup defect. A
 clean project with no overlays yields `[SKIP]` and never affects the verdict.
 
+### Block 8: Keyed Dispatch Witness Prerequisites (PR #15)
+
+The gate-as-signer dispatch witness (`hooks/validate-dispatch-pre.sh` PreToolUse gate +
+`hooks/validate-dispatch.sh` PostToolUse audit) is **pure Python stdlib** (`hmac`, `hashlib`,
+`secrets`) — there is **no bash HMAC fallback**. The PreToolUse gate can only **BLOCK** a bad
+dispatch (deny + `exit 2`) on **Claude Code >= 2.1.90** (issue #26923: `Task` exit-2 was a no-op
+before that). This block asserts those preconditions so the marquee guarantee is not mere
+documentation.
+
+17. Run the prerequisite probes:
+
+```bash
+# Block 8: keyed dispatch witness prerequisites
+
+# (1) Python 3 stdlib — the keyed HMAC gate + audit are pure Python (stdlib only; NO bash fallback).
+if command -v python3 >/dev/null 2>&1 && python3 -c 'import sys,hmac,hashlib,secrets' >/dev/null 2>&1; then
+  echo "[OK] Dispatch witness - Python 3 stdlib (hmac, hashlib, secrets) importable"
+elif command -v python >/dev/null 2>&1 && python -c 'import sys,hmac,hashlib,secrets' >/dev/null 2>&1; then
+  echo "[OK] Dispatch witness - Python 3 stdlib (hmac, hashlib, secrets) importable (python)"
+else
+  echo "[FAIL] Dispatch witness - no runnable Python 3 with stdlib hmac/hashlib/secrets on PATH. The PreToolUse gate and PostToolUse audit are pure Python (stdlib only); there is NO bash HMAC fallback. Fix: install Python 3 on PATH."
+fi
+
+# (2) TOML parser for agent-overlay model resolution (tomllib >= 3.11, OR the tomli backport on 3.10.x).
+if python3 -c 'import tomllib' >/dev/null 2>&1 || python3 -c 'import tomli' >/dev/null 2>&1; then
+  echo "[OK] Dispatch witness - TOML overlay parser available (tomllib or tomli) for shared model resolution"
+else
+  echo "[WARN] Dispatch witness - no TOML parser (tomllib on Python 3.11+, or the tomli backport on 3.10.x). Overlay model resolution is then SKIPPED identically on both gate and orchestrator (frontmatter/claim model is bound). Install Python 3.11+ or run 'python3 -m pip install tomli' to bind overlay model overrides."
+fi
+
+# (3) Claude Code >= 2.1.90 — the LOAD-BEARING precondition for the PreToolUse 'true block'.
+cc_ver=$(claude --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+if [ -z "$cc_ver" ]; then
+  echo "[WARN] Dispatch witness - could not parse 'claude --version'. The PreToolUse gate needs Claude Code >= 2.1.90 to BLOCK a failing dispatch (older clients silently degrade to PostToolUse-advisory). Verify your version manually."
+else
+  cc_major=${cc_ver%%.*}; cc_rest=${cc_ver#*.}; cc_minor=${cc_rest%%.*}; cc_patch=${cc_rest##*.}
+  if [ "$cc_major" -gt 2 ] \
+     || { [ "$cc_major" -eq 2 ] && [ "$cc_minor" -gt 1 ]; } \
+     || { [ "$cc_major" -eq 2 ] && [ "$cc_minor" -eq 1 ] && [ "$cc_patch" -ge 90 ]; }; then
+    echo "[OK] Dispatch witness - Claude Code ${cc_ver} (>= 2.1.90; PreToolUse gate can block)"
+  else
+    echo "[FAIL] Dispatch witness - Claude Code ${cc_ver} < 2.1.90. The PreToolUse Task gate CANNOT block (deny + exit 2 is a no-op before 2.1.90, issue #26923); dispatch enforcement silently degrades to PostToolUse-advisory. Fix: upgrade Claude Code to >= 2.1.90."
+  fi
+fi
+```
+
+The `claude --version` parse is the **load-bearing primary**: a parseable version `< 2.1.90` is a
+hard `[FAIL]`; an unparseable version is a `[WARN]` (cannot prove the precondition either way). No
+bash HMAC fallback is ever added — Python stdlib is a hard requirement.
+
+18. **First-keyed-run deny-canary handshake (once per machine).** This converts the version
+    precondition from documentation into a checked assertion: the gate recognizes the reserved
+    sentinel `subagent_type` `agent-flow:__deny_canary__` and **unconditionally DENIES** it, so a
+    real block proves the running client honors PreToolUse `deny` + `exit 2`.
+
+    - If `.agent-flow/.version-confirmed` already exists → `[SKIP] Dispatch witness - deny-canary
+      handshake already confirmed on this machine`.
+    - Otherwise dispatch ONE inert canary:
+      `Task(subagent_type="agent-flow:__deny_canary__", description="agent-flow version handshake (inert)", prompt="inert — version handshake, do no work")`.
+      The payload is deliberately inert, so even if it launches on a `< 2.1.90` client (where the
+      gate's deny is a no-op) it does no work.
+      - The dispatch was **BLOCKED** (the gate denied it) → `[OK] Dispatch witness - deny-canary
+        blocked; Claude Code honors the PreToolUse true block` and record the once-per-machine
+        marker (the ONLY file this skill writes — a runtime handshake marker, not config):
+
+        ```bash
+        mkdir -p .agent-flow 2>/dev/null
+        date -u '+%Y-%m-%dT%H:%M:%SZ' > .agent-flow/.version-confirmed 2>/dev/null \
+          && echo "[OK] Dispatch witness - recorded .agent-flow/.version-confirmed"
+        ```
+
+      - The canary **LAUNCHED** (was not blocked) → `[FAIL] Dispatch witness - deny-canary was NOT
+        blocked: this Claude Code client is < 2.1.90 (the PreToolUse gate's deny is a no-op).
+        Dispatch enforcement is advisory only until you upgrade to >= 2.1.90.` Do NOT record the
+        marker.
+
+All `[FAIL]` results in Block 8 **count toward the final FAIL verdict** — a missing Python stdlib
+or a `< 2.1.90` client means the keyed gate cannot enforce. `[WARN]` results are advisory.
+
 ## Deprecated config detection
 
 After all primary checks complete, scan for deprecated config sections and emit advisories. These do NOT change the exit code — they're warnings only.

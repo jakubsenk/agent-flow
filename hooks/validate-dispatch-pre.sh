@@ -21,6 +21,15 @@
 # Keyed compute/verify lives ONLY in Python (hooks/lib/witness_core.py +
 # hooks/lib/witness_key.py) — bash holds NO keyed path (REQ-010 / REQ-030).
 #
+# Overlay binding + model resolution (task-009): the gate recomputes
+# overlay_digest from the RAW LF-normalized override_path/<short>.toml bytes
+# (hooks/lib/witness_overlay.py, REQ-031/A5) and resolves `model` by REUSING the
+# SINGLE injector TOML parser — skills/setup-agents/lib/toml-merge.sh
+# resolve_overlay (-> parse_toml_overlay -> tomllib/tomli) — never a naive
+# line-scan for the model scalar (REQ-048; a real TOML parse, not a regex).
+# override_path is read from state.json (REQ-032/A6), not from the
+# AGENT_FLOW_OVERRIDE_PATH env.
+#
 # EXIT: 0 = ALLOW / pass-through. 2 = DENY (true block). Fail-closed: any
 #       internal error under strict -> DENY + exit 2 (never exit 0/1 silently).
 #
@@ -80,6 +89,7 @@ sys.path.insert(0, LIBDIR)
 
 import witness_core as wc      # canon / tag / head128 / dispatch_witness_alg
 import witness_key as wk       # generate / read / discover / bootstrap_decision
+import witness_overlay as wo   # recompute_overlay_digest / resolve_model (A5/A6, REQ-031/048)
 
 DENY_CANARY = "agent-flow:__deny_canary__"
 MARKER_REL  = os.path.join(".agent-flow", "pending-dispatch.json")
@@ -323,25 +333,56 @@ def main():
         return deny("WITNESS_MISMATCH: subagent_type observed (%s) != claim (%s)"
                     % (observed_subagent, claim_subagent))
 
-    # model: deterministic resolution. (Shared-parser overlay resolution is wired
-    # in by task-009; here the resolved value is the CLAIM model, with a
-    # tool_input.model cross-check where the runtime supplies it — REQ-048.)
-    ti_model = ti.get("model")
-    if isinstance(ti_model, str) and ti_model and ti_model != claim_model:
-        return deny("WITNESS_MISMATCH: tool_input.model (%s) != claim model (%s)"
-                    % (ti_model, claim_model))
-    resolved_model = claim_model
+    # override_path is read from state.json (REQ-032/A6) — the Claude-Code-spawned
+    # gate never inherits the skill's AGENT_FLOW_OVERRIDE_PATH env (last-resort only).
+    override_path = str(claim.get("override_path") or "")
+    if not override_path:
+        override_path = os.environ.get("AGENT_FLOW_OVERRIDE_PATH") or "customization/"
+    # Short name for on-disk lookups only (full subagent_type is the hash input).
+    short = observed_subagent.rsplit(":", 1)[-1]
+    proot = os.getcwd()
 
-    # (overlay_source / overlay_digest are taken from the CLAIM here; the gate's
-    #  on-disk RAW .toml recompute + compare is added in task-009.)
+    # model: deterministic resolution via the SHARED injector TOML parser
+    # (resolve_overlay path), REQ-048. The gate does not resolve the plugin
+    # agent-def frontmatter from the consumer cwd (out of reach), so precedence
+    # collapses to overlay-scalar -> CLAIM here; the orchestrator wrote the CLAIM
+    # via the same precedence, so the resolved value matches a correct dispatch.
+    resolved_model, _model_source = wo.resolve_model(
+        override_path, short, frontmatter_model=None,
+        claim_model=claim_model, project_root=proot)
+    # tool_input.model, where the runtime supplies it, is cross-checked against
+    # the resolved value (mismatch -> DENY); where absent, resolved is authoritative.
+    ti_model = ti.get("model")
+    if isinstance(ti_model, str) and ti_model and ti_model != resolved_model:
+        return deny("WITNESS_MISMATCH: tool_input.model (%s) != resolved model (%s)"
+                    % (ti_model, resolved_model))
+
+    # overlay digest: when overlay_source == toml, recompute from the RAW
+    # LF-normalized override_path/<short>.toml bytes (read once) and COMPARE to
+    # the committed digest (REQ-031/A5). A forged override_path escaping the
+    # allowlist, an absent .toml, or a one-byte body edit -> DENY (the gate signs
+    # its own recomputed digest, so the witness binds the on-disk overlay).
+    overlay_digest_for_canon = overlay_digest
+    if overlay_source == "toml":
+        ov_status, ov_val = wo.recompute_overlay_digest(
+            override_path, short, project_root=proot)
+        if ov_status == wo.OVERLAY_DENY:
+            return deny("WITNESS_MISMATCH: " + ov_val)
+        if ov_status == wo.OVERLAY_MISMATCH:
+            return deny("WITNESS_MISMATCH: " + ov_val)
+        if ov_val != overlay_digest:
+            return deny("WITNESS_MISMATCH: overlay_digest recomputed (%s) != claim (%s)"
+                        % (ov_val, overlay_digest))
+        overlay_digest_for_canon = ov_val
 
     # 3d. Observe-and-sign the prompt head as GROUND TRUTH (REQ-003/REQ-051):
     #     NOT compared against any orchestrator claim.
     observed_head = wc.head128(observed_prompt)
 
     # 3e. Compute the HMAC tag over the canonical preimage (folds claim_nonce).
+    #     overlay_digest is the gate's OWN recomputed value (== claim on match).
     c = wc.canon(observed_subagent, resolved_model, observed_head,
-                 overlay_source, overlay_digest, stage, run_id, claim_nonce)
+                 overlay_source, overlay_digest_for_canon, stage, run_id, claim_nonce)
     sig = wc.tag(keyhex, c)
 
     # 3f. Append the gate-owned ledger line keyed by (run_id, stage, claim_nonce).
@@ -350,7 +391,7 @@ def main():
         "dispatch_seq": marker_seq,
         "subagent_type": observed_subagent, "model": resolved_model,
         "prompt_head_128": observed_head,
-        "overlay_source": overlay_source, "overlay_digest": overlay_digest,
+        "overlay_source": overlay_source, "overlay_digest": overlay_digest_for_canon,
         "dispatch_witness_alg": wc.dispatch_witness_alg,
         "tag": sig, "verdict": "WITNESS_OK", "signed_at": now_iso(),
     }

@@ -80,6 +80,7 @@ if LIBDIR:
     sys.path.insert(0, LIBDIR)
 import witness_core as wc      # canon / tag (HMAC) — single keyed authority
 import witness_key as wk       # read_key / ledger_is_nonempty
+import witness_overlay as wo   # overlay binding helpers (A5/A6, REQ-031/032)
 
 # Hardcoded stage whitelist (no dynamic discovery from state.json).
 STAGES = ["triage", "code_analysis", "reproduce_browser", "fixer_reviewer",
@@ -179,7 +180,10 @@ def legacy_verdict(s):
             canon = "|".join(str(vals[k]) for k in WITNESS_FIELDS)
             if hashlib.sha256(canon.encode("utf-8")).hexdigest() == stored:
                 short = str(vals["agent_name"]).rsplit(":", 1)[-1]
-                toml  = os.path.join(override_path, short + ".toml")
+                # A6: prefer the per-stage persisted override_path from the CLAIM
+                # (the hook never inherits the skill's env); env/default is last resort.
+                ovp = str(s.get("override_path") or "") or override_path
+                toml  = os.path.join(ovp, short + ".toml")
                 if os.path.isfile(toml) and vals["overlay_source"] != "toml":
                     return "WITNESS_MISMATCH"
                 return "WITNESS_OK"

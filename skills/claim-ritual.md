@@ -107,7 +107,7 @@ Then append the rendered overlay block to the prompt and issue the `Task()` call
 
 - MUST NOT read, generate, receive, or reference the per-run `dispatch.key`.
 - MUST NOT write a signed `tag` or `dispatch_witness` into `state.json` on a keyed
-  (`schema_version "2.0"`) run — the signed witness lives in the gate-owned
-  `.agent-flow/{RUN-ID}/dispatch-ledger.jsonl`, which the orchestrator never
-  writes or truncates (REQ-014).
+  (`schema_version "2.0"`) run — the signed witness lives in the gate-owned ledger
+  (gate-written, in the run dir), which the orchestrator never writes or truncates
+  (REQ-014).
 - MUST NOT write the prompt head as a witness input (gate-observed ground truth).
