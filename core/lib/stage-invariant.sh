@@ -163,12 +163,16 @@ PY
 # __overlay_short_name AGENT_NAME
 #   Map a Task subagent_type to the overlay file short name used on disk.
 #   `agent-flow:fixer` -> `fixer`. A bare `fixer` passes through unchanged.
-#   Strips any `<plugin>:` prefix (everything up to and including the last
-#   colon).
+#   Strips any `<plugin>:` prefix. PATH-TRAVERSAL GUARD (REQ-038): reject a short
+#   name with `/`, `\`, or `..` (return non-zero) before forming a traversal path.
 # -----------------------------------------------------------------------------
 __overlay_short_name() {
   local agent_name="$1"
-  printf '%s' "${agent_name##*:}"
+  local short="${agent_name##*:}"
+  case "$short" in
+    *'/'*|*'\'*|*'..'*) return 1 ;;
+  esac
+  printf '%s' "$short"
 }
 
 # -----------------------------------------------------------------------------
@@ -280,10 +284,9 @@ emit_witness_audit() {
 
 # -----------------------------------------------------------------------------
 # Self-test mode: `bash core/lib/stage-invariant.sh --self-test`
-# Exits 0 if the helpers work end-to-end on a tiny synthetic input:
-# synthesizes overlay_source=none / overlay_digest=none, computes the 5-tuple
-# witness, writes a state.json whose stored inputs recompute to that witness,
-# and asserts V1+V2 check returns WITNESS_OK.
+# Synthetic 5-tuple V1+V2 smoke, then KEYED ROUND-TRIPS (REQ-030): bash holds NO
+# HMAC -- shell to witness_core.py (tag) + witness_key.py (key/bootstrap) for
+# key-present / key-absent / wrong-key round-trips; skipped if Python is absent.
 # -----------------------------------------------------------------------------
 if [ "${1:-}" = "--self-test" ]; then
   agent="agent-flow:analyst"
@@ -314,6 +317,23 @@ if [ "${1:-}" = "--self-test" ]; then
   vb=$(check_dispatch_witness triage "$bad_state" "$tmp_override"); rc=$?
   rm -f "$bad_state"
   [ "$vb" = "WITNESS_MISMATCH" ] && [ "$rc" -eq 2 ] || { echo "self-test: expected WITNESS_MISMATCH/2 got $vb/$rc"; exit 1; }
+
+  # --- keyed round-trips: shell to the Python authority (REQ-030) -------------
+  pybin=$(command -v python3 || command -v python || true)
+  sd=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." 2>/dev/null && pwd)
+  cpy="$sd/hooks/lib/witness_core.py"; kpy="$sd/hooks/lib/witness_key.py"
+  if [ -n "$pybin" ] && [ -f "$cpy" ] && [ -f "$kpy" ]; then
+    kf() { echo "self-test: keyed $1" >&2; rm -f "$kt" 2>/dev/null || true; exit 1; }
+    "$pybin" "$cpy" --self-test >/dev/null 2>&1 || kf "core golden (key-present tag)"
+    "$pybin" "$kpy" --self-test >/dev/null 2>&1 || kf "key lifecycle + bootstrap (key-absent)"
+    kt=$(mktemp -u 2>/dev/null || echo "${TMPDIR:-/tmp}/ks_$$")
+    K=$("$pybin" "$kpy" generate "$kt" 2>/dev/null) || kf "key generate"
+    [[ "$K" =~ ^[0-9a-f]{64}$ ]] || kf "key not 64-hex (len ${#K})"
+    ta() { "$pybin" "$cpy" tag "$1" agent-flow:fixer opus HEAD none none fixer_reviewer RUN-1 nonce-1; }
+    T1=$(ta "$K"); [[ "$T1" =~ ^[0-9a-f]{64}$ ]] || kf "key-present tag shape"
+    [ "$(ta ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff)" != "$T1" ] || kf "wrong-key same tag"
+    rm -f "$kt" 2>/dev/null || true
+  fi
 
   echo "self-test: PASS"
   exit 0
