@@ -11,7 +11,7 @@ A Claude Code plugin (`agent-flow`) that automates bug-fix workflows, feature im
 
 ## Repository Structure
 
-No build system, no dependencies. Manual test suite in `tests/`. This is a pure plugin of markdown definitions.
+No build system; zero third-party PACKAGE dependencies — requires bash + Python 3 (stdlib only) on PATH. Manual test suite in `tests/`. This is a pure plugin of markdown definitions plus shell + Python hooks.
 
 - `.claude-plugin/` — Plugin metadata (`plugin.json`, `marketplace.json`)
 - `agents/` — 17 agent definitions (markdown with YAML frontmatter)

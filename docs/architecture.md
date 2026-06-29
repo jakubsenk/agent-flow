@@ -1,6 +1,6 @@
 # Architecture
 
-agent-flow is a Claude Code plugin built as a 2-layer system: skills orchestrate WHAT to do, agents specialize in HOW to do it. The plugin is pure markdown with zero runtime dependencies. All project-specific configuration lives outside the plugin in the consuming project's CLAUDE.md.
+agent-flow is a Claude Code plugin built as a 2-layer system: skills orchestrate WHAT to do, agents specialize in HOW to do it. The plugin is pure markdown plus shell + Python hooks, with zero third-party PACKAGE dependencies (requires bash + Python 3, stdlib only). All project-specific configuration lives outside the plugin in the consuming project's CLAUDE.md.
 
 **Current counts:** 17 agents · 17 skills · 18 optional config sections · 17 core contracts.
 

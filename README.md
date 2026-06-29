@@ -1,6 +1,6 @@
 # agent-flow
 
-> **v1.0.0** — Initial public release. [View on GitHub](https://github.com/asysta-act/agent-flow)
+> **v2.0.0** — Keyed (HMAC-signed) dispatch witness; MAJOR breaking release (see CHANGELOG). [View on GitHub](https://github.com/asysta-act/agent-flow)
 
 A Claude Code plugin that automates the full development lifecycle — from bug triage through fix, review, test, and publish. 17 specialized AI agents, 17 orchestration skills, 17 core contracts, zero third-party PACKAGE dependencies (requires bash + Python 3, stdlib only).
 
