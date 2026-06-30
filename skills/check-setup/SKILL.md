@@ -213,18 +213,83 @@ Verdict:
     - If conflict → [WARN] "Plugin '{name}' registers command '{cmd}' which may conflict with agent-flow:{cmd}"
     - If no conflicts → [OK] "No plugin conflicts detected"
 
-### Block 6: Dispatch Enforcement Hook (advisory)
+### Block 6: Dispatch Enforcement Hooks (advisory)
 
-14. Check whether the dispatch enforcement hook is installed:
-    a. Verify that `hooks/validate-dispatch.sh` exists in the plugin installation directory.
-       - Glob with `.claude/plugins/**/hooks/validate-dispatch.sh`; if not found, try `hooks/validate-dispatch.sh` relative to CWD.
-       - Found → [OK] "hooks/validate-dispatch.sh present at {path}"
-       - Not found → [ADVISORY] "hooks/validate-dispatch.sh not found — dispatch audit not available"
-    b. Check whether `~/.claude/settings.json` contains a PostToolUse hook entry referencing `validate-dispatch`.
-       - Read `~/.claude/settings.json` (if accessible).
-       - Found entry referencing `validate-dispatch` → [OK] "PostToolUse hook wired in ~/.claude/settings.json"
-       - Not found or file unreadable → [ADVISORY] "PostToolUse hook not configured — dispatch enforcement is opt-in. See docs/guides/dispatch-enforcement.md to install."
-    c. All results in this block are advisory — they NEVER contribute to the FAIL count or change the final verdict.
+Dispatch enforcement is **two** hooks (see `docs/guides/dispatch-enforcement.md`):
+the **PreToolUse `Task` gate** `hooks/validate-dispatch-pre.sh` (the only component
+that can BLOCK a dispatch) and the **PostToolUse audit** `hooks/validate-dispatch.sh`
+(advisory second layer). Both can be wired at any scope of the Claude Code settings
+tree — `~/.claude/settings.json` (user), `.claude/settings.json` (project), or
+`.claude/settings.local.json` (project-local) — and **hooks COMBINE across scopes**
+(none overrides another; only `"disableAllHooks": true` disables them). Detecting the
+wiring from `~/.claude/settings.json` ALONE is a false negative when an operator wired
+it at the project or project-local scope, so this block scans the whole tree.
+
+14. Check whether the dispatch enforcement hooks are installed:
+
+    a. Verify the hook scripts exist in the plugin installation directory. For each of
+       `hooks/validate-dispatch-pre.sh` (gate) and `hooks/validate-dispatch.sh` (audit):
+       Glob with `.claude/plugins/**/hooks/{name}`; if not found, try `hooks/{name}`
+       relative to CWD.
+       - Found → [OK] "hooks/{name} present at {path}"
+       - Not found → [ADVISORY] "hooks/{name} not found — that layer is not available"
+
+    b. Detect whether the hooks are wired anywhere in the settings tree, using the
+       shared helper `core/lib/detect-dispatch-hooks.sh`. Locate it with Glob: pattern
+       `.claude/plugins/**/core/lib/detect-dispatch-hooks.sh` first, then
+       `**/core/lib/detect-dispatch-hooks.sh`, then `core/lib/detect-dispatch-hooks.sh`
+       relative to CWD. If located, set `$DDH_LIB` to the resolved path and run:
+
+       ```bash
+       # Block 6b: tree-aware dispatch-hook detection (advisory)
+       if [ -z "${DDH_LIB:-}" ] || [ ! -f "${DDH_LIB:-}" ]; then
+         echo "[ADVISORY] Dispatch hooks - detect-dispatch-hooks.sh not found; settings-tree wiring detection skipped (verify plugin installation)."
+       else
+         # shellcheck disable=SC1090
+         . "$DDH_LIB"
+         ddh_out="$(detect_dispatch_hooks "$PWD" "${HOME:-}")"
+         # Pipe-free, CR-safe KEY=VALUE extractor (no `| head` -> no pipefail/SIGPIPE race).
+         val() {
+           local line
+           while IFS= read -r line; do
+             line="${line%$'\r'}"
+             case "$line" in "$1="*) printf '%s' "${line#*=}"; return 0 ;; esac
+           done <<EOF
+$ddh_out
+EOF
+         }
+         gate_wired=$(val GATE_WIRED);  gate_task=$(val GATE_MATCHER_TASK); gate_scopes=$(val GATE_SCOPES)
+         audit_wired=$(val AUDIT_WIRED); audit_scopes=$(val AUDIT_SCOPES)
+         disabled=$(val DISABLE_ALL_HOOKS); disabled_scopes=$(val DISABLE_ALL_HOOKS_SCOPES)
+
+         # PreToolUse Task gate — the blocking component.
+         if [ "$gate_wired" = "1" ] && [ "$gate_task" = "1" ]; then
+           echo "[OK] Dispatch hooks - PreToolUse Task gate wired (${gate_scopes})"
+         elif [ "$gate_wired" = "1" ]; then
+           echo "[ADVISORY] Dispatch hooks - gate command present (${gate_scopes}) but matcher is not \"Task\" — it will NOT gate dispatches. Register it under PreToolUse with matcher \"Task\" (see docs/reference/hooks.md)."
+         else
+           echo "[ADVISORY] Dispatch hooks - PreToolUse Task gate not wired in any settings file (user/project/local) — dispatch enforcement is advisory only. See docs/guides/dispatch-enforcement.md to install."
+         fi
+
+         # PostToolUse audit — the advisory second layer.
+         if [ "$audit_wired" = "1" ]; then
+           echo "[OK] Dispatch hooks - PostToolUse audit wired (${audit_scopes})"
+         else
+           echo "[ADVISORY] Dispatch hooks - PostToolUse audit not wired in any settings file — see docs/guides/dispatch-enforcement.md."
+         fi
+
+         # disableAllHooks short-circuits everything above.
+         if [ "$disabled" = "1" ]; then
+           echo "[WARN] Dispatch hooks - \"disableAllHooks\": true set in ${disabled_scopes} — wired hooks will NOT fire until that is removed."
+         fi
+       fi
+       # Managed/OS-level settings are not inspected by this check.
+       echo "[ADVISORY] Dispatch hooks - managed/OS-level settings (Windows registry policy, macOS plist, Linux managed JSON) are not inspected; a hook wired ONLY there cannot be confirmed here."
+       ```
+
+    c. All results in this block are advisory — they NEVER contribute to the FAIL count
+       or change the final verdict. (The keyed runtime preconditions that CAN fail live
+       in Block 8.)
 
 ### Block 7: Agent Overrides (TOML overlay parsing)
 

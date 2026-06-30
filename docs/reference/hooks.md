@@ -223,6 +223,15 @@ Notes:
 - Requires **Claude Code ≥ 2.1.90** (issue #26923: a `Task` `exit 2` was a no-op
   before v2.1.90). `/check-setup` and the first-keyed-run deny-canary assert this.
 
+**Scope note (applies to both stanzas above).** Either hook can be registered at
+user scope (`~/.claude/settings.json`), project scope (`.claude/settings.json`),
+or project-local scope (`.claude/settings.local.json`). Claude Code merges a
+settings tree across scopes, and **hooks COMBINE** — a hook present in any scope
+fires; none overrides another. Only `"disableAllHooks": true` (set in any scope)
+disables them. `/agent-flow:check-setup` scans all three scopes and detects both
+the PreToolUse `Task` gate and the PostToolUse audit, reporting where each is
+wired.
+
 The optional one-time shape probe is registered the same way (PreToolUse or
 PostToolUse, `matcher: "Task"`, command `hooks/probe-task-shape.sh`); it never
 blocks.

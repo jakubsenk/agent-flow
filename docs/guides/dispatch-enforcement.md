@@ -133,8 +133,16 @@ installation directory.
 
 Install in `~/.claude/settings.json` (user-global) so the hook fires for
 every Claude Code session including autopilot child subprocess invocations.
-If you only want it for a single project, use `.claude/settings.json` in that
-project root.
+
+Project `.claude/settings.json` and project-local
+`.claude/settings.local.json` are equally valid scopes. Claude Code merges a
+settings tree across scopes, and **hooks COMBINE** — a `PreToolUse`/`PostToolUse`
+hook registered in any scope fires; none overrides another. (Only
+`"disableAllHooks": true`, set in any scope, turns hooks off.) So you can wire the
+gate user-global, per-project, or project-local — or in several scopes at once
+without conflict. The user-global scope is still recommended because it is the
+only one that reaches autopilot child subprocesses.
+`/agent-flow:check-setup` detects the hook at any of these scopes.
 
 ---
 
@@ -236,11 +244,16 @@ fires and no dispatch is blocked.
 ## Troubleshooting / diagnosis
 
 **Hook never fires:**
-- Verify the entry is in `~/.claude/settings.json` (not a project-level file
-  that is overriding user-global config).
-- Check `disableAllHooks` is not `true` in any settings file.
-- Run `/agent-flow:check-setup` — it reports whether the hook file and
-  settings.json entry are detected.
+- Verify the entry exists in at least one settings scope. It may live in any of
+  `~/.claude/settings.json` (user-global), project `.claude/settings.json`, or
+  project-local `.claude/settings.local.json` — these scopes COMBINE, so a hook
+  in any one of them fires and none overrides another. There is no need for the
+  entry to be in the user-global file specifically.
+- Check `disableAllHooks` is not `true` in any settings scope — that is the only
+  setting that turns hooks off.
+- Run `/agent-flow:check-setup` — it scans all three scopes (user + project +
+  project-local) and reports, per scope, whether the PreToolUse `Task` gate and
+  the PostToolUse audit are detected.
 
 **`state.json` not found:**
 - The hook exits silently if no `.agent-flow/*/state.json` is present.

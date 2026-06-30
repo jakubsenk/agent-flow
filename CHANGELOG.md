@@ -40,6 +40,16 @@ All notable changes to agent-flow will be documented in this file.
   handshake (reserved sentinel `agent-flow:__deny_canary__`).
 - **`.gitattributes` LF pins** (`tests/fixtures/** text eol=lf`, `*.toml`, `*.json`) so
   hashed byte-identity holds on MSYS2 and Linux CI.
+- **Shared dispatch-hook detection helper (`core/lib/detect-dispatch-hooks.sh`).** Scans
+  the full Claude Code settings tree — user (`~/.claude/settings.json`), project
+  (`.claude/settings.json`), and project-local (`.claude/settings.local.json`) — for both
+  the PreToolUse `Task` gate (`validate-dispatch-pre.sh`, the blocking component) and the
+  PostToolUse audit (`validate-dispatch.sh`), reporting the scope(s) where each is wired,
+  whether the gate matcher is `Task`, and whether any scope sets `disableAllHooks`.
+  Managed/OS-level settings are not inspected (advisory gap, not reported as not-wired).
+- **`/fix-bugs` advisory dispatch-enforcement preflight** — `fix-bugs` now logs whether the
+  blocking PreToolUse `Task` gate is wired across the settings tree before dispatch.
+  Advisory only — it never blocks the run.
 
 ### Changed
 
@@ -68,6 +78,12 @@ All notable changes to agent-flow will be documented in this file.
 - **`## Step Completion Invariants`** wording updated in lockstep across the agent and
   `examples/custom-agents/*` definitions; `agents/acceptance-gate.md`'s self-check now
   reads the gate-owned ledger instead of recomputing via the demoted bash path.
+- **`/check-setup` Block 6 now scans the full settings tree** (user + project +
+  project-local) via the new `core/lib/detect-dispatch-hooks.sh` and detects BOTH the
+  PreToolUse `Task` gate and the PostToolUse audit — fixing a false "hook not configured"
+  advisory raised when the hook was wired only at project (`.claude/settings.json`) or
+  project-local (`.claude/settings.local.json`) scope (hooks COMBINE across scopes; none
+  overrides another). Block 6 stays advisory and never changes the `FAIL` verdict.
 
 ### Fixed
 

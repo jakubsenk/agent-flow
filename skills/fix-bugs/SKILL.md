@@ -131,12 +131,12 @@ Pipeline profile parsing: follow `../../core/profile-parser.md`. Stage names eli
 `triage`, `analyst-impact`, `test-engineer`, `test-engineer-e2e`, `browser-agent-reproduce`,
 `browser-agent-verify`. NEVER skip: `fixer`, `reviewer`, `publisher` (these stages CANNOT be skipped).
 
-## Architecture freshness (advisory)
+## Preflight checks (advisory)
 
 <!-- @snippet:architecture-freshness -->
+<!-- @snippet:dispatch-enforcement-preflight -->
 
-Before fixer dispatch, run the canonical architecture freshness check from
-`core/snippets/architecture-freshness.md`. Advisory only, non-blocking.
+Before fixer dispatch, run both canonical advisory (non-blocking) checks: `core/snippets/architecture-freshness.md` (stale architecture docs) and `core/snippets/dispatch-enforcement-preflight.md` (is the blocking PreToolUse `Task` gate wired across the settings tree — user/project/project-local, not just `~/.claude/settings.json`, since hooks combine?).
 
 ## Worktree / batch processing
 
